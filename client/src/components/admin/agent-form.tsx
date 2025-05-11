@@ -18,6 +18,7 @@ import {
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Agent, insertAgentSchema } from "@shared/schema";
 import { getAgentImage } from "@/lib/utils";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface AgentFormProps {
   agent?: Agent;
