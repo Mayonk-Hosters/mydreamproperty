@@ -19,7 +19,7 @@ export default function AdminEditAgentPage() {
     isLoading: isLoadingAgent 
   } = useQuery<Agent>({
     queryKey: ['/api/agents', params?.id],
-    enabled: Boolean(isAdmin && params?.id),
+    enabled: isAdmin === true && Boolean(params?.id),
   });
 
   useEffect(() => {

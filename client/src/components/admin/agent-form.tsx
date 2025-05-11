@@ -35,6 +35,8 @@ const formSchema = z.object({
   image: z.string().url({
     message: "Please enter a valid image URL",
   }),
+  // Add field for new images using comma-separated URLs
+  newImages: z.string().optional(),
   deals: z.coerce.number().nonnegative().default(0),
   rating: z.coerce.number().min(0).max(5).default(0),
 });
@@ -48,6 +50,7 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
     name: agent?.name || "",
     title: agent?.title || "",
     image: agent?.image || getAgentImage(0),
+    newImages: "",
     deals: agent?.deals || 0,
     rating: agent?.rating || 0,
   };
@@ -74,10 +77,25 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
   // Submit handler
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
+      // Process image URLs
+      let agentImage = data.image;
+      
+      // Handle newImages field - process comma-separated URLs
+      if (data.newImages) {
+        const newImagesArray = data.newImages.split(',')
+          .map(url => url.trim())
+          .filter(url => url.length > 0);
+        
+        // If we have new images, use the first one as the primary image
+        if (newImagesArray.length > 0) {
+          agentImage = newImagesArray[0];
+        }
+      }
+      
       const agentData = {
         name: data.name,
         title: data.title,
-        image: data.image,
+        image: agentImage, // Use processed image
         deals: data.deals,
         rating: data.rating,
       };

@@ -60,7 +60,7 @@ export default function AdminAgentsPage() {
     isLoading: isLoadingAgents 
   } = useQuery<Agent[]>({
     queryKey: ['/api/agents'],
-    enabled: isAdmin
+    enabled: isAdmin === true
   });
   
   // Filter agents based on search query
