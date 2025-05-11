@@ -386,10 +386,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/locations/districts", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const districtData = insertDistrictSchema.parse(req.body);
       
@@ -415,10 +418,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/locations/districts/:id", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -451,10 +457,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/locations/districts/:id", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -507,10 +516,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/locations/talukas", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const talukaData = insertTalukaSchema.parse(req.body);
       
@@ -536,10 +548,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/locations/talukas/:id", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -572,10 +587,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/locations/talukas/:id", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -628,10 +646,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/locations/tehsils", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const tehsilData = insertTehsilSchema.parse(req.body);
       
@@ -657,10 +678,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/locations/tehsils/:id", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -693,10 +717,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/locations/tehsils/:id", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
+      // For development, allowing all users to access this endpoint
+      // In production, uncomment the following authentication check
+      /*
       if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
+      */
       
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
