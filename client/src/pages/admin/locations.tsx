@@ -366,7 +366,7 @@ function DistrictsManager() {
               <SelectValue placeholder="Filter by state" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All States</SelectItem>
+              <SelectItem value="0">All States</SelectItem>
               {statesQuery.data?.map((state) => (
                 <SelectItem key={state.id} value={state.id.toString()}>
                   {state.name}
