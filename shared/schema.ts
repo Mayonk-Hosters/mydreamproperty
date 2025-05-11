@@ -141,8 +141,7 @@ export const tehsils = pgTable("tehsils", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   talukaId: integer("taluka_id").notNull().references(() => talukas.id, { onDelete: 'cascade' }),
-  area: decimal("area").notNull().default('0'),
-  areaUnit: text("area_unit").default('sq.km'),
+  area: text("area").default(''),  // Area as a location text
   createdAt: timestamp("created_at").defaultNow(),
 });
 
