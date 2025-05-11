@@ -27,6 +27,13 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
@@ -55,6 +62,9 @@ export default function AdminSettingsPage() {
     contactPhone: z.string().min(10, {
       message: "Please enter a valid phone number.",
     }),
+    currency: z.string({
+      required_error: "Please select a currency.",
+    }),
   });
 
   const notificationFormSchema = z.object({
@@ -71,6 +81,7 @@ export default function AdminSettingsPage() {
       siteUrl: "https://realestatepro.com",
       contactEmail: "info@realestatepro.com",
       contactPhone: "(123) 456-7890",
+      currency: "USD",
     },
   });
 
@@ -204,6 +215,40 @@ export default function AdminSettingsPage() {
                         )}
                       />
                     </div>
+
+                    <FormField
+                      control={generalForm.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Currency</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select currency" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                              <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                              <SelectItem value="GBP">British Pound (GBP)</SelectItem>
+                              <SelectItem value="INR">Indian Rupee (INR)</SelectItem>
+                              <SelectItem value="AUD">Australian Dollar (AUD)</SelectItem>
+                              <SelectItem value="CAD">Canadian Dollar (CAD)</SelectItem>
+                              <SelectItem value="JPY">Japanese Yen (JPY)</SelectItem>
+                              <SelectItem value="CNY">Chinese Yuan (CNY)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            Select the currency that will be used for all property prices on the website.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     
                     <div className="mt-4 flex justify-end">
                       <Button type="submit">Save Changes</Button>
