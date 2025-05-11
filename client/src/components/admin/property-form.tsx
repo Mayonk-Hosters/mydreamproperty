@@ -376,9 +376,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         </FormControl>
                         <SelectContent>
                           {statesQuery.isLoading ? (
-                            <SelectItem value="loading" disabled>Loading states...</SelectItem>
+                            <SelectItem value="loading-state" disabled>Loading states...</SelectItem>
                           ) : statesQuery.data?.length === 0 ? (
-                            <SelectItem value="none" disabled>No states found</SelectItem>
+                            <SelectItem value="none-state" disabled>No states found</SelectItem>
                           ) : (
                             statesQuery.data?.map((state) => (
                               <SelectItem key={state.id} value={state.id.toString()}>
@@ -415,9 +415,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         </FormControl>
                         <SelectContent>
                           {districtsQuery.isLoading ? (
-                            <SelectItem value="loading" disabled>Loading districts...</SelectItem>
+                            <SelectItem value="loading-district" disabled>Loading districts...</SelectItem>
                           ) : !districtsQuery.data || districtsQuery.data.length === 0 ? (
-                            <SelectItem value="none" disabled>No districts found</SelectItem>
+                            <SelectItem value="none-district" disabled>No districts found</SelectItem>
                           ) : (
                             districtsQuery.data.map((district) => (
                               <SelectItem key={district.id} value={district.id.toString()}>
@@ -456,9 +456,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         </FormControl>
                         <SelectContent>
                           {talukasQuery.isLoading ? (
-                            <SelectItem value="loading" disabled>Loading talukas...</SelectItem>
+                            <SelectItem value="loading-taluka" disabled>Loading talukas...</SelectItem>
                           ) : !talukasQuery.data || talukasQuery.data.length === 0 ? (
-                            <SelectItem value="none" disabled>No talukas found</SelectItem>
+                            <SelectItem value="none-taluka" disabled>No talukas found</SelectItem>
                           ) : (
                             talukasQuery.data.map((taluka) => (
                               <SelectItem key={taluka.id} value={taluka.id.toString()}>
@@ -495,9 +495,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         </FormControl>
                         <SelectContent>
                           {tehsilsQuery.isLoading ? (
-                            <SelectItem value="loading" disabled>Loading tehsils...</SelectItem>
+                            <SelectItem value="loading-tehsil" disabled>Loading tehsils...</SelectItem>
                           ) : !tehsilsQuery.data || tehsilsQuery.data.length === 0 ? (
-                            <SelectItem value="none" disabled>No tehsils found</SelectItem>
+                            <SelectItem value="none-tehsil" disabled>No tehsils found</SelectItem>
                           ) : (
                             tehsilsQuery.data.map((tehsil) => (
                               <SelectItem key={tehsil.id} value={tehsil.id.toString()}>
@@ -652,9 +652,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                       </FormControl>
                       <SelectContent>
                         {agentsQuery.isLoading ? (
-                          <SelectItem value="0" disabled>Loading agents...</SelectItem>
+                          <SelectItem value="loading-agent" disabled>Loading agents...</SelectItem>
                         ) : !agentsQuery.data || agentsQuery.data.length === 0 ? (
-                          <SelectItem value="0" disabled>No agents found</SelectItem>
+                          <SelectItem value="none-agent" disabled>No agents found</SelectItem>
                         ) : (
                           agentsQuery.data.map((agent) => (
                             <SelectItem key={agent.id} value={agent.id.toString()}>
@@ -693,23 +693,57 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
 
             <div className="border rounded-md p-4">
               <FormLabel className="block mb-3">Property Images</FormLabel>
-              <p className="text-sm text-gray-500 mb-3">
-                The property has {form.getValues("images").length} images attached.
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {form.getValues("images").slice(0, 4).map((image, index) => (
-                  <div key={index} className="h-20 overflow-hidden rounded">
-                    <img 
-                      src={image} 
-                      alt={`Property image ${index + 1}`} 
-                      className="w-full h-full object-cover" 
-                    />
+              
+              {/* Display existing images if any */}
+              {form.getValues("images") && Array.isArray(form.getValues("images")) && form.getValues("images").length > 0 ? (
+                <>
+                  <p className="text-sm text-gray-500 mb-3">
+                    The property has {form.getValues("images").length} images attached.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    {form.getValues("images").slice(0, 4).map((image, index) => (
+                      <div key={index} className="h-20 overflow-hidden rounded">
+                        <img 
+                          src={image} 
+                          alt={`Property image ${index + 1}`} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </>
+              ) : (
+                <p className="text-sm text-gray-500 mb-3">
+                  No images are currently attached to this property.
+                </p>
+              )}
+              
+              {/* Image input */}
+              <div className="mt-3">
+                <FormField
+                  control={form.control}
+                  name="newImages"
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <FormItem>
+                      <FormLabel>Add Images</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter image URL(s), separate multiple with commas"
+                          onChange={(e) => {
+                            onChange(e.target.value);
+                          }}
+                          {...rest}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter comma-separated image URLs (e.g., https://example.com/image1.jpg, https://example.com/image2.jpg)
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Image upload functionality would be implemented here.
-              </p>
             </div>
           </div>
         </div>
