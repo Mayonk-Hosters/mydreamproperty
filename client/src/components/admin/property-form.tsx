@@ -122,10 +122,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     newImages: "",
     agentId: 1, // Default agent ID
     createdAt: new Date().toISOString(),
-    stateId: "",
-    districtId: "",
-    talukaId: "",
-    tehsilId: "",
+    stateId: "0",
+    districtId: "0",
+    talukaId: "0",
+    tehsilId: "0",
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -158,9 +158,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedStateId) {
       form.setValue('stateId', selectedStateId);
-      form.setValue('districtId', '');
-      form.setValue('talukaId', '');
-      form.setValue('tehsilId', '');
+      form.setValue('districtId', '0');
+      form.setValue('talukaId', '0');
+      form.setValue('tehsilId', '0');
       setSelectedDistrictId(null);
       setSelectedTalukaId(null);
       setSelectedTehsilId(null);
@@ -170,8 +170,8 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedDistrictId) {
       form.setValue('districtId', selectedDistrictId);
-      form.setValue('talukaId', '');
-      form.setValue('tehsilId', '');
+      form.setValue('talukaId', '0');
+      form.setValue('tehsilId', '0');
       setSelectedTalukaId(null);
       setSelectedTehsilId(null);
     }
@@ -180,7 +180,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedTalukaId) {
       form.setValue('talukaId', selectedTalukaId);
-      form.setValue('tehsilId', '');
+      form.setValue('tehsilId', '0');
       setSelectedTehsilId(null);
     }
   }, [selectedTalukaId, form]);
@@ -235,15 +235,39 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         locationDetail = data.location;
       }
       
-      // Update the data with the compiled location detail
+      // Process new images if provided
+      let updatedImages = data.images || [];
+      if (data.newImages) {
+        const newImagesArray = data.newImages.split(',')
+          .map(url => url.trim())
+          .filter(url => url.length > 0);
+        
+        if (newImagesArray.length > 0) {
+          // If we have existing images, add the new ones
+          if (Array.isArray(updatedImages)) {
+            updatedImages = [...updatedImages, ...newImagesArray];
+          } else {
+            // If no existing images, create a new array
+            updatedImages = newImagesArray;
+          }
+        }
+      }
+      
+      // Update the data with the compiled location detail and processed images
+      const { newImages, ...dataWithoutNewImages } = data;
       const propertyData = {
-        ...data,
+        ...dataWithoutNewImages,
         location: locationDetail || data.location, // Use compiled location or fall back to what user entered
+        images: updatedImages
       };
       
       if (property) {
         // Update existing property
         await apiRequest('PATCH', `/api/properties/${property.id}`, propertyData);
+        // Invalidate cache to refresh the data
+        queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/properties', property.id] });
+        
         toast({
           title: "Property updated",
           description: "The property has been updated successfully.",
@@ -251,6 +275,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       } else {
         // Create new property
         await apiRequest('POST', '/api/properties', propertyData);
+        // Invalidate cache to refresh the data
+        queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+        
         toast({
           title: "Property created",
           description: "The property has been created successfully.",
