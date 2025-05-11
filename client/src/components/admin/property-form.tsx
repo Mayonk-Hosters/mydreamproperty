@@ -119,10 +119,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     ],
     agentId: 1, // Default agent ID
     createdAt: new Date().toISOString(),
-    stateId: "0",
-    districtId: "0",
-    talukaId: "0",
-    tehsilId: "0",
+    stateId: "1",  // Default to first state
+    districtId: "1",  // Default to first district
+    talukaId: "1",  // Default to first taluka
+    tehsilId: "1",  // Default to first tehsil
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -155,9 +155,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedStateId) {
       form.setValue('stateId', selectedStateId);
-      form.setValue('districtId', '0');
-      form.setValue('talukaId', '0');
-      form.setValue('tehsilId', '0');
+      form.setValue('districtId', '1');
+      form.setValue('talukaId', '1');
+      form.setValue('tehsilId', '1');
       setSelectedDistrictId(null);
       setSelectedTalukaId(null);
       setSelectedTehsilId(null);
@@ -167,8 +167,8 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedDistrictId) {
       form.setValue('districtId', selectedDistrictId);
-      form.setValue('talukaId', '0');
-      form.setValue('tehsilId', '0');
+      form.setValue('talukaId', '1');
+      form.setValue('tehsilId', '1');
       setSelectedTalukaId(null);
       setSelectedTehsilId(null);
     }
@@ -177,7 +177,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedTalukaId) {
       form.setValue('talukaId', selectedTalukaId);
-      form.setValue('tehsilId', '0');
+      form.setValue('tehsilId', '1');
       setSelectedTehsilId(null);
     }
   }, [selectedTalukaId, form]);
