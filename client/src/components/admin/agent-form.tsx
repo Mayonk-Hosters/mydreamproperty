@@ -192,6 +192,28 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
           )}
         />
         
+        <FormField
+          control={form.control}
+          name="newImages"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Additional Images</FormLabel>
+              <FormControl>
+                <Input 
+                  type="text" 
+                  placeholder="Enter image URL(s), separate multiple with commas" 
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Enter comma-separated image URLs to add more images or replace the primary image.
+                The first image in this list will become the agent's profile image.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
