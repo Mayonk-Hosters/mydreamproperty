@@ -115,6 +115,97 @@ export type InsertAgent = z.infer<typeof insertAgentSchema>;
 export type Inquiry = typeof inquiries.$inferSelect;
 export type InsertInquiry = z.infer<typeof insertInquirySchema>;
 
+// India Locations Tables
+export const states = pgTable("states", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  code: text("code"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const districts = pgTable("districts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  stateId: integer("state_id").notNull().references(() => states.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const talukas = pgTable("talukas", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  districtId: integer("district_id").notNull().references(() => districts.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const tehsils = pgTable("tehsils", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  talukaId: integer("taluka_id").notNull().references(() => talukas.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Relations for locations
+export const statesRelations = relations(states, ({ many }) => ({
+  districts: many(districts),
+}));
+
+export const districtsRelations = relations(districts, ({ one, many }) => ({
+  state: one(states, {
+    fields: [districts.stateId],
+    references: [states.id],
+  }),
+  talukas: many(talukas),
+}));
+
+export const talukasRelations = relations(talukas, ({ one, many }) => ({
+  district: one(districts, {
+    fields: [talukas.districtId],
+    references: [districts.id],
+  }),
+  tehsils: many(tehsils),
+}));
+
+export const tehsilsRelations = relations(tehsils, ({ one }) => ({
+  taluka: one(talukas, {
+    fields: [tehsils.talukaId],
+    references: [talukas.id],
+  }),
+}));
+
+// Insert schemas for locations
+export const insertStateSchema = createInsertSchema(states).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDistrictSchema = createInsertSchema(districts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTalukaSchema = createInsertSchema(talukas).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTehsilSchema = createInsertSchema(tehsils).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Location type definitions
+export type State = typeof states.$inferSelect;
+export type InsertState = z.infer<typeof insertStateSchema>;
+
+export type District = typeof districts.$inferSelect;
+export type InsertDistrict = z.infer<typeof insertDistrictSchema>;
+
+export type Taluka = typeof talukas.$inferSelect;
+export type InsertTaluka = z.infer<typeof insertTalukaSchema>;
+
+export type Tehsil = typeof tehsils.$inferSelect;
+export type InsertTehsil = z.infer<typeof insertTehsilSchema>;
+
 // Property types constant
 export const PROPERTY_TYPES = ["House", "Apartment", "Villa", "Commercial"] as const;
 export const PROPERTY_STATUS = ["active", "pending", "sold"] as const;

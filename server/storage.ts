@@ -47,6 +47,35 @@ export interface IStorage {
   getAllInquiries(): Promise<Inquiry[]>;
   getInquiry(id: number): Promise<Inquiry | undefined>;
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
+  
+  // India location methods
+  // States
+  getAllStates(): Promise<State[]>;
+  getState(id: number): Promise<State | undefined>;
+  createState(state: InsertState): Promise<State>;
+  updateState(id: number, state: Partial<InsertState>): Promise<State>;
+  deleteState(id: number): Promise<boolean>;
+  
+  // Districts
+  getAllDistricts(stateId?: number): Promise<District[]>;
+  getDistrict(id: number): Promise<District | undefined>;
+  createDistrict(district: InsertDistrict): Promise<District>;
+  updateDistrict(id: number, district: Partial<InsertDistrict>): Promise<District>;
+  deleteDistrict(id: number): Promise<boolean>;
+  
+  // Talukas
+  getAllTalukas(districtId?: number): Promise<Taluka[]>;
+  getTaluka(id: number): Promise<Taluka | undefined>;
+  createTaluka(taluka: InsertTaluka): Promise<Taluka>;
+  updateTaluka(id: number, taluka: Partial<InsertTaluka>): Promise<Taluka>;
+  deleteTaluka(id: number): Promise<boolean>;
+  
+  // Tehsils
+  getAllTehsils(talukaId?: number): Promise<Tehsil[]>;
+  getTehsil(id: number): Promise<Tehsil | undefined>;
+  createTehsil(tehsil: InsertTehsil): Promise<Tehsil>;
+  updateTehsil(id: number, tehsil: Partial<InsertTehsil>): Promise<Tehsil>;
+  deleteTehsil(id: number): Promise<boolean>;
 
   // Session store
   sessionStore: session.Store;
@@ -533,6 +562,164 @@ export class DatabaseStorage implements IStorage {
   async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
     const [newInquiry] = await db.insert(inquiries).values(inquiry).returning();
     return newInquiry;
+  }
+  
+  // India location methods
+  // States
+  async getAllStates(): Promise<State[]> {
+    return await db.select().from(states).orderBy(asc(states.name));
+  }
+  
+  async getState(id: number): Promise<State | undefined> {
+    const [state] = await db.select().from(states).where(eq(states.id, id));
+    return state;
+  }
+  
+  async createState(state: InsertState): Promise<State> {
+    const [newState] = await db.insert(states).values(state).returning();
+    return newState;
+  }
+  
+  async updateState(id: number, stateData: Partial<InsertState>): Promise<State> {
+    const [updatedState] = await db
+      .update(states)
+      .set(stateData)
+      .where(eq(states.id, id))
+      .returning();
+      
+    if (!updatedState) {
+      throw new Error("State not found");
+    }
+    
+    return updatedState;
+  }
+  
+  async deleteState(id: number): Promise<boolean> {
+    const result = await db.delete(states).where(eq(states.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+  
+  // Districts
+  async getAllDistricts(stateId?: number): Promise<District[]> {
+    if (stateId) {
+      return await db
+        .select()
+        .from(districts)
+        .where(eq(districts.stateId, stateId))
+        .orderBy(asc(districts.name));
+    }
+    return await db.select().from(districts).orderBy(asc(districts.name));
+  }
+  
+  async getDistrict(id: number): Promise<District | undefined> {
+    const [district] = await db.select().from(districts).where(eq(districts.id, id));
+    return district;
+  }
+  
+  async createDistrict(district: InsertDistrict): Promise<District> {
+    const [newDistrict] = await db.insert(districts).values(district).returning();
+    return newDistrict;
+  }
+  
+  async updateDistrict(id: number, districtData: Partial<InsertDistrict>): Promise<District> {
+    const [updatedDistrict] = await db
+      .update(districts)
+      .set(districtData)
+      .where(eq(districts.id, id))
+      .returning();
+      
+    if (!updatedDistrict) {
+      throw new Error("District not found");
+    }
+    
+    return updatedDistrict;
+  }
+  
+  async deleteDistrict(id: number): Promise<boolean> {
+    const result = await db.delete(districts).where(eq(districts.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+  
+  // Talukas
+  async getAllTalukas(districtId?: number): Promise<Taluka[]> {
+    if (districtId) {
+      return await db
+        .select()
+        .from(talukas)
+        .where(eq(talukas.districtId, districtId))
+        .orderBy(asc(talukas.name));
+    }
+    return await db.select().from(talukas).orderBy(asc(talukas.name));
+  }
+  
+  async getTaluka(id: number): Promise<Taluka | undefined> {
+    const [taluka] = await db.select().from(talukas).where(eq(talukas.id, id));
+    return taluka;
+  }
+  
+  async createTaluka(taluka: InsertTaluka): Promise<Taluka> {
+    const [newTaluka] = await db.insert(talukas).values(taluka).returning();
+    return newTaluka;
+  }
+  
+  async updateTaluka(id: number, talukaData: Partial<InsertTaluka>): Promise<Taluka> {
+    const [updatedTaluka] = await db
+      .update(talukas)
+      .set(talukaData)
+      .where(eq(talukas.id, id))
+      .returning();
+      
+    if (!updatedTaluka) {
+      throw new Error("Taluka not found");
+    }
+    
+    return updatedTaluka;
+  }
+  
+  async deleteTaluka(id: number): Promise<boolean> {
+    const result = await db.delete(talukas).where(eq(talukas.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+  
+  // Tehsils
+  async getAllTehsils(talukaId?: number): Promise<Tehsil[]> {
+    if (talukaId) {
+      return await db
+        .select()
+        .from(tehsils)
+        .where(eq(tehsils.talukaId, talukaId))
+        .orderBy(asc(tehsils.name));
+    }
+    return await db.select().from(tehsils).orderBy(asc(tehsils.name));
+  }
+  
+  async getTehsil(id: number): Promise<Tehsil | undefined> {
+    const [tehsil] = await db.select().from(tehsils).where(eq(tehsils.id, id));
+    return tehsil;
+  }
+  
+  async createTehsil(tehsil: InsertTehsil): Promise<Tehsil> {
+    const [newTehsil] = await db.insert(tehsils).values(tehsil).returning();
+    return newTehsil;
+  }
+  
+  async updateTehsil(id: number, tehsilData: Partial<InsertTehsil>): Promise<Tehsil> {
+    const [updatedTehsil] = await db
+      .update(tehsils)
+      .set(tehsilData)
+      .where(eq(tehsils.id, id))
+      .returning();
+      
+    if (!updatedTehsil) {
+      throw new Error("Tehsil not found");
+    }
+    
+    return updatedTehsil;
+  }
+  
+  async deleteTehsil(id: number): Promise<boolean> {
+    const result = await db.delete(tehsils).where(eq(tehsils.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }
 
