@@ -16,6 +16,7 @@ import AdminDashboardPage from "@/pages/admin/index";
 import AdminPropertiesPage from "@/pages/admin/properties";
 import AdminPropertyNewPage from "@/pages/admin/properties/new";
 import AdminPropertyEditPage from "@/pages/admin/properties/edit";
+import AdminSettingsPage from "@/pages/admin/settings";
 
 function Router() {
   return (
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/admin/properties" component={AdminPropertiesPage} />
       <Route path="/admin/properties/new" component={AdminPropertyNewPage} />
       <Route path="/admin/properties/edit/:id" component={AdminPropertyEditPage} />
+      <Route path="/admin/settings" component={AdminSettingsPage} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
