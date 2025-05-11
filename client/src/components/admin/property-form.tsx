@@ -20,6 +20,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -44,6 +45,8 @@ const formSchema = insertPropertySchema.extend({
   beds: z.number().int().positive("Beds must be a positive integer"),
   baths: z.number().positive("Baths must be a positive number"),
   area: z.number().int().positive("Area must be a positive integer"),
+  // Add field for new images
+  newImages: z.string().optional(),
   // Add location hierarchy fields
   stateId: z.string().optional(),
   districtId: z.string().optional(),
@@ -97,6 +100,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   // Set default values for a new property
   const defaultValues = property ? {
     ...property,
+    newImages: ""
   } : {
     title: "",
     description: "",
@@ -115,6 +119,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       getInteriorImage(0),
       getInteriorImage(1)
     ],
+    newImages: "",
     agentId: 1, // Default agent ID
     createdAt: new Date().toISOString(),
     stateId: "",
