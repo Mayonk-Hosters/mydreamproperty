@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, boolean, unique, real, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, unique, real, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // User schema
 export const users = pgTable("users", {
@@ -8,12 +9,37 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   isAdmin: boolean("is_admin").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+  inquiries: many(inquiries),
+}));
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   isAdmin: true,
+});
+
+// Agents schema
+export const agents = pgTable("agents", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  title: text("title").notNull(),
+  image: text("image").notNull(),
+  deals: integer("deals").default(0),
+  rating: real("rating").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const agentsRelations = relations(agents, ({ many }) => ({
+  properties: many(properties),
+}));
+
+export const insertAgentSchema = createInsertSchema(agents).omit({
+  id: true,
+  createdAt: true,
 });
 
 // Property schema
@@ -31,26 +57,21 @@ export const properties = pgTable("properties", {
   status: text("status").default("active"),
   featured: boolean("featured").default(false),
   images: jsonb("images").notNull().default([]),
-  agentId: integer("agent_id").notNull(), // Foreign key to agents
-  createdAt: text("created_at").notNull(), // Store as ISO date string
+  agentId: integer("agent_id").notNull().references(() => agents.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const propertiesRelations = relations(properties, ({ one, many }) => ({
+  agent: one(agents, {
+    fields: [properties.agentId],
+    references: [agents.id],
+  }),
+  inquiries: many(inquiries),
+}));
 
 export const insertPropertySchema = createInsertSchema(properties).omit({
   id: true,
-});
-
-// Agents schema
-export const agents = pgTable("agents", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  title: text("title").notNull(),
-  image: text("image").notNull(),
-  deals: integer("deals").default(0),
-  rating: real("rating").default(0),
-});
-
-export const insertAgentSchema = createInsertSchema(agents).omit({
-  id: true,
+  createdAt: true,
 });
 
 // Inquiries schema
@@ -59,12 +80,26 @@ export const inquiries = pgTable("inquiries", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   message: text("message").notNull(),
-  propertyId: integer("property_id").notNull(),
-  createdAt: text("created_at").notNull(),
+  propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: 'cascade' }),
+  userId: integer("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const inquiriesRelations = relations(inquiries, ({ one }) => ({
+  property: one(properties, {
+    fields: [inquiries.propertyId],
+    references: [properties.id],
+  }),
+  user: one(users, {
+    fields: [inquiries.userId],
+    references: [users.id],
+  }),
+}));
 
 export const insertInquirySchema = createInsertSchema(inquiries).omit({
   id: true,
+  createdAt: true,
+  userId: true,
 });
 
 // Type definitions

@@ -5,6 +5,8 @@ import {
   inquiries, type Inquiry, type InsertInquiry
 } from "@shared/schema";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 
 // Property filters interface
 interface PropertyFilters {
@@ -42,6 +44,9 @@ export interface IStorage {
   getAllInquiries(): Promise<Inquiry[]>;
   getInquiry(id: number): Promise<Inquiry | undefined>;
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
+
+  // Session store
+  sessionStore: session.Store;
 }
 
 export class MemStorage implements IStorage {
@@ -54,6 +59,8 @@ export class MemStorage implements IStorage {
   private propertyIdCounter: number;
   private agentIdCounter: number;
   private inquiryIdCounter: number;
+  
+  public sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
@@ -65,6 +72,12 @@ export class MemStorage implements IStorage {
     this.propertyIdCounter = 1;
     this.agentIdCounter = 1;
     this.inquiryIdCounter = 1;
+    
+    // Initialize memory session store
+    const MemoryStore = require('memorystore')(session);
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
     
     // Initialize with sample data
     this.initSampleData();
@@ -315,4 +328,162 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database implementation
+import { db, pool } from "./db";
+import { eq, like, gte, lte, and, desc, asc, sql, or } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  public sessionStore: session.Store;
+  
+  constructor() {
+    // Setup PostgreSQL session store
+    const PostgresStore = connectPg(session);
+    this.sessionStore = new PostgresStore({
+      pool,
+      createTableIfMissing: true,
+    });
+  }
+  
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(users).values(user).returning();
+    return newUser;
+  }
+  
+  // Property methods
+  async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
+    let query = db.select().from(properties);
+    
+    if (filters) {
+      const conditions = [];
+      
+      if (filters.type === "rent") {
+        conditions.push(
+          or(
+            eq(properties.propertyType, "Apartment"),
+            lte(properties.price, 5000)
+          )
+        );
+      }
+      
+      if (filters.propertyType) {
+        conditions.push(eq(properties.propertyType, filters.propertyType));
+      }
+      
+      if (filters.location) {
+        conditions.push(
+          or(
+            like(properties.location, `%${filters.location}%`),
+            like(properties.address, `%${filters.location}%`)
+          )
+        );
+      }
+      
+      if (filters.minPrice !== undefined) {
+        conditions.push(gte(properties.price, filters.minPrice));
+      }
+      
+      if (filters.maxPrice !== undefined) {
+        conditions.push(lte(properties.price, filters.maxPrice));
+      }
+      
+      if (filters.minBeds !== undefined) {
+        conditions.push(gte(properties.beds, filters.minBeds));
+      }
+      
+      if (filters.minBaths !== undefined) {
+        conditions.push(gte(properties.baths, filters.minBaths));
+      }
+      
+      if (filters.featured !== undefined) {
+        conditions.push(eq(properties.featured, filters.featured));
+      }
+      
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+    }
+    
+    // Sort by newest first
+    return await query.orderBy(desc(properties.createdAt));
+  }
+
+  async getProperty(id: number): Promise<Property | undefined> {
+    const [property] = await db.select().from(properties).where(eq(properties.id, id));
+    return property;
+  }
+
+  async createProperty(property: InsertProperty): Promise<Property> {
+    const [newProperty] = await db.insert(properties).values(property).returning();
+    return newProperty;
+  }
+
+  async updateProperty(id: number, property: InsertProperty): Promise<Property | undefined> {
+    const [updatedProperty] = await db
+      .update(properties)
+      .set(property)
+      .where(eq(properties.id, id))
+      .returning();
+    return updatedProperty;
+  }
+
+  async deleteProperty(id: number): Promise<boolean> {
+    const result = await db.delete(properties).where(eq(properties.id, id));
+    return result.rowCount > 0;
+  }
+
+  async countPropertiesByType(propertyType: string): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(properties)
+      .where(eq(properties.propertyType, propertyType));
+    
+    return result?.count || 0;
+  }
+  
+  // Agent methods
+  async getAllAgents(): Promise<Agent[]> {
+    return await db.select().from(agents);
+  }
+
+  async getAgent(id: number): Promise<Agent | undefined> {
+    const [agent] = await db.select().from(agents).where(eq(agents.id, id));
+    return agent;
+  }
+
+  async createAgent(agent: InsertAgent): Promise<Agent> {
+    const [newAgent] = await db.insert(agents).values(agent).returning();
+    return newAgent;
+  }
+  
+  // Inquiry methods
+  async getAllInquiries(): Promise<Inquiry[]> {
+    return await db.select().from(inquiries).orderBy(desc(inquiries.createdAt));
+  }
+
+  async getInquiry(id: number): Promise<Inquiry | undefined> {
+    const [inquiry] = await db.select().from(inquiries).where(eq(inquiries.id, id));
+    return inquiry;
+  }
+
+  async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
+    const [newInquiry] = await db.insert(inquiries).values(inquiry).returning();
+    return newInquiry;
+  }
+}
+
+// Uncomment the following line to use database storage
+export const storage = new DatabaseStorage();
+
+// Comment out the line below to switch from memory storage to database storage
+// export const storage = new MemStorage();
