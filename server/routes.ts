@@ -10,8 +10,11 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication routes
+  setupAuth(app);
   // Get all properties
   app.get("/api/properties", async (req, res) => {
     try {
@@ -231,12 +234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Check admin status
-  app.get("/api/auth/check-admin", async (req, res) => {
-    // For demo purposes, this always returns true
-    // In a real application, this would check the user's session/token
-    res.json({ isAdmin: true });
-  });
+  // Admin routes already defined in auth.ts
 
   const httpServer = createServer(app);
   return httpServer;
