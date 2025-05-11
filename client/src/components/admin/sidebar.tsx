@@ -9,7 +9,8 @@ import {
   Settings, 
   UserCog, 
   PieChart, 
-  LogOut 
+  LogOut,
+  MapPin
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +60,11 @@ export function Sidebar() {
           name: "User Management",
           path: "/admin/users",
           icon: <UserCog className="h-5 w-5" />
+        },
+        {
+          name: "Locations",
+          path: "/admin/locations",
+          icon: <MapPin className="h-5 w-5" />
         },
         {
           name: "Analytics",

@@ -4,7 +4,11 @@ import { storage } from "./storage";
 import { 
   insertPropertySchema, 
   insertAgentSchema, 
-  insertInquirySchema, 
+  insertInquirySchema,
+  insertStateSchema,
+  insertDistrictSchema,
+  insertTalukaSchema,
+  insertTehsilSchema,
   PROPERTY_TYPES,
   PROPERTY_STATUS
 } from "@shared/schema";
@@ -235,6 +239,474 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes already defined in auth.ts
+
+  // India Location API routes
+  // States
+  app.get("/api/locations/states", async (_req, res) => {
+    try {
+      const states = await storage.getAllStates();
+      res.json(states);
+    } catch (error) {
+      console.error("Error fetching states:", error);
+      res.status(500).json({ message: "Failed to fetch states" });
+    }
+  });
+
+  app.get("/api/locations/states/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid state ID" });
+      }
+
+      const state = await storage.getState(id);
+      if (!state) {
+        return res.status(404).json({ message: "State not found" });
+      }
+
+      res.json(state);
+    } catch (error) {
+      console.error("Error fetching state:", error);
+      res.status(500).json({ message: "Failed to fetch state" });
+    }
+  });
+
+  app.post("/api/locations/states", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const stateData = insertStateSchema.parse(req.body);
+      const newState = await storage.createState(stateData);
+      res.status(201).json(newState);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error creating state:", error);
+      res.status(500).json({ message: "Failed to create state" });
+    }
+  });
+
+  app.patch("/api/locations/states/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid state ID" });
+      }
+
+      const stateData = insertStateSchema.partial().parse(req.body);
+      const updatedState = await storage.updateState(id, stateData);
+      res.json(updatedState);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating state:", error);
+      res.status(500).json({ message: "Failed to update state" });
+    }
+  });
+
+  app.delete("/api/locations/states/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid state ID" });
+      }
+
+      const success = await storage.deleteState(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "State not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting state:", error);
+      res.status(500).json({ message: "Failed to delete state" });
+    }
+  });
+
+  // Districts
+  app.get("/api/locations/districts", async (req, res) => {
+    try {
+      const stateId = req.query.stateId ? parseInt(req.query.stateId as string) : undefined;
+      const districts = await storage.getAllDistricts(stateId);
+      res.json(districts);
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+      res.status(500).json({ message: "Failed to fetch districts" });
+    }
+  });
+
+  app.get("/api/locations/districts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid district ID" });
+      }
+
+      const district = await storage.getDistrict(id);
+      if (!district) {
+        return res.status(404).json({ message: "District not found" });
+      }
+
+      res.json(district);
+    } catch (error) {
+      console.error("Error fetching district:", error);
+      res.status(500).json({ message: "Failed to fetch district" });
+    }
+  });
+
+  app.post("/api/locations/districts", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const districtData = insertDistrictSchema.parse(req.body);
+      
+      // Check if state exists
+      const state = await storage.getState(districtData.stateId);
+      if (!state) {
+        return res.status(400).json({ message: "State not found" });
+      }
+      
+      const newDistrict = await storage.createDistrict(districtData);
+      res.status(201).json(newDistrict);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error creating district:", error);
+      res.status(500).json({ message: "Failed to create district" });
+    }
+  });
+
+  app.patch("/api/locations/districts/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid district ID" });
+      }
+
+      const districtData = insertDistrictSchema.partial().parse(req.body);
+      
+      // If stateId is provided, check if state exists
+      if (districtData.stateId !== undefined) {
+        const state = await storage.getState(districtData.stateId);
+        if (!state) {
+          return res.status(400).json({ message: "State not found" });
+        }
+      }
+      
+      const updatedDistrict = await storage.updateDistrict(id, districtData);
+      res.json(updatedDistrict);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating district:", error);
+      res.status(500).json({ message: "Failed to update district" });
+    }
+  });
+
+  app.delete("/api/locations/districts/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid district ID" });
+      }
+
+      const success = await storage.deleteDistrict(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "District not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting district:", error);
+      res.status(500).json({ message: "Failed to delete district" });
+    }
+  });
+
+  // Talukas
+  app.get("/api/locations/talukas", async (req, res) => {
+    try {
+      const districtId = req.query.districtId ? parseInt(req.query.districtId as string) : undefined;
+      const talukas = await storage.getAllTalukas(districtId);
+      res.json(talukas);
+    } catch (error) {
+      console.error("Error fetching talukas:", error);
+      res.status(500).json({ message: "Failed to fetch talukas" });
+    }
+  });
+
+  app.get("/api/locations/talukas/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid taluka ID" });
+      }
+
+      const taluka = await storage.getTaluka(id);
+      if (!taluka) {
+        return res.status(404).json({ message: "Taluka not found" });
+      }
+
+      res.json(taluka);
+    } catch (error) {
+      console.error("Error fetching taluka:", error);
+      res.status(500).json({ message: "Failed to fetch taluka" });
+    }
+  });
+
+  app.post("/api/locations/talukas", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const talukaData = insertTalukaSchema.parse(req.body);
+      
+      // Check if district exists
+      const district = await storage.getDistrict(talukaData.districtId);
+      if (!district) {
+        return res.status(400).json({ message: "District not found" });
+      }
+      
+      const newTaluka = await storage.createTaluka(talukaData);
+      res.status(201).json(newTaluka);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error creating taluka:", error);
+      res.status(500).json({ message: "Failed to create taluka" });
+    }
+  });
+
+  app.patch("/api/locations/talukas/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid taluka ID" });
+      }
+
+      const talukaData = insertTalukaSchema.partial().parse(req.body);
+      
+      // If districtId is provided, check if district exists
+      if (talukaData.districtId !== undefined) {
+        const district = await storage.getDistrict(talukaData.districtId);
+        if (!district) {
+          return res.status(400).json({ message: "District not found" });
+        }
+      }
+      
+      const updatedTaluka = await storage.updateTaluka(id, talukaData);
+      res.json(updatedTaluka);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating taluka:", error);
+      res.status(500).json({ message: "Failed to update taluka" });
+    }
+  });
+
+  app.delete("/api/locations/talukas/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid taluka ID" });
+      }
+
+      const success = await storage.deleteTaluka(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Taluka not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting taluka:", error);
+      res.status(500).json({ message: "Failed to delete taluka" });
+    }
+  });
+
+  // Tehsils
+  app.get("/api/locations/tehsils", async (req, res) => {
+    try {
+      const talukaId = req.query.talukaId ? parseInt(req.query.talukaId as string) : undefined;
+      const tehsils = await storage.getAllTehsils(talukaId);
+      res.json(tehsils);
+    } catch (error) {
+      console.error("Error fetching tehsils:", error);
+      res.status(500).json({ message: "Failed to fetch tehsils" });
+    }
+  });
+
+  app.get("/api/locations/tehsils/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid tehsil ID" });
+      }
+
+      const tehsil = await storage.getTehsil(id);
+      if (!tehsil) {
+        return res.status(404).json({ message: "Tehsil not found" });
+      }
+
+      res.json(tehsil);
+    } catch (error) {
+      console.error("Error fetching tehsil:", error);
+      res.status(500).json({ message: "Failed to fetch tehsil" });
+    }
+  });
+
+  app.post("/api/locations/tehsils", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const tehsilData = insertTehsilSchema.parse(req.body);
+      
+      // Check if taluka exists
+      const taluka = await storage.getTaluka(tehsilData.talukaId);
+      if (!taluka) {
+        return res.status(400).json({ message: "Taluka not found" });
+      }
+      
+      const newTehsil = await storage.createTehsil(tehsilData);
+      res.status(201).json(newTehsil);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error creating tehsil:", error);
+      res.status(500).json({ message: "Failed to create tehsil" });
+    }
+  });
+
+  app.patch("/api/locations/tehsils/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid tehsil ID" });
+      }
+
+      const tehsilData = insertTehsilSchema.partial().parse(req.body);
+      
+      // If talukaId is provided, check if taluka exists
+      if (tehsilData.talukaId !== undefined) {
+        const taluka = await storage.getTaluka(tehsilData.talukaId);
+        if (!taluka) {
+          return res.status(400).json({ message: "Taluka not found" });
+        }
+      }
+      
+      const updatedTehsil = await storage.updateTehsil(id, tehsilData);
+      res.json(updatedTehsil);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating tehsil:", error);
+      res.status(500).json({ message: "Failed to update tehsil" });
+    }
+  });
+
+  app.delete("/api/locations/tehsils/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid tehsil ID" });
+      }
+
+      const success = await storage.deleteTehsil(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Tehsil not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting tehsil:", error);
+      res.status(500).json({ message: "Failed to delete tehsil" });
+    }
+  });
 
   // User management endpoints
   // Get all users

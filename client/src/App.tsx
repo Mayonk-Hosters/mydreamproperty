@@ -18,6 +18,7 @@ import AdminPropertyNewPage from "@/pages/admin/properties/new";
 import AdminPropertyEditPage from "@/pages/admin/properties/edit";
 import AdminSettingsPage from "@/pages/admin/settings";
 import AdminUsersPage from "@/pages/admin/users";
+import AdminLocationsPage from "@/pages/admin/locations";
 
 function Router() {
   return (

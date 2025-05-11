@@ -2,7 +2,11 @@ import {
   users, type User, type InsertUser,
   properties, type Property, type InsertProperty,
   agents, type Agent, type InsertAgent,
-  inquiries, type Inquiry, type InsertInquiry
+  inquiries, type Inquiry, type InsertInquiry,
+  states, type State, type InsertState,
+  districts, type District, type InsertDistrict,
+  talukas, type Taluka, type InsertTaluka,
+  tehsils, type Tehsil, type InsertTehsil
 } from "@shared/schema";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
