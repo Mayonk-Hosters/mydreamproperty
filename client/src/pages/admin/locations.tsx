@@ -938,13 +938,14 @@ function TehsilsManager() {
                 <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Taluka</TableHead>
+                <TableHead>Area (Location)</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {tehsilsQuery.data?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     No tehsils found
                   </TableCell>
                 </TableRow>
@@ -956,6 +957,7 @@ function TehsilsManager() {
                     <TableCell>
                       {talukasQuery.data?.find(taluka => taluka.id === tehsil.talukaId)?.name || tehsil.talukaId}
                     </TableCell>
+                    <TableCell>{tehsil.area || "-"}</TableCell>
                     <TableCell className="text-right">
                       <Dialog 
                         open={editTehsil?.id === tehsil.id} 
