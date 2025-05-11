@@ -36,6 +36,7 @@ function Router() {
       <Route path="/admin/properties/edit/:id" component={AdminPropertyEditPage} />
       <Route path="/admin/settings" component={AdminSettingsPage} />
       <Route path="/admin/users" component={AdminUsersPage} />
+      <Route path="/admin/locations" component={AdminLocationsPage} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />

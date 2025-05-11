@@ -90,11 +90,19 @@ export class MemStorage implements IStorage {
   private properties: Map<number, Property>;
   private agents: Map<number, Agent>;
   private inquiries: Map<number, Inquiry>;
+  private states: Map<number, State>;
+  private districts: Map<number, District>;
+  private talukas: Map<number, Taluka>;
+  private tehsils: Map<number, Tehsil>;
   
   private userIdCounter: number;
   private propertyIdCounter: number;
   private agentIdCounter: number;
   private inquiryIdCounter: number;
+  private stateIdCounter: number;
+  private districtIdCounter: number;
+  private talukaIdCounter: number;
+  private tehsilIdCounter: number;
   
   public sessionStore: session.Store;
 
@@ -103,11 +111,19 @@ export class MemStorage implements IStorage {
     this.properties = new Map();
     this.agents = new Map();
     this.inquiries = new Map();
+    this.states = new Map();
+    this.districts = new Map();
+    this.talukas = new Map();
+    this.tehsils = new Map();
     
     this.userIdCounter = 1;
     this.propertyIdCounter = 1;
     this.agentIdCounter = 1;
     this.inquiryIdCounter = 1;
+    this.stateIdCounter = 1;
+    this.districtIdCounter = 1;
+    this.talukaIdCounter = 1;
+    this.tehsilIdCounter = 1;
     
     // Initialize memory session store
     const MemoryStore = require('memorystore')(session);
@@ -389,6 +405,150 @@ export class MemStorage implements IStorage {
     const inquiry: Inquiry = { ...insertInquiry, id };
     this.inquiries.set(id, inquiry);
     return inquiry;
+  }
+  
+  // India Location methods
+  // States
+  async getAllStates(): Promise<State[]> {
+    return Array.from(this.states.values());
+  }
+  
+  async getState(id: number): Promise<State | undefined> {
+    return this.states.get(id);
+  }
+  
+  async createState(state: InsertState): Promise<State> {
+    const id = this.stateIdCounter++;
+    const newState: State = { ...state, id };
+    this.states.set(id, newState);
+    return newState;
+  }
+  
+  async updateState(id: number, stateData: Partial<InsertState>): Promise<State> {
+    const existingState = this.states.get(id);
+    
+    if (!existingState) {
+      throw new Error("State not found");
+    }
+    
+    const updatedState: State = { ...existingState, ...stateData };
+    this.states.set(id, updatedState);
+    return updatedState;
+  }
+  
+  async deleteState(id: number): Promise<boolean> {
+    return this.states.delete(id);
+  }
+  
+  // Districts
+  async getAllDistricts(stateId?: number): Promise<District[]> {
+    if (stateId !== undefined) {
+      return Array.from(this.districts.values()).filter(
+        district => district.stateId === stateId
+      );
+    }
+    return Array.from(this.districts.values());
+  }
+  
+  async getDistrict(id: number): Promise<District | undefined> {
+    return this.districts.get(id);
+  }
+  
+  async createDistrict(district: InsertDistrict): Promise<District> {
+    const id = this.districtIdCounter++;
+    const newDistrict: District = { ...district, id };
+    this.districts.set(id, newDistrict);
+    return newDistrict;
+  }
+  
+  async updateDistrict(id: number, districtData: Partial<InsertDistrict>): Promise<District> {
+    const existingDistrict = this.districts.get(id);
+    
+    if (!existingDistrict) {
+      throw new Error("District not found");
+    }
+    
+    const updatedDistrict: District = { ...existingDistrict, ...districtData };
+    this.districts.set(id, updatedDistrict);
+    return updatedDistrict;
+  }
+  
+  async deleteDistrict(id: number): Promise<boolean> {
+    return this.districts.delete(id);
+  }
+  
+  // Talukas
+  async getAllTalukas(districtId?: number): Promise<Taluka[]> {
+    if (districtId !== undefined) {
+      return Array.from(this.talukas.values()).filter(
+        taluka => taluka.districtId === districtId
+      );
+    }
+    return Array.from(this.talukas.values());
+  }
+  
+  async getTaluka(id: number): Promise<Taluka | undefined> {
+    return this.talukas.get(id);
+  }
+  
+  async createTaluka(taluka: InsertTaluka): Promise<Taluka> {
+    const id = this.talukaIdCounter++;
+    const newTaluka: Taluka = { ...taluka, id };
+    this.talukas.set(id, newTaluka);
+    return newTaluka;
+  }
+  
+  async updateTaluka(id: number, talukaData: Partial<InsertTaluka>): Promise<Taluka> {
+    const existingTaluka = this.talukas.get(id);
+    
+    if (!existingTaluka) {
+      throw new Error("Taluka not found");
+    }
+    
+    const updatedTaluka: Taluka = { ...existingTaluka, ...talukaData };
+    this.talukas.set(id, updatedTaluka);
+    return updatedTaluka;
+  }
+  
+  async deleteTaluka(id: number): Promise<boolean> {
+    return this.talukas.delete(id);
+  }
+  
+  // Tehsils
+  async getAllTehsils(talukaId?: number): Promise<Tehsil[]> {
+    if (talukaId !== undefined) {
+      return Array.from(this.tehsils.values()).filter(
+        tehsil => tehsil.talukaId === talukaId
+      );
+    }
+    return Array.from(this.tehsils.values());
+  }
+  
+  async getTehsil(id: number): Promise<Tehsil | undefined> {
+    return this.tehsils.get(id);
+  }
+  
+  async createTehsil(tehsil: InsertTehsil): Promise<Tehsil> {
+    const id = this.tehsilIdCounter++;
+    const newTehsil: Tehsil = { ...tehsil, id };
+    this.tehsils.set(id, newTehsil);
+    return newTehsil;
+  }
+  
+  async updateTehsil(id: number, tehsilData: Partial<InsertTehsil>): Promise<Tehsil> {
+    const existingTehsil = this.tehsils.get(id);
+    
+    if (!existingTehsil) {
+      throw new Error("Tehsil not found");
+    }
+    
+    const updatedTehsil: Tehsil = { ...existingTehsil, ...tehsilData };
+    this.tehsils.set(id, updatedTehsil);
+    return updatedTehsil;
+  }
+  
+  async deleteTehsil(id: number): Promise<boolean> {
+    return this.tehsils.delete(id);
   }
 }
 
