@@ -1,11 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { Property, PROPERTY_TYPES, PROPERTY_STATUS, insertPropertySchema } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
+import { 
+  Property, 
+  PROPERTY_TYPES, 
+  PROPERTY_STATUS, 
+  insertPropertySchema,
+  State,
+  District,
+  Taluka,
+  Tehsil 
+} from "@shared/schema";
 
 import {
   Form,
