@@ -204,6 +204,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create agent" });
     }
   });
+  
+  // Update an agent
+  app.patch("/api/agents/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid agent ID" });
+      }
+      
+      const agent = await storage.getAgent(id);
+      if (!agent) {
+        return res.status(404).json({ message: "Agent not found" });
+      }
+      
+      const agentData = insertAgentSchema.parse(req.body);
+      const updatedAgent = await storage.updateAgent(id, agentData);
+      res.json(updatedAgent);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating agent:", error);
+      res.status(500).json({ message: "Failed to update agent" });
+    }
+  });
+  
+  // Delete an agent
+  app.delete("/api/agents/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid agent ID" });
+      }
+      
+      const agent = await storage.getAgent(id);
+      if (!agent) {
+        return res.status(404).json({ message: "Agent not found" });
+      }
+      
+      await storage.deleteAgent(id);
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting agent:", error);
+      res.status(500).json({ message: "Failed to delete agent" });
+    }
+  });
 
   // Get all inquiries
   app.get("/api/inquiries", async (_req, res) => {

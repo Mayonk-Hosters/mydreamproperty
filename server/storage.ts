@@ -46,6 +46,8 @@ export interface IStorage {
   getAllAgents(): Promise<Agent[]>;
   getAgent(id: number): Promise<Agent | undefined>;
   createAgent(agent: InsertAgent): Promise<Agent>;
+  updateAgent(id: number, agent: InsertAgent): Promise<Agent>;
+  deleteAgent(id: number): Promise<boolean>;
   
   // Inquiry methods
   getAllInquiries(): Promise<Inquiry[]>;
