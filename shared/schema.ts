@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, unique, real, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, unique, real, jsonb, timestamp, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -141,6 +141,8 @@ export const tehsils = pgTable("tehsils", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   talukaId: integer("taluka_id").notNull().references(() => talukas.id, { onDelete: 'cascade' }),
+  area: decimal("area").notNull().default('0'),
+  areaUnit: text("area_unit").default('sq.km'),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -768,7 +768,7 @@ function TehsilsManager() {
   });
   
   const createTehsilMutation = useMutation({
-    mutationFn: async (data: { name: string; talukaId: number }) => {
+    mutationFn: async (data: { name: string; talukaId: number; area: number; areaUnit: string }) => {
       const response = await apiRequest("POST", "/api/locations/tehsils", data);
       return await response.json();
     },
@@ -790,7 +790,7 @@ function TehsilsManager() {
   });
   
   const updateTehsilMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: { name: string; talukaId: number } }) => {
+    mutationFn: async ({ id, data }: { id: number; data: { name: string; talukaId: number; area: number; areaUnit: string } }) => {
       const response = await apiRequest("PATCH", `/api/locations/tehsils/${id}`, data);
       return await response.json();
     },
@@ -1218,7 +1218,7 @@ function TehsilForm({
 }: { 
   tehsil?: Tehsil; 
   talukas: Taluka[];
-  onSubmit: (data: { name: string; talukaId: number }) => void; 
+  onSubmit: (data: { name: string; talukaId: number; area: number; areaUnit: string }) => void; 
   isPending: boolean;
 }) {
   const form = useForm({
@@ -1226,11 +1226,15 @@ function TehsilForm({
       z.object({
         name: z.string().min(2, "Name must be at least 2 characters"),
         talukaId: z.coerce.number().positive("Please select a taluka"),
+        area: z.coerce.number().min(0, "Area cannot be negative"),
+        areaUnit: z.string().default("sq.km"),
       })
     ),
     defaultValues: {
       name: tehsil?.name || "",
       talukaId: tehsil?.talukaId || "",
+      area: tehsil?.area?.toString() || "0",
+      areaUnit: tehsil?.areaUnit || "sq.km",
     },
   });
   
@@ -1276,6 +1280,36 @@ function TehsilForm({
             </Select>
             {form.formState.errors.talukaId && (
               <p className="text-sm text-red-500">{form.formState.errors.talukaId.message}</p>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="area">Area</Label>
+            <div className="flex gap-2">
+              <Input
+                id="area"
+                type="number"
+                step="0.01"
+                placeholder="Enter area size"
+                {...form.register("area")}
+                className={cn("flex-1", form.formState.errors.area && "border-red-500")}
+              />
+              <Select
+                value={form.watch("areaUnit") || "sq.km"}
+                onValueChange={(value) => form.setValue("areaUnit", value)}
+              >
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue placeholder="Unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sq.km">sq.km</SelectItem>
+                  <SelectItem value="hectare">hectare</SelectItem>
+                  <SelectItem value="acre">acre</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {form.formState.errors.area && (
+              <p className="text-sm text-red-500">{form.formState.errors.area.message}</p>
             )}
           </div>
         </div>
