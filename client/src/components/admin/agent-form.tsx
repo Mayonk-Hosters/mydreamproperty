@@ -33,11 +33,10 @@ const formSchema = z.object({
   title: z.string().min(2, {
     message: "Title must be at least 2 characters long",
   }),
-  image: z.string().url({
-    message: "Please enter a valid image URL",
-  }),
-  // Add field for new images using comma-separated URLs
-  newImages: z.string().optional(),
+  image: z.union([
+    z.string(),
+    z.array(z.string())
+  ]),
   deals: z.coerce.number().nonnegative().default(0),
   rating: z.coerce.number().min(0).max(5).default(0),
 });
@@ -51,7 +50,6 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
     name: agent?.name || "",
     title: agent?.title || "",
     image: agent?.image || getAgentImage(0),
-    newImages: "",
     deals: agent?.deals || 0,
     rating: agent?.rating || 0,
   };
@@ -78,25 +76,18 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
   // Submit handler
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
-      // Process image URLs
+      // Process image from the ImageUpload component
       let agentImage = data.image;
       
-      // Handle newImages field - process comma-separated URLs
-      if (data.newImages) {
-        const newImagesArray = data.newImages.split(',')
-          .map(url => url.trim())
-          .filter(url => url.length > 0);
-        
-        // If we have new images, use the first one as the primary image
-        if (newImagesArray.length > 0) {
-          agentImage = newImagesArray[0];
-        }
+      // If we have an array of images, use the first one as the primary image
+      if (Array.isArray(agentImage) && agentImage.length > 0) {
+        agentImage = agentImage[0];
       }
       
       const agentData = {
         name: data.name,
         title: data.title,
-        image: agentImage, // Use processed image
+        image: agentImage, // Use the processed image
         deals: data.deals,
         rating: data.rating,
       };
@@ -181,34 +172,19 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
           name="image"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Profile Image URL</FormLabel>
+              <FormLabel>Agent Image</FormLabel>
               <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} />
-              </FormControl>
-              <FormDescription>
-                URL to the agent's profile image.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="newImages"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Additional Images</FormLabel>
-              <FormControl>
-                <Input 
-                  type="text" 
-                  placeholder="Enter image URL(s), separate multiple with commas" 
-                  {...field}
+                <ImageUpload
+                  onImageUpload={(imageUrls) => {
+                    field.onChange(imageUrls);
+                  }}
+                  defaultImages={Array.isArray(field.value) ? field.value as string[] : field.value ? [field.value as string] : []}
+                  multiple={false}
+                  maxImages={1}
                 />
               </FormControl>
               <FormDescription>
-                Enter comma-separated image URLs to add more images or replace the primary image.
-                The first image in this list will become the agent's profile image.
+                Upload an image for the agent. This will be displayed on the agent's profile.
               </FormDescription>
               <FormMessage />
             </FormItem>
