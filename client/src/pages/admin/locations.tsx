@@ -41,7 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -51,21 +51,238 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { State, District, Taluka, Tehsil } from "@shared/schema";
 
+// All Locations Manager Component
+function AllLocationsManager() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
+  
+  // Fetch all location data in parallel
+  const statesQuery = useQuery<State[], Error>({
+    queryKey: ["/api/locations/states"],
+  });
+  
+  const districtsQuery = useQuery<District[], Error>({
+    queryKey: ["/api/locations/districts"],
+  });
+  
+  const talukasQuery = useQuery<Taluka[], Error>({
+    queryKey: ["/api/locations/talukas"],
+  });
+  
+  const tehsilsQuery = useQuery<Tehsil[], Error>({
+    queryKey: ["/api/locations/tehsils"],
+  });
+  
+  // Loading state
+  const isLoading = statesQuery.isLoading || districtsQuery.isLoading || 
+                    talukasQuery.isLoading || tehsilsQuery.isLoading;
+  
+  // Error state
+  const hasError = statesQuery.isError || districtsQuery.isError || 
+                   talukasQuery.isError || tehsilsQuery.isError;
+  
+  // Error message combining all errors
+  const errorMessage = [
+    statesQuery.error?.message, 
+    districtsQuery.error?.message,
+    talukasQuery.error?.message,
+    tehsilsQuery.error?.message,
+  ].filter(Boolean).join(", ");
+  
+  // Filter function for search
+  const filterLocation = (name: string) => {
+    if (!searchTerm) return true;
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  };
+  
+  return (
+    <div className="space-y-8">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>All Locations</CardTitle>
+            <CardDescription>Comprehensive view of all location data</CardDescription>
+          </div>
+          <div className="relative w-64">
+            <Input
+              placeholder="Search locations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 transform -translate-y-1/2 text-muted-foreground" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : hasError ? (
+            <div className="py-8 text-center text-red-500">
+              Error loading locations: {errorMessage}
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {/* States Table */}
+              <div>
+                <h3 className="text-lg font-medium mb-3">States</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Code</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {statesQuery.data?.filter(state => filterLocation(state.name)).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center text-muted-foreground">
+                          No states found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      statesQuery.data?.filter(state => filterLocation(state.name)).map((state) => (
+                        <TableRow key={`state-${state.id}`}>
+                          <TableCell>{state.id}</TableCell>
+                          <TableCell>{state.name}</TableCell>
+                          <TableCell>{state.code || 'N/A'}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {/* Districts Table */}
+              <div>
+                <h3 className="text-lg font-medium mb-3">Districts</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>State</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {districtsQuery.data?.filter(district => filterLocation(district.name)).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center text-muted-foreground">
+                          No districts found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      districtsQuery.data?.filter(district => filterLocation(district.name)).map((district) => (
+                        <TableRow key={`district-${district.id}`}>
+                          <TableCell>{district.id}</TableCell>
+                          <TableCell>{district.name}</TableCell>
+                          <TableCell>
+                            {statesQuery.data?.find(state => state.id === district.stateId)?.name || district.stateId}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {/* Talukas Table */}
+              <div>
+                <h3 className="text-lg font-medium mb-3">Talukas</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>District</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {talukasQuery.data?.filter(taluka => filterLocation(taluka.name)).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center text-muted-foreground">
+                          No talukas found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      talukasQuery.data?.filter(taluka => filterLocation(taluka.name)).map((taluka) => (
+                        <TableRow key={`taluka-${taluka.id}`}>
+                          <TableCell>{taluka.id}</TableCell>
+                          <TableCell>{taluka.name}</TableCell>
+                          <TableCell>
+                            {districtsQuery.data?.find(district => district.id === taluka.districtId)?.name || taluka.districtId}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {/* Tehsils Table */}
+              <div>
+                <h3 className="text-lg font-medium mb-3">Tehsils</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Taluka</TableHead>
+                      <TableHead>Area</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tehsilsQuery.data?.filter(tehsil => filterLocation(tehsil.name)).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center text-muted-foreground">
+                          No tehsils found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      tehsilsQuery.data?.filter(tehsil => filterLocation(tehsil.name)).map((tehsil) => (
+                        <TableRow key={`tehsil-${tehsil.id}`}>
+                          <TableCell>{tehsil.id}</TableCell>
+                          <TableCell>{tehsil.name}</TableCell>
+                          <TableCell>
+                            {talukasQuery.data?.find(taluka => taluka.id === tehsil.talukaId)?.name || tehsil.talukaId}
+                          </TableCell>
+                          <TableCell>{tehsil.area || 'N/A'}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function LocationsPage() {
-  const [activeTab, setActiveTab] = useState("states");
+  const [activeTab, setActiveTab] = useState("all");
   
   return (
     <AdminLayout>
       <div className="container px-4 py-6">
         <h1 className="text-3xl font-bold mb-6">Location Management</h1>
         
-        <Tabs defaultValue="states" onValueChange={setActiveTab}>
+        <Tabs defaultValue="all" onValueChange={setActiveTab}>
           <TabsList className="mb-6">
+            <TabsTrigger value="all">All Locations</TabsTrigger>
             <TabsTrigger value="states">States</TabsTrigger>
             <TabsTrigger value="districts">Districts</TabsTrigger>
             <TabsTrigger value="talukas">Talukas</TabsTrigger>
             <TabsTrigger value="tehsils">Tehsils</TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="all">
+            <AllLocationsManager />
+          </TabsContent>
           
           <TabsContent value="states">
             <StatesManager />
