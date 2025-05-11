@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getPropertyImage, getInteriorImage } from "@/lib/utils";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 // Extend the property schema with additional validation
 const formSchema = insertPropertySchema.extend({
@@ -750,26 +751,25 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                 </p>
               )}
               
-              {/* Image input */}
+              {/* Image upload */}
               <div className="mt-3">
                 <FormField
                   control={form.control}
-                  name="newImages"
-                  render={({ field: { onChange, value, ...rest } }) => (
+                  name="images"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Add Images</FormLabel>
+                      <FormLabel>Property Images</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Enter image URL(s), separate multiple with commas"
-                          onChange={(e) => {
-                            onChange(e.target.value);
+                        <ImageUpload
+                          onImageUpload={(imageUrls) => {
+                            field.onChange(imageUrls);
                           }}
-                          {...rest}
+                          defaultImages={Array.isArray(field.value) ? field.value as string[] : []}
+                          multiple={true}
                         />
                       </FormControl>
                       <FormDescription>
-                        Enter comma-separated image URLs (e.g., https://example.com/image1.jpg, https://example.com/image2.jpg)
+                        Upload property images. You can upload multiple images.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
