@@ -19,6 +19,9 @@ import AdminPropertyEditPage from "@/pages/admin/properties/edit";
 import AdminSettingsPage from "@/pages/admin/settings";
 import AdminUsersPage from "@/pages/admin/users";
 import AdminLocationsPage from "@/pages/admin/locations";
+import AdminAgentsPage from "@/pages/admin/agents";
+import AdminAgentNewPage from "@/pages/admin/agents/new";
+import AdminAgentEditPage from "@/pages/admin/agents/edit";
 
 function Router() {
   return (
@@ -37,6 +40,9 @@ function Router() {
       <Route path="/admin/settings" component={AdminSettingsPage} />
       <Route path="/admin/users" component={AdminUsersPage} />
       <Route path="/admin/locations" component={AdminLocationsPage} />
+      <Route path="/admin/agents" component={AdminAgentsPage} />
+      <Route path="/admin/agents/new" component={AdminAgentNewPage} />
+      <Route path="/admin/agents/edit/:id" component={AdminAgentEditPage} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />

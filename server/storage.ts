@@ -389,6 +389,27 @@ export class MemStorage implements IStorage {
     this.agents.set(id, agent);
     return agent;
   }
+  
+  async updateAgent(id: number, updateAgent: InsertAgent): Promise<Agent> {
+    const existingAgent = await this.getAgent(id);
+    if (!existingAgent) {
+      throw new Error(`Agent with ID ${id} not found`);
+    }
+    
+    const updatedAgent: Agent = { ...updateAgent, id };
+    this.agents.set(id, updatedAgent);
+    return updatedAgent;
+  }
+  
+  async deleteAgent(id: number): Promise<boolean> {
+    const exists = this.agents.has(id);
+    if (!exists) {
+      return false;
+    }
+    
+    this.agents.delete(id);
+    return true;
+  }
 
   // Inquiry methods
   async getAllInquiries(): Promise<Inquiry[]> {
@@ -713,6 +734,25 @@ export class DatabaseStorage implements IStorage {
   async createAgent(agent: InsertAgent): Promise<Agent> {
     const [newAgent] = await db.insert(agents).values(agent).returning();
     return newAgent;
+  }
+  
+  async updateAgent(id: number, agentData: InsertAgent): Promise<Agent> {
+    const [updatedAgent] = await db
+      .update(agents)
+      .set(agentData)
+      .where(eq(agents.id, id))
+      .returning();
+    
+    if (!updatedAgent) {
+      throw new Error(`Agent with ID ${id} not found`);
+    }
+    
+    return updatedAgent;
+  }
+  
+  async deleteAgent(id: number): Promise<boolean> {
+    const result = await db.delete(agents).where(eq(agents.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
   
   // Inquiry methods
