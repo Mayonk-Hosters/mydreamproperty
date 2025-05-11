@@ -77,11 +77,11 @@ export default function AdminSettingsPage() {
   const generalForm = useForm<z.infer<typeof generalFormSchema>>({
     resolver: zodResolver(generalFormSchema),
     defaultValues: {
-      siteName: "RealEstate Pro",
+      siteName: "My Dream Property",
       siteUrl: "https://realestatepro.com",
       contactEmail: "info@realestatepro.com",
       contactPhone: "(123) 456-7890",
-      currency: "USD",
+      currency: "INR",
     },
   });
 
@@ -126,7 +126,7 @@ export default function AdminSettingsPage() {
   return (
     <AdminLayout>
       <Helmet>
-        <title>Settings | Admin | RealEstate Pro</title>
+        <title>Settings | Admin | My Dream Property</title>
       </Helmet>
       
       <div className="mb-6">
