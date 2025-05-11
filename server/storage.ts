@@ -651,12 +651,22 @@ export class DatabaseStorage implements IStorage {
       }
       
       if (filters.location) {
-        conditions.push(
-          or(
-            like(properties.location, `%${filters.location}%`),
-            like(properties.address, `%${filters.location}%`)
-          )
-        );
+        // Split the location input into tokens for more flexible search
+        const locationTerms = filters.location.toLowerCase().split(/\s+/).filter(term => term.length > 1);
+        
+        if (locationTerms.length > 0) {
+          const locationConditions = locationTerms.map(term => 
+            or(
+              like(sql`lower(${properties.location})`, `%${term.toLowerCase()}%`),
+              like(sql`lower(${properties.address})`, `%${term.toLowerCase()}%`),
+              like(sql`lower(${properties.title})`, `%${term.toLowerCase()}%`),
+              like(sql`lower(${properties.description})`, `%${term.toLowerCase()}%`)
+            )
+          );
+          
+          // Each term must match at least one field
+          conditions.push(and(...locationConditions));
+        }
       }
       
       if (filters.minPrice !== undefined) {

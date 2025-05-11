@@ -23,7 +23,10 @@ export function HeroSection() {
     location: "" // Location search term
   });
 
-  const handleSearch = () => {
+  const handleSearch = (e?: React.FormEvent) => {
+    // Prevent form submission if called from form submit event
+    if (e) e.preventDefault();
+    
     // Build query string from search parameters
     const queryParams = new URLSearchParams();
     
@@ -35,8 +38,8 @@ export function HeroSection() {
       queryParams.set("propertyType", searchParams.propertyType);
     }
     
-    if (searchParams.location) {
-      queryParams.set("location", searchParams.location);
+    if (searchParams.location && searchParams.location.trim() !== "") {
+      queryParams.set("location", searchParams.location.trim());
     }
     
     // Navigate to properties page with search params
@@ -58,7 +61,7 @@ export function HeroSection() {
             <p className="text-xl text-white mb-8">Discover the perfect property from our extensive listings</p>
             
             {/* Search Form */}
-            <div className="bg-white p-4 rounded-lg shadow-lg">
+            <form onSubmit={handleSearch} className="bg-white p-4 rounded-lg shadow-lg w-full">
               <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                 <div className="flex-1">
                   <Select 
@@ -100,13 +103,13 @@ export function HeroSection() {
                   />
                 </div>
                 <Button 
+                  type="submit"
                   className="px-6 py-3 bg-primary text-white font-medium rounded-md hover:bg-primary/90 transition-all"
-                  onClick={handleSearch}
                 >
                   <Search className="mr-1 h-4 w-4" /> Search
                 </Button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
