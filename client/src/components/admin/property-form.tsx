@@ -109,6 +109,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     baths: 0,
     area: 0,
     propertyType: PROPERTY_TYPES[0],
+    type: "buy", // Default to buy
     status: PROPERTY_STATUS[0],
     featured: false,
     images: [
@@ -362,6 +363,35 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Transaction Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select transaction type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="buy">Buy</SelectItem>
+                        <SelectItem value="rent">Rent</SelectItem>
+                        <SelectItem value="sell">Sell</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Whether this property is for buying, renting, or selling
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

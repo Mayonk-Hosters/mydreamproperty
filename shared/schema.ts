@@ -54,6 +54,7 @@ export const properties = pgTable("properties", {
   baths: real("baths").notNull(),
   area: integer("area").notNull(),
   propertyType: text("property_type").notNull(),
+  type: text("type").notNull().default("buy"), // Property transaction type: buy, rent, sell
   status: text("status").default("active"),
   featured: boolean("featured").default(false),
   images: jsonb("images").notNull().default([]),

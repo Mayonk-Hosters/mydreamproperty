@@ -200,6 +200,17 @@ export class MemStorage implements IStorage {
       const date = new Date();
       date.setDate(date.getDate() - (i * 2)); // Create dates ranging from today to 10 days ago
       
+      // Determine property transaction type (buy, rent, sell)
+      const types = ["buy", "rent", "sell"];
+      let type = types[i % 3];
+      
+      // Adjust type based on property characteristics
+      if (propertyType === "Apartment") {
+        type = "rent"; // Apartments are typically for rent
+      } else if (prices[i] > 2000000) {
+        type = Math.random() > 0.3 ? "buy" : "sell"; // Higher value properties are for sale
+      }
+      
       this.createProperty({
         title: propertyTitles[i],
         description: `This beautiful ${propertyType.toLowerCase()} features ${beds[i]} bedrooms, ${baths[i]} bathrooms, and ${areas[i]} square feet of living space. Located in ${locations[i]}, it offers modern amenities and a great location.`,
@@ -210,6 +221,7 @@ export class MemStorage implements IStorage {
         baths: baths[i],
         area: areas[i],
         propertyType: propertyType,
+        type: type, // Add property transaction type
         status: status,
         featured: i < 2, // First two properties are featured
         images: [
@@ -297,9 +309,17 @@ export class MemStorage implements IStorage {
     let properties = Array.from(this.properties.values());
     
     if (filters) {
-      if (filters.type === "rent") {
-        // Filter to only show rental properties
-        properties = properties.filter(p => p.propertyType === "Apartment" || p.price < 5000);
+      if (filters.type) {
+        if (filters.type === "rent") {
+          // Rental properties: typically apartments or properties with lower prices
+          properties = properties.filter(p => p.type === "rent");
+        } else if (filters.type === "buy") {
+          // Properties for sale: houses or higher-value properties
+          properties = properties.filter(p => p.type === "buy");
+        } else if (filters.type === "sell") {
+          // Properties for selling: properties listed by owners wanting to sell
+          properties = properties.filter(p => p.type === "sell");
+        }
       }
       
       if (filters.propertyType) {
