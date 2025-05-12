@@ -10,6 +10,7 @@ import HomePage from "@/pages/index";
 import PropertiesPage from "@/pages/properties";
 import PropertyPage from "@/pages/property";
 import AgentsPage from "@/pages/agents";
+import ContactPage from "@/pages/contact";
 
 // Admin Pages
 import AdminDashboardPage from "@/pages/admin/index";
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/properties" component={PropertiesPage} />
       <Route path="/property/:id" component={PropertyPage} />
       <Route path="/agents" component={AgentsPage} />
+      <Route path="/contact" component={ContactPage} />
       
       {/* Admin pages */}
       <Route path="/admin" component={AdminDashboardPage} />

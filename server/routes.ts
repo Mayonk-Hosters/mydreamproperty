@@ -12,6 +12,7 @@ import {
   PROPERTY_TYPES,
   PROPERTY_STATUS
 } from "@shared/schema";
+import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth } from "./auth";
