@@ -81,7 +81,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
       queryParams.set("type", filters.type);
     }
     
-    if (filters.propertyType) {
+    if (filters.propertyType && filters.propertyType !== 'any') {
       queryParams.set("propertyType", filters.propertyType);
     }
     
@@ -171,6 +171,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               <SelectContent>
                 <SelectItem value="buy">Buy</SelectItem>
                 <SelectItem value="rent">Rent</SelectItem>
+                <SelectItem value="sell">Sell</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -185,7 +186,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 <SelectValue placeholder="Any type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any type</SelectItem>
+                <SelectItem value="any">Any type</SelectItem>
                 {PROPERTY_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}

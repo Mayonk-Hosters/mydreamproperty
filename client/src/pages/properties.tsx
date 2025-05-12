@@ -61,7 +61,16 @@ export default function PropertiesPage() {
     queryKey: [`/api/properties?${queryString}`],
   });
 
-  const title = filters.type === "rent" ? "Properties for Rent" : "Properties for Sale";
+  const getTitle = () => {
+    switch (filters.type) {
+      case "rent": return "Properties for Rent";
+      case "sell": return "Properties for Sale";
+      case "buy": 
+      default: return "Properties for Sale";
+    }
+  };
+  
+  const title = getTitle();
   const locationText = filters.location ? `in ${filters.location}` : "";
   const propertyTypeText = filters.propertyType ? `${filters.propertyType}s` : "Properties";
   const pageTitle = `${filters.propertyType || ""} ${title} ${locationText}`;

@@ -25,8 +25,8 @@ export function Navbar() {
                   Home
                 </a>
               </Link>
-              <Link href="/properties">
-                <a className={`font-medium ${location === '/properties' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+              <Link href="/properties?type=buy">
+                <a className={`font-medium ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Buy
                 </a>
               </Link>
@@ -35,8 +35,8 @@ export function Navbar() {
                   Rent
                 </a>
               </Link>
-              <Link href="/properties">
-                <a className={`font-medium ${location === '/sell' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+              <Link href="/properties?type=sell">
+                <a className={`font-medium ${location.includes('type=sell') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Sell
                 </a>
               </Link>
@@ -84,8 +84,8 @@ export function Navbar() {
                   Home
                 </a>
               </Link>
-              <Link href="/properties">
-                <a className={`py-2 font-medium ${location === '/properties' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+              <Link href="/properties?type=buy">
+                <a className={`py-2 font-medium ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Buy
                 </a>
               </Link>
@@ -94,8 +94,8 @@ export function Navbar() {
                   Rent
                 </a>
               </Link>
-              <Link href="/properties">
-                <a className={`py-2 font-medium ${location === '/sell' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+              <Link href="/properties?type=sell">
+                <a className={`py-2 font-medium ${location.includes('type=sell') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Sell
                 </a>
               </Link>
