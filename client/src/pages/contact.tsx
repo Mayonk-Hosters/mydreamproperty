@@ -46,9 +46,12 @@ export default function ContactPage() {
     setIsSubmitting(true);
     
     try {
-      // You can implement actual email sending here with SendGrid
-      // For now, we'll just simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const response = await apiRequest('POST', '/api/contact', data);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send message');
+      }
       
       toast({
         title: "Message sent successfully",
@@ -58,9 +61,10 @@ export default function ContactPage() {
       
       form.reset();
     } catch (error) {
+      console.error('Contact form error:', error);
       toast({
         title: "Error sending message",
-        description: "Please try again later",
+        description: error instanceof Error ? error.message : "Please try again later",
         variant: "destructive",
       });
     } finally {

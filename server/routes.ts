@@ -20,6 +20,39 @@ import { setupAuth } from "./auth";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
+  
+  // Contact form schema
+  const contactFormSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    message: z.string().min(10, "Message must be at least 10 characters"),
+    subject: z.string().min(3, "Subject must be at least 3 characters")
+  });
+  
+  // Contact form endpoint
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const contactData = contactFormSchema.parse(req.body);
+      
+      // Here you would typically send an email using a service like SendGrid
+      // For now, we'll just return success
+      console.log("Contact form submission:", contactData);
+      
+      // Simulate a slight delay for network effect
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      res.status(200).json({ success: true, message: "Message received successfully" });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error processing contact form:", error);
+      res.status(500).json({ message: "Failed to process contact form" });
+    }
+  });
   // Get all properties
   app.get("/api/properties", async (req, res) => {
     try {
