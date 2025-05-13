@@ -106,6 +106,37 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) return res.status(401).send("Not authenticated");
     res.json(req.user);
   });
+  
+  // Profile endpoints
+  app.get("/api/user/profile", (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).send("Not authenticated");
+    res.json(req.user);
+  });
+  
+  app.patch("/api/user/profile", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).send("Not authenticated");
+      
+      // Only allow updating certain fields
+      const allowedFields = ["fullName", "email", "profileImage"];
+      const updateData: { [key: string]: any } = {};
+      
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          updateData[field] = req.body[field];
+        }
+      }
+      
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ message: "No valid fields to update" });
+      }
+      
+      const updatedUser = await storage.updateUser(req.user.id, updateData);
+      res.json(updatedUser);
+    } catch (err) {
+      next(err);
+    }
+  });
 
   // Temporary route for checking admin status during development
   app.get("/api/auth/check-admin", (req, res) => {
