@@ -37,6 +37,17 @@ export function Navbar() {
               </Link>
               {/* Sell link removed */}
               {/* Agents link removed and moved to footer */}
+              <a 
+                href="https://moneycapital.co.in/sign-in" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="font-medium text-primary hover:text-primary-dark flex items-center"
+              >
+                <span className="relative">
+                  Home Loan
+                  <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                </span>
+              </a>
               <Link href="/contact">
                 <a className={`font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Contact
@@ -88,6 +99,17 @@ export function Navbar() {
               </Link>
               {/* Sell link removed */}
               {/* Agents link removed and moved to footer */}
+              <a 
+                href="https://moneycapital.co.in/sign-in" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="py-2 font-medium text-primary hover:text-primary-dark flex items-center"
+              >
+                <span className="relative">
+                  Home Loan
+                  <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                </span>
+              </a>
               <Link href="/contact">
                 <a className={`py-2 font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Contact
