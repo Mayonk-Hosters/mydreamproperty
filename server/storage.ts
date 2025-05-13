@@ -43,6 +43,13 @@ export interface IStorage {
   deleteProperty(id: number): Promise<boolean>;
   countPropertiesByType(propertyType: string): Promise<number>;
   
+  // Property Types methods
+  getAllPropertyTypes(): Promise<PropertyType[]>;
+  getPropertyType(id: number): Promise<PropertyType | undefined>;
+  createPropertyType(propertyType: InsertPropertyType): Promise<PropertyType>;
+  updatePropertyType(id: number, propertyType: Partial<InsertPropertyType>): Promise<PropertyType>;
+  deletePropertyType(id: number): Promise<boolean>;
+  
   // Agent methods
   getAllAgents(): Promise<Agent[]>;
   getAgent(id: number): Promise<Agent | undefined>;
@@ -102,6 +109,7 @@ export class MemStorage implements IStorage {
   private talukas: Map<number, Taluka>;
   private tehsils: Map<number, Tehsil>;
   private contactInfo: ContactInfo | undefined;
+  private propertyTypes: Map<number, PropertyType>;
   
   private userIdCounter: number;
   private propertyIdCounter: number;
@@ -111,6 +119,7 @@ export class MemStorage implements IStorage {
   private districtIdCounter: number;
   private talukaIdCounter: number;
   private tehsilIdCounter: number;
+  private propertyTypeIdCounter: number;
   
   public sessionStore: session.Store;
 
@@ -123,6 +132,7 @@ export class MemStorage implements IStorage {
     this.districts = new Map();
     this.talukas = new Map();
     this.tehsils = new Map();
+    this.propertyTypes = new Map();
     
     this.userIdCounter = 1;
     this.propertyIdCounter = 1;
@@ -132,6 +142,7 @@ export class MemStorage implements IStorage {
     this.districtIdCounter = 1;
     this.talukaIdCounter = 1;
     this.tehsilIdCounter = 1;
+    this.propertyTypeIdCounter = 1;
     
     // Initialize memory session store
     const MemoryStore = require('memorystore')(session);
@@ -151,6 +162,14 @@ export class MemStorage implements IStorage {
       password: "admin123",
       isAdmin: true
     });
+    
+    // Initialize property types with defaults
+    for (const typeName of DEFAULT_PROPERTY_TYPES) {
+      this.createPropertyType({
+        name: typeName,
+        active: true
+      });
+    }
     
     // Create sample agents
     const agentTitles = [
@@ -616,6 +635,43 @@ export class MemStorage implements IStorage {
     this.contactInfo = updatedContactInfo;
     return updatedContactInfo;
   }
+  
+  // Property Types methods
+  async getAllPropertyTypes(): Promise<PropertyType[]> {
+    return Array.from(this.propertyTypes.values());
+  }
+  
+  async getPropertyType(id: number): Promise<PropertyType | undefined> {
+    return this.propertyTypes.get(id);
+  }
+  
+  async createPropertyType(propertyType: InsertPropertyType): Promise<PropertyType> {
+    const id = this.propertyTypeIdCounter++;
+    const now = new Date();
+    const newPropertyType: PropertyType = { 
+      ...propertyType, 
+      id,
+      createdAt: now
+    };
+    this.propertyTypes.set(id, newPropertyType);
+    return newPropertyType;
+  }
+  
+  async updatePropertyType(id: number, propertyTypeData: Partial<InsertPropertyType>): Promise<PropertyType> {
+    const existingPropertyType = this.propertyTypes.get(id);
+    
+    if (!existingPropertyType) {
+      throw new Error("Property type not found");
+    }
+    
+    const updatedPropertyType: PropertyType = { ...existingPropertyType, ...propertyTypeData };
+    this.propertyTypes.set(id, updatedPropertyType);
+    return updatedPropertyType;
+  }
+  
+  async deletePropertyType(id: number): Promise<boolean> {
+    return this.propertyTypes.delete(id);
+  }
 }
 
 // Database implementation
@@ -1025,6 +1081,40 @@ export class DatabaseStorage implements IStorage {
       console.error("Error updating contact information:", error);
       throw error;
     }
+  }
+  
+  // Property Types methods
+  async getAllPropertyTypes(): Promise<PropertyType[]> {
+    return await db.select().from(propertyTypes).orderBy(propertyTypes.name);
+  }
+  
+  async getPropertyType(id: number): Promise<PropertyType | undefined> {
+    const [propertyType] = await db.select().from(propertyTypes).where(eq(propertyTypes.id, id));
+    return propertyType;
+  }
+  
+  async createPropertyType(propertyType: InsertPropertyType): Promise<PropertyType> {
+    const [newPropertyType] = await db.insert(propertyTypes).values(propertyType).returning();
+    return newPropertyType;
+  }
+  
+  async updatePropertyType(id: number, propertyTypeData: Partial<InsertPropertyType>): Promise<PropertyType> {
+    const [updatedPropertyType] = await db
+      .update(propertyTypes)
+      .set(propertyTypeData)
+      .where(eq(propertyTypes.id, id))
+      .returning();
+      
+    if (!updatedPropertyType) {
+      throw new Error("Property type not found");
+    }
+    
+    return updatedPropertyType;
+  }
+  
+  async deletePropertyType(id: number): Promise<boolean> {
+    const result = await db.delete(propertyTypes).where(eq(propertyTypes.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }
 

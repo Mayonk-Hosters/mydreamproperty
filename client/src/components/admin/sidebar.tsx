@@ -75,6 +75,11 @@ export function Sidebar() {
           icon: <PhoneCall className="h-5 w-5" />
         },
         {
+          name: "Property Types",
+          path: "/admin/property-types",
+          icon: <Building className="h-5 w-5" />
+        },
+        {
           name: "Analytics",
           path: "/admin/analytics",
           icon: <PieChart className="h-5 w-5" />

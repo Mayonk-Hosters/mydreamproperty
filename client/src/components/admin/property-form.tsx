@@ -8,7 +8,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Property, 
-  PROPERTY_TYPES, 
+  DEFAULT_PROPERTY_TYPES, 
   PROPERTY_STATUS, 
   insertPropertySchema,
   State,
@@ -110,7 +110,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     beds: 0,
     baths: 0,
     area: 0,
-    propertyType: PROPERTY_TYPES[0],
+    propertyType: DEFAULT_PROPERTY_TYPES[0],
     type: "buy", // Default to buy
     status: PROPERTY_STATUS[0],
     featured: false,

@@ -247,5 +247,22 @@ export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({
 export type ContactInfo = typeof contactInfo.$inferSelect;
 export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
 
-export const PROPERTY_TYPES = ["House", "Apartment", "Villa", "Commercial"] as const;
+// Property types table
+export const propertyTypes = pgTable("property_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPropertyTypeSchema = createInsertSchema(propertyTypes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type PropertyType = typeof propertyTypes.$inferSelect;
+export type InsertPropertyType = z.infer<typeof insertPropertyTypeSchema>;
+
+// Default property types (for backwards compatibility)
+export const DEFAULT_PROPERTY_TYPES = ["House", "Apartment", "Villa", "Commercial"];
 export const PROPERTY_STATUS = ["active", "pending", "sold"] as const;

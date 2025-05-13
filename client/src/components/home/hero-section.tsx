@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/use-site-settings";
-import { PROPERTY_TYPES } from "@shared/schema";
+import { DEFAULT_PROPERTY_TYPES } from "@shared/schema";
 
 export function HeroSection() {
   const [, setLocation] = useLocation();
@@ -87,7 +87,7 @@ export function HeroSection() {
                       <SelectValue placeholder="Property Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {PROPERTY_TYPES.map((type) => (
+                      {DEFAULT_PROPERTY_TYPES.map((type) => (
                         <SelectItem key={type} value={type}>
                           {type}
                         </SelectItem>

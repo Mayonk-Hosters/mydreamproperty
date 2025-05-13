@@ -32,7 +32,7 @@ import {
 import { formatCurrency } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Property, PROPERTY_TYPES, PROPERTY_STATUS } from "@shared/schema";
+import { Property, DEFAULT_PROPERTY_TYPES, PROPERTY_STATUS, PropertyType } from "@shared/schema";
 
 export function PropertyTable() {
   const { toast } = useToast();
@@ -138,7 +138,7 @@ export function PropertyTable() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all-types">All Types</SelectItem>
-              {PROPERTY_TYPES.map(type => (
+              {DEFAULT_PROPERTY_TYPES.map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
             </SelectContent>

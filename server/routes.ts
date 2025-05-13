@@ -10,7 +10,8 @@ import {
   insertTalukaSchema,
   insertTehsilSchema,
   insertContactInfoSchema,
-  PROPERTY_TYPES,
+  insertPropertyTypeSchema,
+  DEFAULT_PROPERTY_TYPES,
   PROPERTY_STATUS
 } from "@shared/schema";
 import { z } from "zod";
@@ -91,10 +92,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get property counts by type
   app.get("/api/properties/counts-by-type", async (_req, res) => {
     try {
+      // Use the dynamic property types from database
+      const propertyTypes = await storage.getAllPropertyTypes();
+      
+      if (propertyTypes.length === 0) {
+        // Fallback to default property types if none exist in database
+        const counts = await Promise.all(
+          DEFAULT_PROPERTY_TYPES.map(async (type) => {
+            const count = await storage.countPropertiesByType(type);
+            return { propertyType: type, count };
+          })
+        );
+        return res.json(counts);
+      }
+      
+      // Use the actual property types from the database
       const counts = await Promise.all(
-        PROPERTY_TYPES.map(async (type) => {
-          const count = await storage.countPropertiesByType(type);
-          return { propertyType: type, count };
+        propertyTypes.map(async (propertyType) => {
+          const count = await storage.countPropertiesByType(propertyType.name);
+          return { propertyType: propertyType.name, count };
         })
       );
       
@@ -1062,6 +1078,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting user:", error);
       res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // Property Types API Routes
+  // Get all property types
+  app.get("/api/property-types", async (_req, res) => {
+    try {
+      const propertyTypes = await storage.getAllPropertyTypes();
+      res.json(propertyTypes);
+    } catch (error) {
+      console.error("Error fetching property types:", error);
+      res.status(500).json({ message: "Failed to fetch property types" });
+    }
+  });
+
+  // Get a single property type
+  app.get("/api/property-types/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid property type ID" });
+      }
+
+      const propertyType = await storage.getPropertyType(id);
+      
+      if (!propertyType) {
+        return res.status(404).json({ message: "Property type not found" });
+      }
+      
+      res.json(propertyType);
+    } catch (error) {
+      console.error("Error fetching property type:", error);
+      res.status(500).json({ message: "Failed to fetch property type" });
+    }
+  });
+
+  // Create a new property type
+  app.post("/api/property-types", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const propertyTypeData = insertPropertyTypeSchema.parse(req.body);
+      const newPropertyType = await storage.createPropertyType(propertyTypeData);
+      res.status(201).json(newPropertyType);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error creating property type:", error);
+      res.status(500).json({ message: "Failed to create property type" });
+    }
+  });
+
+  // Update a property type
+  app.patch("/api/property-types/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid property type ID" });
+      }
+
+      const propertyTypeData = insertPropertyTypeSchema.partial().parse(req.body);
+      const updatedPropertyType = await storage.updatePropertyType(id, propertyTypeData);
+      
+      res.json(updatedPropertyType);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      
+      if (error instanceof Error && error.message === "Property type not found") {
+        return res.status(404).json({ message: "Property type not found" });
+      }
+      
+      console.error("Error updating property type:", error);
+      res.status(500).json({ message: "Failed to update property type" });
+    }
+  });
+
+  // Delete a property type
+  app.delete("/api/property-types/:id", async (req, res) => {
+    try {
+      // Check if user is authenticated and is an admin
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid property type ID" });
+      }
+
+      const success = await storage.deletePropertyType(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Property type not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting property type:", error);
+      res.status(500).json({ message: "Failed to delete property type" });
     }
   });
 
