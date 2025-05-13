@@ -7,7 +7,8 @@ import {
   districts, type District, type InsertDistrict,
   talukas, type Taluka, type InsertTaluka,
   tehsils, type Tehsil, type InsertTehsil,
-  contactInfo, type ContactInfo, type InsertContactInfo
+  contactInfo, type ContactInfo, type InsertContactInfo,
+  propertyTypes, type PropertyType, type InsertPropertyType
 } from "@shared/schema";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
