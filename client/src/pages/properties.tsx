@@ -125,7 +125,7 @@ export default function PropertiesPage() {
           </div>
           
           {/* Property Listings */}
-          <div className="lg:col-span-3">
+          <div id="properties-results" className="lg:col-span-3">
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {Array(6).fill(0).map((_, i) => (

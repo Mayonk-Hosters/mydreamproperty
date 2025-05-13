@@ -241,20 +241,33 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 className="pl-9"
                 placeholder="Enter area name, neighborhood..." 
                 value={filters.location}
-                onChange={(e) => handleFilterChange("location", e.target.value)}
+                onChange={(e) => handleLocationChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyFilters();
+                  }
+                }}
               />
               {filters.location && (
                 <button 
                   className="absolute right-2 top-2.5 text-muted-foreground hover:text-primary"
-                  onClick={() => handleFilterChange("location", "")}
+                  onClick={() => handleLocationChange("")}
+                  aria-label="Clear search"
                 >
                   <XCircle className="h-4 w-4" />
                 </button>
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Search for properties in specific areas
+              Search by area name, district, state or neighborhood
             </p>
+            {filters.location && filters.location.length >= 3 && (
+              <div className="flex items-center gap-2 mt-2 text-xs bg-primary/10 text-primary rounded-md p-1.5">
+                <Search className="h-3 w-3" />
+                <span className="font-medium">Searching for:</span> "{filters.location}"
+              </div>
+            )}
           </div>
         </div>
         
