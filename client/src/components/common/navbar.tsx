@@ -22,20 +22,11 @@ export function Navbar() {
               <span className="font-bold text-xl text-primary">{settings.siteName}</span>
             </Link>
             <nav className="hidden md:flex space-x-6 ml-6">
-              <Link href="/">
-                <a className={`font-medium ${location === '/' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Home
-                </a>
+              <Link href="/properties?type=buy" className={`font-medium ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Buy
               </Link>
-              <Link href="/properties?type=buy">
-                <a className={`font-medium ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Buy
-                </a>
-              </Link>
-              <Link href="/properties?type=rent">
-                <a className={`font-medium ${location.includes('type=rent') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Rent
-                </a>
+              <Link href="/properties?type=rent" className={`font-medium ${location.includes('type=rent') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Rent
               </Link>
               {/* Sell link removed */}
               {/* Agents link removed and moved to footer */}
@@ -50,10 +41,8 @@ export function Navbar() {
                   <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
                 </span>
               </a>
-              <Link href="/contact">
-                <a className={`font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Contact
-                </a>
+              <Link href="/contact" className={`font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Contact
               </Link>
             </nav>
           </div>
@@ -84,20 +73,11 @@ export function Navbar() {
         <div className="md:hidden bg-white border-t">
           <div className="container mx-auto px-4 py-2">
             <nav className="flex flex-col space-y-2">
-              <Link href="/">
-                <a className={`py-2 font-medium ${location === '/' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Home
-                </a>
+              <Link href="/properties?type=buy" className={`py-2 font-medium ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Buy
               </Link>
-              <Link href="/properties?type=buy">
-                <a className={`py-2 font-medium ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Buy
-                </a>
-              </Link>
-              <Link href="/properties?type=rent">
-                <a className={`py-2 font-medium ${location.includes('type=rent') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Rent
-                </a>
+              <Link href="/properties?type=rent" className={`py-2 font-medium ${location.includes('type=rent') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Rent
               </Link>
               {/* Sell link removed */}
               {/* Agents link removed and moved to footer */}
@@ -112,10 +92,8 @@ export function Navbar() {
                   <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
                 </span>
               </a>
-              <Link href="/contact">
-                <a className={`py-2 font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Contact
-                </a>
+              <Link href="/contact" className={`py-2 font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Contact
               </Link>
             </nav>
           </div>
