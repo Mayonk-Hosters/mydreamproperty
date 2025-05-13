@@ -17,6 +17,7 @@ import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth, hashPassword } from "./auth";
+import { sendInquiryNotification } from "./email-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
@@ -309,6 +310,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const newInquiry = await storage.createInquiry(inquiryData);
+      
+      // If property ID is provided, fetch property title for the email
+      let propertyTitle;
+      if (inquiryData.propertyId) {
+        const property = await storage.getProperty(inquiryData.propertyId);
+        if (property) {
+          propertyTitle = property.title;
+        }
+      }
+      
+      // Send email notification to admin
+      try {
+        await sendInquiryNotification(newInquiry, propertyTitle);
+        console.log(`Email notification sent for inquiry ID: ${newInquiry.id}`);
+      } catch (emailError) {
+        // Log the error but don't fail the API response
+        console.error("Failed to send email notification:", emailError);
+      }
+      
       res.status(201).json(newInquiry);
     } catch (error) {
       if (error instanceof ZodError) {

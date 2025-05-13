@@ -1,12 +1,26 @@
-import * as SibApiV3Sdk from 'sib-api-v3-sdk';
+import SibApiV3Sdk from 'sib-api-v3-sdk';
 import { Inquiry } from '@shared/schema';
 
-// Initialize the Brevo API client
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
+// Validate required environment variables
+if (!process.env.BREVO_API_KEY) {
+  console.warn('Warning: BREVO_API_KEY is not set. Email notifications will not be sent.');
+}
 
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+if (!process.env.ADMIN_EMAIL) {
+  console.warn('Warning: ADMIN_EMAIL is not set. Email notifications will not be sent.');
+}
+
+// Initialize the Brevo API client
+let apiInstance: any = null;
+
+try {
+  const defaultClient = SibApiV3Sdk.ApiClient.instance;
+  const apiKey = defaultClient.authentications['api-key'];
+  apiKey.apiKey = process.env.BREVO_API_KEY || '';
+  apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+} catch (error) {
+  console.error('Failed to initialize Brevo API client:', error);
+}
 
 /**
  * Sends an email notification to the admin when a property inquiry is received
