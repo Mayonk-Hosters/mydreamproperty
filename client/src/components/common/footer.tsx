@@ -3,13 +3,15 @@ import { Link } from "wouter";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function Footer() {
+  const { settings } = useSiteSettings();
+  
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-6">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
             <h3 className="text-xl font-bold mb-4 flex items-center">
-              <Home className="mr-2" /> RealEstate Pro
+              <Home className="mr-2" /> {settings.siteName}
             </h3>
             <p className="text-gray-400 mb-4">
               Your trusted partner in finding the perfect property. With our expert agents and extensive listings, we make real estate simple.
@@ -73,7 +75,7 @@ export function Footer() {
         </div>
         
         <div className="pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} RealEstate Pro. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {settings.siteName}. All rights reserved.</p>
         </div>
       </div>
     </footer>

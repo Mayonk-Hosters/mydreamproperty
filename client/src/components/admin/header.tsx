@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { User as UserType } from "@shared/schema";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -25,6 +26,8 @@ export function Header({ toggleSidebar }: HeaderProps) {
   const { data: profile } = useQuery<UserType>({
     queryKey: ['/api/user/profile']
   });
+  
+  const { settings } = useSiteSettings();
 
   // Determine the display name and initials
   const displayName = profile?.fullName || profile?.username || "Admin";
@@ -44,7 +47,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
           >
             <Menu className="h-5 w-5 text-gray-500 hover:text-gray-700" />
           </Button>
-          <div className="ml-3 md:hidden text-lg font-semibold">My Dream Property Admin</div>
+          <div className="ml-3 md:hidden text-lg font-semibold">{settings.siteName} Admin</div>
         </div>
         
         <div className="hidden md:block">
