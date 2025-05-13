@@ -1,5 +1,6 @@
 import { Home, Facebook, Twitter, Instagram, Linkedin, MapPin, Phone, Mail } from "lucide-react";
 import { Link } from "wouter";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function Footer() {
   return (

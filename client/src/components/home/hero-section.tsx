@@ -13,10 +13,12 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 import { PROPERTY_TYPES } from "@shared/schema";
 
 export function HeroSection() {
   const [, setLocation] = useLocation();
+  const { settings } = useSiteSettings();
   const [searchParams, setSearchParams] = useState({
     type: "buy", // buy or rent
     propertyType: "", // House, Apartment, etc.
@@ -57,7 +59,7 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center max-w-3xl px-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Find Your Dream Home</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Welcome to {settings.siteName}</h1>
             <p className="text-xl text-white mb-8">Discover the perfect property from our extensive listings</p>
             
             {/* Search Form */}
