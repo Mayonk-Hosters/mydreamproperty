@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { 
   Property, 
   PropertyType,
@@ -85,8 +85,6 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   const [selectedTalukaId, setSelectedTalukaId] = useState<string | null>(null);
   const [selectedTehsilId, setSelectedTehsilId] = useState<string | null>(null);
   const [isAddPropertyTypeOpen, setIsAddPropertyTypeOpen] = useState(false);
-  const [newPropertyTypeName, setNewPropertyTypeName] = useState('');
-  const [newPropertyTypeActive, setNewPropertyTypeActive] = useState(true);
   
   // Fetch states
   const statesQuery = useQuery<State[]>({
@@ -123,47 +121,6 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     queryKey: ['/api/property-types'],
     enabled: true,
   });
-  
-  // Add a new property type
-  const createPropertyTypeMutation = useMutation({
-    mutationFn: async (propertyType: { name: string; active: boolean }) => {
-      const response = await apiRequest('POST', '/api/property-types', propertyType);
-      const data = await response.json();
-      return data;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Property type created",
-        description: `Property type "${newPropertyTypeName}" has been created successfully.`,
-      });
-      setNewPropertyTypeName('');
-      setIsAddPropertyTypeOpen(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/property-types'] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to create property type",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-  
-  const handleCreatePropertyType = () => {
-    if (!newPropertyTypeName.trim()) {
-      toast({
-        title: "Error",
-        description: "Property type name cannot be empty",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    createPropertyTypeMutation.mutate({
-      name: newPropertyTypeName.trim(),
-      active: newPropertyTypeActive,
-    });
-  };
 
   // Set default values for a new property
   const defaultValues = property ? {
@@ -935,59 +892,15 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         </div>
       </form>
 
-      {/* Dialog for Adding New Property Type */}
-      <Dialog open={isAddPropertyTypeOpen} onOpenChange={setIsAddPropertyTypeOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add New Property Type</DialogTitle>
-            <DialogDescription>
-              Create a new property type for listings. Click Save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="name" className="text-right text-sm font-medium">
-                Name
-              </label>
-              <Input
-                id="name"
-                value={newPropertyTypeName}
-                onChange={(e) => setNewPropertyTypeName(e.target.value)}
-                className="col-span-3"
-                placeholder="e.g., Apartment, Villa, Plot"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="active" className="text-right text-sm font-medium">
-                Active
-              </label>
-              <div className="flex items-center space-x-2 col-span-3">
-                <Switch
-                  id="active"
-                  checked={newPropertyTypeActive}
-                  onCheckedChange={setNewPropertyTypeActive}
-                />
-                <label htmlFor="active" className="text-sm text-muted-foreground">
-                  {newPropertyTypeActive ? 'Active' : 'Inactive'}
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddPropertyTypeOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreatePropertyType}
-              disabled={!newPropertyTypeName.trim() || createPropertyTypeMutation.isPending}
-            >
-              {createPropertyTypeMutation.isPending ? 'Creating...' : 'Create Property Type'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Use the PropertyTypeDialog component */}
+      <PropertyTypeDialog 
+        open={isAddPropertyTypeOpen} 
+        onOpenChange={setIsAddPropertyTypeOpen}
+        onPropertyTypeCreated={(name) => {
+          // When a new property type is created, select it in the form
+          form.setValue("propertyType", name);
+        }}
+      />
     </Form>
   );
 }
