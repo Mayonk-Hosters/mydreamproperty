@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Home, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
