@@ -25,6 +25,7 @@ import AdminAgentNewPage from "@/pages/admin/agents/new";
 import AdminAgentEditPage from "@/pages/admin/agents/edit";
 import AdminContactPage from "@/pages/admin/contact";
 import AdminAnalyticsPage from "@/pages/admin/analytics";
+import AdminInquiriesPage from "@/pages/admin/inquiries";
 
 function Router() {
   return (
@@ -49,6 +50,7 @@ function Router() {
       <Route path="/admin/agents/new" component={AdminAgentNewPage} />
       <Route path="/admin/agents/edit/:id" component={AdminAgentEditPage} />
       <Route path="/admin/analytics" component={AdminAnalyticsPage} />
+      <Route path="/admin/inquiries" component={AdminInquiriesPage} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
