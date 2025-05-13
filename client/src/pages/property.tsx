@@ -37,6 +37,7 @@ export default function PropertyPage() {
     <Layout>
       <PageTitle title={pageTitle} />
       
+      {/* Add metadata with Helmet */}
       {property && (
         <Helmet>
           <meta name="description" content={`${property.title} - ${property.beds} bed, ${property.baths} bath, ${property.area} sq ft ${property.propertyType.toLowerCase()} for ${property.status === 'active' ? 'sale' : property.status} in ${property.location}. ${property.description.substring(0, 120)}...`} />
@@ -44,7 +45,7 @@ export default function PropertyPage() {
           <meta property="og:description" content={`${property.beds} bed, ${property.baths} bath, ${property.area} sq ft ${property.propertyType.toLowerCase()} for ${property.status === 'active' ? 'sale' : property.status}`} />
           <meta property="og:type" content="website" />
           {property.images && Array.isArray(property.images) && property.images.length > 0 && (
-            <meta property="og:image" content={property.images[0]} />
+            <meta property="og:image" content={String(property.images[0])} />
           )}
         </Helmet>
       )}

@@ -3,14 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Helmet } from "react-helmet";
 import { Layout } from "@/components/common/layout";
+import { PageTitle } from "@/components/common/page-title";
 import { PropertyFilter } from "@/components/properties/property-filter";
 import { PropertyCard } from "@/components/properties/property-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Property } from "@shared/schema";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function PropertiesPage() {
   const [location] = useLocation();
+  const { settings } = useSiteSettings();
   const [filters, setFilters] = useState({
     type: "buy",
     propertyType: "",
@@ -77,11 +80,11 @@ export default function PropertiesPage() {
 
   return (
     <Layout>
+      <PageTitle title={`${pageTitle} | ${settings.siteName}`} />
       <Helmet>
-        <title>{pageTitle} | RealEstate Pro</title>
         <meta 
           name="description" 
-          content={`Browse our selection of ${propertyTypeText} available for ${filters.type} ${locationText}. Find your perfect home with RealEstate Pro.`} 
+          content={`Browse our selection of ${propertyTypeText} available for ${filters.type} ${locationText}. Find your perfect home with ${settings.siteName}.`} 
         />
       </Helmet>
 
