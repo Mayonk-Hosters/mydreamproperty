@@ -73,7 +73,7 @@ export default function AdminUsersPage() {
   // Query to fetch all users
   const { data: users, isLoading: isLoadingUsers } = useQuery<User[]>({
     queryKey: ["/api/users"],
-    enabled: isAdmin && !isLoading,
+    enabled: !isLoading,
   });
 
   // Form for adding a new user
