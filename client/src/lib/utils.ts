@@ -15,24 +15,30 @@ export function formatCurrency(amount: number): string {
 }
 
 // Format date (e.g., "3 days ago", "1 week ago", "Just listed")
-export function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+export function formatRelativeTime(dateString?: string | null): string {
+  if (!dateString) return ""; 
   
-  if (diffInDays < 1) {
-    return "Just listed";
-  } else if (diffInDays === 1) {
-    return "1 day ago";
-  } else if (diffInDays < 7) {
-    return `${diffInDays} days ago`;
-  } else if (diffInDays < 14) {
-    return "1 week ago";
-  } else if (diffInDays < 30) {
-    return `${Math.floor(diffInDays / 7)} weeks ago`;
-  } else {
-    return `${Math.floor(diffInDays / 30)} months ago`;
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays < 1) {
+      return "Just listed";
+    } else if (diffInDays === 1) {
+      return "1 day ago";
+    } else if (diffInDays < 7) {
+      return `${diffInDays} days ago`;
+    } else if (diffInDays < 14) {
+      return "1 week ago";
+    } else if (diffInDays < 30) {
+      return `${Math.floor(diffInDays / 7)} weeks ago`;
+    } else {
+      return `${Math.floor(diffInDays / 30)} months ago`;
+    }
+  } catch (error) {
+    return "";
   }
 }
 
