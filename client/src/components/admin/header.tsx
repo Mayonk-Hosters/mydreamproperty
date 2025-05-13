@@ -1,15 +1,37 @@
-import { Menu, Bell, ChevronDown } from "lucide-react";
+import { Menu, Bell, ChevronDown, Settings, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useQuery } from "@tanstack/react-query";
+import { User as UserType } from "@shared/schema";
 
 interface HeaderProps {
   toggleSidebar: () => void;
 }
 
 export function Header({ toggleSidebar }: HeaderProps) {
+  // Fetch the user profile for the header
+  const { data: profile } = useQuery<UserType>({
+    queryKey: ['/api/user/profile']
+  });
+
+  // Determine the display name and initials
+  const displayName = profile?.fullName || profile?.username || "Admin";
+  const initials = profile?.fullName 
+    ? profile.fullName.split(" ").map(n => n[0]).join("").toUpperCase() 
+    : profile?.username?.substring(0, 2).toUpperCase() || "AD";
+    
   return (
     <header className="bg-white shadow-sm">
       <div className="flex items-center justify-between p-4">
@@ -22,7 +44,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
           >
             <Menu className="h-5 w-5 text-gray-500 hover:text-gray-700" />
           </Button>
-          <div className="ml-3 md:hidden text-lg font-semibold">RealEstate Pro Admin</div>
+          <div className="ml-3 md:hidden text-lg font-semibold">My Dream Property Admin</div>
         </div>
         
         <div className="hidden md:block">
@@ -54,14 +76,43 @@ export function Header({ toggleSidebar }: HeaderProps) {
             </Button>
           </div>
           
-          <div className="flex items-center space-x-2 cursor-pointer">
-            <Avatar>
-              <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40" alt="Admin User" />
-              <AvatarFallback>JA</AvatarFallback>
-            </Avatar>
-            <span className="hidden md:block text-sm font-medium">John Admin</span>
-            <ChevronDown className="h-4 w-4 text-gray-500" />
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <Avatar>
+                  <AvatarImage src={profile?.profileImage || undefined} alt={displayName} />
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+                <span className="hidden md:block text-sm font-medium">{displayName}</span>
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <Link href="/admin/profile">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/admin/settings">
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <Link href="/">
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Exit Admin</span>
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Link href="/">
             <Button variant="outline" size="sm" className="ml-2 px-3 py-1.5 bg-gray-100 rounded text-sm hover:bg-gray-200 transition-all">

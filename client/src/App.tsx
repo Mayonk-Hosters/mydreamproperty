@@ -27,6 +27,7 @@ import AdminContactPage from "@/pages/admin/contact";
 import AdminAnalyticsPage from "@/pages/admin/analytics";
 import AdminInquiriesPage from "@/pages/admin/inquiries";
 import AdminClientsPage from "@/pages/admin/clients";
+import AdminProfilePage from "@/pages/admin/profile";
 
 function Router() {
   return (
@@ -53,6 +54,7 @@ function Router() {
       <Route path="/admin/analytics" component={AdminAnalyticsPage} />
       <Route path="/admin/inquiries" component={AdminInquiriesPage} />
       <Route path="/admin/clients" component={AdminClientsPage} />
+      <Route path="/admin/profile" component={AdminProfilePage} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />

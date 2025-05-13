@@ -17,10 +17,14 @@ export function useProfile() {
   // Fetch current user profile
   const { data: profile, isLoading, error } = useQuery<User>({
     queryKey: ['/api/user/profile'],
-    onError: (error) => {
+    onSuccess: (data) => {
+      // Profile loaded successfully
+      console.log("Profile loaded:", data);
+    },
+    onError: () => {
       toast({
         title: "Error",
-        description: `Failed to load profile: ${error.message}`,
+        description: "Failed to load profile. Please try again.",
         variant: "destructive"
       });
     }
