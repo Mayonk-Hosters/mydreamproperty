@@ -101,7 +101,14 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="flex-row items-center justify-between space-y-0">
-            <DialogTitle className="text-2xl font-bold">{property.title}</DialogTitle>
+            <div>
+              <DialogTitle className="text-2xl font-bold">{property.title}</DialogTitle>
+              {property.propertyNumber && (
+                <div className="text-sm font-medium text-primary mt-1">
+                  {property.propertyNumber}
+                </div>
+              )}
+            </div>
             <DialogClose onClick={onClose} />
           </DialogHeader>
 

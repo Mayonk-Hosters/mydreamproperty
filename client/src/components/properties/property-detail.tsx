@@ -139,7 +139,14 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
           {/* Property Details */}
           <div>
             <div className="flex justify-between items-start mb-2">
-              <h1 className="text-3xl font-bold">{property.title}</h1>
+              <div>
+                <h1 className="text-3xl font-bold">{property.title}</h1>
+                {property.propertyNumber && (
+                  <div className="inline-block bg-primary/10 text-primary font-medium px-3 py-1 rounded-md mt-2">
+                    Property ID: {property.propertyNumber}
+                  </div>
+                )}
+              </div>
               <div className="flex space-x-2">
                 <Button variant="outline" size="icon">
                   <Heart className="h-5 w-5" />
@@ -150,7 +157,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </div>
             </div>
             
-            <p className="text-gray-600 flex items-center mb-4">
+            <p className="text-gray-600 flex items-center mb-4 mt-4">
               <MapPin className="h-5 w-5 mr-1" /> {property.address}, {property.location}
             </p>
             

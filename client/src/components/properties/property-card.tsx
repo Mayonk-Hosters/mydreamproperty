@@ -111,11 +111,18 @@ export function PropertyCard({ property }: PropertyCardProps) {
               {property.createdAt ? formatRelativeTime(property.createdAt.toString()) : ''}
             </span>
           </div>
-          <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
-            <Link href={`/property/${property.id}`}>
-              {property.title}
-            </Link>
-          </h3>
+          <div className="flex justify-between items-center mb-1">
+            <h3 className="font-semibold text-lg hover:text-primary transition-colors">
+              <Link href={`/property/${property.id}`}>
+                {property.title}
+              </Link>
+            </h3>
+            {property.propertyNumber && (
+              <Badge variant="outline" className="text-xs bg-gray-50">
+                {property.propertyNumber}
+              </Badge>
+            )}
+          </div>
           <p className="text-gray-600 text-sm mb-2 flex items-center">
             <MapPin className="inline-block mr-1" size={14} /> {property.location}
           </p>
