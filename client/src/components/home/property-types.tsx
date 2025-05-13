@@ -57,8 +57,8 @@ export function PropertyTypes() {
             ))
           ) : (
             // Actual property type counts
-            DEFAULT_PROPERTY_TYPES.map((type) => {
-              const typeData = data?.find(item => item.propertyType === type);
+            propertyTypes.map((type) => {
+              const typeData = countsData?.find(item => item.propertyType === type);
               const count = typeData?.count || 0;
               
               return (

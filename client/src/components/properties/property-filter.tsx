@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Select, 
   SelectContent, 
@@ -12,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/lib/utils";
-import { DEFAULT_PROPERTY_TYPES } from "@shared/schema";
+import { DEFAULT_PROPERTY_TYPES, PropertyType } from "@shared/schema";
 import { Search, Filter, XCircle } from "lucide-react";
 
 interface PropertyFilterProps {
@@ -22,6 +23,15 @@ interface PropertyFilterProps {
 export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
   const [location, setLocation] = useLocation();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  
+  // Fetch property types from API
+  const { data: propertyTypesData, isLoading: propertyTypesLoading } = useQuery<PropertyType[]>({
+    queryKey: ['/api/property-types'],
+    enabled: true,
+  });
+  
+  // Get active property types or fall back to default types
+  const propertyTypes = propertyTypesData?.filter(pt => pt.active).map(pt => pt.name) || DEFAULT_PROPERTY_TYPES;
   
   const [filters, setFilters] = useState({
     type: "buy",
@@ -187,9 +197,13 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any type</SelectItem>
-                {DEFAULT_PROPERTY_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
-                ))}
+                {propertyTypesLoading ? (
+                  <SelectItem value="loading" disabled>Loading property types...</SelectItem>
+                ) : (
+                  propertyTypes.map((type) => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
