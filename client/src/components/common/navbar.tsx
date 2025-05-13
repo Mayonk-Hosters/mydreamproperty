@@ -41,6 +41,9 @@ export function Navbar() {
                   <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
                 </span>
               </a>
+              <Link href="/#services" className={`font-medium ${location === '/#services' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Property Services
+              </Link>
               <Link href="/contact" className={`font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                 Contact
               </Link>
@@ -92,6 +95,9 @@ export function Navbar() {
                   <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
                 </span>
               </a>
+              <Link href="/#services" className={`py-2 font-medium ${location === '/#services' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Property Services
+              </Link>
               <Link href="/contact" className={`py-2 font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                 Contact
               </Link>
