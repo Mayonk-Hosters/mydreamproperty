@@ -54,7 +54,7 @@ export function InquiryForm({ property, isOpen, onClose }: InquiryFormProps) {
       name: "",
       email: "",
       phone: "",
-      message: `I am interested in ${property.title} (${formatCurrency(property.price)})`,
+      message: `I am interested in ${property.title} ${property.propertyNumber ? `(${property.propertyNumber})` : ''} priced at ${formatCurrency(property.price)}`,
     },
   });
 
@@ -107,8 +107,15 @@ export function InquiryForm({ property, isOpen, onClose }: InquiryFormProps) {
         </DialogHeader>
 
         <div className="mb-4">
-          <h3 className="font-medium text-sm">{property.title}</h3>
-          <p className="text-primary font-semibold">
+          <div className="flex justify-between items-start">
+            <h3 className="font-medium text-sm">{property.title}</h3>
+            {property.propertyNumber && (
+              <div className="text-xs bg-primary/10 text-primary font-medium px-2 py-0.5 rounded">
+                {property.propertyNumber}
+              </div>
+            )}
+          </div>
+          <p className="text-primary font-semibold mt-1">
             {formatCurrency(property.price)}
             {property.type === "rent" && <span className="text-sm font-normal text-gray-500">/month</span>}
           </p>

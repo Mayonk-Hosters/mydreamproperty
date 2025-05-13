@@ -134,9 +134,16 @@ export default function AdminInquiriesPage() {
                         <TableCell>{inquiry.email}</TableCell>
                         <TableCell>
                           {property ? (
-                            <span className="max-w-[200px] truncate inline-block">
-                              {property.title}
-                            </span>
+                            <div>
+                              <span className="max-w-[200px] truncate inline-block">
+                                {property.title}
+                              </span>
+                              {property.propertyNumber && (
+                                <span className="text-xs bg-primary/10 text-primary font-medium px-2 py-0.5 rounded ml-2">
+                                  {property.propertyNumber}
+                                </span>
+                              )}
+                            </div>
                           ) : (
                             <span className="text-gray-400">Unknown Property</span>
                           )}
@@ -196,9 +203,16 @@ export default function AdminInquiriesPage() {
                 <Home className="text-gray-400 mt-0.5" size={20} />
                 <div>
                   <h3 className="font-semibold text-sm">Property</h3>
-                  <p className="text-lg">
-                    {properties?.find(p => p.id === viewInquiry.propertyId)?.title || 'Unknown Property'}
-                  </p>
+                  <div className="flex items-center">
+                    <p className="text-lg">
+                      {properties?.find(p => p.id === viewInquiry.propertyId)?.title || 'Unknown Property'}
+                    </p>
+                    {properties?.find(p => p.id === viewInquiry.propertyId)?.propertyNumber && (
+                      <span className="text-xs bg-primary/10 text-primary font-medium px-2 py-0.5 rounded ml-2">
+                        {properties?.find(p => p.id === viewInquiry.propertyId)?.propertyNumber}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               
