@@ -8,7 +8,7 @@ import { PropertyCard } from "@/components/properties/property-card";
 import { ArrowRight } from "lucide-react";
 import { Property } from "@shared/schema";
 
-type PropertyType = "buy" | "rent" | "sell";
+type PropertyType = "buy" | "rent";
 
 export function PropertyTabs() {
   const [activeTab, setActiveTab] = useState<PropertyType>("buy");
@@ -29,13 +29,7 @@ export function PropertyTabs() {
     queryKey: ['/api/properties?type=rent&featured=true'],
   });
   
-  // Query for properties with "sell" type
-  const { 
-    data: sellProperties, 
-    isLoading: isSellLoading 
-  } = useQuery<Property[]>({
-    queryKey: ['/api/properties?type=sell&featured=true'],
-  });
+  // We've removed the "sell" type query
 
   const handleTabChange = (value: string) => {
     setActiveTab(value as PropertyType);
@@ -49,10 +43,9 @@ export function PropertyTabs() {
         </div>
         
         <Tabs defaultValue="buy" value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full md:w-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full md:w-auto grid-cols-2 mb-8">
             <TabsTrigger value="buy" className="px-6 py-2">Buy</TabsTrigger>
             <TabsTrigger value="rent" className="px-6 py-2">Rent</TabsTrigger>
-            <TabsTrigger value="sell" className="px-6 py-2">Sell</TabsTrigger>
           </TabsList>
           
           <TabsContent value="buy" className="mt-0">
@@ -108,31 +101,7 @@ export function PropertyTabs() {
             </div>
           </TabsContent>
           
-          <TabsContent value="sell" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {isSellLoading ? (
-                Array(4).fill(0).map((_, index) => (
-                  <PropertySkeleton key={index} />
-                ))
-              ) : sellProperties && sellProperties.length > 0 ? (
-                sellProperties.slice(0, 8).map((property) => (
-                  <PropertyCard key={property.id} property={property} />
-                ))
-              ) : (
-                <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">No properties found for selling.</p>
-                </div>
-              )}
-            </div>
-            <div className="mt-8 flex justify-center">
-              <Link href="/properties?type=sell">
-                <Button variant="outline" className="group px-6 py-2 border border-primary text-primary font-medium rounded hover:bg-primary hover:text-white transition-all">
-                  View All Properties For Sell
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            </div>
-          </TabsContent>
+          {/* Sell tab content removed */}
         </Tabs>
       </div>
     </section>

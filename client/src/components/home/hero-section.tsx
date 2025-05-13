@@ -69,12 +69,11 @@ export function HeroSection() {
                     onValueChange={(value) => setSearchParams({...searchParams, type: value})}
                   >
                     <SelectTrigger className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary">
-                      <SelectValue placeholder="Buy, Sell or Rent" />
+                      <SelectValue placeholder="Buy or Rent" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="buy">Buy</SelectItem>
                       <SelectItem value="rent">Rent</SelectItem>
-                      <SelectItem value="sell">Sell</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
