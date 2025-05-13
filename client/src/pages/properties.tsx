@@ -8,12 +8,14 @@ import { PropertyFilter } from "@/components/properties/property-filter";
 import { PropertyCard } from "@/components/properties/property-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Property } from "@shared/schema";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export default function PropertiesPage() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { settings } = useSiteSettings();
+  const [activeTab, setActiveTab] = useState<"buy" | "rent">("buy");
   const [filters, setFilters] = useState({
     type: "buy",
     propertyType: "",
@@ -23,6 +25,16 @@ export default function PropertiesPage() {
     minBeds: 0,
     minBaths: 0,
   });
+  
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as "buy" | "rent");
+    setFilters(prev => ({ ...prev, type: value }));
+    
+    // Update URL when changing tabs
+    const params = new URLSearchParams(window.location.search);
+    params.set("type", value);
+    setLocation(`/properties?${params.toString()}`);
+  };
 
   // Parse URL query parameters
   useEffect(() => {
@@ -37,7 +49,10 @@ export default function PropertiesPage() {
 
     const updatedFilters = { ...filters };
     
-    if (type) updatedFilters.type = type;
+    if (type) {
+      updatedFilters.type = type;
+      setActiveTab(type as "buy" | "rent");
+    }
     if (propertyType) updatedFilters.propertyType = propertyType;
     if (locationParam) updatedFilters.location = locationParam;
     if (minPrice) updatedFilters.minPrice = parseInt(minPrice);
@@ -89,7 +104,17 @@ export default function PropertiesPage() {
       </Helmet>
 
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">{pageTitle}</h1>
+        <h1 className="text-3xl font-bold mb-4">{pageTitle}</h1>
+        
+        {/* Property Type Tabs */}
+        <div className="mb-8">
+          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <TabsList className="grid w-full sm:w-auto grid-cols-2 mb-4">
+              <TabsTrigger value="buy" className="px-6 py-2">Buy</TabsTrigger>
+              <TabsTrigger value="rent" className="px-6 py-2">Rent</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar Filters */}
