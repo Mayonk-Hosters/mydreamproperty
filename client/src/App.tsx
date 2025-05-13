@@ -23,6 +23,7 @@ import AdminLocationsPage from "@/pages/admin/locations";
 import AdminAgentsPage from "@/pages/admin/agents";
 import AdminAgentNewPage from "@/pages/admin/agents/new";
 import AdminAgentEditPage from "@/pages/admin/agents/edit";
+import AdminContactPage from "@/pages/admin/contact";
 
 function Router() {
   return (
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/admin/settings" component={AdminSettingsPage} />
       <Route path="/admin/users" component={AdminUsersPage} />
       <Route path="/admin/locations" component={AdminLocationsPage} />
+      <Route path="/admin/contact" component={AdminContactPage} />
       <Route path="/admin/agents" component={AdminAgentsPage} />
       <Route path="/admin/agents/new" component={AdminAgentNewPage} />
       <Route path="/admin/agents/edit/:id" component={AdminAgentEditPage} />
