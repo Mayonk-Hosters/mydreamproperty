@@ -1,34 +1,40 @@
 import { Star, StarHalf } from "lucide-react";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
-// Static testimonial data
-const testimonials = [
-  {
-    id: 1,
-    name: "David Wilson",
-    location: "Bought a home in Seattle",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60",
-    rating: 5,
-    text: "Working with RealEstate Pro was the best decision we made. Jessica understood exactly what we were looking for and found us our dream home within our budget."
-  },
-  {
-    id: 2,
-    name: "Emily Robertson",
-    location: "Sold a property in Portland",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60",
-    rating: 4.5,
-    text: "The team at RealEstate Pro helped me sell my property for more than I expected. Their marketing approach and negotiation skills were impressive."
-  },
-  {
-    id: 3,
-    name: "Thomas Anderson",
-    location: "Investor from Chicago",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60",
-    rating: 5,
-    text: "As a real estate investor, I need agents who understand the market. The team at RealEstate Pro always delivers high-quality investment opportunities."
-  }
-];
+// Testimonial data function that uses site name
+function getTestimonials(siteName: string) {
+  return [
+    {
+      id: 1,
+      name: "David Wilson",
+      location: "Bought a home in Seattle",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60",
+      rating: 5,
+      text: `Working with ${siteName} was the best decision we made. Jessica understood exactly what we were looking for and found us our dream home within our budget.`
+    },
+    {
+      id: 2,
+      name: "Emily Robertson",
+      location: "Sold a property in Portland",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60",
+      rating: 4.5,
+      text: `The team at ${siteName} helped me sell my property for more than I expected. Their marketing approach and negotiation skills were impressive.`
+    },
+    {
+      id: 3,
+      name: "Thomas Anderson",
+      location: "Investor from Chicago",
+      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60",
+      rating: 5,
+      text: `As a real estate investor, I need agents who understand the market. The team at ${siteName} always delivers high-quality investment opportunities.`
+    }
+  ];
+}
 
 export function Testimonials() {
+  const { settings } = useSiteSettings();
+  const testimonials = getTestimonials(settings.siteName);
+  
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);

@@ -14,9 +14,11 @@ import {
   PhoneCall
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function Sidebar() {
   const [location] = useLocation();
+  const { settings } = useSiteSettings();
   
   const sidebarItems = [
     {
@@ -94,7 +96,7 @@ export function Sidebar() {
       <div className="p-4 border-b border-gray-800">
         <div className="flex items-center space-x-2">
           <Home className="text-2xl text-secondary" />
-          <span className="font-bold text-xl">RealEstate Pro</span>
+          <span className="font-bold text-xl">{settings.siteName}</span>
         </div>
         <div className="text-xs text-gray-400 mt-1">Admin Dashboard</div>
       </div>
