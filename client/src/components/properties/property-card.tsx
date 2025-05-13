@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Heart, MapPin, Home, Droplets, Ruler, Eye } from "lucide-react";
+import { Heart, MapPin, Home, Droplets, Ruler, Eye, MessageSquare } from "lucide-react";
 import { Property } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
 import { PropertyModal } from "./property-modal";
+import { InquiryForm } from "./inquiry-form";
 
 interface PropertyCardProps {
   property: Property;
@@ -13,6 +14,7 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property }: PropertyCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   
   // Use the first image as the main display image
   const mainImage = Array.isArray(property.images) && property.images.length > 0 
@@ -24,6 +26,13 @@ export function PropertyCard({ property }: PropertyCardProps) {
     e.preventDefault();
     e.stopPropagation();
     setIsModalOpen(true);
+  };
+  
+  // Handler to open the inquiry form
+  const handleInquiry = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsInquiryOpen(true);
   };
   
   return (
@@ -64,12 +73,20 @@ export function PropertyCard({ property }: PropertyCardProps) {
             >
               <Eye size={16} />
             </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100"
+              title="Inquire about this property"
+              onClick={handleInquiry}
+            >
+              <MessageSquare size={16} />
+            </Button>
           </div>
           
-          {/* Quick view button overlay */}
+          {/* Overlay actions */}
           <div 
-            className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-            onClick={handleQuickView}
+            className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3"
           >
             <Button 
               variant="outline" 
@@ -77,6 +94,13 @@ export function PropertyCard({ property }: PropertyCardProps) {
               onClick={handleQuickView}
             >
               <Eye className="mr-2" size={16} /> Quick View
+            </Button>
+            <Button 
+              variant="outline" 
+              className="bg-white text-primary hover:bg-primary hover:text-white transition-colors"
+              onClick={handleInquiry}
+            >
+              <MessageSquare className="mr-2" size={16} /> Inquire
             </Button>
           </div>
         </div>
@@ -129,6 +153,13 @@ export function PropertyCard({ property }: PropertyCardProps) {
         propertyId={property.id} 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+      />
+      
+      {/* Property Inquiry Form */}
+      <InquiryForm
+        property={property}
+        isOpen={isInquiryOpen}
+        onClose={() => setIsInquiryOpen(false)}
       />
     </>
   );

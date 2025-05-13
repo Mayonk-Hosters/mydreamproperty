@@ -9,8 +9,10 @@ import {
   Calendar,
   Tag,
   X,
-  ArrowRight
+  ArrowRight,
+  MessageSquare
 } from "lucide-react";
+import { InquiryForm } from "./inquiry-form";
 import { 
   Carousel,
   CarouselContent,
@@ -38,6 +40,8 @@ interface PropertyModalProps {
 }
 
 export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProps) {
+  const [isInquiryFormOpen, setIsInquiryFormOpen] = useState(false);
+  
   const { data: property, isLoading, error } = useQuery<Property>({
     queryKey: [`/api/properties/${propertyId}`],
     enabled: isOpen && propertyId > 0,
@@ -93,115 +97,135 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="flex-row items-center justify-between space-y-0">
-          <DialogTitle className="text-2xl font-bold">{property.title}</DialogTitle>
-          <DialogClose onClick={onClose} />
-        </DialogHeader>
+    <>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="flex-row items-center justify-between space-y-0">
+            <DialogTitle className="text-2xl font-bold">{property.title}</DialogTitle>
+            <DialogClose onClick={onClose} />
+          </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Property Images */}
-          <div>
-            <Carousel className="mb-4">
-              <CarouselContent>
-                {propertyImages.map((image, index) => (
-                  <CarouselItem key={index}>
-                    <div className="h-[300px] overflow-hidden rounded-lg">
-                      <img 
-                        src={image} 
-                        alt={`${property.title} - Image ${index + 1}`} 
-                        className="w-full h-full object-cover" 
-                      />
-                    </div>
-                  </CarouselItem>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Property Images */}
+            <div>
+              <Carousel className="mb-4">
+                <CarouselContent>
+                  {propertyImages.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div className="h-[300px] overflow-hidden rounded-lg">
+                        <img 
+                          src={image} 
+                          alt={`${property.title} - Image ${index + 1}`} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-1" />
+                <CarouselNext className="right-1" />
+              </Carousel>
+
+              {/* Image Thumbnails */}
+              <div className="grid grid-cols-4 gap-2">
+                {propertyImages.slice(0, 4).map((image, index) => (
+                  <div 
+                    key={index} 
+                    className="h-16 overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
+                  >
+                    <img 
+                      src={image} 
+                      alt={`Thumbnail ${index + 1}`} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-1" />
-              <CarouselNext className="right-1" />
-            </Carousel>
-
-            {/* Image Thumbnails */}
-            <div className="grid grid-cols-4 gap-2">
-              {propertyImages.slice(0, 4).map((image, index) => (
-                <div 
-                  key={index} 
-                  className="h-16 overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
-                >
-                  <img 
-                    src={image} 
-                    alt={`Thumbnail ${index + 1}`} 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Property Details */}
-          <div>
-            <h3 className="text-2xl font-bold text-primary mb-2">
-              {formatCurrency(property.price)}
-              {property.type === "rent" && <span className="text-sm font-normal text-gray-500">/month</span>}
-            </h3>
-
-            <p className="text-gray-600 flex items-center mb-4">
-              <MapPin className="h-5 w-5 mr-1" /> {property.address}, {property.location}
-            </p>
-
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              <div className="flex flex-col items-center bg-gray-100 p-2 rounded-md">
-                <Home className="h-5 w-5 text-primary" /> 
-                <span className="mt-1 text-sm font-medium">{property.beds} Beds</span>
-              </div>
-              <div className="flex flex-col items-center bg-gray-100 p-2 rounded-md">
-                <Droplets className="h-5 w-5 text-primary" /> 
-                <span className="mt-1 text-sm font-medium">{property.baths} Baths</span>
-              </div>
-              <div className="flex flex-col items-center bg-gray-100 p-2 rounded-md">
-                <Ruler className="h-5 w-5 text-primary" /> 
-                <span className="mt-1 text-sm font-medium">{property.area} sq ft</span>
               </div>
             </div>
 
-            <div className="mb-4">
-              <h4 className="font-semibold mb-1">Property Details</h4>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                <div className="flex items-center">
-                  <Tag className="h-4 w-4 mr-1 text-primary" /> Type: {property.propertyType}
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1 text-primary" /> Status: {property.status}
-                </div>
-              </div>
-            </div>
+            {/* Property Details */}
+            <div>
+              <h3 className="text-2xl font-bold text-primary mb-2">
+                {formatCurrency(property.price)}
+                {property.type === "rent" && <span className="text-sm font-normal text-gray-500">/month</span>}
+              </h3>
 
-            <div className="mb-4">
-              <h4 className="font-semibold mb-1">Description</h4>
-              <p className="text-gray-700 text-sm">
-                {property.description.length > 200 
-                  ? `${property.description.substring(0, 200)}...` 
-                  : property.description}
+              <p className="text-gray-600 flex items-center mb-4">
+                <MapPin className="h-5 w-5 mr-1" /> {property.address}, {property.location}
               </p>
-            </div>
 
-            <div className="flex justify-between mt-2">
-              <Button 
-                variant="outline" 
-                onClick={onClose} 
-                className="flex items-center"
-              >
-                <X className="mr-1 h-4 w-4" /> Close
-              </Button>
-              <Link href={`/property/${property.id}`}>
-                <Button className="flex items-center">
-                  View Details <ArrowRight className="ml-1 h-4 w-4" />
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="flex flex-col items-center bg-gray-100 p-2 rounded-md">
+                  <Home className="h-5 w-5 text-primary" /> 
+                  <span className="mt-1 text-sm font-medium">{property.beds} Beds</span>
+                </div>
+                <div className="flex flex-col items-center bg-gray-100 p-2 rounded-md">
+                  <Droplets className="h-5 w-5 text-primary" /> 
+                  <span className="mt-1 text-sm font-medium">{property.baths} Baths</span>
+                </div>
+                <div className="flex flex-col items-center bg-gray-100 p-2 rounded-md">
+                  <Ruler className="h-5 w-5 text-primary" /> 
+                  <span className="mt-1 text-sm font-medium">{property.area} sq ft</span>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <h4 className="font-semibold mb-1">Property Details</h4>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                  <div className="flex items-center">
+                    <Tag className="h-4 w-4 mr-1 text-primary" /> Type: {property.propertyType}
+                  </div>
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1 text-primary" /> Status: {property.status}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <h4 className="font-semibold mb-1">Description</h4>
+                <p className="text-gray-700 text-sm">
+                  {property.description.length > 200 
+                    ? `${property.description.substring(0, 200)}...` 
+                    : property.description}
+                </p>
+              </div>
+
+              <div className="flex justify-between mt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={onClose} 
+                  className="flex items-center"
+                >
+                  <X className="mr-1 h-4 w-4" /> Close
                 </Button>
-              </Link>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline"
+                    className="flex items-center"
+                    onClick={() => setIsInquiryFormOpen(true)}
+                  >
+                    <MessageSquare className="mr-1 h-4 w-4" /> Inquire
+                  </Button>
+                  <Link href={`/property/${property.id}`}>
+                    <Button className="flex items-center">
+                      View Details <ArrowRight className="ml-1 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Property Inquiry Form */}
+      {property && (
+        <InquiryForm
+          property={property}
+          isOpen={isInquiryFormOpen}
+          onClose={() => setIsInquiryFormOpen(false)}
+        />
+      )}
+    </>
   );
 }

@@ -9,8 +9,10 @@ import {
   Share2,
   Calendar,
   Tag,
-  CheckCircle 
+  CheckCircle,
+  MessageSquare
 } from "lucide-react";
+import { InquiryForm } from "./inquiry-form";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -31,6 +33,7 @@ interface PropertyDetailProps {
 
 export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const [selectedTab, setSelectedTab] = useState("details");
+  const [isInquiryFormOpen, setIsInquiryFormOpen] = useState(false);
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
@@ -91,17 +94,8 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
     ? property.images 
     : [0, 1, 2, 3].map(i => getInteriorImage(i));
 
-  const handleContactFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setContactFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleContactFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Submit inquiry to the backend
-    // Implementation pending
-    alert("Your inquiry has been submitted!");
-  };
+  // No need for the handleContactFormChange and handleContactFormSubmit 
+  // functions as we'll be using the InquiryForm component instead
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -283,67 +277,27 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
         <div>
           <div className="bg-white shadow-md rounded-lg p-6 mb-6">
             <h3 className="text-xl font-semibold mb-4">Interested in this property?</h3>
-            <form onSubmit={handleContactFormSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                    value={contactFormData.name}
-                    onChange={handleContactFormChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                    value={contactFormData.email}
-                    onChange={handleContactFormChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                    value={contactFormData.phone}
-                    onChange={handleContactFormChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                    value={contactFormData.message}
-                    onChange={handleContactFormChange}
-                  ></textarea>
-                </div>
-                <Button type="submit" className="w-full">
-                  Send Inquiry
-                </Button>
+            <p className="text-gray-600 mb-4">
+              Send an inquiry to learn more about this property. Our agent will get back to you as soon as possible.
+            </p>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="font-medium">{property.title}</p>
+                <p className="text-primary font-semibold">
+                  {formatCurrency(property.price)}
+                  {property.type === "rent" && <span className="text-sm font-normal text-gray-500">/month</span>}
+                </p>
               </div>
-            </form>
+              <Button 
+                onClick={() => setIsInquiryFormOpen(true)}
+                className="flex items-center"
+              >
+                <MessageSquare className="mr-2 h-4 w-4" /> Send Inquiry
+              </Button>
+            </div>
+            <div className="text-gray-500 text-sm italic">
+              * By submitting an inquiry, you agree to our terms of service and privacy policy.
+            </div>
           </div>
           
           <div className="bg-white shadow-md rounded-lg p-6">
@@ -368,6 +322,15 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* Property Inquiry Form */}
+      {property && (
+        <InquiryForm
+          property={property}
+          isOpen={isInquiryFormOpen}
+          onClose={() => setIsInquiryFormOpen(false)}
+        />
+      )}
     </div>
   );
 }
