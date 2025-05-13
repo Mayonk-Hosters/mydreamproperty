@@ -86,6 +86,7 @@ export const inquiries = pgTable("inquiries", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
+  phone: text("phone"),
   message: text("message").notNull(),
   propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: 'cascade' }),
   userId: integer("user_id").references(() => users.id),
