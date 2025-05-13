@@ -9,6 +9,7 @@ import {
   insertDistrictSchema,
   insertTalukaSchema,
   insertTehsilSchema,
+  insertContactInfoSchema,
   PROPERTY_TYPES,
   PROPERTY_STATUS
 } from "@shared/schema";
@@ -823,6 +824,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting tehsil:", error);
       res.status(500).json({ message: "Failed to delete tehsil" });
+    }
+  });
+
+  // Contact Information API routes
+  app.get("/api/contact-info", async (_req, res) => {
+    try {
+      const contactInfo = await storage.getContactInfo();
+      if (!contactInfo) {
+        return res.status(404).json({ message: "Contact information not found" });
+      }
+      res.json(contactInfo);
+    } catch (error) {
+      console.error("Error fetching contact information:", error);
+      res.status(500).json({ message: "Failed to fetch contact information" });
+    }
+  });
+
+  app.post("/api/contact-info", async (req, res) => {
+    try {
+      // Check for admin authentication
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const contactData = insertContactInfoSchema.parse(req.body);
+      const updatedContact = await storage.updateContactInfo(contactData);
+      res.status(200).json(updatedContact);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating contact information:", error);
+      res.status(500).json({ message: "Failed to update contact information" });
     }
   });
 

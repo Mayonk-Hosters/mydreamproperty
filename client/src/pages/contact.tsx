@@ -16,8 +16,9 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -31,6 +32,23 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 export default function ContactPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Fetch contact information
+  const { data: contactInfo, isLoading: isLoadingContact } = useQuery({
+    queryKey: ['/api/contact-info'],
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/contact-info');
+        if (!response.ok) {
+          return null;
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('Failed to fetch contact info:', error);
+        return null;
+      }
+    }
+  });
   
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -90,55 +108,135 @@ export default function ContactPage() {
             <div className="bg-white p-6 rounded-lg shadow-md h-full">
               <h2 className="text-xl font-semibold mb-6">Contact Information</h2>
               
-              <div className="space-y-6">
-                <div className="flex items-start space-x-3">
-                  <MapPin className="h-5 w-5 text-primary mt-1" />
-                  <div>
-                    <h3 className="font-medium">Our Office</h3>
-                    <p className="text-gray-600">
-                      123 Real Estate Avenue<br />
-                      Mumbai, Maharashtra 400001<br />
-                      India
-                    </p>
+              {isLoadingContact ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : contactInfo ? (
+                <>
+                  <div className="space-y-6">
+                    <div className="flex items-start space-x-3">
+                      <MapPin className="h-5 w-5 text-primary mt-1" />
+                      <div>
+                        <h3 className="font-medium">Our Office</h3>
+                        <p className="text-gray-600 whitespace-pre-line">
+                          {contactInfo.address}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <Phone className="h-5 w-5 text-primary mt-1" />
+                      <div>
+                        <h3 className="font-medium">Phone</h3>
+                        <p className="text-gray-600">{contactInfo.phone1}</p>
+                        {contactInfo.phone2 && (
+                          <p className="text-gray-600">{contactInfo.phone2}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <Mail className="h-5 w-5 text-primary mt-1" />
+                      <div>
+                        <h3 className="font-medium">Email</h3>
+                        <p className="text-gray-600">{contactInfo.email1}</p>
+                        {contactInfo.email2 && (
+                          <p className="text-gray-600">{contactInfo.email2}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8">
+                    <h3 className="text-lg font-medium mb-3">Business Hours</h3>
+                    <ul className="space-y-1 text-gray-600">
+                      {contactInfo.businessHours && typeof contactInfo.businessHours === 'object' && (
+                        <>
+                          <li className="flex justify-between">
+                            <span>Monday:</span>
+                            <span>{contactInfo.businessHours.monday}</span>
+                          </li>
+                          <li className="flex justify-between">
+                            <span>Tuesday:</span>
+                            <span>{contactInfo.businessHours.tuesday}</span>
+                          </li>
+                          <li className="flex justify-between">
+                            <span>Wednesday:</span>
+                            <span>{contactInfo.businessHours.wednesday}</span>
+                          </li>
+                          <li className="flex justify-between">
+                            <span>Thursday:</span>
+                            <span>{contactInfo.businessHours.thursday}</span>
+                          </li>
+                          <li className="flex justify-between">
+                            <span>Friday:</span>
+                            <span>{contactInfo.businessHours.friday}</span>
+                          </li>
+                          <li className="flex justify-between">
+                            <span>Saturday:</span>
+                            <span>{contactInfo.businessHours.saturday}</span>
+                          </li>
+                          <li className="flex justify-between">
+                            <span>Sunday:</span>
+                            <span>{contactInfo.businessHours.sunday}</span>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-3">
+                    <MapPin className="h-5 w-5 text-primary mt-1" />
+                    <div>
+                      <h3 className="font-medium">Our Office</h3>
+                      <p className="text-gray-600">
+                        123 Real Estate Avenue<br />
+                        Mumbai, Maharashtra 400001<br />
+                        India
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <Phone className="h-5 w-5 text-primary mt-1" />
+                    <div>
+                      <h3 className="font-medium">Phone</h3>
+                      <p className="text-gray-600">+91 98765 43210</p>
+                      <p className="text-gray-600">+91 91234 56789</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3">
+                    <Mail className="h-5 w-5 text-primary mt-1" />
+                    <div>
+                      <h3 className="font-medium">Email</h3>
+                      <p className="text-gray-600">info@mydreamproperty.com</p>
+                      <p className="text-gray-600">sales@mydreamproperty.com</p>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8">
+                    <h3 className="text-lg font-medium mb-3">Business Hours</h3>
+                    <ul className="space-y-1 text-gray-600">
+                      <li className="flex justify-between">
+                        <span>Monday - Friday:</span>
+                        <span>9:00 AM - 6:00 PM</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Saturday:</span>
+                        <span>10:00 AM - 4:00 PM</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span>Sunday:</span>
+                        <span>Closed</span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
-                
-                <div className="flex items-start space-x-3">
-                  <Phone className="h-5 w-5 text-primary mt-1" />
-                  <div>
-                    <h3 className="font-medium">Phone</h3>
-                    <p className="text-gray-600">+91 98765 43210</p>
-                    <p className="text-gray-600">+91 91234 56789</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <Mail className="h-5 w-5 text-primary mt-1" />
-                  <div>
-                    <h3 className="font-medium">Email</h3>
-                    <p className="text-gray-600">info@mydreamproperty.com</p>
-                    <p className="text-gray-600">sales@mydreamproperty.com</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-8">
-                <h3 className="text-lg font-medium mb-3">Business Hours</h3>
-                <ul className="space-y-1 text-gray-600">
-                  <li className="flex justify-between">
-                    <span>Monday - Friday:</span>
-                    <span>9:00 AM - 6:00 PM</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Saturday:</span>
-                    <span>10:00 AM - 4:00 PM</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Sunday:</span>
-                    <span>Closed</span>
-                  </li>
-                </ul>
-              </div>
+              )}
             </div>
           </div>
           
@@ -223,14 +321,25 @@ export default function ContactPage() {
           </div>
         </div>
         
-        <div className="mt-12 max-w-6xl mx-auto">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-6">Find Us on the Map</h2>
-            <div className="aspect-video rounded-md bg-gray-200 flex items-center justify-center">
-              <p className="text-gray-600">Map goes here (Google Maps integration can be added)</p>
+        {contactInfo?.mapUrl && (
+          <div className="mt-12 max-w-6xl mx-auto">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-xl font-semibold mb-6">Find Us on the Map</h2>
+              <div className="aspect-video rounded-md overflow-hidden">
+                <iframe
+                  src={contactInfo.mapUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Google Maps"
+                ></iframe>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </Layout>
   );

@@ -980,6 +980,52 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(tehsils).where(eq(tehsils.id, id));
     return result.rowCount !== null && result.rowCount > 0;
   }
+
+  // Contact Information methods
+  async getContactInfo(): Promise<ContactInfo | undefined> {
+    try {
+      const [contact] = await db.select().from(contactInfo);
+      return contact;
+    } catch (error) {
+      console.error("Error getting contact information:", error);
+      return undefined;
+    }
+  }
+
+  async updateContactInfo(contactData: InsertContactInfo): Promise<ContactInfo> {
+    try {
+      // Check if contact info exists
+      const existingContact = await this.getContactInfo();
+      
+      if (existingContact) {
+        // Update existing record
+        const [updated] = await db
+          .update(contactInfo)
+          .set({
+            ...contactData,
+            updatedAt: new Date()
+          })
+          .where(eq(contactInfo.id, existingContact.id))
+          .returning();
+        
+        return updated;
+      } else {
+        // Create new record
+        const [newContact] = await db
+          .insert(contactInfo)
+          .values({
+            ...contactData,
+            updatedAt: new Date()
+          })
+          .returning();
+        
+        return newContact;
+      }
+    } catch (error) {
+      console.error("Error updating contact information:", error);
+      throw error;
+    }
+  }
 }
 
 // Uncomment the following line to use database storage
