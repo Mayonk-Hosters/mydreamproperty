@@ -37,8 +37,8 @@ import { Property, PROPERTY_TYPES, PROPERTY_STATUS } from "@shared/schema";
 export function PropertyTable() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all-statuses");
+  const [typeFilter, setTypeFilter] = useState("all-types");
   const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; propertyId: number | null }>({
     isOpen: false,
     propertyId: null,
@@ -58,8 +58,8 @@ export function PropertyTable() {
         property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         property.location.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesStatus = !statusFilter || property.status === statusFilter;
-      const matchesType = !typeFilter || property.propertyType === typeFilter;
+      const matchesStatus = !statusFilter || statusFilter === "all-statuses" || property.status === statusFilter;
+      const matchesType = !typeFilter || typeFilter === "all-types" || property.propertyType === typeFilter;
 
       return matchesSearch && matchesStatus && matchesType;
     });
@@ -123,7 +123,7 @@ export function PropertyTable() {
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all-statuses">All Statuses</SelectItem>
               {PROPERTY_STATUS.map(status => (
                 <SelectItem key={status} value={status}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -137,7 +137,7 @@ export function PropertyTable() {
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Types</SelectItem>
+              <SelectItem value="all-types">All Types</SelectItem>
               {PROPERTY_TYPES.map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
@@ -187,8 +187,8 @@ export function PropertyTable() {
                         size="sm"
                         onClick={() => {
                           setSearchQuery("");
-                          setStatusFilter("");
-                          setTypeFilter("");
+                          setStatusFilter("all-statuses");
+                          setTypeFilter("all-types");
                         }}
                       >
                         Clear Filters
