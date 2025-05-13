@@ -1137,9 +1137,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       */
       
+      console.log("Creating property type with data:", req.body);
       const propertyTypeData = insertPropertyTypeSchema.parse(req.body);
-      const newPropertyType = await storage.createPropertyType(propertyTypeData);
-      res.status(201).json(newPropertyType);
+      console.log("Parsed property type data:", propertyTypeData);
+      try {
+        const newPropertyType = await storage.createPropertyType(propertyTypeData);
+        console.log("Created new property type:", newPropertyType);
+        res.status(201).json(newPropertyType);
+      } catch (storageError) {
+        console.error("Error in storage.createPropertyType:", storageError);
+        throw storageError;
+      }
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({ 
