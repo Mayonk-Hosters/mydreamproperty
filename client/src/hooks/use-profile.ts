@@ -17,17 +17,8 @@ export function useProfile() {
   // Fetch current user profile
   const { data: profile, isLoading, error } = useQuery<User>({
     queryKey: ['/api/user/profile'],
-    onSuccess: (data) => {
-      // Profile loaded successfully
-      console.log("Profile loaded:", data);
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to load profile. Please try again.",
-        variant: "destructive"
-      });
-    }
+    retry: 1,
+    staleTime: 30000
   });
 
   // Update profile mutation
