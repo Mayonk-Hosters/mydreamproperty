@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Property, 
   PropertyType,
@@ -17,6 +17,7 @@ import {
   Taluka,
   Tehsil 
 } from "@shared/schema";
+import { PropertyTypeDialog } from "./property-type-dialog";
 
 import {
   Form,
@@ -438,7 +439,15 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                   <FormItem>
                     <FormLabel>Property Type</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        if (value === "add-new") {
+                          // Open the dialog to add a new property type
+                          setIsAddPropertyTypeOpen(true);
+                          // Don't change the field value
+                          return;
+                        }
+                        field.onChange(value);
+                      }}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -925,6 +934,60 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
           </Button>
         </div>
       </form>
+
+      {/* Dialog for Adding New Property Type */}
+      <Dialog open={isAddPropertyTypeOpen} onOpenChange={setIsAddPropertyTypeOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add New Property Type</DialogTitle>
+            <DialogDescription>
+              Create a new property type for listings. Click Save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="name" className="text-right text-sm font-medium">
+                Name
+              </label>
+              <Input
+                id="name"
+                value={newPropertyTypeName}
+                onChange={(e) => setNewPropertyTypeName(e.target.value)}
+                className="col-span-3"
+                placeholder="e.g., Apartment, Villa, Plot"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="active" className="text-right text-sm font-medium">
+                Active
+              </label>
+              <div className="flex items-center space-x-2 col-span-3">
+                <Switch
+                  id="active"
+                  checked={newPropertyTypeActive}
+                  onCheckedChange={setNewPropertyTypeActive}
+                />
+                <label htmlFor="active" className="text-sm text-muted-foreground">
+                  {newPropertyTypeActive ? 'Active' : 'Inactive'}
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddPropertyTypeOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreatePropertyType}
+              disabled={!newPropertyTypeName.trim() || createPropertyTypeMutation.isPending}
+            >
+              {createPropertyTypeMutation.isPending ? 'Creating...' : 'Create Property Type'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Form>
   );
 }
