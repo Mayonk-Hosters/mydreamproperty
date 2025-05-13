@@ -40,58 +40,52 @@ export async function sendInquiryNotification(inquiry: Inquiry, propertyTitle?: 
       return false;
     }
 
+    if (!apiInstance) {
+      console.error('Brevo API client is not initialized. Cannot send email notification.');
+      return false;
+    }
+
     // Prepare the email content
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    
-    // Set the email recipients
-    sendSmtpEmail.to = [{ email: process.env.ADMIN_EMAIL }];
-    
-    // Set the sender information (using the inquirer's email for reply-to)
-    sendSmtpEmail.sender = { 
-      name: 'My Dream Property', 
-      email: 'noreply@mydreamproperty.com'
+    const sendSmtpEmail = {
+      to: [{ email: process.env.ADMIN_EMAIL }],
+      sender: { 
+        name: 'My Dream Property', 
+        email: 'noreply@mydreamproperty.com'
+      },
+      replyTo: { email: inquiry.email, name: inquiry.name },
+      subject: `New Property Inquiry${propertyTitle ? ` for "${propertyTitle}"` : ''}`,
+      htmlContent: `
+        <html>
+          <body>
+            <h1>New Property Inquiry</h1>
+            ${propertyTitle ? `<p><strong>Property:</strong> ${propertyTitle}</p>` : ''}
+            <p><strong>From:</strong> ${inquiry.name}</p>
+            <p><strong>Email:</strong> ${inquiry.email}</p>
+            <p><strong>Phone:</strong> ${inquiry.phone || 'Not provided'}</p>
+            <p><strong>Message:</strong></p>
+            <p>${inquiry.message.replace(/\n/g, '<br>')}</p>
+            <p>You can respond directly to this email to contact the inquirer.</p>
+            <hr>
+            <p><small>This is an automated message from My Dream Property website.</small></p>
+          </body>
+        </html>
+      `,
+      textContent: `
+        New Property Inquiry
+        
+        ${propertyTitle ? `Property: ${propertyTitle}\n` : ''}
+        From: ${inquiry.name}
+        Email: ${inquiry.email}
+        Phone: ${inquiry.phone || 'Not provided'}
+        
+        Message:
+        ${inquiry.message}
+        
+        You can respond directly to this email to contact the inquirer.
+        
+        This is an automated message from My Dream Property website.
+      `
     };
-    
-    // Set reply-to to the inquirer's email so admin can reply directly
-    sendSmtpEmail.replyTo = { email: inquiry.email, name: inquiry.name };
-    
-    // Set email subject
-    sendSmtpEmail.subject = `New Property Inquiry${propertyTitle ? ` for "${propertyTitle}"` : ''}`;
-    
-    // Set HTML content
-    sendSmtpEmail.htmlContent = `
-      <html>
-        <body>
-          <h1>New Property Inquiry</h1>
-          ${propertyTitle ? `<p><strong>Property:</strong> ${propertyTitle}</p>` : ''}
-          <p><strong>From:</strong> ${inquiry.name}</p>
-          <p><strong>Email:</strong> ${inquiry.email}</p>
-          <p><strong>Phone:</strong> ${inquiry.phone || 'Not provided'}</p>
-          <p><strong>Message:</strong></p>
-          <p>${inquiry.message.replace(/\n/g, '<br>')}</p>
-          <p>You can respond directly to this email to contact the inquirer.</p>
-          <hr>
-          <p><small>This is an automated message from My Dream Property website.</small></p>
-        </body>
-      </html>
-    `;
-    
-    // Set plain text content as fallback
-    sendSmtpEmail.textContent = `
-      New Property Inquiry
-      
-      ${propertyTitle ? `Property: ${propertyTitle}\n` : ''}
-      From: ${inquiry.name}
-      Email: ${inquiry.email}
-      Phone: ${inquiry.phone || 'Not provided'}
-      
-      Message:
-      ${inquiry.message}
-      
-      You can respond directly to this email to contact the inquirer.
-      
-      This is an automated message from My Dream Property website.
-    `;
 
     // Send the email
     const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
