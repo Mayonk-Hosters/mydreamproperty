@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Building, Home, Store, Hotel } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { DEFAULT_PROPERTY_TYPES } from "@shared/schema";
+import { DEFAULT_PROPERTY_TYPES, PropertyType } from "@shared/schema";
 
 interface PropertyTypeCountResponse {
   propertyType: string;
@@ -9,9 +9,20 @@ interface PropertyTypeCountResponse {
 }
 
 export function PropertyTypes() {
-  const { data, isLoading } = useQuery<PropertyTypeCountResponse[]>({
+  // Fetch property types from API
+  const { data: propertyTypesData, isLoading: propertyTypesLoading } = useQuery<PropertyType[]>({
+    queryKey: ['/api/property-types'],
+    enabled: true,
+  });
+  
+  // Fetch property counts by type
+  const { data: countsData, isLoading: countsLoading } = useQuery<PropertyTypeCountResponse[]>({
     queryKey: ['/api/properties/counts-by-type'],
   });
+  
+  // Merge data to get active property types with their counts
+  const propertyTypes = propertyTypesData?.filter(pt => pt.active).map(pt => pt.name) || DEFAULT_PROPERTY_TYPES;
+  const isLoading = propertyTypesLoading || countsLoading;
 
   // Icons for each property type
   const getIconForType = (type: string) => {

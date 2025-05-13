@@ -8,6 +8,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Property, 
+  PropertyType,
   DEFAULT_PROPERTY_TYPES, 
   PROPERTY_STATUS, 
   insertPropertySchema,
@@ -94,6 +95,12 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   // Fetch agents
   const agentsQuery = useQuery({
     queryKey: ['/api/agents'],
+    enabled: true,
+  });
+  
+  // Fetch property types
+  const propertyTypesQuery = useQuery<PropertyType[]>({
+    queryKey: ['/api/property-types'],
     enabled: true,
   });
 
@@ -380,11 +387,30 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {DEFAULT_PROPERTY_TYPES.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
+                        {/* Show loading state if property types are being fetched */}
+                        {propertyTypesQuery.isLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading property types...
                           </SelectItem>
-                        ))}
+                        )}
+                        
+                        {/* Show available property types from API */}
+                        {propertyTypesQuery.data && propertyTypesQuery.data.length > 0 ? (
+                          propertyTypesQuery.data
+                            .filter(pt => pt.active)
+                            .map((type) => (
+                              <SelectItem key={type.id} value={type.name}>
+                                {type.name}
+                              </SelectItem>
+                            ))
+                        ) : (
+                          // Fallback to default property types if API returns no data
+                          DEFAULT_PROPERTY_TYPES.map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
