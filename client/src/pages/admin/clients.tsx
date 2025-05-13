@@ -254,22 +254,24 @@ export default function AdminClientsPage() {
   
   // Filter users based on search term and selected tab
   const filteredUsers = users
-    ? users.filter(user => {
-        const matchesSearch = 
-          user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (user.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-          (user.fullName?.toLowerCase() || "").includes(searchTerm.toLowerCase());
-        
-        if (selectedTab === "all") {
+    ? Array.isArray(users) 
+      ? users.filter(user => {
+          const matchesSearch = 
+            user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (user.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+            (user.fullName?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+          
+          if (selectedTab === "all") {
+            return matchesSearch;
+          } else if (selectedTab === "admins") {
+            return matchesSearch && user.isAdmin;
+          } else if (selectedTab === "clients") {
+            return matchesSearch && !user.isAdmin;
+          }
+          
           return matchesSearch;
-        } else if (selectedTab === "admins") {
-          return matchesSearch && user.isAdmin;
-        } else if (selectedTab === "clients") {
-          return matchesSearch && !user.isAdmin;
-        }
-        
-        return matchesSearch;
-      })
+        })
+      : []
     : [];
 
   return (
@@ -316,7 +318,7 @@ export default function AdminClientsPage() {
           
           {filteredUsers.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              {users?.length === 0 
+              {Array.isArray(users) && users.length === 0 
                 ? "No users found. Add your first user to get started."
                 : "No users matching your search criteria."}
             </div>
