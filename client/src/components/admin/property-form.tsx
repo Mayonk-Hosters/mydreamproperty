@@ -380,7 +380,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {PROPERTY_TYPES.map((type) => (
+                        {DEFAULT_PROPERTY_TYPES.map((type) => (
                           <SelectItem key={type} value={type}>
                             {type}
                           </SelectItem>

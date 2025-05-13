@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Building, Home, Store, Hotel } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { PROPERTY_TYPES } from "@shared/schema";
+import { DEFAULT_PROPERTY_TYPES } from "@shared/schema";
 
 interface PropertyTypeCountResponse {
   propertyType: string;
@@ -37,7 +37,7 @@ export function PropertyTypes() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {isLoading ? (
             // Loading placeholders
-            PROPERTY_TYPES.map((type, index) => (
+            DEFAULT_PROPERTY_TYPES.map((type, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all text-center animate-pulse">
                 <div className="mx-auto w-16 h-16 flex items-center justify-center bg-gray-200 rounded-full mb-4"></div>
                 <div className="h-6 bg-gray-200 rounded mb-1"></div>
@@ -46,7 +46,7 @@ export function PropertyTypes() {
             ))
           ) : (
             // Actual property type counts
-            PROPERTY_TYPES.map((type) => {
+            DEFAULT_PROPERTY_TYPES.map((type) => {
               const typeData = data?.find(item => item.propertyType === type);
               const count = typeData?.count || 0;
               

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/lib/utils";
-import { PROPERTY_TYPES } from "@shared/schema";
+import { DEFAULT_PROPERTY_TYPES } from "@shared/schema";
 import { Search, Filter, XCircle } from "lucide-react";
 
 interface PropertyFilterProps {
@@ -187,7 +187,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any type</SelectItem>
-                {PROPERTY_TYPES.map((type) => (
+                {DEFAULT_PROPERTY_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
               </SelectContent>
