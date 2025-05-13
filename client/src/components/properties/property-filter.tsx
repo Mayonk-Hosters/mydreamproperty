@@ -127,6 +127,30 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
     setShowMobileFilters(false);
   };
 
+  const handleLocationChange = (value: string) => {
+    setFilters({
+      ...filters,
+      location: value
+    });
+    
+    if (onFilterChange) {
+      onFilterChange({
+        ...filters,
+        location: value
+      });
+    }
+    
+    // If we have at least 3 characters, scroll to the results section after search is applied
+    if (value.trim().length >= 3) {
+      setTimeout(() => {
+        const resultsSection = document.getElementById('properties-results');
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 300);
+    }
+  };
+
   const resetFilters = () => {
     setFilters({
       type: "buy",
@@ -209,13 +233,28 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
           </div>
           
           <div>
-            <Label htmlFor="location">Location</Label>
-            <Input 
-              id="location"
-              placeholder="Enter city, neighborhood..." 
-              value={filters.location}
-              onChange={(e) => handleFilterChange("location", e.target.value)}
-            />
+            <Label htmlFor="location">Search by Area</Label>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                id="location"
+                className="pl-9"
+                placeholder="Enter area name, neighborhood..." 
+                value={filters.location}
+                onChange={(e) => handleFilterChange("location", e.target.value)}
+              />
+              {filters.location && (
+                <button 
+                  className="absolute right-2 top-2.5 text-muted-foreground hover:text-primary"
+                  onClick={() => handleFilterChange("location", "")}
+                >
+                  <XCircle className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Search for properties in specific areas
+            </p>
           </div>
         </div>
         
