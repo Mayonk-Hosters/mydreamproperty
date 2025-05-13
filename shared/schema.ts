@@ -218,6 +218,7 @@ export type InsertTehsil = z.infer<typeof insertTehsilSchema>;
 // Contact information schema
 export const contactInfo = pgTable("contact_info", {
   id: serial("id").primaryKey(),
+  siteName: text("site_name").notNull().default("My Dream Property"),
   address: text("address").notNull(),
   phone1: text("phone1").notNull(),
   phone2: text("phone2"),
