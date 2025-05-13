@@ -35,16 +35,8 @@ export function Navbar() {
                   Rent
                 </a>
               </Link>
-              <Link href="/properties?type=sell">
-                <a className={`font-medium ${location.includes('type=sell') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Sell
-                </a>
-              </Link>
-              <Link href="/agents">
-                <a className={`font-medium ${location === '/agents' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Agents
-                </a>
-              </Link>
+              {/* Sell link removed */}
+              {/* Agents link removed and moved to footer */}
               <Link href="/contact">
                 <a className={`font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Contact
@@ -94,16 +86,8 @@ export function Navbar() {
                   Rent
                 </a>
               </Link>
-              <Link href="/properties?type=sell">
-                <a className={`py-2 font-medium ${location.includes('type=sell') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Sell
-                </a>
-              </Link>
-              <Link href="/agents">
-                <a className={`py-2 font-medium ${location === '/agents' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                  Agents
-                </a>
-              </Link>
+              {/* Sell link removed */}
+              {/* Agents link removed and moved to footer */}
               <Link href="/contact">
                 <a className={`py-2 font-medium ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Contact
