@@ -23,16 +23,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, User, Mail, Camera } from "lucide-react";
+import { Loader2, User, Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { FileUpload } from "@/components/ui/file-upload";
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters").max(50, "Name must not exceed 50 characters").nullable().optional(),
   email: z.string().email("Please enter a valid email address").nullable().optional(),
-  profileImage: z.string().url("Please enter a valid image URL").nullable().optional(),
+  profileImage: z.any().optional(), // Will handle profile image as File object or data URL
 });
 
 export default function AdminProfilePage() {
@@ -40,13 +41,14 @@ export default function AdminProfilePage() {
   const { profile, isLoading: profileLoading, updateProfile, isPending } = useProfile();
   const { toast } = useToast();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       fullName: "",
       email: "",
-      profileImage: "",
+      profileImage: null,
     },
   });
 
@@ -60,7 +62,7 @@ export default function AdminProfilePage() {
       form.reset({
         fullName: typedProfile.fullName || "",
         email: typedProfile.email || "",
-        profileImage: typedProfile.profileImage || "",
+        profileImage: null, // We'll handle the image separately
       });
       setPreviewImage(typedProfile.profileImage || null);
     }
@@ -77,17 +79,21 @@ export default function AdminProfilePage() {
       updateData.email = data.email || undefined;
     }
     
-    if (data.profileImage !== undefined) {
-      updateData.profileImage = data.profileImage || undefined;
+    // If we have a preview image (data URL), use that for the profile image
+    if (previewImage) {
+      updateData.profileImage = previewImage;
     }
     
     updateProfile(updateData);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    form.setValue("profileImage", value);
-    setPreviewImage(value);
+  const handleFileChange = (file: File | null) => {
+    setProfileImageFile(file);
+    form.setValue("profileImage", file);
+  };
+
+  const handleFileDataUrlChange = (dataUrl: string | null) => {
+    setPreviewImage(dataUrl);
   };
 
   if (adminLoading || profileLoading) {
@@ -172,23 +178,18 @@ export default function AdminProfilePage() {
                   name="profileImage"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Profile Image URL</FormLabel>
+                      <FormLabel>Profile Image</FormLabel>
                       <FormControl>
-                        <div className="flex">
-                          <Camera className="text-gray-500 w-5 h-5 mr-2 mt-2.5" />
-                          <Input
-                            placeholder="https://example.com/image.jpg"
-                            {...field}
-                            value={field.value || ""}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleImageChange(e);
-                            }}
-                          />
-                        </div>
+                        <FileUpload 
+                          value={previewImage}
+                          onFileChange={handleFileChange}
+                          onFileDataUrl={handleFileDataUrlChange}
+                          accept="image/*"
+                          maxSizeMB={2}
+                        />
                       </FormControl>
                       <FormDescription>
-                        Enter a URL to your profile image
+                        Upload your profile image (Max size: 2MB)
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
