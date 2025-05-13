@@ -16,7 +16,7 @@ export default function AdminPropertyEditPage() {
   
   const { data: property, isLoading: propertyLoading, error } = useQuery<Property>({
     queryKey: [`/api/properties/${propertyId}`],
-    enabled: propertyId > 0 && isAdmin,
+    enabled: propertyId > 0 && isAdmin === true,
   });
   
   useEffect(() => {
