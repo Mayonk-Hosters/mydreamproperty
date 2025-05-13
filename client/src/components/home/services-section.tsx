@@ -1,9 +1,10 @@
-import { ArrowRight, Building2, BarChart2, Home, Key, FileText, Building } from "lucide-react";
+import { ArrowRight, Building2, BarChart2, Home, Key, FileText, Building, Calculator } from "lucide-react";
 import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { RentalAgreementService } from "./rental-agreement-service";
+import { AreaCalculator } from "./area-calculator";
 
 interface ServiceCardProps {
   title: string;
@@ -73,6 +74,12 @@ export function ServicesSection() {
       description: "Our legal experts assist with all property-related documentation and compliance requirements.",
       icon: <FileText className="h-6 w-6 text-primary" />,
       customContent: <RentalAgreementService />
+    },
+    {
+      title: "Area Calculator",
+      description: "Calculate property area in various units to help make informed real estate decisions.",
+      icon: <Calculator className="h-6 w-6 text-primary" />,
+      customContent: <AreaCalculator />
     },
     {
       title: "Rental Services",
