@@ -8,6 +8,7 @@ import { useSiteSettings } from "@/hooks/use-site-settings";
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { settings } = useSiteSettings();
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
@@ -18,7 +19,7 @@ export function Navbar() {
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2">
               <Home className="text-primary text-2xl" />
-              <span className="font-bold text-xl text-primary">RealEstate Pro</span>
+              <span className="font-bold text-xl text-primary">{settings.siteName}</span>
             </Link>
             <nav className="hidden md:flex space-x-6 ml-6">
               <Link href="/">
