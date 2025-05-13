@@ -3,14 +3,16 @@ import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { RentalAgreementService } from "./rental-agreement-service";
 
 interface ServiceCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
+  customContent?: React.ReactNode;
 }
 
-const ServiceCard = ({ title, description, icon }: ServiceCardProps) => (
+const ServiceCard = ({ title, description, icon, customContent }: ServiceCardProps) => (
   <Card className="h-full flex flex-col transition-all duration-300 hover:shadow-lg">
     <CardHeader>
       <div className="mb-2 p-2 bg-primary/10 w-12 h-12 flex items-center justify-center rounded-lg">
@@ -23,10 +25,12 @@ const ServiceCard = ({ title, description, icon }: ServiceCardProps) => (
       
     </CardContent>
     <CardFooter>
-      <Button variant="outline" className="w-full group">
-        Learn More 
-        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-      </Button>
+      {customContent ? customContent : (
+        <Button variant="outline" className="w-full group">
+          Learn More 
+          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+        </Button>
+      )}
     </CardFooter>
   </Card>
 );
@@ -34,10 +38,15 @@ const ServiceCard = ({ title, description, icon }: ServiceCardProps) => (
 export function ServicesSection() {
   const { toast } = useToast();
   
-  const handleServiceClick = useCallback(() => {
+  const handleServiceClick = useCallback((service: string) => {
+    if (service === "Legal Documentation") {
+      // The Legal Documentation service already has the rental agreement dialog
+      return;
+    }
+    
     toast({
       title: "Coming Soon",
-      description: "This service will be available shortly!",
+      description: `The ${service} service will be available shortly!`,
     });
   }, [toast]);
   
@@ -65,7 +74,8 @@ export function ServicesSection() {
     {
       title: "Legal Documentation",
       description: "Our legal experts assist with all property-related documentation and compliance requirements.",
-      icon: <FileText className="h-6 w-6 text-primary" />
+      icon: <FileText className="h-6 w-6 text-primary" />,
+      customContent: <RentalAgreementService />
     },
     {
       title: "Rental Services",
