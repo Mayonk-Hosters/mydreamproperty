@@ -209,5 +209,34 @@ export type Tehsil = typeof tehsils.$inferSelect;
 export type InsertTehsil = z.infer<typeof insertTehsilSchema>;
 
 // Property types constant
+// Contact information schema
+export const contactInfo = pgTable("contact_info", {
+  id: serial("id").primaryKey(),
+  address: text("address").notNull(),
+  phone1: text("phone1").notNull(),
+  phone2: text("phone2"),
+  email1: text("email1").notNull(),
+  email2: text("email2"),
+  businessHours: jsonb("business_hours").notNull().default({
+    monday: "9:00 AM - 6:00 PM",
+    tuesday: "9:00 AM - 6:00 PM",
+    wednesday: "9:00 AM - 6:00 PM",
+    thursday: "9:00 AM - 6:00 PM",
+    friday: "9:00 AM - 6:00 PM",
+    saturday: "10:00 AM - 4:00 PM",
+    sunday: "Closed"
+  }),
+  mapUrl: text("map_url"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type ContactInfo = typeof contactInfo.$inferSelect;
+export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
+
 export const PROPERTY_TYPES = ["House", "Apartment", "Villa", "Commercial"] as const;
 export const PROPERTY_STATUS = ["active", "pending", "sold"] as const;

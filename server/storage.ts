@@ -54,6 +54,10 @@ export interface IStorage {
   getInquiry(id: number): Promise<Inquiry | undefined>;
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
   
+  // Contact Information methods
+  getContactInfo(): Promise<ContactInfo | undefined>;
+  updateContactInfo(contactData: InsertContactInfo): Promise<ContactInfo>;
+  
   // India location methods
   // States
   getAllStates(): Promise<State[]>;
