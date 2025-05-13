@@ -6,7 +6,8 @@ import {
   states, type State, type InsertState,
   districts, type District, type InsertDistrict,
   talukas, type Taluka, type InsertTaluka,
-  tehsils, type Tehsil, type InsertTehsil
+  tehsils, type Tehsil, type InsertTehsil,
+  contactInfo, type ContactInfo, type InsertContactInfo
 } from "@shared/schema";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
@@ -100,6 +101,7 @@ export class MemStorage implements IStorage {
   private districts: Map<number, District>;
   private talukas: Map<number, Taluka>;
   private tehsils: Map<number, Tehsil>;
+  private contactInfo: ContactInfo | undefined;
   
   private userIdCounter: number;
   private propertyIdCounter: number;
@@ -596,6 +598,23 @@ export class MemStorage implements IStorage {
   
   async deleteTehsil(id: number): Promise<boolean> {
     return this.tehsils.delete(id);
+  }
+
+  // Contact Information methods
+  async getContactInfo(): Promise<ContactInfo | undefined> {
+    return this.contactInfo;
+  }
+
+  async updateContactInfo(contactData: InsertContactInfo): Promise<ContactInfo> {
+    const now = new Date();
+    const updatedContactInfo: ContactInfo = {
+      id: 1, // Always use a single record with ID 1
+      ...contactData,
+      updatedAt: now
+    };
+    
+    this.contactInfo = updatedContactInfo;
+    return updatedContactInfo;
   }
 }
 
