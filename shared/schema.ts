@@ -51,6 +51,7 @@ export const insertAgentSchema = createInsertSchema(agents).omit({
 // Property schema
 export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
+  propertyNumber: text("property_number").unique(), // Unique property number (MDP-XXX)
   title: text("title").notNull(),
   description: text("description").notNull(),
   price: real("price").notNull(),
