@@ -12,44 +12,41 @@ interface ServiceCardProps {
   customContent?: React.ReactNode;
 }
 
-const ServiceCard = ({ title, description, icon, customContent }: ServiceCardProps) => (
-  <Card className="h-full flex flex-col transition-all duration-300 hover:shadow-lg">
-    <CardHeader>
-      <div className="mb-2 p-2 bg-primary/10 w-12 h-12 flex items-center justify-center rounded-lg">
-        {icon}
-      </div>
-      <CardTitle className="text-xl">{title}</CardTitle>
-      <CardDescription className="text-base">{description}</CardDescription>
-    </CardHeader>
-    <CardContent className="flex-grow">
-      
-    </CardContent>
-    <CardFooter>
-      {customContent ? customContent : (
-        <Button variant="outline" className="w-full group">
-          Learn More 
-          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-        </Button>
-      )}
-    </CardFooter>
-  </Card>
-);
-
-export function ServicesSection() {
+const ServiceCard = ({ title, description, icon, customContent }: ServiceCardProps) => {
   const { toast } = useToast();
   
-  const handleServiceClick = useCallback((service: string) => {
-    if (service === "Legal Documentation") {
-      // The Legal Documentation service already has the rental agreement dialog
-      return;
-    }
-    
+  const handleLearnMore = useCallback(() => {
     toast({
       title: "Coming Soon",
-      description: `The ${service} service will be available shortly!`,
+      description: `More information about ${title} service will be available shortly!`,
     });
-  }, [toast]);
+  }, [toast, title]);
   
+  return (
+    <Card className="h-full flex flex-col transition-all duration-300 hover:shadow-lg">
+      <CardHeader>
+        <div className="mb-2 p-2 bg-primary/10 w-12 h-12 flex items-center justify-center rounded-lg">
+          {icon}
+        </div>
+        <CardTitle className="text-xl">{title}</CardTitle>
+        <CardDescription className="text-base">{description}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow">
+        
+      </CardContent>
+      <CardFooter>
+        {customContent ? customContent : (
+          <Button variant="outline" className="w-full group" onClick={handleLearnMore}>
+            Learn More 
+            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
+  );
+};
+
+export function ServicesSection() {
   const services = [
     {
       title: "Property Management",
@@ -95,13 +92,13 @@ export function ServicesSection() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service, index) => (
-          <div key={index} className="h-full" onClick={handleServiceClick}>
-            <ServiceCard 
-              title={service.title} 
-              description={service.description} 
-              icon={service.icon} 
-            />
-          </div>
+          <ServiceCard 
+            key={index}
+            title={service.title} 
+            description={service.description} 
+            icon={service.icon}
+            customContent={service.customContent}
+          />
         ))}
       </div>
     </section>
