@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { 
   Property, 
   PropertyType,
@@ -37,6 +37,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+import { Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getPropertyImage, getInteriorImage } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -67,6 +83,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
   const [selectedTalukaId, setSelectedTalukaId] = useState<string | null>(null);
   const [selectedTehsilId, setSelectedTehsilId] = useState<string | null>(null);
+  const [isAddPropertyTypeOpen, setIsAddPropertyTypeOpen] = useState(false);
+  const [newPropertyTypeName, setNewPropertyTypeName] = useState('');
+  const [newPropertyTypeActive, setNewPropertyTypeActive] = useState(true);
   
   // Fetch states
   const statesQuery = useQuery<State[]>({
@@ -103,6 +122,47 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     queryKey: ['/api/property-types'],
     enabled: true,
   });
+  
+  // Add a new property type
+  const createPropertyTypeMutation = useMutation({
+    mutationFn: async (propertyType: { name: string; active: boolean }) => {
+      const response = await apiRequest('POST', '/api/property-types', propertyType);
+      const data = await response.json();
+      return data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Property type created",
+        description: `Property type "${newPropertyTypeName}" has been created successfully.`,
+      });
+      setNewPropertyTypeName('');
+      setIsAddPropertyTypeOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/property-types'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to create property type",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handleCreatePropertyType = () => {
+    if (!newPropertyTypeName.trim()) {
+      toast({
+        title: "Error",
+        description: "Property type name cannot be empty",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    createPropertyTypeMutation.mutate({
+      name: newPropertyTypeName.trim(),
+      active: newPropertyTypeActive,
+    });
+  };
 
   // Set default values for a new property
   const defaultValues = property ? {
@@ -393,6 +453,16 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                             Loading property types...
                           </SelectItem>
                         )}
+                        
+                        {/* Add New Property Type option */}
+                        <SelectItem value="add-new">
+                          <div className="flex items-center text-primary">
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add New Property Type
+                          </div>
+                        </SelectItem>
+                        
+                        <div className="h-px bg-muted my-1" />
                         
                         {/* Show available property types from API */}
                         {propertyTypesQuery.data && propertyTypesQuery.data.length > 0 ? (
