@@ -98,91 +98,118 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   // functions as we'll be using the InquiryForm component instead
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-2">
           {/* Property Images Carousel */}
-          <Carousel className="mb-6">
+          <Carousel className="mb-4 sm:mb-6">
             <CarouselContent>
               {propertyImages.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="h-[400px] overflow-hidden rounded-lg">
+                  <div className="h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden rounded-lg">
                     <img 
                       src={image} 
                       alt={`${property.title} - Image ${index + 1}`} 
                       className="w-full h-full object-cover" 
+                      loading="lazy"
                     />
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-2" />
-            <CarouselNext className="right-2" />
+            <CarouselPrevious className="left-2 w-8 h-8 sm:w-10 sm:h-10" />
+            <CarouselNext className="right-2 w-8 h-8 sm:w-10 sm:h-10" />
           </Carousel>
           
-          {/* Image Thumbnails */}
-          <div className="grid grid-cols-4 gap-2 mb-6">
+          {/* Image Thumbnails - Hidden on mobile */}
+          <div className="hidden sm:grid grid-cols-4 gap-2 mb-6">
             {propertyImages.slice(0, 4).map((image, index) => (
               <div 
                 key={index} 
-                className="h-20 overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
+                className="h-16 sm:h-20 overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
               >
                 <img 
                   src={image} 
                   alt={`Thumbnail ${index + 1}`} 
                   className="w-full h-full object-cover" 
+                  loading="lazy"
                 />
               </div>
             ))}
+          </div>
+          
+          {/* Mobile Property Header */}
+          <div className="block lg:hidden bg-white rounded-lg shadow-sm p-4 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between mb-2">
+              <div className="flex items-center bg-primary/10 text-primary text-sm font-medium px-2 py-1 rounded">
+                <Tag className="h-3.5 w-3.5 mr-1" /> 
+                <span>{formatCurrency(property.price)}</span>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="icon" className="h-8 w-8">
+                  <Heart className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" className="h-8 w-8">
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <Button 
+              className="w-full text-sm h-9 mt-2"
+              onClick={() => setIsInquiryFormOpen(true)}
+            >
+              <MessageSquare className="mr-2 h-4 w-4" /> Contact Agent
+            </Button>
           </div>
           
           {/* Property Details */}
           <div>
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h1 className="text-3xl font-bold">{property.title}</h1>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">{property.title}</h1>
                 {property.propertyNumber && (
-                  <div className="inline-block bg-primary/10 text-primary font-medium px-3 py-1 rounded-md mt-2">
+                  <div className="inline-block bg-primary/10 text-primary text-xs sm:text-sm font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-md mt-2">
                     Property ID: {property.propertyNumber}
                   </div>
                 )}
               </div>
-              <div className="flex space-x-2">
+              <div className="hidden lg:flex space-x-2">
                 <Button variant="outline" size="icon">
-                  <Heart className="h-5 w-5" />
+                  <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
                 <Button variant="outline" size="icon">
-                  <Share2 className="h-5 w-5" />
+                  <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </div>
             </div>
             
-            <p className="text-gray-600 flex items-center mb-4 mt-4">
-              <MapPin className="h-5 w-5 mr-1" /> {property.address}, {property.location}
+            <p className="text-gray-600 text-sm sm:text-base flex items-center mt-2 sm:mt-4 mb-3 sm:mb-4">
+              <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-1 flex-shrink-0" /> 
+              <span>{property.address}, {property.location}</span>
             </p>
             
-            <div className="flex flex-wrap gap-4 mb-6">
-              <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md">
-                <Home className="h-5 w-5 mr-2 text-primary" /> 
+            <div className="flex flex-wrap gap-2 sm:gap-4 mb-4 sm:mb-6">
+              <div className="flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
+                <Home className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
                 <span>{property.beds} Beds</span>
               </div>
-              <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md">
-                <Droplets className="h-5 w-5 mr-2 text-primary" /> 
+              <div className="flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
+                <Droplets className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
                 <span>{property.baths} Baths</span>
               </div>
-              <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md">
-                <Ruler className="h-5 w-5 mr-2 text-primary" /> 
+              <div className="flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
+                <Ruler className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
                 <span>{property.area} sq ft</span>
               </div>
-              <div className="flex items-center bg-gray-100 px-4 py-2 rounded-md">
-                <Tag className="h-5 w-5 mr-2 text-primary" /> 
+              <div className="hidden lg:flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
+                <Tag className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
                 <span>{formatCurrency(property.price)}</span>
               </div>
             </div>
             
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-2">Description</h2>
-              <p className="text-gray-700">{property.description}</p>
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">Description</h2>
+              <p className="text-gray-700 text-sm sm:text-base">{property.description}</p>
             </div>
             
             <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-8">
