@@ -59,12 +59,15 @@ export const NeighborhoodComparisonProvider: React.FC<{ children: ReactNode }> =
   // Fetch comparison data when neighborhoods are selected
   const { data, isLoading, error } = useQuery<NeighborhoodWithMetrics[], Error>({
     queryKey: ['/api/neighborhoods/compare', selectedNeighborhoods],
-    queryFn: getQueryFn(),
-    enabled: selectedNeighborhoods.length > 0,
-    // Create query params with comma-separated IDs
-    meta: {
-      queryParams: { ids: selectedNeighborhoods.join(',') }
-    }
+    queryFn: async ({ queryKey }) => {
+      const url = `${queryKey[0]}?ids=${selectedNeighborhoods.join(',')}`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) {
+        throw new Error(`Error fetching comparison data: ${res.status}`);
+      }
+      return res.json();
+    },
+    enabled: selectedNeighborhoods.length > 0
   });
 
   const addNeighborhood = (id: number) => {
@@ -110,7 +113,13 @@ export const useNeighborhoodComparison = () => {
 export const useNeighborhoods = () => {
   return useQuery<Neighborhood[], Error>({
     queryKey: ['/api/neighborhoods'],
-    queryFn: getQueryFn()
+    queryFn: async ({ queryKey }) => {
+      const res = await fetch(queryKey[0] as string, { credentials: 'include' });
+      if (!res.ok) {
+        throw new Error(`Error fetching neighborhoods: ${res.status}`);
+      }
+      return res.json();
+    }
   });
 };
 
@@ -118,13 +127,25 @@ export const useNeighborhoods = () => {
 export const useNeighborhood = (id: number) => {
   const neighborhoodQuery = useQuery<Neighborhood, Error>({
     queryKey: [`/api/neighborhoods/${id}`],
-    queryFn: getQueryFn(),
+    queryFn: async ({ queryKey }) => {
+      const res = await fetch(queryKey[0] as string, { credentials: 'include' });
+      if (!res.ok) {
+        throw new Error(`Error fetching neighborhood: ${res.status}`);
+      }
+      return res.json();
+    },
     enabled: !!id
   });
 
   const metricsQuery = useQuery<NeighborhoodMetrics, Error>({
     queryKey: [`/api/neighborhoods/${id}/metrics`],
-    queryFn: getQueryFn(),
+    queryFn: async ({ queryKey }) => {
+      const res = await fetch(queryKey[0] as string, { credentials: 'include' });
+      if (!res.ok) {
+        throw new Error(`Error fetching neighborhood metrics: ${res.status}`);
+      }
+      return res.json();
+    },
     enabled: !!id
   });
 
