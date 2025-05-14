@@ -212,46 +212,54 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               <p className="text-gray-700 text-sm sm:text-base">{property.description}</p>
             </div>
             
-            <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-8">
+            <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-6 sm:mb-8">
               <TabsList className="grid grid-cols-3 w-full">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="features">Features</TabsTrigger>
-                <TabsTrigger value="location">Location</TabsTrigger>
+                <TabsTrigger value="details" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Details</TabsTrigger>
+                <TabsTrigger value="features" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Features</TabsTrigger>
+                <TabsTrigger value="location" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Location</TabsTrigger>
               </TabsList>
               <TabsContent value="details">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <h3 className="font-medium mb-2">Property Details</h3>
-                      <ul className="space-y-2">
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Property Type: {property.propertyType}
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Property Details</h3>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Property Type: {property.propertyType}</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Status: {property.status}
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Status: {property.status}</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Year Built: 2018
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Year Built: 2018</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Parking: 2 Spaces
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Parking: 2 Spaces</span>
                         </li>
                       </ul>
                     </div>
-                    <div>
-                      <h3 className="font-medium mb-2">Interior Details</h3>
-                      <ul className="space-y-2">
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Bedrooms: {property.beds}
+                    <div className="mt-3 sm:mt-0">
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Interior Details</h3>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Bedrooms: {property.beds}</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Bathrooms: {property.baths}
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Bathrooms: {property.baths}</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Total Area: {property.area} sq ft
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Total Area: {property.area} sq ft</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Appliances: Included
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Appliances: Included</span>
                         </li>
                       </ul>
                     </div>
@@ -259,39 +267,47 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 </div>
               </TabsContent>
               <TabsContent value="features">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <h3 className="font-medium mb-2">Interior Features</h3>
-                      <ul className="space-y-2">
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Central Air Conditioning
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Interior Features</h3>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Central Air Conditioning</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Heating System
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Heating System</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Modern Kitchen
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Modern Kitchen</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Hardwood Floors
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Hardwood Floors</span>
                         </li>
                       </ul>
                     </div>
-                    <div>
-                      <h3 className="font-medium mb-2">Exterior Features</h3>
-                      <ul className="space-y-2">
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Backyard
+                    <div className="mt-3 sm:mt-0">
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Exterior Features</h3>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Backyard</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Garage
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Garage</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Swimming Pool
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Swimming Pool</span>
                         </li>
-                        <li className="flex items-center text-sm">
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" /> Garden
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Garden</span>
                         </li>
                       </ul>
                     </div>
@@ -299,8 +315,15 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 </div>
               </TabsContent>
               <TabsContent value="location">
-                <div className="bg-gray-50 p-4 rounded-lg h-[300px] flex items-center justify-center">
-                  <p className="text-gray-500">Map view would be displayed here</p>
+                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg h-[250px] sm:h-[300px] flex items-center justify-center">
+                  <div className="text-center">
+                    <MapPin className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">Property Location</h3>
+                    <p className="text-gray-500 text-sm sm:text-base mb-3 sm:mb-4">
+                      {property.address}, {property.location}
+                    </p>
+                    <Button variant="outline" size="sm" className="text-sm">View on Maps</Button>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
@@ -309,14 +332,14 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
         
         {/* Contact Form and Agent Info */}
         <div>
-          <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-4">Interested in this property?</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white shadow-sm sm:shadow-md rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+            <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4">Interested in this property?</h3>
+            <p className="text-gray-600 text-sm sm:text-base mb-3 sm:mb-4">
               Send an inquiry to learn more about this property. Our agent will get back to you as soon as possible.
             </p>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4">
               <div>
-                <p className="font-medium">{property.title}</p>
+                <p className="font-medium text-sm sm:text-base">{property.title}</p>
                 <p className="text-primary font-semibold">
                   {formatCurrency(property.price)}
                   {property.type === "rent" && <span className="text-sm font-normal text-gray-500">/month</span>}
@@ -324,32 +347,33 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </div>
               <Button 
                 onClick={() => setIsInquiryFormOpen(true)}
-                className="flex items-center"
+                className="flex items-center mt-3 sm:mt-0 text-sm h-9 sm:h-10"
               >
-                <MessageSquare className="mr-2 h-4 w-4" /> Send Inquiry
+                <MessageSquare className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Send Inquiry
               </Button>
             </div>
-            <div className="text-gray-500 text-sm italic">
+            <div className="text-gray-500 text-xs sm:text-sm italic">
               * By submitting an inquiry, you agree to our terms of service and privacy policy.
             </div>
           </div>
           
-          <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="bg-white shadow-sm sm:shadow-md rounded-lg p-4 sm:p-6">
             <div className="text-center">
               <img 
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"
                 alt="Agent" 
-                className="w-20 h-20 rounded-full object-cover mx-auto mb-3" 
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover mx-auto mb-2 sm:mb-3"
+                loading="lazy"
               />
-              <h3 className="font-semibold text-lg">Jessica Williams</h3>
-              <p className="text-gray-600 text-sm mb-3">Luxury Property Specialist</p>
-              <div className="flex justify-center space-x-2 mb-4">
-                <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">120+ Deals</span>
-                <span className="px-2 py-1 bg-gray-100 rounded-full text-xs flex items-center">
+              <h3 className="font-semibold text-base sm:text-lg">Jessica Williams</h3>
+              <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3">Luxury Property Specialist</p>
+              <div className="flex justify-center space-x-2 mb-3 sm:mb-4">
+                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full text-xs">120+ Deals</span>
+                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full text-xs flex items-center">
                   4.9 <span className="text-yellow-400 ml-1">★</span>
                 </span>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full text-xs sm:text-sm h-8 sm:h-10">
                 View Agent Profile
               </Button>
             </div>
