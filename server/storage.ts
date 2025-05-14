@@ -1166,6 +1166,34 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(propertyTypes).where(eq(propertyTypes.id, id));
     return result.rowCount !== null && result.rowCount > 0;
   }
+
+  // Contact Messages methods
+  async getAllContactMessages(): Promise<ContactMessage[]> {
+    return await db.select().from(contactMessages).orderBy(desc(contactMessages.createdAt));
+  }
+  
+  async getContactMessage(id: number): Promise<ContactMessage | undefined> {
+    const [message] = await db.select().from(contactMessages).where(eq(contactMessages.id, id));
+    return message;
+  }
+  
+  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
+    const [newMessage] = await db.insert(contactMessages).values(message).returning();
+    return newMessage;
+  }
+  
+  async markContactMessageAsRead(id: number): Promise<boolean> {
+    const result = await db
+      .update(contactMessages)
+      .set({ isRead: true })
+      .where(eq(contactMessages.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+  
+  async deleteContactMessage(id: number): Promise<boolean> {
+    const result = await db.delete(contactMessages).where(eq(contactMessages.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
 }
 
 // Uncomment the following line to use database storage
