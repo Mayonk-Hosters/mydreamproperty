@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { useContactMessages, type ContactMessage } from "@/hooks/use-contact-messages";
 import { AdminLayout } from "@/components/admin/admin-layout";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Loader2, Trash2, Check, Mail, MailOpen } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useNotifications } from "@/hooks/use-notifications";
 
 export default function AdminContactMessagesPage() {
   const [selectedTab, setSelectedTab] = useState("all");
@@ -23,6 +24,13 @@ export default function AdminContactMessagesPage() {
     deleteMessage,
     isDeleting
   } = useContactMessages();
+  
+  const { markAllAsRead } = useNotifications();
+  
+  // Mark all messages as read when visiting this page
+  useEffect(() => {
+    markAllAsRead();
+  }, [markAllAsRead]);
   
   const unreadMessages = contactMessages.filter(msg => !msg.isRead);
   const readMessages = contactMessages.filter(msg => msg.isRead);

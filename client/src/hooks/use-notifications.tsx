@@ -1,4 +1,4 @@
-import { ContactMessage } from "@shared/schema";
+import { ContactMessage } from "@/hooks/use-contact-messages";
 import { createContext, ReactNode, useContext, useCallback, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "./use-toast";
@@ -23,31 +23,34 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     queryKey: ['/api/contact-messages'],
     refetchInterval: 60000, // Check every minute
     refetchOnWindowFocus: true,
-    staleTime: 30000,
-    onSuccess: (data) => {
-      if (!data) return;
+    staleTime: 30000
+  });
+
+  // Check for new messages when messages data changes
+  useEffect(() => {
+    if (!messages) return;
+    
+    // Check for new messages since last check
+    const newMessages = messages.filter(message => {
+      if (!message.createdAt) return false;
+      return new Date(message.createdAt) > lastCheckedTime && !message.isRead;
+    });
+    
+    // If new messages arrived, show a toast and update count
+    if (newMessages.length > 0 && newMessages.length !== unreadCount) {
+      setUnreadCount(newMessages.length);
+      setHasUnreadMessages(true);
       
-      // Check for new messages since last check
-      const newMessages = data.filter(message => 
-        new Date(message.createdAt!) > lastCheckedTime && !message.read
-      );
-      
-      // If new messages arrived, show a toast and update count
-      if (newMessages.length > 0 && newMessages.length !== unreadCount) {
-        setUnreadCount(newMessages.length);
-        setHasUnreadMessages(true);
-        
-        // Show toast only if this isn't the initial load
-        if (lastCheckedTime.getTime() > 0) {
-          toast({
-            title: "New Message Received",
-            description: `You have ${newMessages.length} new contact message${newMessages.length > 1 ? 's' : ''}`,
-            variant: "default",
-          });
-        }
+      // Show toast only if this isn't the initial load
+      if (lastCheckedTime.getTime() > 0) {
+        toast({
+          title: "New Message Received",
+          description: `You have ${newMessages.length} new contact message${newMessages.length > 1 ? 's' : ''}`,
+          variant: "default",
+        });
       }
     }
-  });
+  }, [messages, lastCheckedTime, toast, unreadCount]);
 
   // Check for new messages
   const checkForNewMessages = useCallback(() => {
