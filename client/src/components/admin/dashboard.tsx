@@ -92,34 +92,45 @@ export function Dashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {stats.map((stat, index) => (
-          <Card key={index} className="overflow-hidden hover:shadow-md transition-shadow">
-            <CardContent className="p-5">
+          <Card key={index} className="overflow-hidden hover:shadow-lg transition-all border-t-4 border-t-transparent hover:border-t-primary">
+            <CardContent className="p-6 min-h-[140px] flex flex-col justify-between">
               <div className="flex items-start">
-                <div className={`flex-shrink-0 rounded-full p-3.5 bg-opacity-15 ${
+                <div className={`flex-shrink-0 rounded-full p-4 bg-opacity-20 ${
                   index === 0 ? 'bg-primary' :
                   index === 1 ? 'bg-secondary' :
                   index === 2 ? 'bg-accent' : 'bg-green-100'
                 }`}>
-                  {stat.icon}
+                  {/* Increased icon size */}
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {stat.icon}
+                  </div>
                 </div>
-                <div className="ml-4 flex-1">
-                  <h2 className="text-sm font-medium text-gray-500 mb-1">{stat.title}</h2>
-                  <p className={`text-3xl font-bold tracking-tight ${
-                    // Adjust text size based on length of value
-                    String(stat.value).length > 8 ? 'text-2xl' : 
-                    String(stat.value).length > 5 ? 'text-2xl' : 'text-3xl'
-                  }`}>
-                    {stat.value}
-                  </p>
-                  <p className={`mt-1 text-xs flex items-center ${
-                    stat.trend === 'up' ? 'text-green-500' : 'text-red-500'
-                  }`}>
-                    {stat.trend === 'up' ? <ArrowUp className="mr-1 h-3 w-3" /> : <ArrowDown className="mr-1 h-3 w-3" />}
-                    {stat.change}% from last month
-                  </p>
+                <div className="ml-5 flex-1">
+                  <h2 className="text-sm font-medium text-gray-500 mb-1.5">{stat.title}</h2>
+                  {/* Dynamic content box with auto-sizing for different content lengths */}
+                  <div className={`min-h-[40px] flex items-center`}>
+                    <p className={`font-bold tracking-tight ${
+                      // More granular adaptive sizing based on content length
+                      String(stat.value).length > 12 ? 'text-xl' : 
+                      String(stat.value).length > 8 ? 'text-2xl' : 
+                      String(stat.value).length > 5 ? 'text-3xl' : 'text-4xl'
+                    }`}>
+                      {stat.value}
+                    </p>
+                  </div>
                 </div>
+              </div>
+              
+              {/* Trend indicator in its own row for more space */}
+              <div className="mt-3 pt-2 border-t border-gray-100">
+                <p className={`text-xs flex items-center ${
+                  stat.trend === 'up' ? 'text-green-500' : 'text-red-500'
+                }`}>
+                  {stat.trend === 'up' ? <ArrowUp className="mr-1 h-3 w-3" /> : <ArrowDown className="mr-1 h-3 w-3" />}
+                  {stat.change}% from last month
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -256,7 +267,9 @@ export function Dashboard() {
                         <p className="text-xs text-gray-500">{inquiry.email}</p>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-500">{new Date(inquiry.createdAt).toLocaleString()}</span>
+                    <span className="text-xs text-gray-500">
+                      {inquiry.createdAt ? new Date(inquiry.createdAt as string).toLocaleString() : 'Date not available'}
+                    </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">
                     Interested in: <span className="font-medium">Property #{inquiry.propertyId}</span>
