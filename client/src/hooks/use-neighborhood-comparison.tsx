@@ -1,0 +1,137 @@
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getQueryFn } from '@/lib/queryClient';
+
+export interface Neighborhood {
+  id: number;
+  name: string;
+  city: string;
+  description: string;
+  locationData: {
+    lat: number;
+    lng: number;
+    boundaries?: Array<{lat: number, lng: number}>;
+  };
+  createdAt: string;
+}
+
+export interface NeighborhoodMetrics {
+  id: number;
+  neighborhoodId: number;
+  avgPropertyPrice: number;
+  safetyScore: number;
+  walkabilityScore: number;
+  schoolsScore: number;
+  publicTransportScore: number;
+  diningScore: number;
+  entertainmentScore: number;
+  parkingScore: number;
+  noiseLevel: number;
+  schoolsCount: number;
+  parksCount: number;
+  restaurantsCount: number;
+  hospitalsCount: number;
+  shoppingCount: number;
+  groceryStoresCount: number;
+  gymsCount: number;
+  updatedAt: string;
+}
+
+export interface NeighborhoodWithMetrics extends Neighborhood {
+  metrics: NeighborhoodMetrics | null;
+}
+
+interface NeighborhoodComparisonContextProps {
+  selectedNeighborhoods: number[];
+  addNeighborhood: (id: number) => void;
+  removeNeighborhood: (id: number) => void;
+  clearNeighborhoods: () => void;
+  comparisonData: NeighborhoodWithMetrics[];
+  isLoading: boolean;
+  error: Error | null;
+}
+
+const NeighborhoodComparisonContext = createContext<NeighborhoodComparisonContextProps | undefined>(undefined);
+
+export const NeighborhoodComparisonProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<number[]>([]);
+
+  // Fetch comparison data when neighborhoods are selected
+  const { data, isLoading, error } = useQuery<NeighborhoodWithMetrics[], Error>({
+    queryKey: ['/api/neighborhoods/compare', selectedNeighborhoods],
+    queryFn: getQueryFn(),
+    enabled: selectedNeighborhoods.length > 0,
+    // Create query params with comma-separated IDs
+    meta: {
+      queryParams: { ids: selectedNeighborhoods.join(',') }
+    }
+  });
+
+  const addNeighborhood = (id: number) => {
+    if (!selectedNeighborhoods.includes(id) && selectedNeighborhoods.length < 5) {
+      setSelectedNeighborhoods([...selectedNeighborhoods, id]);
+    }
+  };
+
+  const removeNeighborhood = (id: number) => {
+    setSelectedNeighborhoods(selectedNeighborhoods.filter(nId => nId !== id));
+  };
+
+  const clearNeighborhoods = () => {
+    setSelectedNeighborhoods([]);
+  };
+
+  return (
+    <NeighborhoodComparisonContext.Provider
+      value={{
+        selectedNeighborhoods,
+        addNeighborhood,
+        removeNeighborhood,
+        clearNeighborhoods,
+        comparisonData: data || [],
+        isLoading,
+        error
+      }}
+    >
+      {children}
+    </NeighborhoodComparisonContext.Provider>
+  );
+};
+
+export const useNeighborhoodComparison = () => {
+  const context = useContext(NeighborhoodComparisonContext);
+  if (context === undefined) {
+    throw new Error('useNeighborhoodComparison must be used within a NeighborhoodComparisonProvider');
+  }
+  return context;
+};
+
+// Hook for fetching all neighborhoods
+export const useNeighborhoods = () => {
+  return useQuery<Neighborhood[], Error>({
+    queryKey: ['/api/neighborhoods'],
+    queryFn: getQueryFn()
+  });
+};
+
+// Hook for fetching a single neighborhood with metrics
+export const useNeighborhood = (id: number) => {
+  const neighborhoodQuery = useQuery<Neighborhood, Error>({
+    queryKey: [`/api/neighborhoods/${id}`],
+    queryFn: getQueryFn(),
+    enabled: !!id
+  });
+
+  const metricsQuery = useQuery<NeighborhoodMetrics, Error>({
+    queryKey: [`/api/neighborhoods/${id}/metrics`],
+    queryFn: getQueryFn(),
+    enabled: !!id
+  });
+
+  return {
+    neighborhood: neighborhoodQuery.data,
+    metrics: metricsQuery.data,
+    isLoading: neighborhoodQuery.isLoading || metricsQuery.isLoading,
+    error: neighborhoodQuery.error || metricsQuery.error
+  };
+};

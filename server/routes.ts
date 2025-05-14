@@ -20,6 +20,7 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth, hashPassword } from "./auth";
 import { sendInquiryNotification } from "./email-service";
+import neighborhoodsRoutes from "./routes/neighborhoods";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
@@ -1325,6 +1326,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete contact message" });
     }
   });
+
+  // Neighborhoods API
+  app.use('/api/neighborhoods', neighborhoodsRoutes);
 
   const httpServer = createServer(app);
   return httpServer;
