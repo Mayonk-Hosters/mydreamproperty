@@ -14,6 +14,7 @@ import PropertyPage from "@/pages/property";
 import AgentsPage from "@/pages/agents";
 import ContactPage from "@/pages/contact";
 import PropertyCalculatorPage from "@/pages/property-calculator";
+import NeighborhoodComparisonPage from "@/pages/neighborhood-comparison";
 
 // Admin Pages
 import AdminDashboardPage from "@/pages/admin/index";
@@ -43,6 +44,7 @@ function Router() {
       <Route path="/property/:id" component={PropertyPage} />
       <Route path="/agents" component={AgentsPage} />
       <Route path="/property-calculator" component={PropertyCalculatorPage} />
+      <Route path="/neighborhood-comparison" component={NeighborhoodComparisonPage} />
       <Route path="/contact" component={ContactPage} />
       
       {/* Admin pages */}

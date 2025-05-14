@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator } from "lucide-react";
+import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator, MapPin, BarChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useSiteSettings } from "@/hooks/use-site-settings";
@@ -75,6 +75,12 @@ export function Navbar() {
                   <DropdownMenuItem asChild>
                     <Link href="/#services" className="flex items-center w-full cursor-pointer">
                       All Services
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/neighborhood-comparison" className="flex items-center w-full cursor-pointer">
+                      <BarChart className="h-4 w-4 mr-2" />
+                      Neighborhood Comparison
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
@@ -165,6 +171,17 @@ export function Navbar() {
                 }`}
               >
                 Property Services
+              </Link>
+              <Link 
+                href="/neighborhood-comparison" 
+                className={`py-2 px-8 font-medium text-sm rounded-md flex items-center ${
+                  location === '/neighborhood-comparison' 
+                    ? 'text-primary bg-blue-50' 
+                    : 'text-gray-700 hover:text-primary hover:bg-gray-50'
+                }`}
+              >
+                <BarChart className="h-3.5 w-3.5 mr-2" />
+                Neighborhood Comparison
               </Link>
               <Link 
                 href="/property-calculator" 
