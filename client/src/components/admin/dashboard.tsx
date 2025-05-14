@@ -94,28 +94,44 @@ export function Dashboard() {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {stats.map((stat, index) => (
-          <Card key={index} className="overflow-hidden hover:shadow-lg transition-all border-t-4 border-t-transparent hover:border-t-primary">
-            <CardContent className="p-6 min-h-[140px] flex flex-col justify-between">
+          <Card 
+            key={index} 
+            className={`overflow-hidden hover:shadow-lg transition-all border-t-4 border-t-transparent hover:border-t-primary
+              ${index === 1 ? 'col-span-1 md:col-span-2' : ''}`}
+          >
+            <CardContent className={`p-6 min-h-[140px] flex flex-col justify-between
+              ${index === 1 ? 'pb-7' : ''}`}
+            >
               <div className="flex items-start">
                 <div className={`flex-shrink-0 rounded-full p-4 bg-opacity-20 ${
                   index === 0 ? 'bg-primary' :
                   index === 1 ? 'bg-secondary' :
                   index === 2 ? 'bg-accent' : 'bg-green-100'
                 }`}>
-                  {/* Increased icon size */}
-                  <div className="w-6 h-6 flex items-center justify-center">
+                  {/* Increased icon size - even larger for Total Sales */}
+                  <div className={`flex items-center justify-center ${
+                    index === 1 ? 'w-7 h-7' : 'w-6 h-6'
+                  }`}>
                     {stat.icon}
                   </div>
                 </div>
                 <div className="ml-5 flex-1">
-                  <h2 className="text-sm font-medium text-gray-500 mb-1.5">{stat.title}</h2>
+                  <h2 className={`font-medium mb-1.5 ${
+                    index === 1 ? 'text-base text-secondary-700' : 'text-sm text-gray-500'
+                  }`}>
+                    {stat.title}
+                  </h2>
                   {/* Dynamic content box with auto-sizing for different content lengths */}
-                  <div className={`min-h-[40px] flex items-center`}>
+                  <div className={`flex items-center ${
+                    index === 1 ? 'min-h-[50px]' : 'min-h-[40px]'
+                  }`}>
                     <p className={`font-bold tracking-tight ${
-                      // More granular adaptive sizing based on content length
-                      String(stat.value).length > 12 ? 'text-xl' : 
-                      String(stat.value).length > 8 ? 'text-2xl' : 
-                      String(stat.value).length > 5 ? 'text-3xl' : 'text-4xl'
+                      // Special handling for Total Sales (index 1)
+                      index === 1 
+                        ? 'text-2xl md:text-3xl text-secondary-700' 
+                        : String(stat.value).length > 12 ? 'text-xl' 
+                          : String(stat.value).length > 8 ? 'text-2xl' 
+                            : String(stat.value).length > 5 ? 'text-3xl' : 'text-4xl'
                     }`}>
                       {stat.value}
                     </p>
@@ -124,7 +140,9 @@ export function Dashboard() {
               </div>
               
               {/* Trend indicator in its own row for more space */}
-              <div className="mt-3 pt-2 border-t border-gray-100">
+              <div className={`mt-3 pt-2 border-t border-gray-100 ${
+                index === 1 ? 'flex justify-end' : ''
+              }`}>
                 <p className={`text-xs flex items-center ${
                   stat.trend === 'up' ? 'text-green-500' : 'text-red-500'
                 }`}>
@@ -268,7 +286,10 @@ export function Dashboard() {
                       </div>
                     </div>
                     <span className="text-xs text-gray-500">
-                      {inquiry.createdAt ? new Date(inquiry.createdAt as string).toLocaleString() : 'Date not available'}
+                      {inquiry.createdAt 
+                        ? new Date(inquiry.createdAt.toString()).toLocaleString()
+                        : 'Date not available'
+                      }
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">
