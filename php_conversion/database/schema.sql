@@ -13,6 +13,8 @@ DROP TABLE IF EXISTS tehsils;
 DROP TABLE IF EXISTS contact_info;
 DROP TABLE IF EXISTS property_types;
 DROP TABLE IF EXISTS contact_messages;
+DROP TABLE IF EXISTS neighborhoods;
+DROP TABLE IF EXISTS neighborhood_metrics;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Create users table
@@ -151,3 +153,46 @@ CREATE INDEX idx_inquiries_property ON inquiries(property_id);
 CREATE INDEX idx_districts_state ON districts(state_id);
 CREATE INDEX idx_talukas_district ON talukas(district_id);
 CREATE INDEX idx_tehsils_taluka ON tehsils(taluka_id);
+
+-- Create neighborhoods table
+CREATE TABLE neighborhoods (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  city VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  location_data JSON DEFAULT ('{}'),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_neighborhood_city (name, city)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Create neighborhood_metrics table
+CREATE TABLE neighborhood_metrics (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  neighborhood_id INT NOT NULL,
+  avg_property_price DECIMAL(12,2),
+  safety_score INT,
+  walkability_score INT,
+  schools_score INT,
+  public_transport_score INT,
+  dining_score INT,
+  entertainment_score INT,
+  parking_score INT,
+  noise_level INT,
+  schools_count INT DEFAULT 0,
+  parks_count INT DEFAULT 0,
+  restaurants_count INT DEFAULT 0,
+  hospitals_count INT DEFAULT 0,
+  shopping_count INT DEFAULT 0,
+  grocery_stores_count INT DEFAULT 0,
+  gyms_count INT DEFAULT 0,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (neighborhood_id) REFERENCES neighborhoods(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Add neighborhood foreign key to properties
+ALTER TABLE properties ADD COLUMN neighborhood_id INT NULL;
+ALTER TABLE properties ADD FOREIGN KEY (neighborhood_id) REFERENCES neighborhoods(id) ON DELETE SET NULL;
+
+-- Create indices for neighborhood tables
+CREATE INDEX idx_properties_neighborhood ON properties(neighborhood_id);
+CREATE INDEX idx_neighborhood_metrics ON neighborhood_metrics(neighborhood_id);
