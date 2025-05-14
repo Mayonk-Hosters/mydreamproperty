@@ -1229,9 +1229,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact Messages API Routes
   app.get("/api/contact-messages", async (req, res) => {
     try {
-      // Only admins should access contact messages
-      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-        return res.status(403).json({ message: "Forbidden" });
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
       }
       
       const messages = await storage.getAllContactMessages();
@@ -1244,9 +1247,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/contact-messages/:id", async (req, res) => {
     try {
-      // Only admins should access contact messages
-      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-        return res.status(403).json({ message: "Forbidden" });
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
       }
       
       const id = parseInt(req.params.id);
@@ -1268,9 +1274,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/contact-messages/:id/mark-read", async (req, res) => {
     try {
-      // Only admins should access contact messages
-      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-        return res.status(403).json({ message: "Forbidden" });
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
       }
       
       const id = parseInt(req.params.id);
@@ -1292,9 +1301,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/contact-messages/:id", async (req, res) => {
     try {
-      // Only admins should access contact messages
-      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-        return res.status(403).json({ message: "Forbidden" });
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
       }
       
       const id = parseInt(req.params.id);
