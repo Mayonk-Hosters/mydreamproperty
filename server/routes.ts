@@ -11,6 +11,7 @@ import {
   insertTehsilSchema,
   insertContactInfoSchema,
   insertPropertyTypeSchema,
+  insertContactMessageSchema,
   DEFAULT_PROPERTY_TYPES,
   PROPERTY_STATUS
 } from "@shared/schema";
@@ -35,16 +36,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form endpoint
   app.post("/api/contact", async (req, res) => {
     try {
-      const contactData = contactFormSchema.parse(req.body);
+      const contactData = insertContactMessageSchema.parse(req.body);
       
-      // Here you would typically send an email using a service like SendGrid
-      // For now, we'll just return success
-      console.log("Contact form submission:", contactData);
+      // Store the contact form submission in the database
+      const newMessage = await storage.createContactMessage(contactData);
+      console.log("Contact form submission saved:", newMessage);
       
-      // Simulate a slight delay for network effect
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Here you would typically also send an email notification to admin
       
-      res.status(200).json({ success: true, message: "Message received successfully" });
+      res.status(201).json({ success: true, message: "Message received successfully", id: newMessage.id });
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({ 
