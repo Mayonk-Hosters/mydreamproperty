@@ -8,7 +8,9 @@ import {
   talukas, type Taluka, type InsertTaluka,
   tehsils, type Tehsil, type InsertTehsil,
   contactInfo, type ContactInfo, type InsertContactInfo,
-  propertyTypes, type PropertyType, type InsertPropertyType
+  propertyTypes, type PropertyType, type InsertPropertyType,
+  contactMessages, type ContactMessage, type InsertContactMessage,
+  DEFAULT_PROPERTY_TYPES
 } from "@shared/schema";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
@@ -118,6 +120,7 @@ export class MemStorage implements IStorage {
   private tehsils: Map<number, Tehsil>;
   private contactInfo: ContactInfo | undefined;
   private propertyTypes: Map<number, PropertyType>;
+  private contactMessages: Map<number, ContactMessage>;
   
   private userIdCounter: number;
   private propertyIdCounter: number;
@@ -128,6 +131,7 @@ export class MemStorage implements IStorage {
   private talukaIdCounter: number;
   private tehsilIdCounter: number;
   private propertyTypeIdCounter: number;
+  private contactMessageIdCounter: number;
   
   public sessionStore: session.Store;
 
@@ -141,6 +145,7 @@ export class MemStorage implements IStorage {
     this.talukas = new Map();
     this.tehsils = new Map();
     this.propertyTypes = new Map();
+    this.contactMessages = new Map();
     
     this.userIdCounter = 1;
     this.propertyIdCounter = 1;
@@ -151,6 +156,7 @@ export class MemStorage implements IStorage {
     this.talukaIdCounter = 1;
     this.tehsilIdCounter = 1;
     this.propertyTypeIdCounter = 1;
+    this.contactMessageIdCounter = 1;
     
     // Initialize memory session store
     const MemoryStore = require('memorystore')(session);
@@ -642,6 +648,42 @@ export class MemStorage implements IStorage {
     
     this.contactInfo = updatedContactInfo;
     return updatedContactInfo;
+  }
+  
+  // Contact Messages methods
+  async getAllContactMessages(): Promise<ContactMessage[]> {
+    return Array.from(this.contactMessages.values());
+  }
+  
+  async getContactMessage(id: number): Promise<ContactMessage | undefined> {
+    return this.contactMessages.get(id);
+  }
+  
+  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
+    const id = this.contactMessageIdCounter++;
+    const now = new Date();
+    const newMessage: ContactMessage = {
+      ...message,
+      id,
+      isRead: false,
+      createdAt: now
+    };
+    
+    this.contactMessages.set(id, newMessage);
+    return newMessage;
+  }
+  
+  async markContactMessageAsRead(id: number): Promise<boolean> {
+    const message = this.contactMessages.get(id);
+    if (!message) return false;
+    
+    message.isRead = true;
+    this.contactMessages.set(id, message);
+    return true;
+  }
+  
+  async deleteContactMessage(id: number): Promise<boolean> {
+    return this.contactMessages.delete(id);
   }
   
   // Property Types methods
