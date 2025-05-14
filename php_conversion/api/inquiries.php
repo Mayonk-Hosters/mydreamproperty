@@ -155,8 +155,17 @@ else if ($method === 'POST' && $endpoint === '') {
                 'property_number' => $property->property_number
             ];
             
+            // Send email notification using email service
+            $email_service = new EmailService();
+            
+            // Prepare property data for email
+            $property_data = [
+                'title' => $property->title,
+                'propertyNumber' => $property->property_number
+            ];
+            
             // Send email notification
-            send_inquiry_notification($inquiry_data, $property->title);
+            $email_service->sendInquiryNotification($inquiry_data, $property_data);
             
             // Set response code - 201 created
             http_response_code(201);
