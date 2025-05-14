@@ -5,13 +5,24 @@
  * This file establishes connection to the MySQL database
  */
 
+// Include configuration
+require_once __DIR__ . '/../config.php';
+
 class Database {
-    // Database credentials - replace with actual values in production
-    private $host = "localhost";
-    private $db_name = "mydreamproperty";
-    private $username = "root";
-    private $password = "";
+    // Database credentials - loaded from config
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
     private $conn;
+
+    // Constructor
+    public function __construct() {
+        $this->host = defined('DB_HOST') ? DB_HOST : getenv('DB_HOST');
+        $this->db_name = defined('DB_NAME') ? DB_NAME : getenv('DB_NAME');
+        $this->username = defined('DB_USER') ? DB_USER : getenv('DB_USER');
+        $this->password = defined('DB_PASS') ? DB_PASS : getenv('DB_PASS');
+    }
 
     // Get database connection
     public function getConnection() {
