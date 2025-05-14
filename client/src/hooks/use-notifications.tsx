@@ -1,8 +1,7 @@
-import { createContext, ReactNode, useContext, useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
-import { ContactMessage } from "@/hooks/use-contact-messages";
+import { ContactMessage } from "@shared/schema";
+import { createContext, ReactNode, useContext, useCallback, useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useToast } from "./use-toast";
 
 type NotificationContextType = {
   hasUnreadMessages: boolean;
@@ -15,90 +14,71 @@ export const NotificationContext = createContext<NotificationContextType | null>
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  const [location] = useLocation();
-  const queryClient = useQueryClient();
   const [lastCheckedTime, setLastCheckedTime] = useState<Date>(new Date());
   const [unreadCount, setUnreadCount] = useState(0);
-  
-  // Get contact messages from cache or fetch them
-  const { data: messages } = useQuery<ContactMessage[]>({
-    queryKey: ["/api/contact-messages"],
-    // Don't show error toasts for this background query
-    onError: () => {},
-    // Disabled by default - we'll trigger this manually
-    enabled: false,
-  });
-  
-  // Check for new messages
-  const checkForNewMessages = async () => {
-    try {
-      // Refetch the latest messages
-      await queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
-      await queryClient.refetchQueries({ queryKey: ['/api/contact-messages'] });
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+
+  // Fetch contact messages
+  const { data: messages, refetch } = useQuery<ContactMessage[]>({
+    queryKey: ['/api/contact-messages'],
+    refetchInterval: 60000, // Check every minute
+    refetchOnWindowFocus: true,
+    staleTime: 30000,
+    onSuccess: (data) => {
+      if (!data) return;
       
-      // Get the latest data after refetch
-      const latestMessages = queryClient.getQueryData<ContactMessage[]>(["/api/contact-messages"]);
-      
-      if (!latestMessages) return;
-      
-      // Count unread messages
-      const unreadMessages = latestMessages.filter(msg => !msg.isRead);
-      setUnreadCount(unreadMessages.length);
-      
-      // Check for messages newer than last check time
-      const newMessages = latestMessages.filter(
-        msg => new Date(msg.createdAt) > lastCheckedTime && !msg.isRead
+      // Check for new messages since last check
+      const newMessages = data.filter(message => 
+        new Date(message.createdAt!) > lastCheckedTime && !message.read
       );
       
-      // Notify if there are new messages since last check
-      if (newMessages.length > 0 && !location.startsWith('/admin/contact-messages')) {
-        // Play notification sound
-        const audio = new Audio('/notification-sound.mp3');
-        audio.play().catch(err => console.log('Audio play failed:', err));
+      // If new messages arrived, show a toast and update count
+      if (newMessages.length > 0 && newMessages.length !== unreadCount) {
+        setUnreadCount(newMessages.length);
+        setHasUnreadMessages(true);
         
-        // Show toast notification
-        toast({
-          title: `${newMessages.length} New Contact ${newMessages.length === 1 ? 'Message' : 'Messages'}`,
-          description: "You have new unread contact messages",
-          variant: "default",
-        });
+        // Show toast only if this isn't the initial load
+        if (lastCheckedTime.getTime() > 0) {
+          toast({
+            title: "New Message Received",
+            description: `You have ${newMessages.length} new contact message${newMessages.length > 1 ? 's' : ''}`,
+            variant: "default",
+          });
+        }
       }
-      
-      // Update the last checked time
-      setLastCheckedTime(new Date());
-    } catch (error) {
-      console.error("Error checking for new messages:", error);
     }
-  };
-  
-  // Mark all as read (used when visiting the messages page)
-  const markAllAsRead = () => {
+  });
+
+  // Check for new messages
+  const checkForNewMessages = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  // Mark all messages as read
+  const markAllAsRead = useCallback(async () => {
+    if (!messages) return;
+    
+    // Update UI state immediately
+    setHasUnreadMessages(false);
     setUnreadCount(0);
-  };
-  
-  // Periodically check for new messages when admin is logged in
+    setLastCheckedTime(new Date());
+    
+    // For messages marked as read on the contact messages page,
+    // the API call would happen there, not here
+  }, [messages]);
+
+  // Check for new messages on mount
   useEffect(() => {
-    // Only run this for admin routes
-    if (!location.startsWith('/admin')) return;
-    
-    // Initial check
     checkForNewMessages();
-    
-    // Set up periodic checks every 30 seconds
-    const interval = setInterval(() => {
-      checkForNewMessages();
-    }, 30000); // check every 30 seconds
-    
-    return () => clearInterval(interval);
-  }, [location]);
-  
+  }, [checkForNewMessages]);
+
   return (
     <NotificationContext.Provider
       value={{
-        hasUnreadMessages: unreadCount > 0,
+        hasUnreadMessages,
         unreadCount,
         checkForNewMessages,
-        markAllAsRead,
+        markAllAsRead
       }}
     >
       {children}
