@@ -94,20 +94,26 @@ export function Dashboard() {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <div className={`flex-shrink-0 rounded-full p-3 bg-opacity-10 ${
+          <Card key={index} className="overflow-hidden hover:shadow-md transition-shadow">
+            <CardContent className="p-5">
+              <div className="flex items-start">
+                <div className={`flex-shrink-0 rounded-full p-3.5 bg-opacity-15 ${
                   index === 0 ? 'bg-primary' :
                   index === 1 ? 'bg-secondary' :
                   index === 2 ? 'bg-accent' : 'bg-green-100'
                 }`}>
                   {stat.icon}
                 </div>
-                <div className="ml-4">
-                  <h2 className="text-sm font-medium text-gray-500">{stat.title}</h2>
-                  <p className="text-2xl font-semibold">{stat.value}</p>
-                  <p className={`text-xs flex items-center ${
+                <div className="ml-4 flex-1">
+                  <h2 className="text-sm font-medium text-gray-500 mb-1">{stat.title}</h2>
+                  <p className={`text-3xl font-bold tracking-tight ${
+                    // Adjust text size based on length of value
+                    String(stat.value).length > 8 ? 'text-2xl' : 
+                    String(stat.value).length > 5 ? 'text-2xl' : 'text-3xl'
+                  }`}>
+                    {stat.value}
+                  </p>
+                  <p className={`mt-1 text-xs flex items-center ${
                     stat.trend === 'up' ? 'text-green-500' : 'text-red-500'
                   }`}>
                     {stat.trend === 'up' ? <ArrowUp className="mr-1 h-3 w-3" /> : <ArrowDown className="mr-1 h-3 w-3" />}
