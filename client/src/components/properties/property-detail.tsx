@@ -196,9 +196,22 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 <Button variant="outline" size="icon">
                   <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
-                <Button variant="outline" size="icon">
-                  <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-3" align="end">
+                    <div className="text-sm font-medium mb-3">Share this property</div>
+                    <ShareButtons 
+                      url={`/property/${property.id}`}
+                      title={`${property.title} | My Dream Property`}
+                      description={`${property.beds} bed, ${property.baths} bath ${property.propertyType} for ${property.type} at ${formatCurrency(property.price)} in ${property.location}`}
+                      iconSize={32}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             
