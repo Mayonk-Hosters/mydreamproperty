@@ -38,116 +38,132 @@ export function PropertyCard({ property }: PropertyCardProps) {
   return (
     <>
       <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
-        <div className="relative h-48 overflow-hidden group">
+        <div className="relative h-44 sm:h-48 overflow-hidden group">
           <img 
             src={mainImage} 
             alt={property.title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy" // Add lazy loading for better mobile performance
           />
-          {property.featured && (
-            <div className="absolute top-2 left-2">
-              <Badge className="bg-primary text-white">Featured</Badge>
-            </div>
-          )}
-          {property.status === "active" && property.createdAt && 
-           new Date(property.createdAt.toString()) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
-            <div className="absolute top-2 left-2">
-              <Badge className="bg-secondary text-white">New</Badge>
-            </div>
-          )}
-          <div className="absolute top-2 right-2 flex gap-2">
+          
+          {/* Status badges */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            {property.featured && (
+              <Badge className="bg-primary text-white text-xs">Featured</Badge>
+            )}
+            {property.status === "active" && property.createdAt && 
+            new Date(property.createdAt.toString()) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
+              <Badge className="bg-secondary text-white text-xs">New</Badge>
+            )}
+          </div>
+          
+          {/* Action buttons optimized for touch */}
+          <div className="absolute top-2 right-2 flex gap-1.5 sm:gap-2">
             <Button 
               size="icon" 
               variant="ghost" 
-              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100"
+              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100 h-7 w-7 sm:h-8 sm:w-8"
               title="Add to favorites"
+              aria-label="Add to favorites"
             >
-              <Heart size={16} />
+              <Heart size={15} />
             </Button>
             <Button 
               size="icon" 
               variant="ghost" 
-              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100"
+              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100 h-7 w-7 sm:h-8 sm:w-8"
               title="Quick view"
+              aria-label="Quick view"
               onClick={handleQuickView}
             >
-              <Eye size={16} />
+              <Eye size={15} />
             </Button>
             <Button 
               size="icon" 
               variant="ghost" 
-              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100"
+              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100 h-7 w-7 sm:h-8 sm:w-8"
               title="Inquire about this property"
+              aria-label="Inquire about this property"
               onClick={handleInquiry}
             >
-              <MessageSquare size={16} />
+              <MessageSquare size={15} />
             </Button>
           </div>
           
-          {/* Overlay actions */}
+          {/* Overlay actions - hidden on mobile, visible on desktop hover */}
           <div 
-            className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3"
+            className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center gap-3"
           >
             <Button 
               variant="outline" 
-              className="bg-white text-primary hover:bg-primary hover:text-white transition-colors"
+              className="bg-white text-primary hover:bg-primary hover:text-white transition-colors text-sm"
               onClick={handleQuickView}
             >
-              <Eye className="mr-2" size={16} /> Quick View
+              <Eye className="mr-2" size={15} /> Quick View
             </Button>
             <Button 
               variant="outline" 
-              className="bg-white text-primary hover:bg-primary hover:text-white transition-colors"
+              className="bg-white text-primary hover:bg-primary hover:text-white transition-colors text-sm"
               onClick={handleInquiry}
             >
-              <MessageSquare className="mr-2" size={16} /> Inquire
+              <MessageSquare className="mr-2" size={15} /> Inquire
             </Button>
           </div>
         </div>
-        <div className="p-4">
-          <div className="flex justify-between mb-2">
-            <span className="text-secondary font-semibold">{formatCurrency(property.price)}</span>
-            <span className="text-sm text-gray-500">
+        
+        <div className="p-3 sm:p-4">
+          <div className="flex justify-between mb-1 sm:mb-2">
+            <span className="text-secondary font-semibold text-sm sm:text-base">{formatCurrency(property.price)}</span>
+            <span className="text-xs sm:text-sm text-gray-500">
               {property.createdAt ? formatRelativeTime(property.createdAt.toString()) : ''}
             </span>
           </div>
+          
           <div className="flex justify-between items-center mb-1">
-            <h3 className="font-semibold text-lg hover:text-primary transition-colors">
+            <h3 className="font-semibold text-base sm:text-lg hover:text-primary transition-colors line-clamp-1">
               <Link href={`/property/${property.id}`}>
                 {property.title}
               </Link>
             </h3>
             {property.propertyNumber && (
-              <Badge variant="outline" className="text-xs bg-gray-50">
+              <Badge variant="outline" className="text-xs bg-gray-50 ml-1">
                 {property.propertyNumber}
               </Badge>
             )}
           </div>
-          <p className="text-gray-600 text-sm mb-2 flex items-center">
-            <MapPin className="inline-block mr-1" size={14} /> {property.location}
+          
+          <p className="text-gray-600 text-xs sm:text-sm mb-2 flex items-center line-clamp-1">
+            <MapPin className="inline-block mr-1 flex-shrink-0" size={12} /> 
+            <span>{property.location}</span>
           </p>
-          <div className="flex justify-between text-sm text-gray-500 mb-3">
+          
+          <div className="flex justify-between text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">
             <span className="flex items-center">
-              <Home className="mr-1" size={14} /> {property.beds} beds
+              <Home className="mr-1 flex-shrink-0" size={12} /> {property.beds} beds
             </span>
             <span className="flex items-center">
-              <Droplets className="mr-1" size={14} /> {property.baths} baths
+              <Droplets className="mr-1 flex-shrink-0" size={12} /> {property.baths} baths
             </span>
             <span className="flex items-center">
-              <Ruler className="mr-1" size={14} /> {property.area} sq ft
+              <Ruler className="mr-1 flex-shrink-0" size={12} /> {property.area} sq ft
             </span>
           </div>
-          <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
+          
+          <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
             <div className="flex items-center">
               <img 
                 src={`https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40`} 
                 alt="Agent" 
-                className="w-8 h-8 rounded-full object-cover"
+                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
+                loading="lazy"
               />
-              <span className="ml-2 text-sm">Agent Name</span>
+              <span className="ml-1.5 sm:ml-2 text-xs sm:text-sm">Agent Name</span>
             </div>
             <Link href={`/property/${property.id}`}>
-              <Button variant="link" className="text-primary text-sm font-medium hover:underline">
+              <Button 
+                variant="link" 
+                className="text-primary text-xs sm:text-sm font-medium hover:underline p-0 h-auto"
+              >
                 View Details
               </Button>
             </Link>

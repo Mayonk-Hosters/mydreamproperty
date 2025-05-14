@@ -169,37 +169,45 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 mb-6">
+    <div className="bg-white rounded-lg shadow p-4 sm:p-5 mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-lg">Filter Properties</h3>
+        <h3 className="font-semibold text-base sm:text-lg">Filter Properties</h3>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
             size="sm" 
-            className="md:hidden"
+            className="md:hidden h-9 text-xs sm:text-sm px-2 py-1"
             onClick={() => setShowMobileFilters(!showMobileFilters)}
           >
-            <Filter className="h-4 w-4 mr-1" /> Filters
+            <Filter className="h-3.5 w-3.5 mr-1" /> Filters
           </Button>
           <Button 
             variant="outline" 
             size="sm"
+            className="h-9 text-xs sm:text-sm px-2 py-1"
             onClick={resetFilters}
           >
-            <XCircle className="h-4 w-4 mr-1" /> Reset
+            <XCircle className="h-3.5 w-3.5 mr-1" /> Reset
           </Button>
         </div>
       </div>
       
-      <div className={`space-y-4 ${showMobileFilters ? 'block' : 'hidden md:block'}`}>
+      {/* Mobile filter panel with transition */}
+      <div 
+        className={`space-y-4 transition-all duration-300 ease-in-out overflow-hidden ${
+          showMobileFilters 
+            ? 'max-h-[2000px] opacity-100' 
+            : 'max-h-0 opacity-0 md:max-h-[2000px] md:opacity-100'
+        }`}
+      >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="type">Buy or Rent</Label>
+            <Label htmlFor="type" className="text-sm font-medium mb-1.5 inline-block">Buy or Rent</Label>
             <Select 
               value={filters.type}
               onValueChange={(value) => handleFilterChange("type", value)}
             >
-              <SelectTrigger id="type">
+              <SelectTrigger id="type" className="h-10">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
@@ -211,12 +219,12 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
           </div>
           
           <div>
-            <Label htmlFor="propertyType">Property Type</Label>
+            <Label htmlFor="propertyType" className="text-sm font-medium mb-1.5 inline-block">Property Type</Label>
             <Select 
               value={filters.propertyType}
               onValueChange={(value) => handleFilterChange("propertyType", value)}
             >
-              <SelectTrigger id="propertyType">
+              <SelectTrigger id="propertyType" className="h-10">
                 <SelectValue placeholder="Any type" />
               </SelectTrigger>
               <SelectContent>
@@ -233,12 +241,12 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
           </div>
           
           <div>
-            <Label htmlFor="location">Search by Area</Label>
+            <Label htmlFor="location" className="text-sm font-medium mb-1.5 inline-block">Search by Area</Label>
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
               <Input 
                 id="location"
-                className="pl-9"
+                className="pl-9 h-10"
                 placeholder="Enter area name, neighborhood..." 
                 value={filters.location}
                 onChange={(e) => handleLocationChange(e.target.value)}
@@ -251,7 +259,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               />
               {filters.location && (
                 <button 
-                  className="absolute right-2 top-2.5 text-muted-foreground hover:text-primary"
+                  className="absolute right-2 top-3 text-muted-foreground hover:text-primary"
                   onClick={() => handleLocationChange("")}
                   aria-label="Clear search"
                 >
@@ -274,12 +282,12 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label>Price Range</Label>
-              <span className="text-sm text-gray-500">
+              <Label className="text-sm font-medium">Price Range</Label>
+              <span className="text-xs sm:text-sm text-gray-500">
                 {formatCurrency(filters.minPrice)} - {formatCurrency(filters.maxPrice)}
               </span>
             </div>
-            <div className="pt-2 px-2">
+            <div className="pt-4 px-2">
               <Slider 
                 defaultValue={[filters.minPrice, filters.maxPrice]} 
                 min={0} 
@@ -290,18 +298,19 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                   handleFilterChange("minPrice", value[0]);
                   handleFilterChange("maxPrice", value[1]);
                 }}
+                className="touch-action-none" /* Ensures better touch handling on mobile */
               />
             </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="minBeds">Minimum Beds</Label>
+              <Label htmlFor="minBeds" className="text-sm font-medium mb-1.5 inline-block">Minimum Beds</Label>
               <Select 
                 value={filters.minBeds.toString()}
                 onValueChange={(value) => handleFilterChange("minBeds", parseInt(value))}
               >
-                <SelectTrigger id="minBeds">
+                <SelectTrigger id="minBeds" className="h-10">
                   <SelectValue placeholder="Any" />
                 </SelectTrigger>
                 <SelectContent>
@@ -316,12 +325,12 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
             </div>
             
             <div>
-              <Label htmlFor="minBaths">Minimum Baths</Label>
+              <Label htmlFor="minBaths" className="text-sm font-medium mb-1.5 inline-block">Minimum Baths</Label>
               <Select 
                 value={filters.minBaths.toString()}
                 onValueChange={(value) => handleFilterChange("minBaths", parseInt(value))}
               >
-                <SelectTrigger id="minBaths">
+                <SelectTrigger id="minBaths" className="h-10">
                   <SelectValue placeholder="Any" />
                 </SelectTrigger>
                 <SelectContent>
@@ -336,7 +345,10 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
           </div>
         </div>
         
-        <Button className="w-full" onClick={applyFilters}>
+        <Button 
+          className="w-full h-11 text-sm font-medium mt-2" 
+          onClick={applyFilters}
+        >
           <Search className="mr-2 h-4 w-4" /> Apply Filters
         </Button>
       </div>

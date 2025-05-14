@@ -62,16 +62,14 @@ export function PropertyTypes() {
               const count = typeData?.count || 0;
               
               return (
-                <Link key={type} href={`/properties?propertyType=${type}`}>
-                  <a className="block">
-                    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all text-center cursor-pointer">
-                      <div className="mx-auto w-16 h-16 flex items-center justify-center bg-primary-light bg-opacity-10 rounded-full mb-4">
-                        {getIconForType(type)}
-                      </div>
-                      <h3 className="text-lg font-semibold mb-1">{type}s</h3>
-                      <p className="text-gray-500 text-sm">{count} Properties</p>
+                <Link key={type} href={`/properties?propertyType=${type}`} className="block">
+                  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all text-center cursor-pointer">
+                    <div className="mx-auto w-16 h-16 flex items-center justify-center bg-primary-light bg-opacity-10 rounded-full mb-4">
+                      {getIconForType(type)}
                     </div>
-                  </a>
+                    <h3 className="text-lg font-semibold mb-1">{type}s</h3>
+                    <p className="text-gray-500 text-sm">{count} Properties</p>
+                  </div>
                 </Link>
               );
             })
