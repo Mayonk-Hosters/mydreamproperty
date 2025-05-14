@@ -155,16 +155,29 @@ export function Navbar() {
                 <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
               </span>
             </a>
-            <Link 
-              href="/#services" 
-              className={`py-2.5 px-2 font-medium text-base rounded-md ${
-                location === '/#services' 
-                  ? 'text-primary bg-blue-50' 
-                  : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-              }`}
-            >
-              Property Services
-            </Link>
+            <div className="flex flex-col">
+              <Link 
+                href="/#services" 
+                className={`py-2.5 px-2 font-medium text-base rounded-md ${
+                  location === '/#services' 
+                    ? 'text-primary bg-blue-50' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
+              >
+                Property Services
+              </Link>
+              <Link 
+                href="/property-calculator" 
+                className={`py-2 px-8 font-medium text-sm rounded-md flex items-center ${
+                  location === '/property-calculator' 
+                    ? 'text-primary bg-blue-50' 
+                    : 'text-gray-700 hover:text-primary hover:bg-gray-50'
+                }`}
+              >
+                <ArrowRightLeft className="h-3.5 w-3.5 mr-2" />
+                Property Calculators
+              </Link>
+            </div>
             <Link 
               href="/contact" 
               className={`py-2.5 px-2 font-medium text-base rounded-md ${
