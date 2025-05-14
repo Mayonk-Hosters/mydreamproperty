@@ -13,12 +13,15 @@ import {
   MapPin,
   PhoneCall
 } from "lucide-react";
+import { NotificationIndicator } from "./notification-indicator";
+import { useNotifications } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function Sidebar() {
   const [location] = useLocation();
   const { settings } = useSiteSettings();
+  const { hasUnreadMessages } = useNotifications();
   
   const sidebarItems = [
     {
@@ -52,7 +55,8 @@ export function Sidebar() {
         {
           name: "Contact Messages",
           path: "/admin/contact-messages",
-          icon: <PhoneCall className="h-5 w-5" />
+          icon: <PhoneCall className="h-5 w-5" />,
+          notification: true
         }
       ]
     },
