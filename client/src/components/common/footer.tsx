@@ -4,78 +4,118 @@ import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function Footer() {
   const { settings } = useSiteSettings();
+  const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-gray-900 text-white pt-12 pb-6">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          <div>
+    <footer className="bg-gray-900 text-white pt-10 pb-6">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          {/* Company Info */}
+          <div className="mb-6 sm:mb-0">
             <h3 className="text-xl font-bold mb-4 flex items-center">
-              <Home className="mr-2" /> {settings.siteName}
+              <Home className="mr-2 h-5 w-5" /> {settings.siteName}
             </h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-400 mb-4 text-sm md:text-base">
               Your trusted partner in finding the perfect property. With our expert agents and extensive listings, we make real estate simple.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-all">
-                <Facebook />
+              <a href="#" className="text-gray-400 hover:text-white transition-all p-1.5">
+                <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-all">
-                <Twitter />
+              <a href="#" className="text-gray-400 hover:text-white transition-all p-1.5">
+                <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-all">
-                <Instagram />
+              <a href="#" className="text-gray-400 hover:text-white transition-all p-1.5">
+                <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-all">
-                <Linkedin />
+              <a href="#" className="text-gray-400 hover:text-white transition-all p-1.5">
+                <Linkedin className="h-5 w-5" />
               </a>
             </div>
           </div>
           
-          <div>
+          {/* Quick Links */}
+          <div className="mb-6 sm:mb-0">
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link href="/"><a className="text-gray-400 hover:text-white transition-all">Home</a></Link></li>
-              <li><Link href="/properties"><a className="text-gray-400 hover:text-white transition-all">Properties</a></Link></li>
-              <li><Link href="/agents"><a className="text-gray-400 hover:text-white font-medium transition-all bg-gray-800 px-2 py-0.5 rounded">Find Agents</a></Link></li>
-              <li><Link href="/blog"><a className="text-gray-400 hover:text-white transition-all">Blog</a></Link></li>
-              <li><Link href="/about"><a className="text-gray-400 hover:text-white transition-all">About Us</a></Link></li>
-              <li><Link href="/contact"><a className="text-gray-400 hover:text-white transition-all">Contact</a></Link></li>
+              <li>
+                <Link href="/" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/properties" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  Properties
+                </Link>
+              </li>
+              <li>
+                <Link href="/agents" className="text-gray-400 hover:text-white font-medium transition-all bg-gray-800 px-2 py-1 rounded inline-block">
+                  Find Agents
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
           
-          <div>
+          {/* Properties */}
+          <div className="mb-6 sm:mb-0">
             <h3 className="text-lg font-semibold mb-4">Properties</h3>
             <ul className="space-y-2">
-              <li><Link href="/properties?type=sale"><a className="text-gray-400 hover:text-white transition-all">Houses for Sale</a></Link></li>
-              <li><Link href="/properties?type=rent"><a className="text-gray-400 hover:text-white transition-all">Apartments for Rent</a></Link></li>
-              <li><Link href="/properties?propertyType=Commercial"><a className="text-gray-400 hover:text-white transition-all">Commercial Properties</a></Link></li>
-              <li><Link href="/properties?propertyType=Villa"><a className="text-gray-400 hover:text-white transition-all">Luxury Villas</a></Link></li>
-              <li><Link href="/properties?status=new"><a className="text-gray-400 hover:text-white transition-all">New Developments</a></Link></li>
+              <li>
+                <Link href="/properties?type=buy" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  Houses for Sale
+                </Link>
+              </li>
+              <li>
+                <Link href="/properties?type=rent" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  Apartments for Rent
+                </Link>
+              </li>
+              <li>
+                <Link href="/properties?propertyType=Commercial" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  Commercial Properties
+                </Link>
+              </li>
+              <li>
+                <Link href="/properties?propertyType=Villa" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  Luxury Villas
+                </Link>
+              </li>
+              <li>
+                <Link href="/properties?status=new" className="text-gray-400 hover:text-white transition-all inline-block py-1">
+                  New Developments
+                </Link>
+              </li>
             </ul>
           </div>
           
+          {/* Contact */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <MapPin className="mt-1 mr-2 h-4 w-4" />
-                <span className="text-gray-400">123 Real Estate Ave, New York, NY 10001</span>
+                <MapPin className="mt-0.5 mr-2 h-4 w-4 flex-shrink-0" />
+                <span className="text-gray-400 text-sm md:text-base">123 Real Estate Ave, New York, NY 10001</span>
               </li>
               <li className="flex items-center">
-                <Phone className="mr-2 h-4 w-4" />
-                <span className="text-gray-400">(123) 456-7890</span>
+                <Phone className="mr-2 h-4 w-4 flex-shrink-0" />
+                <span className="text-gray-400 text-sm md:text-base">(123) 456-7890</span>
               </li>
               <li className="flex items-center">
-                <Mail className="mr-2 h-4 w-4" />
-                <span className="text-gray-400">info@realestatepro.com</span>
+                <Mail className="mr-2 h-4 w-4 flex-shrink-0" />
+                <span className="text-gray-400 text-sm md:text-base break-all">info@realestatepro.com</span>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} {settings.siteName}. All rights reserved.</p>
+        <div className="pt-6 border-t border-gray-800 text-center text-gray-500 text-xs sm:text-sm">
+          <p>&copy; {currentYear} {settings.siteName}. All rights reserved.</p>
+          <p className="mt-2 text-xs">Optimized for iOS and Android devices</p>
         </div>
       </div>
     </footer>
