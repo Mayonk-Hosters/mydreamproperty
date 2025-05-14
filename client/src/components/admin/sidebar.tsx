@@ -123,25 +123,24 @@ export function Sidebar() {
             </div>
             
             {group.items.map((item, itemIndex) => (
-              <Link key={itemIndex} href={item.path}>
-                <a className={cn(
-                  "block px-4 py-2 rounded mx-2 mb-1 flex items-center space-x-2",
-                  isActiveLink(item.path) 
-                    ? "text-white bg-primary-dark" 
-                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
-                )}>
-                  <div className="relative">
-                    {item.icon}
-                    {item.notification && hasUnreadMessages && (
-                      <span className="absolute -top-1 -right-1 h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                      </span>
-                    )}
+              <div key={itemIndex} className="relative">
+                <Link href={item.path}>
+                  <div className={cn(
+                    "block px-4 py-2 rounded mx-2 mb-1 flex items-center space-x-2 cursor-pointer",
+                    isActiveLink(item.path) 
+                      ? "text-white bg-primary-dark" 
+                      : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                  )}>
+                    <div className="relative">
+                      {item.icon}
+                      {item.notification && (
+                        <NotificationIndicator />
+                      )}
+                    </div>
+                    <span>{item.name}</span>
                   </div>
-                  <span>{item.name}</span>
-                </a>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         ))}
@@ -149,10 +148,10 @@ export function Sidebar() {
       
       <div className="absolute bottom-0 w-64 p-4 border-t border-gray-800">
         <Link href="/">
-          <a className="block px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-white rounded flex items-center space-x-2">
+          <div className="block px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-white rounded flex items-center space-x-2 cursor-pointer">
             <LogOut className="h-5 w-5" />
             <span>Exit Admin</span>
-          </a>
+          </div>
         </Link>
       </div>
     </aside>
