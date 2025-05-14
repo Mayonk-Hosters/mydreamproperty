@@ -35,7 +35,7 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calculator, ArrowRightLeft, Landmark } from "lucide-react";
-import MainLayout from "@/components/layouts/main-layout";
+import { Layout } from "@/components/common/layout";
 
 // Define conversion factors
 const CONVERSION_FACTORS = {
@@ -406,7 +406,7 @@ function EMICalculator() {
 
 export default function PropertyCalculatorPage() {
   return (
-    <MainLayout>
+    <Layout>
       <Helmet>
         <title>Property Calculators | My Dream Property</title>
         <meta 
@@ -444,6 +444,6 @@ export default function PropertyCalculatorPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
+    </Layout>
   );
 }

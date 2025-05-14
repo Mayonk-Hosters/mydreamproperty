@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Home, Menu, X, LogIn, User } from "lucide-react";
+import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,9 +67,24 @@ export function Navbar() {
                   <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
                 </span>
               </a>
-              <Link href="/#services" className={`font-medium text-sm lg:text-base ${location === '/#services' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
-                Property Services
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger className={`font-medium text-sm lg:text-base flex items-center ${location === '/#services' || location === '/property-calculator' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                  Property Services <ChevronDown className="h-4 w-4 ml-1" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/#services" className="flex items-center w-full cursor-pointer">
+                      All Services
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/property-calculator" className="flex items-center w-full cursor-pointer">
+                      <ArrowRightLeft className="h-4 w-4 mr-2" />
+                      Property Calculators
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Link href="/contact" className={`font-medium text-sm lg:text-base ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                 Contact
               </Link>
