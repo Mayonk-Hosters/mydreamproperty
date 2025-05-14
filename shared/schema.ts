@@ -66,6 +66,7 @@ export const properties = pgTable("properties", {
   featured: boolean("featured").default(false),
   images: jsonb("images").notNull().default([]),
   agentId: integer("agent_id").notNull().references(() => agents.id, { onDelete: 'cascade' }),
+  neighborhoodId: integer("neighborhood_id").references(() => neighborhoods.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -73,6 +74,10 @@ export const propertiesRelations = relations(properties, ({ one, many }) => ({
   agent: one(agents, {
     fields: [properties.agentId],
     references: [agents.id],
+  }),
+  neighborhood: one(neighborhoods, {
+    fields: [properties.neighborhoodId],
+    references: [neighborhoods.id],
   }),
   inquiries: many(inquiries),
 }));
@@ -282,6 +287,71 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
 
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+
+// Neighborhoods schema
+export const neighborhoods = pgTable("neighborhoods", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  city: text("city").notNull(),
+  description: text("description").notNull(),
+  locationData: jsonb("location_data").notNull().default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const neighborhoodMetrics = pgTable("neighborhood_metrics", {
+  id: serial("id").primaryKey(),
+  neighborhoodId: integer("neighborhood_id").notNull().references(() => neighborhoods.id, { onDelete: 'cascade' }),
+  // Metrics for comparing neighborhoods
+  avgPropertyPrice: decimal("avg_property_price", { precision: 12, scale: 2 }),
+  safetyScore: integer("safety_score"),
+  walkabilityScore: integer("walkability_score"),
+  schoolsScore: integer("schools_score"),
+  publicTransportScore: integer("public_transport_score"),
+  diningScore: integer("dining_score"),
+  entertainmentScore: integer("entertainment_score"),
+  parkingScore: integer("parking_score"),
+  noiseLevel: integer("noise_level"),
+  // Amenities counts
+  schoolsCount: integer("schools_count").default(0),
+  parksCount: integer("parks_count").default(0),
+  restaurantsCount: integer("restaurants_count").default(0),
+  hospitalsCount: integer("hospitals_count").default(0),
+  shoppingCount: integer("shopping_count").default(0),
+  groceryStoresCount: integer("grocery_stores_count").default(0),
+  gymsCount: integer("gyms_count").default(0),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const neighborhoodsRelations = relations(neighborhoods, ({ one, many }) => ({
+  metrics: one(neighborhoodMetrics, {
+    fields: [neighborhoods.id],
+    references: [neighborhoodMetrics.neighborhoodId],
+  }),
+  properties: many(properties),
+}));
+
+export const neighborhoodMetricsRelations = relations(neighborhoodMetrics, ({ one }) => ({
+  neighborhood: one(neighborhoods, {
+    fields: [neighborhoodMetrics.neighborhoodId],
+    references: [neighborhoods.id],
+  }),
+}));
+
+export const insertNeighborhoodSchema = createInsertSchema(neighborhoods).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertNeighborhoodMetricsSchema = createInsertSchema(neighborhoodMetrics).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type Neighborhood = typeof neighborhoods.$inferSelect;
+export type InsertNeighborhood = z.infer<typeof insertNeighborhoodSchema>;
+
+export type NeighborhoodMetrics = typeof neighborhoodMetrics.$inferSelect;
+export type InsertNeighborhoodMetrics = z.infer<typeof insertNeighborhoodMetricsSchema>;
 
 // Default property types (for backwards compatibility)
 export const DEFAULT_PROPERTY_TYPES = ["House", "Apartment", "Villa", "Commercial"];

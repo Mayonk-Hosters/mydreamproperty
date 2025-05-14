@@ -1,70 +1,79 @@
 <?php
 /**
- * Authentication Helper Functions
+ * Authentication Check Functions
  * 
- * Provides helper functions for user authentication and authorization
+ * This file provides authentication-related utility functions
  */
 
 /**
- * Check if a user is logged in
+ * Check if a user is authenticated
  * 
- * @return bool True if logged in, false otherwise
+ * @return bool True if authenticated, false otherwise
  */
-function is_logged_in() {
+function is_authenticated() {
     return isset($_SESSION['user_id']);
 }
 
 /**
- * Check if a user is an admin
+ * Check if the authenticated user is an admin
  * 
  * @return bool True if admin, false otherwise
  */
 function is_admin() {
-    // For development mode, skip admin check
-    if (getenv('APP_ENV') === 'development') {
-        return true;
+    if (!is_authenticated()) {
+        return false;
     }
     
-    return is_logged_in() && isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-}
-
-/**
- * Get current user ID
- * 
- * @return int|null User ID if logged in, null otherwise
- */
-function get_current_user_id() {
-    return is_logged_in() ? $_SESSION['user_id'] : null;
-}
-
-/**
- * Require login for API endpoint
- * 
- * If not logged in, sends 401 response and exits
- */
-function require_login() {
-    if (!is_logged_in()) {
-        // Set response code - 401 Unauthorized
-        http_response_code(401);
-        
-        // Tell the user
-        echo json_encode(array("message" => "You must be logged in to access this resource."));
-        exit;
+    // Get user from database
+    require_once __DIR__ . '/../config/database.php';
+    require_once __DIR__ . '/../models/User.php';
+    
+    $database = new Database();
+    $db = $database->getConnection();
+    
+    $user = new User($db);
+    if ($user->getById($_SESSION['user_id'])) {
+        return (bool)$user->is_admin;
     }
+    
+    return false;
 }
 
 /**
- * Require admin for API endpoint
+ * Get the current authenticated user
  * 
- * If not admin, sends 403 response and exits
+ * @return User|false User object if authenticated, false otherwise
  */
-function require_admin() {
-    if (!is_admin()) {
-        // Set response code - 403 Forbidden
-        http_response_code(403);
-        
-        // Tell the user
-        echo json_encode(array("message" => "You must be an admin to access this resource."));
+function get_current_user() {
+    if (!is_authenticated()) {
+        return false;
+    }
+    
+    // Get user from database
+    require_once __DIR__ . '/../config/database.php';
+    require_once __DIR__ . '/../models/User.php';
+    
+    $database = new Database();
+    $db = $database->getConnection();
+    
+    $user = new User($db);
+    if ($user->getById($_SESSION['user_id'])) {
+        return $user;
+    }
+    
+    return false;
+}
+
+/**
+ * CORS preflight request handler
+ * 
+ * This function handles OPTIONS requests for CORS preflight
+ */
+function handle_preflight() {
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
         exit;
     }
 }

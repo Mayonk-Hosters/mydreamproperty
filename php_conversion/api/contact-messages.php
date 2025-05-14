@@ -31,11 +31,8 @@ $contactMessage = new ContactMessage($db);
 // Get the HTTP method
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Handle different endpoints
-$endpoint = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
-
 // Get all contact messages - requires admin
-if ($method === 'GET' && $endpoint === '' && is_admin()) {
+if ($method === 'GET' && empty($_GET['id']) && empty($_GET['count']) && is_admin()) {
     // Get contact messages
     $stmt = $contactMessage->getAll();
     $num = $stmt->rowCount();
@@ -43,57 +40,70 @@ if ($method === 'GET' && $endpoint === '' && is_admin()) {
     // Check if more than 0 record found
     if ($num > 0) {
         // Contact messages array
-        $messages_arr = array();
+        $contact_messages_arr = array();
         
         // Retrieve table contents
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             // Extract row
             extract($row);
             
-            // Create message item
-            $message_item = array(
+            // Create contact message item
+            $contact_message_item = array(
                 "id" => $id,
                 "name" => $name,
                 "email" => $email,
+                "phone" => $phone,
                 "subject" => $subject,
                 "message" => $message,
-                "isRead" => (bool)$is_read,
+                "isRead" => (int)$is_read,
                 "createdAt" => $created_at
             );
             
-            // Push to messages array
-            array_push($messages_arr, $message_item);
+            // Push to contact messages array
+            array_push($contact_messages_arr, $contact_message_item);
         }
         
         // Set response code - 200 OK
         http_response_code(200);
         
-        // Show messages data
-        echo json_encode($messages_arr);
+        // Show contact messages data
+        echo json_encode($contact_messages_arr);
     } else {
         // Set response code - 200 OK
         http_response_code(200);
         
-        // No messages found
+        // No contact messages found
         echo json_encode(array());
     }
 }
 
-// Get a single contact message - requires admin
+// Get unread count - requires admin
+else if ($method === 'GET' && isset($_GET['count']) && $_GET['count'] === 'unread' && is_admin()) {
+    $unread_count = $contactMessage->countUnread();
+    
+    // Set response code - 200 OK
+    http_response_code(200);
+    
+    // Return count
+    echo json_encode(array("unreadCount" => $unread_count));
+}
+
+// Get contact message by ID - requires admin
 else if ($method === 'GET' && isset($_GET['id']) && is_admin()) {
-    // Set message ID from query string
+    // Set contact message ID
     $contactMessage->id = $_GET['id'];
     
-    // Get the message
+    // Get the contact message
     if ($contactMessage->getById($contactMessage->id)) {
-        // Create message array
-        $message_arr = array(
+        // Create contact message array
+        $contact_message_arr = array(
             "id" => $contactMessage->id,
             "name" => $contactMessage->name,
             "email" => $contactMessage->email,
+            "phone" => $contactMessage->phone,
             "subject" => $contactMessage->subject,
             "message" => $contactMessage->message,
-            "isRead" => (bool)$contactMessage->is_read,
+            "isRead" => (int)$contactMessage->is_read,
             "createdAt" => $contactMessage->created_at
         );
         
@@ -101,61 +111,60 @@ else if ($method === 'GET' && isset($_GET['id']) && is_admin()) {
         http_response_code(200);
         
         // Make it json format
-        echo json_encode($message_arr);
+        echo json_encode($contact_message_arr);
     } else {
         // Set response code - 404 Not found
         http_response_code(404);
         
-        // Tell the user message does not exist
+        // Tell the user
         echo json_encode(array("message" => "Contact message not found."));
     }
 }
 
-// Create a contact message
-else if ($method === 'POST' && $endpoint === '') {
+// Create contact message - public endpoint
+else if ($method === 'POST') {
     // Get posted data
     $data = json_decode(file_get_contents("php://input"));
     
     // Make sure data is not empty
-    if (
-        !empty($data->name) &&
-        !empty($data->email) &&
-        !empty($data->subject) &&
-        !empty($data->message)
-    ) {
+    if (!empty($data->name) && !empty($data->email) && !empty($data->message)) {
         // Set contact message values
         $contactMessage->name = $data->name;
         $contactMessage->email = $data->email;
-        $contactMessage->subject = $data->subject;
+        $contactMessage->phone = isset($data->phone) ? $data->phone : "";
+        $contactMessage->subject = isset($data->subject) ? $data->subject : "Contact Form Submission";
         $contactMessage->message = $data->message;
-        $contactMessage->is_read = false;
         
         // Create the contact message
         if ($contactMessage->create()) {
-            // Prepare message details for email
-            $message_data = [
-                'name' => $contactMessage->name,
-                'email' => $contactMessage->email,
-                'subject' => $contactMessage->subject,
-                'message' => $contactMessage->message
-            ];
-            
-            // Send email notification
-            send_contact_message_notification($message_data);
-            
             // Set response code - 201 created
             http_response_code(201);
             
-            // Return the new message
-            echo json_encode(array(
-                "id" => $contactMessage->id,
-                "name" => $contactMessage->name,
-                "email" => $contactMessage->email,
-                "subject" => $contactMessage->subject,
-                "message" => $contactMessage->message,
-                "isRead" => false,
-                "createdAt" => date('Y-m-d H:i:s')
-            ));
+            // Send email notification to admin
+            $email_service = new EmailService();
+            $admin_email = getenv('ADMIN_EMAIL');
+            
+            if ($admin_email) {
+                // Prepare email content
+                $subject = "New Contact Form Submission";
+                $body = "
+                    <h2>New Contact Form Submission</h2>
+                    <p><strong>Name:</strong> {$contactMessage->name}</p>
+                    <p><strong>Email:</strong> {$contactMessage->email}</p>
+                    <p><strong>Phone:</strong> {$contactMessage->phone}</p>
+                    <p><strong>Subject:</strong> {$contactMessage->subject}</p>
+                    <p><strong>Message:</strong></p>
+                    <p>{$contactMessage->message}</p>
+                    <hr>
+                    <p>You can view this message in your admin panel.</p>
+                ";
+                
+                // Send the email
+                $email_service->sendEmail($admin_email, $subject, $body);
+            }
+            
+            // Return success message
+            echo json_encode(array("message" => "Contact message was created."));
         } else {
             // Set response code - 503 service unavailable
             http_response_code(503);
@@ -168,16 +177,16 @@ else if ($method === 'POST' && $endpoint === '') {
         http_response_code(400);
         
         // Tell the user
-        echo json_encode(array("message" => "Unable to create contact message. Data is incomplete."));
+        echo json_encode(array("message" => "Unable to create contact message. Name, email, and message are required."));
     }
 }
 
-// Mark contact message as read - requires admin
-else if ($method === 'PUT' && $endpoint === 'mark-read' && isset($_GET['id']) && is_admin()) {
-    // Set message ID from query string
+// Mark message as read - requires admin
+else if ($method === 'PUT' && isset($_GET['id']) && isset($_GET['action']) && $_GET['action'] === 'read' && is_admin()) {
+    // Set contact message ID
     $contactMessage->id = $_GET['id'];
     
-    // Check if message exists
+    // Check if contact message exists
     if (!$contactMessage->getById($contactMessage->id)) {
         // Set response code - 404 Not found
         http_response_code(404);
@@ -187,13 +196,13 @@ else if ($method === 'PUT' && $endpoint === 'mark-read' && isset($_GET['id']) &&
         exit;
     }
     
-    // Mark the message as read
+    // Mark as read
     if ($contactMessage->markAsRead()) {
         // Set response code - 200 OK
         http_response_code(200);
         
         // Tell the user
-        echo json_encode(array("message" => "Contact message was marked as read."));
+        echo json_encode(array("message" => "Contact message marked as read."));
     } else {
         // Set response code - 503 service unavailable
         http_response_code(503);
@@ -203,12 +212,12 @@ else if ($method === 'PUT' && $endpoint === 'mark-read' && isset($_GET['id']) &&
     }
 }
 
-// Delete a contact message - requires admin
+// Delete contact message - requires admin
 else if ($method === 'DELETE' && isset($_GET['id']) && is_admin()) {
-    // Set message ID from query string
+    // Set contact message ID
     $contactMessage->id = $_GET['id'];
     
-    // Check if message exists
+    // Check if contact message exists
     if (!$contactMessage->getById($contactMessage->id)) {
         // Set response code - 404 Not found
         http_response_code(404);
@@ -218,7 +227,7 @@ else if ($method === 'DELETE' && isset($_GET['id']) && is_admin()) {
         exit;
     }
     
-    // Delete the message
+    // Delete the contact message
     if ($contactMessage->delete()) {
         // Set response code - 200 OK
         http_response_code(200);
@@ -234,21 +243,9 @@ else if ($method === 'DELETE' && isset($_GET['id']) && is_admin()) {
     }
 }
 
-// Get unread messages count - requires admin
-else if ($method === 'GET' && $endpoint === 'unread-count' && is_admin()) {
-    // Get unread count
-    $count = $contactMessage->countUnread();
-    
-    // Set response code - 200 OK
-    http_response_code(200);
-    
-    // Return the count
-    echo json_encode(array("count" => $count));
-}
-
-// Handle invalid endpoint
+// Handle invalid endpoint or method
 else {
-    // Set response code - 404 Not found
+    // Set response code - 404 Not found or 403 Forbidden
     http_response_code(404);
     
     // Tell the user

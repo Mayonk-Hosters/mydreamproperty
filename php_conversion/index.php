@@ -1,115 +1,112 @@
 <?php
 /**
- * API Router
+ * Main Entry Point
  * 
- * Routes incoming requests to the appropriate API endpoint
+ * This file serves the React application and handles API requests
  */
 
-// Set environment
-if (!getenv('APP_ENV')) {
-    putenv('APP_ENV=development');
-}
+// Start session
+session_start();
 
-// Handle CORS preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
-    header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-    exit(0);
-}
+// Define constants
+define('BASE_PATH', __DIR__);
+define('API_PATH', BASE_PATH . '/api');
 
-// Parse the URL
-$request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = trim($request_uri, '/');
-$path_parts = explode('/', $path);
-
-// Set default API path
-$api_path = '';
-
-// Find the 'api' part in the URL
-$api_index = array_search('api', $path_parts);
-if ($api_index !== false) {
-    // Get the API endpoint (next part after 'api')
-    if (isset($path_parts[$api_index + 1])) {
-        $api_path = $path_parts[$api_index + 1];
+// Handle API requests
+if (strpos($_SERVER['REQUEST_URI'], '/api/') === 0) {
+    // Get the endpoint from the URL
+    $endpoint = substr($_SERVER['REQUEST_URI'], 5);
+    $endpoint = strtok($endpoint, '?'); // Remove query string
+    $endpoint = rtrim($endpoint, '/');  // Remove trailing slash
+    
+    // Map endpoint to PHP file
+    $mappings = [
+        'users' => 'users.php',
+        'login' => 'login.php',
+        'logout' => 'logout.php',
+        'register' => 'register.php',
+        'user' => 'user.php',
+        'properties' => 'properties.php',
+        'properties/counts-by-type' => 'properties-counts.php',
+        'property-types' => 'property-types.php',
+        'agents' => 'agents.php',
+        'inquiries' => 'inquiries.php',
+        'contact-info' => 'contact-info.php',
+        'contact-messages' => 'contact-messages.php',
+        'states' => 'states.php',
+        'districts' => 'districts.php',
+        'talukas' => 'talukas.php',
+        'tehsils' => 'tehsils.php'
+    ];
+    
+    // Check if the endpoint exists in our mappings
+    if (isset($mappings[$endpoint])) {
+        // Include the API file
+        include_once API_PATH . '/' . $mappings[$endpoint];
+        exit;
     }
     
-    // Get additional parameters
-    $endpoint = '';
-    if (isset($path_parts[$api_index + 2])) {
-        $endpoint = $path_parts[$api_index + 2];
-    }
-    
-    // Set query string parameters
-    if ($endpoint) {
-        $_GET['endpoint'] = $endpoint;
-    }
-    
-    // Handle ID if present
-    if (isset($path_parts[$api_index + 3])) {
-        $_GET['id'] = $path_parts[$api_index + 3];
-    }
-}
-
-// Route to appropriate API file
-switch ($api_path) {
-    case 'auth':
-        include_once 'api/auth.php';
-        break;
-    
-    case 'users':
-        include_once 'api/users.php';
-        break;
-    
-    case 'properties':
-        include_once 'api/properties.php';
-        break;
-    
-    case 'agents':
-        include_once 'api/agents.php';
-        break;
-    
-    case 'inquiries':
-        include_once 'api/inquiries.php';
-        break;
-    
-    case 'states':
-        include_once 'api/states.php';
-        break;
-    
-    case 'districts':
-        include_once 'api/districts.php';
-        break;
-    
-    case 'talukas':
-        include_once 'api/talukas.php';
-        break;
-    
-    case 'tehsils':
-        include_once 'api/tehsils.php';
-        break;
-    
-    case 'property-types':
-        include_once 'api/property-types.php';
-        break;
-    
-    case 'contact-info':
-        include_once 'api/contact-info.php';
-        break;
-    
-    case 'contact-messages':
-        include_once 'api/contact-messages.php';
-        break;
-    
-    default:
-        if ($api_path) {
-            // Unknown API endpoint
-            header("HTTP/1.1 404 Not Found");
-            echo json_encode(array("message" => "API endpoint not found."));
-        } else {
-            // Serve the main index.html file for frontend routes
-            include_once 'public/index.html';
+    // Dynamic endpoints with IDs
+    foreach ($mappings as $base => $file) {
+        if (preg_match('#^' . $base . '/(\d+)$#', $endpoint, $matches)) {
+            // Set the ID in $_GET
+            $_GET['id'] = $matches[1];
+            
+            // Include the API file
+            include_once API_PATH . '/' . $file;
+            exit;
         }
-        break;
+    }
+    
+    // If no matching endpoint found
+    header("HTTP/1.1 404 Not Found");
+    echo json_encode(['message' => 'API endpoint not found']);
+    exit;
 }
+
+// Serve the React application for non-API requests
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dream Property</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <!-- Open Graph tags for social sharing -->
+    <meta property="og:title" content="My Dream Property - Real Estate Platform">
+    <meta property="og:description" content="Find your dream property with our comprehensive real estate platform.">
+    <meta property="og:image" content="https://yourdomain.com/images/og-image.jpg">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:type" content="website">
+    
+    <!-- Meta description -->
+    <meta name="description" content="My Dream Property is a comprehensive real estate platform to help you find your perfect property. Browse listings, contact agents, and more.">
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- SEO-friendly metadata -->
+    <meta name="keywords" content="real estate, property, house, apartment, commercial property, land, real estate agent">
+    <meta name="author" content="My Dream Property">
+    
+    <!-- App styles -->
+    <link rel="stylesheet" href="dist/css/main.css">
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- React application bundle -->
+    <script src="dist/js/bundle.js"></script>
+    
+    <!-- Inline script to set environment variables -->
+    <script>
+        window.env = {
+            apiUrl: '<?php echo $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']; ?>'
+        };
+    </script>
+</body>
+</html>
