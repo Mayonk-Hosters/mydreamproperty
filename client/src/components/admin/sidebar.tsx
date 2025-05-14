@@ -48,6 +48,11 @@ export function Sidebar() {
           name: "Inquiries",
           path: "/admin/inquiries",
           icon: <MessageCircle className="h-5 w-5" />
+        },
+        {
+          name: "Contact Messages",
+          path: "/admin/contact-messages",
+          icon: <PhoneCall className="h-5 w-5" />
         }
       ]
     },

@@ -30,6 +30,7 @@ import AdminInquiriesPage from "@/pages/admin/inquiries";
 import AdminClientsPage from "@/pages/admin/clients";
 import AdminProfilePage from "@/pages/admin/profile";
 import AdminPropertyTypesPage from "@/pages/admin/property-types";
+import AdminContactMessagesPage from "@/pages/admin/contact-messages";
 
 function Router() {
   return (
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/admin/clients" component={AdminClientsPage} />
       <Route path="/admin/profile" component={AdminProfilePage} />
       <Route path="/admin/property-types" component={AdminPropertyTypesPage} />
+      <Route path="/admin/contact-messages" component={AdminContactMessagesPage} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />

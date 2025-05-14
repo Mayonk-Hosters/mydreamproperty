@@ -1226,6 +1226,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Contact Messages API Routes
+  app.get("/api/contact-messages", async (req, res) => {
+    try {
+      // Only admins should access contact messages
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const messages = await storage.getAllContactMessages();
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching contact messages:", error);
+      res.status(500).json({ message: "Failed to fetch contact messages" });
+    }
+  });
+
+  app.get("/api/contact-messages/:id", async (req, res) => {
+    try {
+      // Only admins should access contact messages
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid message ID" });
+      }
+
+      const message = await storage.getContactMessage(id);
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+
+      res.json(message);
+    } catch (error) {
+      console.error("Error fetching contact message:", error);
+      res.status(500).json({ message: "Failed to fetch contact message" });
+    }
+  });
+
+  app.patch("/api/contact-messages/:id/mark-read", async (req, res) => {
+    try {
+      // Only admins should access contact messages
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid message ID" });
+      }
+
+      const success = await storage.markContactMessageAsRead(id);
+      if (!success) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking contact message as read:", error);
+      res.status(500).json({ message: "Failed to mark message as read" });
+    }
+  });
+
+  app.delete("/api/contact-messages/:id", async (req, res) => {
+    try {
+      // Only admins should access contact messages
+      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid message ID" });
+      }
+
+      const success = await storage.deleteContactMessage(id);
+      if (!success) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting contact message:", error);
+      res.status(500).json({ message: "Failed to delete contact message" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
