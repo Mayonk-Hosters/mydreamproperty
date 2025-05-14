@@ -67,6 +67,13 @@ export interface IStorage {
   getContactInfo(): Promise<ContactInfo | undefined>;
   updateContactInfo(contactData: InsertContactInfo): Promise<ContactInfo>;
   
+  // Contact Messages methods
+  getAllContactMessages(): Promise<ContactMessage[]>;
+  getContactMessage(id: number): Promise<ContactMessage | undefined>;
+  createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
+  markContactMessageAsRead(id: number): Promise<boolean>;
+  deleteContactMessage(id: number): Promise<boolean>;
+  
   // India location methods
   // States
   getAllStates(): Promise<State[]>;
