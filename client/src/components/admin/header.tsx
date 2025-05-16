@@ -138,10 +138,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
             queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
             queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
             queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
-            // Force garbage collection of any unmounted components
-            setTimeout(() => {
-              queryClient.gc();
-            }, 100);
+            // Remove this operation as queryClient.gc() is not available in this version
           }}>
             <Button variant="outline" size="sm" className="ml-2 px-3 py-1.5 bg-gray-100 rounded text-sm hover:bg-gray-200 transition-all">
               Exit Admin

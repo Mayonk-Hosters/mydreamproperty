@@ -162,10 +162,7 @@ export function Sidebar() {
           queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
           queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
           queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
-          // Force garbage collection of any unmounted components
-          setTimeout(() => {
-            queryClient.gc();
-          }, 100);
+          // Remove this operation as queryClient.gc() is not available in this version
         }}>
           <div className="block px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-white rounded flex items-center space-x-2 cursor-pointer">
             <LogOut className="h-5 w-5" />
