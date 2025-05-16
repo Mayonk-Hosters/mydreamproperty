@@ -85,6 +85,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   const [selectedTalukaId, setSelectedTalukaId] = useState<string | null>(null);
   const [selectedTehsilId, setSelectedTehsilId] = useState<string | null>(null);
   const [isAddPropertyTypeOpen, setIsAddPropertyTypeOpen] = useState(false);
+  const [generatingPropertyNumber, setGeneratingPropertyNumber] = useState(false);
   
   // Fetch states
   const statesQuery = useQuery<State[]>({
