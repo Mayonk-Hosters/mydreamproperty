@@ -10,10 +10,10 @@ require_once __DIR__ . '/../config.php';
 
 class Database {
     // Database credentials - loaded from config
-    private $host;
-    private $db_name;
-    private $username;
-    private $password;
+private $host = "localhost";
+private $db_name = "mydreamproperty_db";
+private $username = "Smileplz004";
+private $password = "Balaji_2727";
     private $conn;
 
     // Constructor
