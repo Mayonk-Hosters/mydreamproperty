@@ -19,6 +19,7 @@ import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
 import { sendInquiryNotification } from "./email-service";
 import neighborhoodsRoutes from "./routes/neighborhoods";
@@ -26,6 +27,9 @@ import neighborhoodsRoutes from "./routes/neighborhoods";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   await setupAuth(app);
+  
+  // Setup admin login routes
+  setupAdminLogin(app);
   
   // Auth user endpoint
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
