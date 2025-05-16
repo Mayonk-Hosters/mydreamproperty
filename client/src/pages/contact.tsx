@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
   subject: z.string().min(3, "Subject must be at least 3 characters")
 });
@@ -55,6 +56,7 @@ export default function ContactPage() {
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       subject: "",
       message: ""
     }
@@ -275,6 +277,20 @@ export default function ContactPage() {
                       )}
                     />
                   </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+91 12345 67890" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   <FormField
                     control={form.control}

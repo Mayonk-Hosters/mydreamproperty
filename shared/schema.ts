@@ -273,6 +273,7 @@ export const contactMessages = pgTable("contact_messages", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
+  phone: text("phone"),
   subject: text("subject").notNull(),
   message: text("message").notNull(),
   isRead: boolean("is_read").default(false),
