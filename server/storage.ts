@@ -810,16 +810,23 @@ export class DatabaseStorage implements IStorage {
   async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
     let query = db.select().from(properties);
     
+    // By default, only show active properties unless explicitly filtered
+    const conditions = [
+      or(
+        eq(properties.status, 'active'),
+        eq(sql`${properties.status}`, sql`NULL`)
+      )
+    ];
+    
     if (filters) {
-      const conditions = [];
-      
-      if (filters.type === "rent") {
-        conditions.push(
-          or(
-            eq(properties.propertyType, "Apartment"),
-            lte(properties.price, 5000)
-          )
-        );
+      if (filters.type) {
+        if (filters.type === "rent") {
+          conditions.push(eq(properties.type, "rent"));
+        } else if (filters.type === "buy") {
+          conditions.push(eq(properties.type, "buy"));
+        } else if (filters.type === "sell") {
+          conditions.push(eq(properties.type, "sell"));
+        }
       }
       
       if (filters.propertyType) {
@@ -864,11 +871,10 @@ export class DatabaseStorage implements IStorage {
       if (filters.featured !== undefined) {
         conditions.push(eq(properties.featured, filters.featured));
       }
-      
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
-      }
     }
+    
+    // Apply all conditions
+    query = query.where(and(...conditions));
     
     // Sort by newest first
     return await query.orderBy(desc(properties.createdAt));
