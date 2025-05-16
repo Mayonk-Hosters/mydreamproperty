@@ -31,17 +31,26 @@ export class AuthStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    // Transform OpenID claims to match our database schema
+    const userInsert = {
+      id: userData.id,
+      email: userData.email,
+      fullName: userData.fullName || (userData as any).firstName, // Support both formats
+      profileImage: userData.profileImage || (userData as any).profileImageUrl,
+      isAdmin: userData.isAdmin || false,
+      // Keep existing username/password if this is an update
+      username: userData.username || userData.email, // Use email as username if not provided
+      // Don't set password for OAuth users
+    };
+    
     const [user] = await db
       .insert(users)
-      .values({
-        ...userData,
-        updatedAt: new Date(),
-      })
+      .values(userInsert)
       .onConflictDoUpdate({
         target: users.id,
         set: {
-          ...userData,
-          updatedAt: new Date(),
+          ...userInsert,
+          // Don't override existing password during update
         },
       })
       .returning();

@@ -18,12 +18,12 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: text("id").primaryKey().notNull(),
   email: text("email"),
-  firstName: text("first_name"),
-  lastName: text("last_name"),
-  profileImageUrl: text("profile_image_url"),
+  username: text("username"),
+  password: text("password"),
+  fullName: text("full_name"),
+  profileImage: text("profile_image"),
   isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
