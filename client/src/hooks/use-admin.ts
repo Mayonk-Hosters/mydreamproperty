@@ -4,11 +4,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
 export function useAdmin() {
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // TEMPORARY: Always return true for isAdmin to bypass authentication
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
+  // COMMENTED OUT ORIGINAL CODE:
+  /*
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
@@ -25,8 +28,14 @@ export function useAdmin() {
 
     checkAdminStatus();
   }, []);
+  */
 
   const requireAdmin = () => {
+    // TEMPORARY: No-op function since we're bypassing admin checks
+    return;
+    
+    // COMMENTED OUT ORIGINAL CODE:
+    /*
     if (isLoading) return;
     
     if (!isAdmin) {
@@ -37,6 +46,7 @@ export function useAdmin() {
       });
       navigate('/');
     }
+    */
   };
 
   return { isAdmin, isLoading, requireAdmin };
