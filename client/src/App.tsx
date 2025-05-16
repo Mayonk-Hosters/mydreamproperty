@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { SiteSettingsProvider } from "@/hooks/use-site-settings";
 import { NotificationProvider } from "@/hooks/use-notifications";
+import { ProtectedAdminRoute } from "@/components/admin/protected-admin-route";
 
 // Pages
 import HomePage from "@/pages/index";
@@ -15,6 +16,7 @@ import AgentsPage from "@/pages/agents";
 import ContactPage from "@/pages/contact";
 import PropertyCalculatorPage from "@/pages/property-calculator";
 import NeighborhoodComparisonPage from "@/pages/neighborhood-comparison";
+import LoginPage from "@/pages/login";
 
 // Admin Pages
 import AdminDashboardPage from "@/pages/admin/index";
@@ -47,26 +49,63 @@ function Router() {
       <Route path="/property-calculator" component={PropertyCalculatorPage} />
       <Route path="/neighborhood-comparison" component={NeighborhoodComparisonPage} />
       <Route path="/contact" component={ContactPage} />
+      <Route path="/login" component={LoginPage} />
       
       {/* Admin pages */}
-      <Route path="/admin" component={AdminDashboardPage} />
-      <Route path="/admin/properties" component={AdminPropertiesPage} />
-      <Route path="/admin/properties/new" component={AdminPropertyNewPage} />
-      <Route path="/admin/properties/edit/:id" component={AdminPropertyEditPage} />
-      <Route path="/admin/settings" component={AdminSettingsPage} />
-      <Route path="/admin/users" component={AdminUsersPage} />
-      <Route path="/admin/locations" component={AdminLocationsPage} />
-      <Route path="/admin/contact" component={AdminContactPage} />
-      <Route path="/admin/agents" component={AdminAgentsPage} />
-      <Route path="/admin/agents/new" component={AdminAgentNewPage} />
-      <Route path="/admin/agents/edit/:id" component={AdminAgentEditPage} />
-      <Route path="/admin/analytics" component={AdminAnalyticsPage} />
-      <Route path="/admin/inquiries" component={AdminInquiriesPage} />
-      <Route path="/admin/clients" component={AdminClientsPage} />
-      <Route path="/admin/profile" component={AdminProfilePage} />
-      <Route path="/admin/property-types" component={AdminPropertyTypesPage} />
-      <Route path="/admin/contact-messages" component={AdminContactMessagesPage} />
-      <Route path="/admin/message-dashboard" component={MessageDashboardPage} />
+      <Route path="/admin">
+        <ProtectedAdminRoute component={AdminDashboardPage} />
+      </Route>
+      <Route path="/admin/properties">
+        <ProtectedAdminRoute component={AdminPropertiesPage} />
+      </Route>
+      <Route path="/admin/properties/new">
+        <ProtectedAdminRoute component={AdminPropertyNewPage} />
+      </Route>
+      <Route path="/admin/properties/edit/:id">
+        <ProtectedAdminRoute component={AdminPropertyEditPage} />
+      </Route>
+      <Route path="/admin/settings">
+        <ProtectedAdminRoute component={AdminSettingsPage} />
+      </Route>
+      <Route path="/admin/users">
+        <ProtectedAdminRoute component={AdminUsersPage} />
+      </Route>
+      <Route path="/admin/locations">
+        <ProtectedAdminRoute component={AdminLocationsPage} />
+      </Route>
+      <Route path="/admin/contact">
+        <ProtectedAdminRoute component={AdminContactPage} />
+      </Route>
+      <Route path="/admin/agents">
+        <ProtectedAdminRoute component={AdminAgentsPage} />
+      </Route>
+      <Route path="/admin/agents/new">
+        <ProtectedAdminRoute component={AdminAgentNewPage} />
+      </Route>
+      <Route path="/admin/agents/edit/:id">
+        <ProtectedAdminRoute component={AdminAgentEditPage} />
+      </Route>
+      <Route path="/admin/analytics">
+        <ProtectedAdminRoute component={AdminAnalyticsPage} />
+      </Route>
+      <Route path="/admin/inquiries">
+        <ProtectedAdminRoute component={AdminInquiriesPage} />
+      </Route>
+      <Route path="/admin/clients">
+        <ProtectedAdminRoute component={AdminClientsPage} />
+      </Route>
+      <Route path="/admin/profile">
+        <ProtectedAdminRoute component={AdminProfilePage} />
+      </Route>
+      <Route path="/admin/property-types">
+        <ProtectedAdminRoute component={AdminPropertyTypesPage} />
+      </Route>
+      <Route path="/admin/contact-messages">
+        <ProtectedAdminRoute component={AdminContactMessagesPage} />
+      </Route>
+      <Route path="/admin/message-dashboard">
+        <ProtectedAdminRoute component={MessageDashboardPage} />
+      </Route>
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
