@@ -20,7 +20,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation } = useAuth();
-  const isPending = loginMutation.isPending;
 
   // Redirect if already logged in
   useEffect(() => {

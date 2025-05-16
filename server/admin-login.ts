@@ -94,9 +94,11 @@ export function setupAdminLogin(app: Express) {
 
   // Check if user is admin
   app.get("/api/auth/check-admin", (req: Request, res: Response) => {
-    // In development, everyone is an admin for simplicity
-    if (process.env.NODE_ENV === 'development') {
-      return res.json({ isAdmin: true });
+    // In development mode for testing
+    if (process.env.NODE_ENV === 'development' && req.isAuthenticated()) {
+      if (req.user && (req.user as any).username === 'admin') {
+        return res.json({ isAdmin: true });
+      }
     }
     
     // Check if authenticated user is an admin
@@ -104,6 +106,7 @@ export function setupAdminLogin(app: Express) {
       return res.json({ isAdmin: true });
     }
     
+    // Not admin
     res.json({ isAdmin: false });
   });
 }
