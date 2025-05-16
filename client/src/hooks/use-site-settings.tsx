@@ -1,6 +1,5 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
 import type { ContactInfo } from "@shared/schema";
 
 export interface SiteSettings {
@@ -15,46 +14,29 @@ const defaultSettings: SiteSettings = {
 type SiteSettingsContextType = {
   settings: SiteSettings;
   isLoading: boolean;
-  error: Error | null;
 };
 
 const SiteSettingsContext = createContext<SiteSettingsContextType>({
   settings: defaultSettings,
-  isLoading: false,
-  error: null
+  isLoading: false
 });
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
-  const { toast } = useToast();
-  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
-  
-  const { data, error, isLoading } = useQuery<ContactInfo>({
+  const { data, isLoading } = useQuery<ContactInfo>({
     queryKey: ["/api/contact-info"],
     retry: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    // Silently handle 404 errors as we'll use default settings
+    onError: () => {},
   });
   
-  useEffect(() => {
-    if (data) {
-      // Extract site name from contact info
-      setSettings({
-        siteName: data.siteName || defaultSettings.siteName,
-      });
-    }
-  }, [data]);
-  
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: "Error loading site settings",
-        description: "Could not load site settings. Using default values.",
-        variant: "destructive",
-      });
-    }
-  }, [error, toast]);
+  // Use data if available, otherwise use default settings
+  const settings: SiteSettings = data 
+    ? { siteName: data.siteName || defaultSettings.siteName }
+    : defaultSettings;
   
   return (
-    <SiteSettingsContext.Provider value={{ settings, isLoading, error: error as Error | null }}>
+    <SiteSettingsContext.Provider value={{ settings, isLoading }}>
       {children}
     </SiteSettingsContext.Provider>
   );
