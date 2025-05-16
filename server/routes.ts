@@ -279,6 +279,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Toggle property featured status
+  app.patch("/api/properties/:id/toggle-featured", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid property ID" });
+      }
+
+      const property = await storage.getProperty(id);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+
+      // Toggle the featured status
+      const updatedProperty = await storage.updateProperty(id, {
+        ...property,
+        featured: !property.featured
+      });
+      
+      res.json(updatedProperty);
+    } catch (error) {
+      console.error("Error toggling property featured status:", error);
+      res.status(500).json({ message: "Failed to update featured status" });
+    }
+  });
+
   // Delete a property
   app.delete("/api/properties/:id", async (req, res) => {
     try {

@@ -234,11 +234,35 @@ export function PropertyTable() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {property.featured ? (
-                      <Badge className="bg-primary text-white">Featured</Badge>
-                    ) : (
-                      <span className="text-gray-400 text-sm">-</span>
-                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={property.featured ? "text-primary hover:text-primary/80" : "text-gray-400 hover:text-gray-500"}
+                      onClick={async () => {
+                        try {
+                          await apiRequest("PATCH", `/api/properties/${property.id}/toggle-featured`);
+                          queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+                          toast({
+                            title: property.featured ? "Property unfeatured" : "Property featured",
+                            description: property.featured 
+                              ? `${property.title} has been removed from featured properties.` 
+                              : `${property.title} is now featured on the homepage.`,
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Error",
+                            description: "Failed to update featured status. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      {property.featured ? (
+                        <Badge className="bg-primary text-white">Featured ✓</Badge>
+                      ) : (
+                        <span className="text-gray-400 text-sm">Set as Featured</span>
+                      )}
+                    </Button>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
