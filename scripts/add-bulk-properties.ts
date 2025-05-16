@@ -1,5 +1,5 @@
 import { db } from '../server/db';
-import { properties } from '../shared/schema';
+import { properties, agents } from '../shared/schema';
 import { faker } from '@faker-js/faker';
 
 async function addBulkProperties() {
@@ -36,7 +36,8 @@ async function addBulkProperties() {
           "https://placehold.co/600x400/webp?text=Property+Image+1",
           "https://placehold.co/600x400/webp?text=Property+Image+2",
           "https://placehold.co/600x400/webp?text=Property+Image+3"
-        ]
+        ],
+        neighborhood_id: null
       };
     });
 
@@ -67,14 +68,39 @@ async function addBulkProperties() {
           "https://placehold.co/600x400/webp?text=Property+Image+1",
           "https://placehold.co/600x400/webp?text=Property+Image+2",
           "https://placehold.co/600x400/webp?text=Property+Image+3"
-        ]
+        ],
+        neighborhood_id: null
       };
     });
 
     const allProperties = [...buyProperties, ...rentProperties];
     
+    // Get available agent IDs
+    const agentResult = await db.execute('SELECT id FROM agents LIMIT 5');
+    const agentIds = agentResult.rows.map(row => Number(row.id));
+    
+    if (agentIds.length === 0) {
+      console.log('Warning: No agents found in database. Creating a default agent...');
+      // Insert a default agent if none exist
+      const [newAgent] = await db.insert(agents).values({
+        name: 'Default Agent',
+        title: 'Real Estate Agent',
+        image: 'https://placehold.co/200x200/webp?text=Agent',
+        deals: 0,
+        rating: 4
+      }).returning();
+      
+      agentIds.push(newAgent.id);
+    }
+    
+    // Assign valid agent IDs to properties
+    allProperties.forEach(property => {
+      // Assign a random agent from the available ones
+      property.agent_id = agentIds[Math.floor(Math.random() * agentIds.length)];
+    });
+    
     // Insert all properties to database in chunks to avoid overwhelming the database
-    const chunkSize = 10;
+    const chunkSize = 5;
     for (let i = 0; i < allProperties.length; i += chunkSize) {
       const chunk = allProperties.slice(i, i + chunkSize);
       console.log(`Inserting chunk ${i/chunkSize + 1} (${chunk.length} properties)...`);
