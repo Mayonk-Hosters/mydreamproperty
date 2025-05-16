@@ -94,19 +94,52 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   
   // Fetch districts based on selected state
   const districtsQuery = useQuery<District[]>({
-    queryKey: ['/api/locations/districts', selectedStateId],
+    queryKey: ['/api/locations/districts', { stateId: selectedStateId }],
+    queryFn: async ({ queryKey }) => {
+      const params = new URLSearchParams();
+      if (selectedStateId) {
+        params.append('stateId', selectedStateId);
+      }
+      const response = await fetch(`/api/locations/districts?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch districts');
+      }
+      return response.json();
+    },
     enabled: !!selectedStateId,
   });
   
   // Fetch talukas based on selected district
   const talukasQuery = useQuery<Taluka[]>({
-    queryKey: ['/api/locations/talukas', selectedDistrictId],
+    queryKey: ['/api/locations/talukas', { districtId: selectedDistrictId }],
+    queryFn: async ({ queryKey }) => {
+      const params = new URLSearchParams();
+      if (selectedDistrictId) {
+        params.append('districtId', selectedDistrictId);
+      }
+      const response = await fetch(`/api/locations/talukas?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch talukas');
+      }
+      return response.json();
+    },
     enabled: !!selectedDistrictId,
   });
   
   // Fetch tehsils based on selected taluka
   const tehsilsQuery = useQuery<Tehsil[]>({
-    queryKey: ['/api/locations/tehsils', selectedTalukaId],
+    queryKey: ['/api/locations/tehsils', { talukaId: selectedTalukaId }],
+    queryFn: async ({ queryKey }) => {
+      const params = new URLSearchParams();
+      if (selectedTalukaId) {
+        params.append('talukaId', selectedTalukaId);
+      }
+      const response = await fetch(`/api/locations/tehsils?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch tehsils');
+      }
+      return response.json();
+    },
     enabled: !!selectedTalukaId,
   });
   
