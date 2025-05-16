@@ -15,9 +15,7 @@ export default function MessageDashboardPage() {
   const { contactMessages, isLoading } = useContactMessages();
   
   useEffect(() => {
-    if (contactMessages && Array.isArray(contactMessages)) {
-      processData();
-    }
+    processData();
   }, [contactMessages, timeRange]);
   
   const processData = () => {
@@ -93,18 +91,21 @@ export default function MessageDashboardPage() {
             <Button
               variant={timeRange === "7days" ? "default" : "outline"}
               onClick={() => setTimeRange("7days")}
+              type="button"
             >
               Last 7 Days
             </Button>
             <Button
               variant={timeRange === "30days" ? "default" : "outline"}
               onClick={() => setTimeRange("30days")}
+              type="button"
             >
               Last 30 Days
             </Button>
             <Button
               variant={timeRange === "all" ? "default" : "outline"}
               onClick={() => setTimeRange("all")}
+              type="button"
             >
               All Time
             </Button>
