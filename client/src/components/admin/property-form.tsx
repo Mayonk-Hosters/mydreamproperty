@@ -221,8 +221,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedStateId) {
       form.setValue('stateId', selectedStateId);
-      // Don't reset other values if we're just initializing with existing property data
-      if (!property || !property.districtId) {
+      
+      // Only clear district/taluka/tehsil if the state has actually changed
+      // and we're not just initializing the form
+      if (property?.stateId && selectedStateId !== property.stateId.toString()) {
         form.setValue('districtId', undefined);
         form.setValue('talukaId', undefined);
         form.setValue('tehsilId', undefined);
@@ -236,8 +238,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedDistrictId) {
       form.setValue('districtId', selectedDistrictId);
-      // Don't reset other values if we're just initializing with existing property data
-      if (!property || !property.talukaId) {
+      
+      // Only clear taluka/tehsil if the district has actually changed
+      // and we're not just initializing the form
+      if (property?.districtId && selectedDistrictId !== property.districtId.toString()) {
         form.setValue('talukaId', undefined);
         form.setValue('tehsilId', undefined);
         setSelectedTalukaId(null);
@@ -249,8 +253,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   useEffect(() => {
     if (selectedTalukaId) {
       form.setValue('talukaId', selectedTalukaId);
-      // Don't reset other values if we're just initializing with existing property data
-      if (!property || !property.tehsilId) {
+      
+      // Only clear tehsil if the taluka has actually changed
+      // and we're not just initializing the form
+      if (property?.talukaId && selectedTalukaId !== property.talukaId.toString()) {
         form.setValue('tehsilId', undefined);
         setSelectedTehsilId(null);
       }
