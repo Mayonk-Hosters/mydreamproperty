@@ -37,7 +37,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form endpoint
   app.post("/api/contact", async (req, res) => {
     try {
-      const contactData = insertContactMessageSchema.parse(req.body);
+      console.log("Received contact form data:", req.body);
+      
+      // Make sure we match the contact form fields from the frontend
+      const validatedData = contactFormSchema.parse(req.body);
+      
+      // Transform to match our database schema
+      const contactData = {
+        name: validatedData.name,
+        email: validatedData.email,
+        subject: validatedData.subject,
+        message: validatedData.message,
+        isRead: false
+      };
       
       // Store the contact form submission in the database
       const newMessage = await storage.createContactMessage(contactData);
@@ -48,6 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json({ success: true, message: "Message received successfully", id: newMessage.id });
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error("Validation error:", error.errors);
         return res.status(400).json({ 
           message: "Validation error", 
           errors: fromZodError(error).message 
