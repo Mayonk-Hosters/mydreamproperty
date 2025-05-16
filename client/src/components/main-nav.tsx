@@ -19,6 +19,11 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
           Properties
         </Button>
       </Link>
+      <Link href="/mdp-properties">
+        <Button variant="link" className="text-lg font-semibold">
+          MDP Properties
+        </Button>
+      </Link>
       <Link href="/agents">
         <Button variant="link" className="text-lg font-semibold">
           Agents
