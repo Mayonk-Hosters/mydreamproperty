@@ -34,9 +34,9 @@ interface PropertyFilters {
 export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  upsertUser(user: typeof users.$inferInsert): Promise<User>;
   getAllUsers(): Promise<User[]>;
-  updateUser(id: string, userData: Partial<UpsertUser>): Promise<User>;
+  updateUser(id: string, userData: Partial<typeof users.$inferInsert>): Promise<User>;
   deleteUser(id: string): Promise<boolean>;
   
   // Property methods
@@ -759,29 +759,37 @@ export class DatabaseStorage implements IStorage {
   }
   
   // User methods
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+  async upsertUser(userData: typeof users.$inferInsert): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
     return user;
-  }
-
-  async createUser(user: InsertUser): Promise<User> {
-    const [newUser] = await db.insert(users).values(user).returning();
-    return newUser;
   }
   
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(desc(users.id));
   }
   
-  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User> {
+  async updateUser(id: string, userData: Partial<typeof users.$inferInsert>): Promise<User> {
     const [updatedUser] = await db
       .update(users)
-      .set(userData)
+      .set({
+        ...userData,
+        updatedAt: new Date()
+      })
       .where(eq(users.id, id))
       .returning();
       
@@ -792,7 +800,7 @@ export class DatabaseStorage implements IStorage {
     return updatedUser;
   }
   
-  async deleteUser(id: number): Promise<boolean> {
+  async deleteUser(id: string): Promise<boolean> {
     const result = await db.delete(users).where(eq(users.id, id));
     return result.rowCount !== null && result.rowCount > 0;
   }
