@@ -200,6 +200,9 @@ export default function AdminContactMessagesPage() {
                         <CardTitle>{selectedMessage.subject}</CardTitle>
                         <CardDescription>
                           From: {selectedMessage.name} &lt;{selectedMessage.email}&gt;
+                          {selectedMessage.phone && (
+                            <div className="mt-1">Phone: {selectedMessage.phone}</div>
+                          )}
                         </CardDescription>
                       </div>
                     </div>
