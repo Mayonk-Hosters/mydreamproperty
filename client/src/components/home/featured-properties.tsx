@@ -8,8 +8,9 @@ import { Filter, SlidersHorizontal } from "lucide-react";
 import { Property } from "@shared/schema";
 
 export function FeaturedProperties() {
+  // Show all properties on homepage instead of just featured ones
   const { data: properties, isLoading } = useQuery<Property[]>({
-    queryKey: ['/api/properties?featured=true'],
+    queryKey: ['/api/properties'],
   });
 
   return (
