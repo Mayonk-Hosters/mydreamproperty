@@ -1,151 +1,81 @@
 import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useContactMessages, type ContactMessage } from "@/hooks/use-contact-messages";
 import { Button } from "@/components/ui/button";
-import { format, subDays, startOfDay, endOfDay, isWithinInterval, isSameDay } from "date-fns";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
-} from "recharts";
-import { Loader2, Phone, Mail, CalendarIcon, MessageSquare } from "lucide-react";
+import { useContactMessages, type ContactMessage } from "@/hooks/use-contact-messages";
+import { Loader2, Phone, Mail, MessageSquare } from "lucide-react";
 
 export default function MessageDashboardPage() {
   const [timeRange, setTimeRange] = useState<"7days" | "30days" | "all">("7days");
-  const [messagesByDate, setMessagesByDate] = useState<any[]>([]);
-  const [readUnreadData, setReadUnreadData] = useState<any[]>([]);
   const [todayMessages, setTodayMessages] = useState<ContactMessage[]>([]);
-  const [phoneEmailStats, setPhoneEmailStats] = useState({ withPhone: 0, withoutPhone: 0 });
+  const [messagesWithPhone, setMessagesWithPhone] = useState(0);
+  const [messagesTotal, setMessagesTotal] = useState(0);
+  const [messagesRead, setMessagesRead] = useState(0);
   
   const { contactMessages, isLoading } = useContactMessages();
   
   useEffect(() => {
-    if (contactMessages && contactMessages.length > 0) {
-      processMessageData();
-    } else if (contactMessages && contactMessages.length === 0) {
-      // If there are no messages, initialize with empty data
-      setMessagesByDate([]);
-      setReadUnreadData([
-        { name: 'Read', value: 0, color: '#10b981' },
-        { name: 'Unread', value: 0, color: '#f43f5e' }
-      ]);
-      setTodayMessages([]);
-      setPhoneEmailStats({ withPhone: 0, withoutPhone: 0 });
+    if (contactMessages && Array.isArray(contactMessages)) {
+      processData();
     }
   }, [contactMessages, timeRange]);
   
-  const processMessageData = () => {
-    if (!contactMessages || contactMessages.length === 0) return;
-    
-    // Define date ranges based on selected timeRange
-    const now = new Date();
-    const today = startOfDay(now);
-    let startDate;
-    
-    if (timeRange === "7days") {
-      startDate = subDays(today, 6);
-    } else if (timeRange === "30days") {
-      startDate = subDays(today, 29);
-    } else {
-      // For "all", we'll use the oldest message date or default to 90 days back
-      const validDates = contactMessages
-        .filter(msg => msg.createdAt)
-        .map(msg => new Date(msg.createdAt));
-      
-      startDate = validDates.length > 0 
-        ? new Date(Math.min(...validDates.map(d => d.getTime())))
-        : subDays(today, 90);
+  const processData = () => {
+    if (!contactMessages || !Array.isArray(contactMessages)) {
+      setTodayMessages([]);
+      setMessagesWithPhone(0);
+      setMessagesTotal(0);
+      setMessagesRead(0);
+      return;
     }
     
-    // Generate full date range for x-axis (important for showing days with zero messages)
-    const dateRange: Date[] = [];
-    let currentDate = new Date(startDate);
+    // Count today's messages
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    while (currentDate <= now) {
-      dateRange.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    
-    // Filter messages based on timeRange
-    const filteredMessages = timeRange === "all" 
-      ? contactMessages 
-      : contactMessages.filter(msg => {
-          if (!msg.createdAt) return false;
-          try {
-            const msgDate = new Date(msg.createdAt);
-            return isWithinInterval(msgDate, { 
-              start: startDate, 
-              end: endOfDay(now) 
-            });
-          } catch (e) {
-            return false;
-          }
-        });
-    
-    // Count messages by date
-    const messageCountByDate = dateRange.map(date => {
-      const count = filteredMessages.filter(msg => {
-        if (!msg.createdAt) return false;
-        try {
-          return isSameDay(new Date(msg.createdAt), date);
-        } catch (e) {
-          return false;
-        }
-      }).length;
-      
-      return {
-        date: format(date, "MMM dd"),
-        count,
-      };
-    });
-    
-    // Set messages received today
-    const messagesFromToday = contactMessages.filter(msg => {
+    const todayMsgs = contactMessages.filter(msg => {
       if (!msg.createdAt) return false;
       try {
-        return isSameDay(new Date(msg.createdAt), today);
+        const msgDate = new Date(msg.createdAt);
+        return msgDate.toDateString() === today.toDateString();
       } catch (e) {
         return false;
       }
     });
     
-    // Count read vs unread messages
-    const readCount = filteredMessages.filter(msg => msg.isRead).length;
-    const unreadCount = filteredMessages.filter(msg => !msg.isRead).length;
+    // Count messages with phone numbers
+    const withPhone = contactMessages.filter(msg => 
+      msg.phone && msg.phone.trim() !== ''
+    ).length;
     
-    // Count messages with/without phone
-    const withPhone = filteredMessages.filter(msg => msg.phone && msg.phone.trim() !== '').length;
-    const withoutPhone = filteredMessages.length - withPhone;
+    // Count read messages
+    const read = contactMessages.filter(msg => msg.isRead).length;
     
-    // Update state with processed data
-    setMessagesByDate(messageCountByDate);
-    setReadUnreadData([
-      { name: 'Read', value: readCount, color: '#10b981' },
-      { name: 'Unread', value: unreadCount, color: '#f43f5e' }
-    ]);
-    setTodayMessages(messagesFromToday);
-    setPhoneEmailStats({
-      withPhone,
-      withoutPhone
-    });
+    // Update state
+    setTodayMessages(todayMsgs);
+    setMessagesWithPhone(withPhone);
+    setMessagesTotal(contactMessages.length);
+    setMessagesRead(read);
   };
   
-  // Colors for the pie chart
-  const COLORS = ['#10b981', '#f43f5e', '#3b82f6', '#f59e0b'];
-  
-  // Handle click on message card to navigate to the full message view
+  // Navigate to view a specific message
   const handleMessageClick = (id: number) => {
     window.location.href = `/admin/contact-messages?message=${id}`;
+  };
+  
+  // Calculate percentage safely
+  const calculatePercentage = (value: number, total: number): string => {
+    if (total === 0) return "0%";
+    return `${Math.round((value / total) * 100)}%`;
+  };
+  
+  // Format date like "May 15, 2023"
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
   
   return (
@@ -159,17 +89,26 @@ export default function MessageDashboardPage() {
             </p>
           </div>
           
-          <Tabs 
-            value={timeRange} 
-            onValueChange={(value) => setTimeRange(value as "7days" | "30days" | "all")}
-            className="w-full md:w-auto"
-          >
-            <TabsList className="grid w-full grid-cols-3 md:w-[300px]">
-              <TabsTrigger value="7days">Last 7 Days</TabsTrigger>
-              <TabsTrigger value="30days">Last 30 Days</TabsTrigger>
-              <TabsTrigger value="all">All Time</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex space-x-2">
+            <Button
+              variant={timeRange === "7days" ? "default" : "outline"}
+              onClick={() => setTimeRange("7days")}
+            >
+              Last 7 Days
+            </Button>
+            <Button
+              variant={timeRange === "30days" ? "default" : "outline"}
+              onClick={() => setTimeRange("30days")}
+            >
+              Last 30 Days
+            </Button>
+            <Button
+              variant={timeRange === "all" ? "default" : "outline"}
+              onClick={() => setTimeRange("all")}
+            >
+              All Time
+            </Button>
+          </div>
         </div>
         
         {isLoading ? (
@@ -178,8 +117,9 @@ export default function MessageDashboardPage() {
           </div>
         ) : (
           <>
-            {/* Stats overview */}
+            {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              {/* Total Messages */}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -187,7 +127,7 @@ export default function MessageDashboardPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{contactMessages.length}</div>
+                  <div className="text-2xl font-bold">{messagesTotal}</div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {timeRange === "7days" ? "Last 7 days" : 
                      timeRange === "30days" ? "Last 30 days" : 
@@ -196,6 +136,7 @@ export default function MessageDashboardPage() {
                 </CardContent>
               </Card>
               
+              {/* Today's Messages */}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -205,11 +146,12 @@ export default function MessageDashboardPage() {
                 <CardContent>
                   <div className="text-2xl font-bold">{todayMessages.length}</div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {format(new Date(), "MMM dd, yyyy")}
+                    {formatDate(new Date())}
                   </p>
                 </CardContent>
               </Card>
               
+              {/* Read Rate */}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -218,17 +160,15 @@ export default function MessageDashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {contactMessages.length > 0 
-                      ? `${Math.round((contactMessages.filter(m => m.isRead).length / contactMessages.length) * 100)}%`
-                      : "0%"
-                    }
+                    {calculatePercentage(messagesRead, messagesTotal)}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {contactMessages.filter(m => m.isRead).length} of {contactMessages.length} messages
+                    {messagesRead} of {messagesTotal} messages
                   </p>
                 </CardContent>
               </Card>
               
+              {/* Phone Numbers */}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -237,88 +177,11 @@ export default function MessageDashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {contactMessages.length > 0 
-                      ? `${Math.round((phoneEmailStats.withPhone / contactMessages.length) * 100)}%`
-                      : "0%"
-                    }
+                    {calculatePercentage(messagesWithPhone, messagesTotal)}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {phoneEmailStats.withPhone} of {contactMessages.length} messages
+                    {messagesWithPhone} of {messagesTotal} messages
                   </p>
-                </CardContent>
-              </Card>
-            </div>
-            
-            {/* Charts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {/* Messages Over Time */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Messages Over Time</CardTitle>
-                  <CardDescription>
-                    Number of messages received per day
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={messagesByDate}
-                        margin={{ top: 5, right: 30, left: 5, bottom: 20 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
-                          tick={{ fontSize: 12 }}
-                          angle={-45} 
-                          textAnchor="end"
-                          height={60}
-                        />
-                        <YAxis allowDecimals={false} />
-                        <Tooltip />
-                        <Bar dataKey="count" fill="#3b82f6" name="Messages" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              {/* Read vs Unread */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Read vs. Unread</CardTitle>
-                  <CardDescription>
-                    Status of received messages
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px] flex justify-center items-center">
-                    {readUnreadData[0].value === 0 && readUnreadData[1].value === 0 ? (
-                      <p className="text-muted-foreground">No data available</p>
-                    ) : (
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={readUnreadData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={70}
-                            outerRadius={90}
-                            fill="#8884d8"
-                            paddingAngle={5}
-                            dataKey="value"
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          >
-                            {readUnreadData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Legend />
-                          <Tooltip formatter={(value) => [`${value} messages`, '']} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    )}
-                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -328,7 +191,7 @@ export default function MessageDashboardPage() {
               <CardHeader>
                 <CardTitle>Today's Messages</CardTitle>
                 <CardDescription>
-                  Messages received today ({format(new Date(), "MMM dd, yyyy")})
+                  Messages received today ({formatDate(new Date())})
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -352,7 +215,12 @@ export default function MessageDashboardPage() {
                           <div className="flex justify-between items-start">
                             <CardTitle className="text-base">{message.subject}</CardTitle>
                             <div className="text-xs text-muted-foreground">
-                              {format(new Date(message.createdAt), "h:mm a")}
+                              {message.createdAt ? 
+                                new Date(message.createdAt).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
+                                }) : "--:--"}
                             </div>
                           </div>
                           <CardDescription>
@@ -382,6 +250,49 @@ export default function MessageDashboardPage() {
                 )}
               </CardContent>
             </Card>
+            
+            {/* Message Analysis */}
+            <div className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Message Analysis</CardTitle>
+                  <CardDescription>
+                    Insights about contact form submissions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-medium mb-2">Read vs. Unread Messages</h3>
+                      <div className="w-full bg-gray-200 rounded-full h-4">
+                        <div 
+                          className="bg-primary h-4 rounded-full" 
+                          style={{ width: calculatePercentage(messagesRead, messagesTotal) }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>Read: {messagesRead}</span>
+                        <span>Unread: {messagesTotal - messagesRead}</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium mb-2">Messages with Phone Numbers</h3>
+                      <div className="w-full bg-gray-200 rounded-full h-4">
+                        <div 
+                          className="bg-green-500 h-4 rounded-full" 
+                          style={{ width: calculatePercentage(messagesWithPhone, messagesTotal) }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>With Phone: {messagesWithPhone}</span>
+                        <span>Without Phone: {messagesTotal - messagesWithPhone}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </>
         )}
       </div>
