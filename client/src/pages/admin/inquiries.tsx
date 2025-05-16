@@ -120,6 +120,7 @@ export default function AdminInquiriesPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
                     <TableHead>Property</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -132,6 +133,7 @@ export default function AdminInquiriesPage() {
                       <TableRow key={inquiry.id}>
                         <TableCell className="font-medium">{inquiry.name}</TableCell>
                         <TableCell>{inquiry.email}</TableCell>
+                        <TableCell>{inquiry.phone || "Not provided"}</TableCell>
                         <TableCell>
                           {property ? (
                             <div>
