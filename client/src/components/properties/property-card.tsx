@@ -1,12 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
-import { Heart, MapPin, Home, Droplets, Ruler, Eye, MessageSquare } from "lucide-react";
+import { Heart, MapPin, Home, Droplets, Ruler, Eye, MessageSquare, Share2 } from "lucide-react";
 import { Property } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
 import { PropertyModal } from "./property-modal";
 import { InquiryForm } from "./inquiry-form";
+import { 
+  FacebookShareButton, 
+  TwitterShareButton, 
+  WhatsappShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  WhatsappIcon,
+  LinkedinShareButton,
+  LinkedinIcon,
+  EmailShareButton,
+  EmailIcon
+} from "react-share";
 
 interface PropertyCardProps {
   property: Property;
@@ -15,11 +27,44 @@ interface PropertyCardProps {
 export function PropertyCard({ property }: PropertyCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const shareDropdownRef = useRef<HTMLDivElement>(null);
+  const shareButtonRef = useRef<HTMLButtonElement>(null);
   
   // Use the first image as the main display image
   const mainImage = Array.isArray(property.images) && property.images.length > 0 
     ? property.images[0] 
     : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400";
+  
+  // Get full property URL for sharing
+  const propertyUrl = typeof window !== 'undefined' 
+    ? `${window.location.origin}/property/${property.id}` 
+    : `https://app.replit.app/property/${property.id}`;
+    
+  // Share title and description
+  const shareTitle = `Check out this property: ${property.title}`;
+  const shareDescription = `${property.beds} beds, ${property.baths} baths, ${property.area} sq ft in ${property.location} for ${formatCurrency(property.price)}`;
+  
+  // Click outside handler to close the share dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isShareOpen && 
+          shareDropdownRef.current && 
+          shareButtonRef.current && 
+          !shareDropdownRef.current.contains(event.target as Node) &&
+          !shareButtonRef.current.contains(event.target as Node)) {
+        setIsShareOpen(false);
+      }
+    };
+    
+    // Add click event listener to detect clicks outside the dropdown
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Clean up the event listener when component unmounts
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isShareOpen]);
   
   // Handler to open the quick view modal
   const handleQuickView = (e: React.MouseEvent) => {
@@ -33,6 +78,13 @@ export function PropertyCard({ property }: PropertyCardProps) {
     e.preventDefault();
     e.stopPropagation();
     setIsInquiryOpen(true);
+  };
+  
+  // Handler to toggle share dropdown
+  const handleToggleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsShareOpen(!isShareOpen);
   };
   
   return (
@@ -79,6 +131,17 @@ export function PropertyCard({ property }: PropertyCardProps) {
               <Eye size={15} />
             </Button>
             <Button 
+              ref={shareButtonRef}
+              size="icon" 
+              variant="ghost" 
+              className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100 h-7 w-7 sm:h-8 sm:w-8"
+              title="Share this property"
+              aria-label="Share this property"
+              onClick={handleToggleShare}
+            >
+              <Share2 size={15} />
+            </Button>
+            <Button 
               size="icon" 
               variant="ghost" 
               className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100 h-7 w-7 sm:h-8 sm:w-8"
@@ -88,6 +151,37 @@ export function PropertyCard({ property }: PropertyCardProps) {
             >
               <MessageSquare size={15} />
             </Button>
+            
+            {/* Share dropdown */}
+            {isShareOpen && (
+              <div 
+                ref={shareDropdownRef}
+                className="absolute top-10 right-0 bg-white rounded-md shadow-lg z-10 p-2 flex flex-col gap-2 w-[180px]"
+              >
+                <div className="text-xs font-medium text-gray-500 px-1 mb-1">Share via:</div>
+                <div className="flex flex-wrap gap-2 justify-around">
+                  <WhatsappShareButton url={propertyUrl} title={shareTitle}>
+                    <WhatsappIcon size={32} round />
+                  </WhatsappShareButton>
+                  
+                  <FacebookShareButton url={propertyUrl} quote={shareTitle} description={shareDescription}>
+                    <FacebookIcon size={32} round />
+                  </FacebookShareButton>
+                  
+                  <TwitterShareButton url={propertyUrl} title={shareTitle}>
+                    <TwitterIcon size={32} round />
+                  </TwitterShareButton>
+                  
+                  <LinkedinShareButton url={propertyUrl} title={shareTitle} summary={shareDescription}>
+                    <LinkedinIcon size={32} round />
+                  </LinkedinShareButton>
+                  
+                  <EmailShareButton url={propertyUrl} subject={shareTitle} body={shareDescription}>
+                    <EmailIcon size={32} round />
+                  </EmailShareButton>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Overlay actions - hidden on mobile, visible on desktop hover */}
@@ -100,6 +194,13 @@ export function PropertyCard({ property }: PropertyCardProps) {
               onClick={handleQuickView}
             >
               <Eye className="mr-2" size={15} /> Quick View
+            </Button>
+            <Button 
+              variant="outline" 
+              className="bg-white text-primary hover:bg-primary hover:text-white transition-colors text-sm"
+              onClick={handleToggleShare}
+            >
+              <Share2 className="mr-2" size={15} /> Share
             </Button>
             <Button 
               variant="outline" 
