@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { User as UserType } from "@shared/schema";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
@@ -108,7 +109,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
                 </Link>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <Link href="/">
+              <Link href="/" onClick={() => queryClient.clear()}>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Exit Admin</span>
@@ -117,7 +118,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Link href="/">
+          <Link href="/" onClick={() => queryClient.clear()}>
             <Button variant="outline" size="sm" className="ml-2 px-3 py-1.5 bg-gray-100 rounded text-sm hover:bg-gray-200 transition-all">
               Exit Admin
             </Button>

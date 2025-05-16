@@ -17,6 +17,7 @@ import { NotificationIndicator } from "./notification-indicator";
 import { useNotifications } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { queryClient } from "@/lib/queryClient";
 
 export function Sidebar() {
   const [location] = useLocation();
@@ -152,7 +153,11 @@ export function Sidebar() {
       </nav>
       
       <div className="absolute bottom-0 w-64 p-4 border-t border-gray-800">
-        <Link href="/">
+        <Link href="/" onClick={() => {
+          // Clear any cached admin-specific queries when exiting admin panel
+          // This prevents errors when components unmount
+          queryClient.clear();
+        }}>
           <div className="block px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-white rounded flex items-center space-x-2 cursor-pointer">
             <LogOut className="h-5 w-5" />
             <span>Exit Admin</span>
