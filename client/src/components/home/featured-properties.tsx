@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,21 @@ import { Filter, SlidersHorizontal } from "lucide-react";
 import { Property } from "@shared/schema";
 
 export function FeaturedProperties() {
-  // Show all properties on homepage instead of just featured ones
+  // Show all active properties on homepage
   const { data: properties, isLoading } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
   });
+
+  // Filter for active properties only
+  const activeProperties = properties?.filter(property => 
+    property.status === 'active' || property.status === undefined
+  );
 
   return (
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">All Properties</h2>
+          <h2 className="text-2xl font-bold">Available Properties</h2>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" className="px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-all">
               <Filter className="mr-1 h-4 w-4" /> Filter
@@ -57,13 +62,13 @@ export function FeaturedProperties() {
                 </div>
               </div>
             ))
-          ) : properties && properties.length > 0 ? (
-            properties.map((property) => (
+          ) : activeProperties && activeProperties.length > 0 ? (
+            activeProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))
           ) : (
             <div className="col-span-full text-center py-8">
-              <p className="text-gray-500">No properties found.</p>
+              <p className="text-gray-500">No active properties found.</p>
             </div>
           )}
         </div>
