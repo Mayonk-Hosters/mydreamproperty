@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Search,
   Home as HomeIcon
@@ -14,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/use-site-settings";
-import { DEFAULT_PROPERTY_TYPES } from "@shared/schema";
+import { DEFAULT_PROPERTY_TYPES, PropertyType } from "@shared/schema";
 
 export function HeroSection() {
   const [, setLocation] = useLocation();
@@ -23,6 +24,11 @@ export function HeroSection() {
     type: "buy", // buy or rent
     propertyType: "", // House, Apartment, etc.
     location: "" // Location search term
+  });
+  
+  // Fetch property types from API
+  const { data: propertyTypes, isLoading } = useQuery<PropertyType[]>({
+    queryKey: ['/api/property-types'],
   });
 
   const handleSearch = (e?: React.FormEvent) => {
@@ -87,11 +93,21 @@ export function HeroSection() {
                       <SelectValue placeholder="Property Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {DEFAULT_PROPERTY_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
+                      {isLoading ? (
+                        <SelectItem value="" disabled>Loading property types...</SelectItem>
+                      ) : propertyTypes && propertyTypes.length > 0 ? (
+                        propertyTypes.map((type) => (
+                          <SelectItem key={type.id} value={type.name}>
+                            {type.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        DEFAULT_PROPERTY_TYPES.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
