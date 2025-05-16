@@ -1,32 +1,38 @@
-import { pgTable, text, serial, integer, boolean, unique, real, jsonb, timestamp, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, unique, real, jsonb, timestamp, decimal, varchar, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
 // User schema
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  id: text("id").primaryKey().notNull(),
   email: text("email"),
-  fullName: text("full_name"),
-  profileImage: text("profile_image"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  profileImageUrl: text("profile_image_url"),
   isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   inquiries: many(inquiries),
 }));
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  email: true,
-  fullName: true,
-  profileImage: true,
-  isAdmin: true,
-});
+export const insertUserSchema = createInsertSchema(users);
+
+export type UpsertUser = typeof users.$inferInsert;
 
 // Agents schema
 export const agents = pgTable("agents", {
@@ -95,7 +101,7 @@ export const inquiries = pgTable("inquiries", {
   phone: text("phone"),
   message: text("message").notNull(),
   propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: 'cascade' }),
-  userId: integer("user_id").references(() => users.id),
+  userId: text("user_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
