@@ -1,34 +1,29 @@
-import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { Redirect } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
-// Component to protect admin routes
-export function ProtectedAdminRoute({ 
-  component: Component 
-}: { 
-  component: React.ComponentType 
-}) {
-  const [, setLocation] = useLocation();
+type ProtectedAdminRouteProps = {
+  component: React.ComponentType;
+};
+
+export function ProtectedAdminRoute({ component: Component }: ProtectedAdminRouteProps) {
   const { user, isLoading, isAdmin } = useAuth();
 
-  useEffect(() => {
-    // If authentication check is complete and user is not admin, redirect to home
-    if (!isLoading && (!user || !isAdmin)) {
-      setLocation("/");
-    }
-  }, [isLoading, user, isAdmin, setLocation]);
-
-  // Show loading while checking authentication
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-lg text-gray-600">Checking authentication...</p>
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  // Show component only if user is logged in and is admin
-  return user && isAdmin ? <Component /> : null;
+  if (!user) {
+    return <Redirect to="/login" />;
+  }
+
+  if (!isAdmin) {
+    return <Redirect to="/" />;
+  }
+
+  return <Component />;
 }

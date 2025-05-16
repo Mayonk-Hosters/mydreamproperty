@@ -1,15 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-
-type User = {
-  id: string;
-  username?: string | null;
-  email?: string | null;
-  fullName?: string | null;
-  profileImage?: string | null;
-  isAdmin: boolean;
-};
+import { queryClient } from "@/lib/queryClient";
 
 type LoginCredentials = {
   username: string;
@@ -18,24 +9,17 @@ type LoginCredentials = {
 
 export function useAuth() {
   const { toast } = useToast();
-
-  // Query to get current user
-  const { 
-    data: user, 
-    isLoading,
-    error 
-  } = useQuery<User | null>({
+  
+  // Query the current user
+  const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/user"],
     retry: false,
   });
 
-  // Check if user is admin
-  const isAdmin = user?.isAdmin ?? false;
-
-  // Traditional login mutation
+  // Login mutation for traditional authentication
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginCredentials) => {
-      const response = await fetch("/api/traditional-login", {
+      const res = await fetch("/api/traditional-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,42 +27,40 @@ export function useAuth() {
         body: JSON.stringify(credentials),
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!res.ok) {
+        const errorData = await res.json();
         throw new Error(errorData.message || "Login failed");
       }
       
-      return await response.json() as User;
+      return res.json();
     },
-    onSuccess: (userData) => {
-      queryClient.setQueryData(["/api/auth/user"], userData);
+    onSuccess: (data) => {
+      queryClient.setQueryData(["/api/auth/user"], data);
       toast({
         title: "Login successful",
-        description: `Welcome back${userData.fullName ? ', ' + userData.fullName : ''}!`,
+        description: "You are now logged in",
       });
+      
+      // Redirect to admin dashboard
+      window.location.href = "/admin";
     },
     onError: (error: Error) => {
       toast({
         title: "Login failed",
-        description: error.message,
+        description: error.message || "Invalid credentials",
         variant: "destructive",
       });
     },
   });
 
-  // Logout function
-  const logout = async () => {
-    window.location.href = "/api/logout";
-  };
+  // Check if the user is an admin
+  const isAdmin = user?.isAdmin === true;
 
   return {
-    user: user || null,
+    user,
     isLoading,
     error,
-    isAuthenticated: !!user,
     isAdmin,
-    login: (credentials: LoginCredentials) => loginMutation.mutate(credentials),
-    logout,
     loginMutation,
   };
 }

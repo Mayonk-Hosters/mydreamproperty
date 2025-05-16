@@ -205,10 +205,10 @@ export function Navbar() {
               Contact
             </Link>
             <Link 
-              href="/admin" 
-              className="py-2.5 px-2 font-medium text-base rounded-md text-gray-800 hover:text-primary hover:bg-gray-50 sm:hidden"
+              href="/login" 
+              className="py-2.5 px-2 font-medium text-base rounded-md text-gray-800 hover:text-primary hover:bg-gray-50"
             >
-              Admin Panel
+              Admin Login
             </Link>
             <div className="py-2.5 px-2">
               <LoginButton />
