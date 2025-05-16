@@ -8,12 +8,22 @@ import { Filter, SlidersHorizontal } from "lucide-react";
 import { Property } from "@shared/schema";
 
 export function FeaturedProperties() {
-  // Show all active properties on homepage
-  const { data: properties, isLoading } = useQuery<Property[]>({
+  // Query all properties directly
+  const { data: properties, isLoading, error } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
   });
 
-  // Filter for active properties only
+  // Log data to help debug
+  useEffect(() => {
+    if (properties) {
+      console.log("Properties loaded:", properties.length);
+    }
+    if (error) {
+      console.error("Error loading properties:", error);
+    }
+  }, [properties, error]);
+
+  // Filter active properties only
   const activeProperties = properties?.filter(property => 
     property.status === 'active' || property.status === undefined
   );
@@ -62,13 +72,15 @@ export function FeaturedProperties() {
                 </div>
               </div>
             ))
-          ) : activeProperties && activeProperties.length > 0 ? (
-            activeProperties.map((property) => (
+          ) : properties && properties.length > 0 ? (
+            // Show all properties for now to debug
+            properties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))
           ) : (
             <div className="col-span-full text-center py-8">
-              <p className="text-gray-500">No active properties found.</p>
+              <p className="text-gray-500">No properties found.</p>
+              {error && <p className="text-red-500 mt-2">Error: {String(error)}</p>}
             </div>
           )}
         </div>
