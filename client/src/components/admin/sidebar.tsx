@@ -57,6 +57,11 @@ export function Sidebar() {
           path: "/admin/contact-messages",
           icon: <PhoneCall className="h-5 w-5" />,
           notification: true
+        },
+        {
+          name: "Message Dashboard",
+          path: "/admin/message-dashboard",
+          icon: <PieChart className="h-5 w-5" />
         }
       ]
     },

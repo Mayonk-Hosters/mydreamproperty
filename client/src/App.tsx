@@ -34,6 +34,7 @@ import AdminClientsPage from "@/pages/admin/clients";
 import AdminProfilePage from "@/pages/admin/profile";
 import AdminPropertyTypesPage from "@/pages/admin/property-types";
 import AdminContactMessagesPage from "@/pages/admin/contact-messages";
+import MessageDashboardPage from "@/pages/admin/message-dashboard";
 
 function Router() {
   return (
@@ -65,6 +66,7 @@ function Router() {
       <Route path="/admin/profile" component={AdminProfilePage} />
       <Route path="/admin/property-types" component={AdminPropertyTypesPage} />
       <Route path="/admin/contact-messages" component={AdminContactMessagesPage} />
+      <Route path="/admin/message-dashboard" component={MessageDashboardPage} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
