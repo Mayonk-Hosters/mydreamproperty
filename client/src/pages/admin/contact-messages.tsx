@@ -11,10 +11,12 @@ import { Loader2, Trash2, Check, Mail, MailOpen } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications } from "@/hooks/use-notifications";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminContactMessagesPage() {
   const [selectedTab, setSelectedTab] = useState("all");
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const { toast } = useToast();
   
   const {
     contactMessages,
@@ -201,7 +203,27 @@ export default function AdminContactMessagesPage() {
                         <CardDescription>
                           From: {selectedMessage.name} &lt;{selectedMessage.email}&gt;
                           {selectedMessage.phone && (
-                            <div className="mt-1">Phone: {selectedMessage.phone}</div>
+                            <div className="mt-1 flex items-center gap-2">
+                              Phone: 
+                              <button 
+                                className="inline-flex items-center gap-1 px-2 py-1 bg-muted rounded hover:bg-muted/80 text-xs"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigator.clipboard.writeText(selectedMessage.phone || "");
+                                  toast({
+                                    title: "Phone number copied",
+                                    description: "The phone number has been copied to your clipboard.",
+                                    duration: 2000,
+                                  });
+                                }}
+                              >
+                                {selectedMessage.phone}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                              </button>
+                            </div>
                           )}
                         </CardDescription>
                       </div>
