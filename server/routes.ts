@@ -23,8 +23,31 @@ import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
 import { sendInquiryNotification } from "./email-service";
 import neighborhoodsRoutes from "./routes/neighborhoods";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import passport from "passport";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configure cookie parser
+  app.use(cookieParser());
+  
+  // Configure session
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'local-dev-secret',
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    }
+  }));
+  
+  // Setup passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+  
   // Setup authentication routes
   await setupAuth(app);
   
