@@ -30,12 +30,23 @@ export default function MessageDashboardPage() {
   const { contactMessages, isLoading } = useContactMessages();
   
   useEffect(() => {
-    if (contactMessages.length > 0) {
+    if (contactMessages && contactMessages.length > 0) {
       processMessageData();
+    } else if (contactMessages && contactMessages.length === 0) {
+      // If there are no messages, initialize with empty data
+      setMessagesByDate([]);
+      setReadUnreadData([
+        { name: 'Read', value: 0, color: '#10b981' },
+        { name: 'Unread', value: 0, color: '#f43f5e' }
+      ]);
+      setTodayMessages([]);
+      setPhoneEmailStats({ withPhone: 0, withoutPhone: 0 });
     }
   }, [contactMessages, timeRange]);
   
   const processMessageData = () => {
+    if (!contactMessages || contactMessages.length === 0) return;
+    
     // Define date ranges based on selected timeRange
     const now = new Date();
     const today = startOfDay(now);
@@ -47,9 +58,12 @@ export default function MessageDashboardPage() {
       startDate = subDays(today, 29);
     } else {
       // For "all", we'll use the oldest message date or default to 90 days back
-      const dates = contactMessages.map(msg => new Date(msg.createdAt));
-      startDate = dates.length > 0 
-        ? new Date(Math.min(...dates.map(d => d.getTime())))
+      const validDates = contactMessages
+        .filter(msg => msg.createdAt)
+        .map(msg => new Date(msg.createdAt));
+      
+      startDate = validDates.length > 0 
+        ? new Date(Math.min(...validDates.map(d => d.getTime())))
         : subDays(today, 90);
     }
     
@@ -66,18 +80,28 @@ export default function MessageDashboardPage() {
     const filteredMessages = timeRange === "all" 
       ? contactMessages 
       : contactMessages.filter(msg => {
-          const msgDate = new Date(msg.createdAt);
-          return isWithinInterval(msgDate, { 
-            start: startDate, 
-            end: endOfDay(now) 
-          });
+          if (!msg.createdAt) return false;
+          try {
+            const msgDate = new Date(msg.createdAt);
+            return isWithinInterval(msgDate, { 
+              start: startDate, 
+              end: endOfDay(now) 
+            });
+          } catch (e) {
+            return false;
+          }
         });
     
     // Count messages by date
     const messageCountByDate = dateRange.map(date => {
-      const count = filteredMessages.filter(msg => 
-        isSameDay(new Date(msg.createdAt), date)
-      ).length;
+      const count = filteredMessages.filter(msg => {
+        if (!msg.createdAt) return false;
+        try {
+          return isSameDay(new Date(msg.createdAt), date);
+        } catch (e) {
+          return false;
+        }
+      }).length;
       
       return {
         date: format(date, "MMM dd"),
@@ -86,9 +110,14 @@ export default function MessageDashboardPage() {
     });
     
     // Set messages received today
-    const messagesFromToday = contactMessages.filter(msg => 
-      isSameDay(new Date(msg.createdAt), today)
-    );
+    const messagesFromToday = contactMessages.filter(msg => {
+      if (!msg.createdAt) return false;
+      try {
+        return isSameDay(new Date(msg.createdAt), today);
+      } catch (e) {
+        return false;
+      }
+    });
     
     // Count read vs unread messages
     const readCount = filteredMessages.filter(msg => msg.isRead).length;
