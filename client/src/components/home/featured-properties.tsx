@@ -17,7 +17,7 @@ export function FeaturedProperties() {
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">Featured Properties</h2>
+          <h2 className="text-2xl font-bold">All Properties</h2>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" className="px-3 py-1.5 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-all">
               <Filter className="mr-1 h-4 w-4" /> Filter
