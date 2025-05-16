@@ -18,7 +18,10 @@ export function PropertyTabs() {
     data: buyProperties, 
     isLoading: isBuyLoading 
   } = useQuery<Property[]>({
-    queryKey: ['/api/properties?type=buy&featured=true'],
+    queryKey: ['/api/properties'],
+    select: (data) => data.filter(property => 
+      property.type === 'buy' && property.status === 'active'
+    ),
   });
   
   // Query for properties with "rent" type
@@ -26,7 +29,10 @@ export function PropertyTabs() {
     data: rentProperties, 
     isLoading: isRentLoading 
   } = useQuery<Property[]>({
-    queryKey: ['/api/properties?type=rent&featured=true'],
+    queryKey: ['/api/properties'],
+    select: (data) => data.filter(property => 
+      property.type === 'rent' && property.status === 'active'
+    ),
   });
   
   // We've removed the "sell" type query
