@@ -21,6 +21,14 @@ export async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAdminLogin(app: Express) {
+  // Set up serialization/deserialization for Passport
+  passport.serializeUser((user, done) => {
+    done(null, user);
+  });
+  
+  passport.deserializeUser((user: any, done) => {
+    done(null, user);
+  });
   // Admin login endpoint - Simple version for development
   app.post("/api/traditional-login", async (req: Request, res: Response) => {
     try {
@@ -33,7 +41,7 @@ export function setupAdminLogin(app: Express) {
       // Allow admin access with any password in development mode
       if (process.env.NODE_ENV === 'development' && username === 'admin') {
         // Create an admin user for the session
-        const adminUser: Partial<User> = {
+        const adminUser = {
           id: "admin-dev",
           username: "admin",
           fullName: "Admin User",
@@ -49,8 +57,18 @@ export function setupAdminLogin(app: Express) {
             return res.status(500).json({ message: "Login failed" });
           }
           
-          // Return admin user data
-          res.status(200).json(adminUser);
+          // Explicitly set admin flag in session
+          req.session.isAdmin = true;
+          
+          // Save the session
+          req.session.save((err) => {
+            if (err) {
+              console.error("Session save error:", err);
+            }
+            
+            // Return admin user data
+            res.status(200).json(adminUser);
+          });
         });
         return;
       }
@@ -72,9 +90,21 @@ export function setupAdminLogin(app: Express) {
       req.login(user, (err) => {
         if (err) return res.status(500).json({ message: "Login failed" });
         
-        // Return user data (excluding password)
-        const { password, ...userData } = user;
-        res.status(200).json(userData);
+        // Set admin flag in session if user is admin
+        if (user.isAdmin) {
+          req.session.isAdmin = true;
+        }
+        
+        // Save the session
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+          }
+          
+          // Return user data (excluding password)
+          const { password, ...userData } = user;
+          res.status(200).json(userData);
+        });
       });
     } catch (error) {
       console.error("Login error:", error);
