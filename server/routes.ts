@@ -27,6 +27,9 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
 
+import mdpPropertiesRoutes from './routes/mdp-properties';
+import { eq, like } from 'drizzle-orm';
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure cookie parser
   app.use(cookieParser());
@@ -448,6 +451,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes already defined in auth.ts
+
+  // MDP Properties route
+  app.use('/api/mdp-properties', mdpPropertiesRoutes);
 
   // India Location API routes
   // States
