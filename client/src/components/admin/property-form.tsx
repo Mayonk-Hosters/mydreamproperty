@@ -384,16 +384,51 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Property Number</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="MDP-XXX (Auto-generated if left empty)" 
-                      {...field} 
-                      value={field.value || ""} 
-                      disabled={!!property}
-                    />
-                  </FormControl>
+                  <div className="flex space-x-2">
+                    <FormControl>
+                      <Input 
+                        placeholder="MDP-XXX (Auto-generated if left empty)" 
+                        {...field} 
+                        value={field.value || ""} 
+                        disabled={!!property}
+                      />
+                    </FormControl>
+                    {!property && !field.value && (
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => {
+                          // Generate property code based on property type (buy/rent)
+                          const type = form.getValues('type') || 'buy';
+                          const prefix = type === 'rent' ? 'MDP-R' : 'MDP-B';
+                          
+                          // Get count of existing properties for each type
+                          const existingProperties = propertiesQuery || [];
+                          const sameTypeProperties = existingProperties.filter(p => 
+                            p.type === type &&
+                            p.propertyNumber?.startsWith(prefix)
+                          );
+                          
+                          // Generate sequential number
+                          const nextNumber = sameTypeProperties.length + 1;
+                          // Format with leading zeros (001, 002, etc.)
+                          const paddedNumber = nextNumber.toString().padStart(3, '0');
+                          const propertyNumber = `${prefix}-${paddedNumber}`;
+                          
+                          field.onChange(propertyNumber);
+                        }}
+                        disabled={generatingPropertyNumber}
+                      >
+                        {generatingPropertyNumber ? 
+                          "Generating..." : 
+                          "Generate Code"}
+                      </Button>
+                    )}
+                  </div>
                   <FormDescription>
-                    {property ? "Property number cannot be changed after creation" : "Will be auto-generated if left empty (format: MDP-XXX)"}
+                    {property ? 
+                      "Property number cannot be changed after creation" : 
+                      "Click 'Generate Code' to create a property number (MDP-B for buying, MDP-R for rental)"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
