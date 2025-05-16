@@ -12,7 +12,7 @@ export default function MessageDashboardPage() {
   const [messagesTotal, setMessagesTotal] = useState(0);
   const [messagesRead, setMessagesRead] = useState(0);
   
-  const { contactMessages, isLoading } = useContactMessages();
+  const { contactMessages = [], isLoading } = useContactMessages();
   
   useEffect(() => {
     processData();
@@ -32,7 +32,7 @@ export default function MessageDashboardPage() {
     today.setHours(0, 0, 0, 0);
     
     const todayMsgs = contactMessages.filter(msg => {
-      if (!msg.createdAt) return false;
+      if (!msg || !msg.createdAt) return false;
       try {
         const msgDate = new Date(msg.createdAt);
         return msgDate.toDateString() === today.toDateString();
@@ -43,11 +43,11 @@ export default function MessageDashboardPage() {
     
     // Count messages with phone numbers
     const withPhone = contactMessages.filter(msg => 
-      msg.phone && msg.phone.trim() !== ''
+      msg && msg.phone && msg.phone.trim() !== ''
     ).length;
     
     // Count read messages
-    const read = contactMessages.filter(msg => msg.isRead).length;
+    const read = contactMessages.filter(msg => msg && msg.isRead).length;
     
     // Update state
     setTodayMessages(todayMsgs);
