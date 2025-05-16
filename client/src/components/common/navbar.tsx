@@ -4,6 +4,8 @@ import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator, Ma
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { LoginButton } from "@/components/auth/auth-buttons";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -103,10 +105,7 @@ export function Navbar() {
                 <span className="hidden sm:inline">Admin</span>
               </Button>
             </Link>
-            <Button size="sm" className="px-2 sm:px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 transition-all flex items-center text-xs sm:text-sm">
-              <LogIn className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              Login
-            </Button>
+            <LoginButton />
             <div className="md:hidden">
               <Button 
                 variant="ghost" 
@@ -211,6 +210,9 @@ export function Navbar() {
             >
               Admin Panel
             </Link>
+            <div className="py-2.5 px-2">
+              <LoginButton />
+            </div>
           </nav>
         </div>
       </div>
