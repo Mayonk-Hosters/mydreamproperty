@@ -32,8 +32,6 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const insertUserSchema = createInsertSchema(users);
 
-export type UpsertUser = typeof users.$inferInsert;
-
 // Agents schema
 export const agents = pgTable("agents", {
   id: serial("id").primaryKey(),
@@ -125,6 +123,7 @@ export const insertInquirySchema = createInsertSchema(inquiries).omit({
 // Type definitions
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpsertUser = typeof users.$inferInsert;
 
 export type Property = typeof properties.$inferSelect;
 export type InsertProperty = z.infer<typeof insertPropertySchema>;
