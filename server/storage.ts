@@ -1,5 +1,5 @@
 import {
-  users, type User, type InsertUser,
+  users, type User, type InsertUser, type UpsertUser,
   properties, type Property, type InsertProperty,
   agents, type Agent, type InsertAgent,
   inquiries, type Inquiry, type InsertInquiry,
@@ -12,11 +12,13 @@ import {
   neighborhoodMetrics, type NeighborhoodMetrics, type InsertNeighborhoodMetrics,
   propertyTypes, type PropertyType, type InsertPropertyType,
   contactMessages, type ContactMessage, type InsertContactMessage,
-  DEFAULT_PROPERTY_TYPES
+  DEFAULT_PROPERTY_TYPES,
+  sessions
 } from "@shared/schema";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import memorystore from "memorystore";
 
 // Property filters interface
 interface PropertyFilters {
@@ -176,9 +178,8 @@ export class MemStorage implements IStorage {
     this.propertyTypeIdCounter = 1;
     this.contactMessageIdCounter = 1;
     
-    // Initialize memory session store
-    const MemoryStore = require('memorystore')(session);
-    this.sessionStore = new MemoryStore({
+    // Initialize a basic session store
+    this.sessionStore = new session.MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
     });
     
@@ -1222,8 +1223,6 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Uncomment the following line to use database storage
-export const storage = new DatabaseStorage();
-
-// Comment out the line below to switch from memory storage to database storage
-// export const storage = new MemStorage();
+// Database storage implementation
+// Use memory storage by default
+export const storage = new MemStorage();

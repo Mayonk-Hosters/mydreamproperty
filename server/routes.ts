@@ -19,6 +19,7 @@ import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { authStorage } from "./auth-storage";
 import { sendInquiryNotification } from "./email-service";
 import neighborhoodsRoutes from "./routes/neighborhoods";
 
@@ -30,7 +31,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      // Use auth storage for authentication-related queries
+      const user = await authStorage.getUser(userId);
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
