@@ -311,10 +311,19 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       // and stored in the form data's "images" field
       let updatedImages = data.images || [];
       
+      // Parse location IDs from string to number
+      const stateId = data.stateId ? parseInt(data.stateId) : null;
+      const districtId = data.districtId ? parseInt(data.districtId) : null;
+      const talukaId = data.talukaId ? parseInt(data.talukaId) : null;
+      const tehsilId = data.tehsilId ? parseInt(data.tehsilId) : null;
+      
       // Update the data
-      const dataWithoutNewImages = data;
       const propertyData = {
-        ...dataWithoutNewImages,
+        ...data,
+        stateId,
+        districtId,
+        talukaId,
+        tehsilId,
         location: locationDetail || data.location, // Use compiled location or fall back to what user entered
         images: updatedImages
       };
