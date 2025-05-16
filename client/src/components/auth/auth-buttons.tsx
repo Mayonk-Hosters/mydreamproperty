@@ -1,56 +1,64 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 
-export const LoginButton = () => {
+// Helper function for generating user initials
+function getUserInitials(name?: string | null): string {
+  if (!name) return '?';
+  
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
+}
+
+export function LoginButton() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <Button variant="outline" size="sm" disabled>Loading...</Button>;
+    return <Button variant="outline" disabled>Loading...</Button>;
   }
 
   if (user) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
+          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              {user.profileImageUrl ? (
-                <AvatarImage src={user.profileImageUrl} alt={user.firstName || 'User'} />
-              ) : (
-                <AvatarFallback>
-                  {user.firstName?.charAt(0) || user.email?.charAt(0) || 'U'}
-                </AvatarFallback>
-              )}
+              <AvatarImage src={user.profileImage || undefined} alt={user.fullName || 'User'} />
+              <AvatarFallback>{getUserInitials(user.fullName || user.email)}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>
-            {user.firstName ? `${user.firstName} ${user.lastName || ''}` : user.email}
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <a href="/account" className="flex items-center">
-              <UserIcon className="mr-2 h-4 w-4" />
-              <span>Account</span>
-            </a>
+          <DropdownMenuItem className="cursor-pointer">
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a href="/api/logout" className="flex items-center text-red-500">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
-            </a>
+          {user.isAdmin && (
+            <DropdownMenuItem 
+              className="cursor-pointer"
+              onClick={() => window.location.href = '/admin'}
+            >
+              <span>Admin Panel</span>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem 
+            className="cursor-pointer text-red-600" 
+            onClick={() => window.location.href = '/api/logout'}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -59,23 +67,10 @@ export const LoginButton = () => {
 
   return (
     <Button 
-      variant="default" 
-      size="sm" 
       onClick={() => window.location.href = '/api/login'}
+      variant="default"
     >
-      Log in
+      Login
     </Button>
   );
-};
-
-export const LogoutButton = () => {
-  return (
-    <Button 
-      variant="default" 
-      size="sm" 
-      onClick={() => window.location.href = '/api/logout'}
-    >
-      Log out
-    </Button>
-  );
-};
+}

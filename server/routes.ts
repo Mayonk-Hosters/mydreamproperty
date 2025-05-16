@@ -40,6 +40,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Check if user is admin
+  app.get('/api/auth/check-admin', async (req: any, res) => {
+    try {
+      if (req.isAuthenticated() && req.user?.dbUser?.isAdmin) {
+        return res.status(200).json({ isAdmin: true });
+      } else if (req.isAuthenticated() && req.user?.claims?.sub) {
+        // Check admin status in database
+        const userId = req.user.claims.sub;
+        const user = await authStorage.getUser(userId);
+        if (user && user.isAdmin) {
+          return res.status(200).json({ isAdmin: true });
+        }
+      }
+      return res.status(200).json({ isAdmin: false });
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+      return res.status(200).json({ isAdmin: false });
+    }
+  });
+  
   // Contact form schema
   const contactFormSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),

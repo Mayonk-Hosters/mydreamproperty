@@ -1,17 +1,18 @@
 import * as client from "openid-client";
 import { Strategy, type VerifyFunction } from "openid-client/passport";
-
 import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 import { authStorage } from "./auth-storage";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
 
+// Cache OIDC configuration for 1 hour
 const getOidcConfig = memoize(
   async () => {
     return await client.discovery(
@@ -23,16 +24,23 @@ const getOidcConfig = memoize(
 );
 
 export function getSession() {
-  // Use the session store from authStorage
+  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+  const pgStore = connectPg(session);
+  const sessionStore = new pgStore({
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: true,
+    tableName: "sessions",
+    ttl: sessionTtl,
+  });
   return session({
-    secret: process.env.SESSION_SECRET!,
-    store: authStorage.sessionStore,
+    secret: process.env.SESSION_SECRET || "replit-auth-secret",
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+      secure: process.env.NODE_ENV === "production",
+      maxAge: sessionTtl,
     },
   });
 }
@@ -50,13 +58,19 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await authStorage.upsertUser({
+  // First check if user already exists to preserve admin status
+  const existingUser = await authStorage.getUser(claims["sub"]);
+  
+  const user = await authStorage.upsertUser({
     id: claims["sub"],
     email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
+    fullName: claims["first_name"] ? `${claims["first_name"]} ${claims["last_name"] || ""}`.trim() : null,
+    profileImage: claims["profile_image_url"],
+    // Preserve existing admin status if user exists
+    isAdmin: existingUser ? existingUser.isAdmin : false
   });
+
+  return user;
 }
 
 export async function setupAuth(app: Express) {
@@ -71,14 +85,24 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
+    try {
+      const user: any = {};
+      updateUserSession(user, tokens);
+      
+      // Store user in database
+      const dbUser = await upsertUser(tokens.claims());
+      
+      // Add database user info to session user
+      user.dbUser = dbUser;
+      
+      verified(null, user);
+    } catch (error) {
+      console.error("Authentication error:", error);
+      verified(error as Error);
+    }
   };
 
-  for (const domain of process.env
-    .REPLIT_DOMAINS!.split(",")) {
+  for (const domain of process.env.REPLIT_DOMAINS!.split(",")) {
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
@@ -118,12 +142,35 @@ export async function setupAuth(app: Express) {
       );
     });
   });
+
+  // Add user info route
+  app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
+    try {
+      res.json(req.user.dbUser);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Check admin status
+  app.get("/api/auth/check-admin", async (req: any, res) => {
+    try {
+      if (req.isAuthenticated() && req.user && req.user.dbUser && req.user.dbUser.isAdmin) {
+        return res.status(200).json({ isAdmin: true });
+      }
+      return res.status(200).json({ isAdmin: false });
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+      return res.status(200).json({ isAdmin: false });
+    }
+  });
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated() || !user?.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -139,10 +186,18 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
   try {
     const config = await getOidcConfig();
-    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+    const tokenResponse = await config.refresh(refreshToken);
     updateUserSession(user, tokenResponse);
     return next();
   } catch (error) {
+    console.error("Token refresh failed:", error);
     return res.redirect("/api/login");
   }
+};
+
+export const isAdmin: RequestHandler = async (req, res, next) => {
+  if (req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+    return next();
+  }
+  return res.status(403).json({ message: "Access denied" });
 };
