@@ -154,9 +154,18 @@ export function Sidebar() {
       
       <div className="absolute bottom-0 w-64 p-4 border-t border-gray-800">
         <Link href="/" onClick={() => {
-          // Clear any cached admin-specific queries when exiting admin panel
+          // Only invalidate admin-specific queries when exiting admin panel
           // This prevents errors when components unmount
-          queryClient.clear();
+          queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/property-types'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
+          // Force garbage collection of any unmounted components
+          setTimeout(() => {
+            queryClient.gc();
+          }, 100);
         }}>
           <div className="block px-4 py-2 text-gray-400 hover:bg-gray-800 hover:text-white rounded flex items-center space-x-2 cursor-pointer">
             <LogOut className="h-5 w-5" />

@@ -109,7 +109,19 @@ export function Header({ toggleSidebar }: HeaderProps) {
                 </Link>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <Link href="/" onClick={() => queryClient.clear()}>
+              <Link href="/" onClick={() => {
+                // Only invalidate admin-specific queries when exiting admin panel
+                queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/property-types'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
+                // Force garbage collection of any unmounted components
+                setTimeout(() => {
+                  queryClient.gc();
+                }, 100);
+              }}>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Exit Admin</span>
@@ -118,7 +130,19 @@ export function Header({ toggleSidebar }: HeaderProps) {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Link href="/" onClick={() => queryClient.clear()}>
+          <Link href="/" onClick={() => {
+            // Only invalidate admin-specific queries when exiting admin panel
+            queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/property-types'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
+            // Force garbage collection of any unmounted components
+            setTimeout(() => {
+              queryClient.gc();
+            }, 100);
+          }}>
             <Button variant="outline" size="sm" className="ml-2 px-3 py-1.5 bg-gray-100 rounded text-sm hover:bg-gray-200 transition-all">
               Exit Admin
             </Button>
