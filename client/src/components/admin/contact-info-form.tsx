@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 const contactInfoSchema = z.object({
   address: z.string().min(5, "Address must be at least 5 characters"),
@@ -41,6 +42,35 @@ type ContactInfoFormValues = z.infer<typeof contactInfoSchema>;
 export default function ContactInfoForm() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formInitialized, setFormInitialized] = useState(false);
+
+  // Default business hours
+  const defaultBusinessHours = {
+    monday: "9:00 AM - 6:00 PM",
+    tuesday: "9:00 AM - 6:00 PM",
+    wednesday: "9:00 AM - 6:00 PM",
+    thursday: "9:00 AM - 6:00 PM",
+    friday: "9:00 AM - 6:00 PM",
+    saturday: "10:00 AM - 4:00 PM",
+    sunday: "Closed",
+  };
+
+  // Default form values
+  const defaultValues = {
+    address: "",
+    phone1: "",
+    phone2: "",
+    email1: "",
+    email2: "",
+    businessHours: defaultBusinessHours,
+    mapUrl: "",
+  };
+
+  // Initialize form with default values
+  const form = useForm<ContactInfoFormValues>({
+    resolver: zodResolver(contactInfoSchema),
+    defaultValues,
+  });
 
   // Fetch contact information
   const { data: contactInfo, isLoading } = useQuery({
@@ -59,49 +89,30 @@ export default function ContactInfoForm() {
     }
   });
 
-  const form = useForm<ContactInfoFormValues>({
-    resolver: zodResolver(contactInfoSchema),
-    defaultValues: {
-      address: contactInfo?.address || "",
-      phone1: contactInfo?.phone1 || "",
-      phone2: contactInfo?.phone2 || "",
-      email1: contactInfo?.email1 || "",
-      email2: contactInfo?.email2 || "",
-      businessHours: contactInfo?.businessHours || {
-        monday: "9:00 AM - 6:00 PM",
-        tuesday: "9:00 AM - 6:00 PM",
-        wednesday: "9:00 AM - 6:00 PM",
-        thursday: "9:00 AM - 6:00 PM",
-        friday: "9:00 AM - 6:00 PM",
-        saturday: "10:00 AM - 4:00 PM",
-        sunday: "Closed",
-      },
-      mapUrl: contactInfo?.mapUrl || "",
-    },
-  });
-
-  // Reset form when contactInfo is loaded
-  React.useEffect(() => {
-    if (contactInfo) {
+  // Update form when contactInfo is loaded
+  useEffect(() => {
+    if (contactInfo && !formInitialized) {
+      // Prepare business hours, ensuring all required fields exist
+      const businessHours = {
+        ...defaultBusinessHours,
+        ...(contactInfo.businessHours || {})
+      };
+      
+      // Reset form with actual data
       form.reset({
-        address: contactInfo.address,
-        phone1: contactInfo.phone1,
+        address: contactInfo.address || "",
+        phone1: contactInfo.phone1 || "",
         phone2: contactInfo.phone2 || "",
-        email1: contactInfo.email1,
+        email1: contactInfo.email1 || "",
         email2: contactInfo.email2 || "",
-        businessHours: contactInfo.businessHours || {
-          monday: "9:00 AM - 6:00 PM",
-          tuesday: "9:00 AM - 6:00 PM",
-          wednesday: "9:00 AM - 6:00 PM",
-          thursday: "9:00 AM - 6:00 PM",
-          friday: "9:00 AM - 6:00 PM",
-          saturday: "10:00 AM - 4:00 PM",
-          sunday: "Closed",
-        },
+        businessHours,
         mapUrl: contactInfo.mapUrl || "",
       });
+      
+      // Mark as initialized to prevent unnecessary resets
+      setFormInitialized(true);
     }
-  }, [contactInfo, form]);
+  }, [contactInfo, form, formInitialized]);
 
   async function onSubmit(data: ContactInfoFormValues) {
     setIsSubmitting(true);
