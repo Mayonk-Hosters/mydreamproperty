@@ -22,7 +22,14 @@ import { queryClient } from "@/lib/queryClient";
 export function Sidebar() {
   const [location] = useLocation();
   const { settings } = useSiteSettings();
-  const { hasUnreadMessages } = useNotifications();
+  const { 
+    unreadMessagesCount, 
+    unreadInquiriesCount, 
+    totalUnreadCount,
+    hasUnreadMessages,
+    hasUnreadInquiries,
+    hasUnread
+  } = useNotifications();
   
   const sidebarItems = [
     {
@@ -51,18 +58,23 @@ export function Sidebar() {
         {
           name: "Inquiries",
           path: "/admin/inquiries",
-          icon: <MessageCircle className="h-5 w-5" />
+          icon: <MessageCircle className="h-5 w-5" />,
+          hasNotification: hasUnreadInquiries,
+          notificationCount: unreadInquiriesCount
         },
         {
           name: "Contact Messages",
           path: "/admin/contact-messages",
           icon: <PhoneCall className="h-5 w-5" />,
-          notification: true
+          hasNotification: hasUnreadMessages,
+          notificationCount: unreadMessagesCount
         },
         {
           name: "Message Dashboard",
           path: "/admin/message-dashboard",
-          icon: <PieChart className="h-5 w-5" />
+          icon: <PieChart className="h-5 w-5" />,
+          hasNotification: hasUnread,
+          notificationCount: totalUnreadCount
         }
       ]
     },
@@ -139,8 +151,8 @@ export function Sidebar() {
                   )}>
                     <div className="relative">
                       {item.icon}
-                      {item.notification && (
-                        <NotificationIndicator />
+                      {item.hasNotification && (
+                        <NotificationIndicator count={item.notificationCount} />
                       )}
                     </div>
                     <span>{item.name}</span>
