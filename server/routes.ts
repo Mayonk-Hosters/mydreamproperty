@@ -241,32 +241,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Generate property number if not provided
       if (!propertyData.propertyNumber) {
-        // Check property type to determine prefix (MDP-B for buy, MDP-R for rent)
-        const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
-        
-        // Get existing properties with the same prefix pattern to calculate next number
-        const existingProperties = await storage.getAllProperties();
-        
-        // Find the highest number for this property type
-        let highestNumber = 0;
-        for (const property of existingProperties) {
-          if (property.propertyNumber && property.propertyNumber.startsWith(prefix)) {
-            // Extract the number part (after the prefix and dash)
-            const matches = property.propertyNumber.match(`${prefix}-(\\d+)`);
-            if (matches && matches[1]) {
-              const num = parseInt(matches[1], 10);
-              if (!isNaN(num) && num > highestNumber) {
-                highestNumber = num;
+        try {
+          // Check property type to determine prefix (MDP-B for buy, MDP-R for rent)
+          const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
+          
+          // Query directly for properties with this property type and prefix
+          // (more reliable than client-side filtering)
+          const query = `
+            SELECT property_number 
+            FROM properties 
+            WHERE property_number LIKE '${prefix}-%'
+            ORDER BY property_number DESC
+          `;
+          
+          // Execute the query directly to get accurate results
+          const result = await pool.query(query);
+          const existingNumbers = result.rows;
+          
+          // Find the highest number
+          let highestNumber = 0;
+          for (const row of existingNumbers) {
+            if (row.property_number) {
+              // Extract the number part using a regex
+              const matches = row.property_number.match(`${prefix}-(\\d+)`);
+              if (matches && matches[1]) {
+                const num = parseInt(matches[1], 10);
+                if (!isNaN(num) && num > highestNumber) {
+                  highestNumber = num;
+                }
               }
             }
           }
+          
+          // Generate sequential number with leading zeros (next number after highest found)
+          const nextNumber = highestNumber + 1;
+          const paddedNumber = nextNumber.toString().padStart(3, '0');
+          propertyData.propertyNumber = `${prefix}-${paddedNumber}`;
+          console.log(`Generated property number: ${propertyData.propertyNumber} (highest was ${highestNumber})`);
+        } catch (error) {
+          console.error('Error generating property number:', error);
+          // Fallback to a timestamp-based number if query fails
+          const timestamp = new Date().getTime().toString().slice(-6);
+          const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
+          propertyData.propertyNumber = `${prefix}-${timestamp}`;
+          console.log(`Fallback property number generated: ${propertyData.propertyNumber}`);
         }
-        
-        // Generate sequential number with leading zeros (next number after highest found)
-        const nextNumber = highestNumber + 1;
-        const paddedNumber = nextNumber.toString().padStart(3, '0');
-        propertyData.propertyNumber = `${prefix}-${paddedNumber}`;
-        console.log(`Generated property number: ${propertyData.propertyNumber}`);
       }
       
       const newProperty = await storage.createProperty(propertyData);
