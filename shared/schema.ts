@@ -128,6 +128,7 @@ export const inquiries = pgTable("inquiries", {
   message: text("message").notNull(),
   propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: 'cascade' }),
   userId: text("user_id").references(() => users.id),
+  isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

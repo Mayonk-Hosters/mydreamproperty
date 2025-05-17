@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { apiRequest } from "@/lib/queryClient";
+import type { ContactMessage, Inquiry } from "@shared/schema";
 
 export function useNotifications() {
   // Get unread contact messages
   const { 
-    data: contactMessages = [],
+    data: contactMessages = [] as ContactMessage[],
     isLoading: isLoadingMessages 
-  } = useQuery({
+  } = useQuery<ContactMessage[]>({
     queryKey: ['/api/contact-messages'],
     queryFn: async () => {
       const response = await fetch('/api/contact-messages');
@@ -17,9 +18,9 @@ export function useNotifications() {
 
   // Get unread inquiries
   const { 
-    data: inquiries = [], 
+    data: inquiries = [] as Inquiry[], 
     isLoading: isLoadingInquiries 
-  } = useQuery({
+  } = useQuery<Inquiry[]>({
     queryKey: ['/api/inquiries'],
     queryFn: async () => {
       const response = await fetch('/api/inquiries');
@@ -28,8 +29,8 @@ export function useNotifications() {
   });
 
   // Filter for unread items
-  const unreadMessages = contactMessages.filter(message => !message.isRead);
-  const unreadInquiries = inquiries.filter(inquiry => !inquiry.isRead);
+  const unreadMessages = contactMessages.filter((message: ContactMessage) => !message.isRead);
+  const unreadInquiries = inquiries.filter((inquiry: Inquiry) => !inquiry.isRead);
   
   // Total unread count
   const unreadMessagesCount = unreadMessages.length;
@@ -41,7 +42,7 @@ export function useNotifications() {
     try {
       if (unreadMessages.length > 0) {
         await apiRequest('PATCH', '/api/contact-messages/mark-read', {
-          ids: unreadMessages.map(msg => msg.id)
+          ids: unreadMessages.map((msg: ContactMessage) => msg.id)
         });
       }
     } catch (error) {
@@ -54,7 +55,7 @@ export function useNotifications() {
     try {
       if (unreadInquiries.length > 0) {
         await apiRequest('PATCH', '/api/inquiries/mark-read', {
-          ids: unreadInquiries.map(inq => inq.id)
+          ids: unreadInquiries.map((inq: Inquiry) => inq.id)
         });
       }
     } catch (error) {
