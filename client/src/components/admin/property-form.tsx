@@ -150,6 +150,12 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     enabled: true,
   });
   
+  // Fetch all properties (needed for property number generation)
+  const { data: propertiesData } = useQuery<Property[]>({
+    queryKey: ['/api/properties'],
+    enabled: !property, // Only needed when creating new properties
+  });
+  
   // Fetch property types
   const propertyTypesQuery = useQuery<PropertyType[]>({
     queryKey: ['/api/property-types'],
@@ -403,7 +409,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                           const prefix = type === 'rent' ? 'MDP-R' : 'MDP-B';
                           
                           // Get count of existing properties for each type
-                          const existingProperties = propertiesQuery || [];
+                          const existingProperties = propertiesData || [];
                           const sameTypeProperties = existingProperties.filter(p => 
                             p.type === type &&
                             p.propertyNumber?.startsWith(prefix)
