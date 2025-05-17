@@ -504,9 +504,20 @@ export class MemStorage implements IStorage {
 
   async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
     const id = this.inquiryIdCounter++;
-    const inquiry: Inquiry = { ...insertInquiry, id };
+    const inquiry: Inquiry = { ...insertInquiry, id, isRead: false };
     this.inquiries.set(id, inquiry);
     return inquiry;
+  }
+  
+  async markInquiryAsRead(id: number): Promise<boolean> {
+    const inquiry = this.inquiries.get(id);
+    if (!inquiry) {
+      return false;
+    }
+    
+    inquiry.isRead = true;
+    this.inquiries.set(id, inquiry);
+    return true;
   }
   
   // India Location methods

@@ -1485,6 +1485,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete contact message" });
     }
   });
+  
+  // Mark multiple contact messages as read
+  app.patch("/api/contact-messages/mark-read", async (req, res) => {
+    try {
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      }
+      
+      const { ids } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid message IDs provided" });
+      }
+      
+      // Mark each message as read
+      await Promise.all(ids.map(async (id: number) => {
+        await storage.markContactMessageAsRead(id);
+      }));
+      
+      res.status(200).json({ success: true, message: "Messages marked as read" });
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+      res.status(500).json({ message: "Failed to mark messages as read" });
+    }
+  });
 
   // Neighborhoods API
   app.use('/api/neighborhoods', neighborhoodsRoutes);
