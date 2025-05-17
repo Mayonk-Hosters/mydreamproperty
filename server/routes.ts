@@ -485,6 +485,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch inquiries" });
     }
   });
+  
+  // Mark multiple inquiries as read
+  app.patch("/api/inquiries/mark-read", async (req, res) => {
+    try {
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      }
+      
+      const { ids } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid inquiry IDs provided" });
+      }
+      
+      // Mark each inquiry as read
+      await Promise.all(ids.map(async (id: number) => {
+        await storage.markInquiryAsRead(id);
+      }));
+      
+      res.status(200).json({ success: true, message: "Inquiries marked as read" });
+    } catch (error) {
+      console.error("Error marking inquiries as read:", error);
+      res.status(500).json({ message: "Failed to mark inquiries as read" });
+    }
+  });
 
   // Create a new inquiry
   app.post("/api/inquiries", async (req, res) => {
