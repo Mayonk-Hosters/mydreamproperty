@@ -244,17 +244,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check property type to determine prefix (MDP-B for buy, MDP-R for rent)
         const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
         
-        // Get existing properties with the same prefix to calculate next number
+        // Get existing properties with the same prefix pattern to calculate next number
         const existingProperties = await storage.getAllProperties();
-        const sameTypeProperties = existingProperties.filter(p => 
-          p.type === propertyData.type && 
-          p.propertyNumber?.startsWith(prefix)
-        );
         
-        // Generate sequential number with leading zeros
-        const nextNumber = sameTypeProperties.length + 1;
+        // Find the highest number for this property type
+        let highestNumber = 0;
+        for (const property of existingProperties) {
+          if (property.propertyNumber && property.propertyNumber.startsWith(prefix)) {
+            // Extract the number part (after the prefix and dash)
+            const matches = property.propertyNumber.match(`${prefix}-(\\d+)`);
+            if (matches && matches[1]) {
+              const num = parseInt(matches[1], 10);
+              if (!isNaN(num) && num > highestNumber) {
+                highestNumber = num;
+              }
+            }
+          }
+        }
+        
+        // Generate sequential number with leading zeros (next number after highest found)
+        const nextNumber = highestNumber + 1;
         const paddedNumber = nextNumber.toString().padStart(3, '0');
         propertyData.propertyNumber = `${prefix}-${paddedNumber}`;
+        console.log(`Generated property number: ${propertyData.propertyNumber}`);
       }
       
       const newProperty = await storage.createProperty(propertyData);
