@@ -236,7 +236,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new property
   app.post("/api/properties", async (req, res) => {
     try {
+      // Validate input data
       const propertyData = insertPropertySchema.parse(req.body);
+      
+      // Generate property number if not provided
+      if (!propertyData.propertyNumber) {
+        // Check property type to determine prefix (MDP-B for buy, MDP-R for rent)
+        const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
+        
+        // Get existing properties with the same prefix to calculate next number
+        const existingProperties = await storage.getAllProperties();
+        const sameTypeProperties = existingProperties.filter(p => 
+          p.type === propertyData.type && 
+          p.propertyNumber?.startsWith(prefix)
+        );
+        
+        // Generate sequential number with leading zeros
+        const nextNumber = sameTypeProperties.length + 1;
+        const paddedNumber = nextNumber.toString().padStart(3, '0');
+        propertyData.propertyNumber = `${prefix}-${paddedNumber}`;
+      }
+      
       const newProperty = await storage.createProperty(propertyData);
       res.status(201).json(newProperty);
     } catch (error) {

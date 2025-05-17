@@ -110,6 +110,13 @@ export const propertiesRelations = relations(properties, ({ one, many }) => ({
 export const insertPropertySchema = createInsertSchema(properties).omit({
   id: true,
   createdAt: true,
+}).partial({
+  propertyNumber: true,
+  neighborhoodId: true,
+  stateId: true,
+  districtId: true,
+  talukaId: true,
+  tehsilId: true
 });
 
 // Inquiries schema
