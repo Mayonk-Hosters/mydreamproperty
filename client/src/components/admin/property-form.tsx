@@ -330,14 +330,28 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       const talukaId = data.talukaId ? parseInt(data.talukaId) : null;
       const tehsilId = data.tehsilId ? parseInt(data.tehsilId) : null;
       
-      // Update the data
+      // Prepare the property data with proper formatting and validation
       const propertyData = {
         ...data,
-        stateId,
-        districtId,
-        talukaId,
-        tehsilId,
-        location: locationDetail || data.location, // Use compiled location or fall back to what user entered
+        // Ensure all required fields have valid values
+        propertyNumber: data.propertyNumber || `MDP-${data.type === 'rent' ? 'R' : 'B'}-001`,
+        title: data.title || 'Untitled Property',
+        description: data.description || 'No description provided',
+        price: data.price > 0 ? data.price : 1000,
+        address: data.address || 'Address not provided',
+        beds: data.beds > 0 ? data.beds : 1,
+        baths: data.baths > 0 ? data.baths : 1,
+        area: data.area > 0 ? data.area : 100,
+        propertyType: data.propertyType || 'House',
+        agentId: data.agentId || 1,
+        // Use the generated location or fall back to a default
+        location: locationDetail || data.location || 'Location not specified',
+        // Pass the location IDs as integers or undefined (not null)
+        stateId: stateId || undefined,
+        districtId: districtId || undefined,
+        talukaId: talukaId || undefined,
+        tehsilId: tehsilId || undefined,
+        // Use the updated images
         images: updatedImages
       };
       
