@@ -321,61 +321,82 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         locationDetail = data.location;
       }
       
-      // The images are now directly managed by the ImageUpload component
-      // and stored in the form data's "images" field
-      let updatedImages = data.images || [];
+      // Ensure images is an array
+      const updatedImages = Array.isArray(data.images) ? data.images : [];
       
-      // Parse location IDs from string to number
-      const stateId = data.stateId ? parseInt(data.stateId) : null;
-      const districtId = data.districtId ? parseInt(data.districtId) : null;
-      const talukaId = data.talukaId ? parseInt(data.talukaId) : null;
-      const tehsilId = data.tehsilId ? parseInt(data.tehsilId) : null;
-      
-      // Prepare the property data with proper formatting and validation
-      const propertyData = {
-        ...data,
-        // Ensure all required fields have valid values
-        propertyNumber: data.propertyNumber || `MDP-${data.type === 'rent' ? 'R' : 'B'}-001`,
+      // Create a clean property data object without any extra fields
+      const propertyData: Record<string, any> = {
         title: data.title || 'Untitled Property',
         description: data.description || 'No description provided',
         price: data.price > 0 ? data.price : 1000,
-        address: data.address || 'Address not provided',
-        beds: data.beds > 0 ? data.beds : 1,
-        baths: data.baths > 0 ? data.baths : 1,
-        area: data.area > 0 ? data.area : 100,
-        propertyType: data.propertyType || 'House',
-        agentId: data.agentId || 1,
-        // Use the generated location or fall back to a default
         location: locationDetail || data.location || 'Location not specified',
-        // Pass the location IDs as integers or undefined (not null)
-        stateId: stateId || undefined,
-        districtId: districtId || undefined,
-        talukaId: talukaId || undefined,
-        tehsilId: tehsilId || undefined,
-        // Use the updated images
-        images: updatedImages
+        address: data.address || 'Address not provided',
+        beds: data.beds > 0 ? Math.floor(data.beds) : 1,
+        baths: data.baths > 0 ? data.baths : 1,
+        area: data.area > 0 ? Math.floor(data.area) : 100,
+        propertyType: data.propertyType || 'House',
+        type: data.type || 'buy',
+        status: data.status || 'active',
+        featured: Boolean(data.featured),
+        images: updatedImages,
+        agentId: data.agentId ? parseInt(data.agentId.toString()) : 1
       };
       
-      if (property) {
-        // Update existing property
-        await apiRequest('PATCH', `/api/properties/${property.id}`, propertyData);
-        // Invalidate cache to refresh the data
-        queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/properties', property.id] });
+      // Add location IDs if they have values
+      if (selectedStateId) {
+        propertyData.stateId = parseInt(selectedStateId);
+      }
+      
+      if (selectedDistrictId) {
+        propertyData.districtId = parseInt(selectedDistrictId);
+      }
+      
+      if (selectedTalukaId) {
+        propertyData.talukaId = parseInt(selectedTalukaId);
+      }
+      
+      if (selectedTehsilId) {
+        propertyData.tehsilId = parseInt(selectedTehsilId);
+      }
+      
+      // Log the property data for debugging
+      console.log('Saving property data:', propertyData);
+      
+      try {
+        if (property) {
+          // Update existing property
+          await apiRequest('PATCH', `/api/properties/${property.id}`, propertyData);
+          // Invalidate cache to refresh the data
+          queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/properties', property.id] });
+          
+          toast({
+            title: "Property updated",
+            description: "The property has been updated successfully.",
+          });
+        } else {
+          // Create new property
+          await apiRequest('POST', '/api/properties', propertyData);
+          // Invalidate cache to refresh the data
+          queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+          
+          toast({
+            title: "Property created",
+            description: "The property has been created successfully.",
+          });
+        }
         
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate('/admin/properties');
+        }
+      } catch (error) {
+        console.error('Error saving property:', error);
         toast({
-          title: "Property updated",
-          description: "The property has been updated successfully.",
-        });
-      } else {
-        // Create new property
-        await apiRequest('POST', '/api/properties', propertyData);
-        // Invalidate cache to refresh the data
-        queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
-        
-        toast({
-          title: "Property created",
-          description: "The property has been created successfully.",
+          title: "Error saving property",
+          description: "There was a problem saving the property. Please check the form and try again.",
+          variant: "destructive",
         });
       }
       
