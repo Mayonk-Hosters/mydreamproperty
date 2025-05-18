@@ -14,7 +14,7 @@ import {
   PhoneCall
 } from "lucide-react";
 import { NotificationIndicator } from "./notification-indicator";
-import { useNotifications } from "@/hooks/use-notifications";
+import { useNotificationIndicators } from "@/hooks/use-notification-indicators";
 import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { queryClient } from "@/lib/queryClient";
@@ -29,7 +29,7 @@ export function Sidebar() {
     hasUnreadMessages,
     hasUnreadInquiries,
     hasUnread
-  } = useNotifications();
+  } = useNotificationIndicators();
   
   const sidebarItems = [
     {
