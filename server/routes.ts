@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { pool } from "./db";
 import { 
   insertPropertySchema, 
   insertAgentSchema, 
@@ -534,18 +535,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      const { ids } = req.body;
+      // Handle both single IDs and arrays for flexibility
+      const { ids, id } = req.body;
+      let inquiryIds: number[] = [];
       
-      if (!Array.isArray(ids) || ids.length === 0) {
-        return res.status(400).json({ message: "Invalid inquiry IDs provided" });
+      if (Array.isArray(ids) && ids.length > 0) {
+        inquiryIds = ids;
+      } else if (id !== undefined) {
+        inquiryIds = [id];
+      } else if (!ids) {
+        // If no ids provided, mark ALL unread inquiries as read
+        const inquiries = await storage.getAllInquiries();
+        inquiryIds = inquiries
+          .filter(inq => !inq.isRead)
+          .map(inq => inq.id);
+      }
+      
+      if (inquiryIds.length === 0) {
+        return res.status(200).json({ success: true, message: "No inquiries to mark as read" });
       }
       
       // Mark each inquiry as read
-      await Promise.all(ids.map(async (id: number) => {
-        await storage.markInquiryAsRead(id);
+      const results = await Promise.all(inquiryIds.map(async (id: number) => {
+        return await storage.markInquiryAsRead(id);
       }));
       
-      res.status(200).json({ success: true, message: "Inquiries marked as read" });
+      const successCount = results.filter(success => success).length;
+      
+      console.log(`Marked ${successCount} of ${inquiryIds.length} inquiries as read`);
+      res.status(200).json({ 
+        success: true, 
+        message: `Marked ${successCount} of ${inquiryIds.length} inquiries as read` 
+      });
     } catch (error) {
       console.error("Error marking inquiries as read:", error);
       res.status(500).json({ message: "Failed to mark inquiries as read" });
