@@ -58,14 +58,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { getPropertyImage, getInteriorImage } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 
-// Extend the property schema with additional validation
+// Extend the property schema with additional validation but make validation more flexible
 const formSchema = insertPropertySchema.extend({
-  price: z.number().positive("Price must be a positive number"),
-  beds: z.number().int().positive("Beds must be a positive integer"),
-  baths: z.number().positive("Baths must be a positive number"),
-  area: z.number().int().positive("Area must be a positive integer"),
+  // Allow zero values during form editing, we'll handle min values during submission
+  price: z.number().nonnegative("Price must be a non-negative number"),
+  beds: z.number().int().nonnegative("Beds must be a non-negative integer"),
+  baths: z.number().nonnegative("Baths must be a non-negative number"),
+  area: z.number().int().nonnegative("Area must be a non-negative integer"),
   propertyNumber: z.string().optional(),
-  // Add location hierarchy fields
+  // Add location hierarchy fields as optional
   stateId: z.string().optional(),
   districtId: z.string().optional(),
   talukaId: z.string().optional(),
