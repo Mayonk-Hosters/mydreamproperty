@@ -400,11 +400,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         });
       }
       
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate('/admin/properties');
-      }
+
     } catch (error) {
       console.error('Error saving property:', error);
       toast({
