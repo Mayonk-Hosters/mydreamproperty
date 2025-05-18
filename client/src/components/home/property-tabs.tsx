@@ -13,26 +13,50 @@ type PropertyType = "buy" | "rent";
 export function PropertyTabs() {
   const [activeTab, setActiveTab] = useState<PropertyType>("buy");
   
-  // Query for properties with "buy" type
+  // Query for properties with "buy" type - featured first, then regular properties
   const { 
     data: buyProperties, 
     isLoading: isBuyLoading 
   } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
-    select: (data) => data.filter(property => 
-      property.type === 'buy' && property.status === 'active'
-    ),
+    select: (data) => {
+      // Filter active buy properties
+      const activeBuyProperties = data.filter(property => 
+        property.type === 'buy' && property.status === 'active'
+      );
+      
+      // Sort featured properties first
+      return activeBuyProperties.sort((a, b) => {
+        // First sort by featured status (featured properties first)
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        // Then sort by ID (newest first - assuming higher IDs are newer)
+        return b.id - a.id;
+      });
+    },
   });
   
-  // Query for properties with "rent" type
+  // Query for properties with "rent" type - featured first, then regular properties
   const { 
     data: rentProperties, 
     isLoading: isRentLoading 
   } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
-    select: (data) => data.filter(property => 
-      property.type === 'rent' && property.status === 'active'
-    ),
+    select: (data) => {
+      // Filter active rent properties
+      const activeRentProperties = data.filter(property => 
+        property.type === 'rent' && property.status === 'active'
+      );
+      
+      // Sort featured properties first
+      return activeRentProperties.sort((a, b) => {
+        // First sort by featured status (featured properties first)
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        // Then sort by ID (newest first - assuming higher IDs are newer)
+        return b.id - a.id;
+      });
+    },
   });
   
   // We've removed the "sell" type query
