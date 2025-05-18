@@ -36,11 +36,6 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
       </Link>
       <div className="ml-auto flex items-center">
         <LoginButton />
-        <Link href="/login">
-          <Button variant="outline" className="ml-4">
-            Admin Login
-          </Button>
-        </Link>
       </div>
     </nav>
   );
