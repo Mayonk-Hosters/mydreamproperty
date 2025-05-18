@@ -1563,18 +1563,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      const { ids } = req.body;
+      // Handle both single IDs and arrays for flexibility
+      const { ids, id } = req.body;
+      let messageIds: number[] = [];
       
-      if (!Array.isArray(ids) || ids.length === 0) {
-        return res.status(400).json({ message: "Invalid message IDs provided" });
+      if (Array.isArray(ids) && ids.length > 0) {
+        messageIds = ids;
+      } else if (id !== undefined) {
+        messageIds = [id];
+      } else if (!ids) {
+        // If no ids provided, mark ALL unread messages as read
+        const messages = await storage.getAllContactMessages();
+        messageIds = messages
+          .filter(msg => !msg.isRead)
+          .map(msg => msg.id);
+      }
+      
+      if (messageIds.length === 0) {
+        return res.status(200).json({ success: true, message: "No messages to mark as read" });
       }
       
       // Mark each message as read
-      await Promise.all(ids.map(async (id: number) => {
-        await storage.markContactMessageAsRead(id);
+      const results = await Promise.all(messageIds.map(async (id: number) => {
+        return await storage.markContactMessageAsRead(id);
       }));
       
-      res.status(200).json({ success: true, message: "Messages marked as read" });
+      const successCount = results.filter(success => success).length;
+      
+      console.log(`Marked ${successCount} of ${messageIds.length} messages as read`);
+      res.status(200).json({ 
+        success: true, 
+        message: `Marked ${successCount} of ${messageIds.length} messages as read` 
+      });
     } catch (error) {
       console.error("Error marking messages as read:", error);
       res.status(500).json({ message: "Failed to mark messages as read" });
