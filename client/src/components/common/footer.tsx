@@ -115,7 +115,17 @@ export function Footer() {
         
         <div className="pt-6 border-t border-gray-800 text-center text-gray-500 text-xs sm:text-sm">
           <p>&copy; {currentYear} {settings.siteName}. All rights reserved.</p>
-          <p className="mt-2 text-xs">Optimized for iOS and Android devices</p>
+          <p className="mt-2 text-xs">
+            Optimized for iOS and Android devices
+            <span className="mx-1">·</span>
+            <Link 
+              to="/admin" 
+              className="text-gray-500 hover:text-gray-500 cursor-default"
+              title="Site version 2.5.1"
+            >
+              v2.5.1
+            </Link>
+          </p>
         </div>
       </div>
     </footer>
