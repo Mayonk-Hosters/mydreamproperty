@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Loader2, Trash2, Check, Mail, MailOpen } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useNotifications } from "@/hooks/use-notifications";
+import { useNotificationIndicators } from "@/hooks/use-notification-indicators";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminContactMessagesPage() {
@@ -26,12 +26,12 @@ export default function AdminContactMessagesPage() {
     isDeleting
   } = useContactMessages();
   
-  const { markAllAsRead } = useNotifications();
+  const { markMessagesAsRead } = useNotificationIndicators();
   
   // Mark all messages as read when visiting this page
   useEffect(() => {
-    markAllAsRead();
-  }, [markAllAsRead]);
+    markMessagesAsRead();
+  }, [markMessagesAsRead]);
   
   // Sort messages by date (newest first)
   const sortedMessages = [...contactMessages].sort((a, b) => 
