@@ -28,10 +28,27 @@ export default function AdminContactMessagesPage() {
   
   const { markMessagesAsRead } = useNotificationIndicators();
   
-  // Mark all messages as read when visiting this page
+  // Mark all messages as read when visiting this page and when selecting a message
   useEffect(() => {
-    markMessagesAsRead();
-  }, [markMessagesAsRead]);
+    // Only mark all as read when the page loads
+    if (contactMessages.length > 0) {
+      markMessagesAsRead();
+    }
+  }, [contactMessages.length, markMessagesAsRead]);
+  
+  // When a message is selected, mark it as read
+  useEffect(() => {
+    if (selectedMessage && !selectedMessage.isRead) {
+      // Use markAsRead directly since it exists in the component scope
+      markAsRead(selectedMessage.id);
+      
+      // Update the local state to reflect the change immediately
+      setSelectedMessage({
+        ...selectedMessage,
+        isRead: true
+      });
+    }
+  }, [selectedMessage, markAsRead]);
   
   // Sort messages by date (newest first)
   const sortedMessages = [...contactMessages].sort((a, b) => 
