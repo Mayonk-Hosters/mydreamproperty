@@ -186,11 +186,18 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             <div className="flex justify-between items-start mb-2">
               <div>
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">{property.title}</h1>
-                {property.propertyNumber && (
-                  <div className="inline-block bg-primary/10 text-primary text-xs sm:text-sm font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-md mt-2">
-                    Property ID: {property.propertyNumber}
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {property.propertyNumber && (
+                    <div className="inline-block bg-primary/10 text-primary text-xs sm:text-sm font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-md">
+                      Property ID: {property.propertyNumber}
+                    </div>
+                  )}
+                  {property.maharera_registered && (
+                    <div className="inline-block bg-green-100 text-green-800 text-xs sm:text-sm font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-md">
+                      MahaRERA Registered
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="hidden lg:flex space-x-2">
                 <Button variant="outline" size="icon">
