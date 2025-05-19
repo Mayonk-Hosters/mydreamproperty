@@ -287,11 +287,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Use the simple MDP prefix for all properties
           const prefix = 'MDP';
           
-          // Query directly for properties with the MDP prefix
+          // Query directly for all MDP properties (including legacy MDP-R and MDP-B)
           const query = `
             SELECT property_number 
             FROM properties 
-            WHERE property_number LIKE '${prefix}-%'
+            WHERE property_number LIKE 'MDP-%'
             ORDER BY property_number DESC
           `;
           
@@ -303,8 +303,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let highestNumber = 0;
           for (const row of existingNumbers) {
             if (row.property_number) {
-              // Extract the number part using a regex
-              const matches = row.property_number.match(`${prefix}-(\\d+)`);
+              // Extract the number part using a regex that catches all existing formats
+              // This will match MDP-XXXX, MDP-RXXX, and MDP-BXXX
+              const matches = row.property_number.match(/MDP-[RB]?(\d+)/);
               if (matches && matches[1]) {
                 const num = parseInt(matches[1], 10);
                 if (!isNaN(num) && num > highestNumber) {
@@ -317,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Generate sequential number with leading zeros (next number after highest found)
           const nextNumber = highestNumber + 1;
           const paddedNumber = nextNumber.toString().padStart(4, '0'); // Using 4 digits for more capacity
-          propertyData.propertyNumber = `${prefix}-${paddedNumber}`;
+          propertyData.propertyNumber = `MDP-${paddedNumber}`;
           console.log(`Generated property number: ${propertyData.propertyNumber} (highest was ${highestNumber})`);
         } catch (error) {
           console.error('Error generating property number:', error);
