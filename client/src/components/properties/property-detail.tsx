@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import { 
   MapPin, 
   Home, 
@@ -40,6 +41,8 @@ interface PropertyDetailProps {
 export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const [selectedTab, setSelectedTab] = useState("details");
   const [isInquiryFormOpen, setIsInquiryFormOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { toast } = useToast();
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
@@ -50,6 +53,40 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const { data: property, isLoading, error } = useQuery<Property>({
     queryKey: [`/api/properties/${propertyId}`],
   });
+  
+  // Check if property is in favorites on load
+  useEffect(() => {
+    if (propertyId) {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+      setIsFavorite(favorites.includes(propertyId));
+    }
+  }, [propertyId]);
+  
+  // Toggle favorite status
+  const toggleFavorite = () => {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    
+    if (isFavorite) {
+      // Remove from favorites
+      const newFavorites = favorites.filter((id: number) => id !== propertyId);
+      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      toast({
+        title: "Removed from favorites",
+        description: "This property has been removed from your favorites",
+      });
+    } else {
+      // Add to favorites
+      if (!favorites.includes(propertyId)) {
+        localStorage.setItem('favorites', JSON.stringify([...favorites, propertyId]));
+        toast({
+          title: "Added to favorites",
+          description: "This property has been added to your favorites",
+        });
+      }
+    }
+    
+    setIsFavorite(!isFavorite);
+  };
 
   if (isLoading) {
     return (
@@ -152,8 +189,13 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 <span>{formatCurrency(property.price)}</span>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon" className="h-8 w-8">
-                  <Heart className="h-4 w-4" />
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className={`h-8 w-8 ${isFavorite ? 'bg-red-50 text-red-500 hover:text-red-500 hover:bg-red-50' : ''}`}
+                  onClick={toggleFavorite}
+                >
+                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
                 </Button>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -200,8 +242,13 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 </div>
               </div>
               <div className="hidden lg:flex space-x-2">
-                <Button variant="outline" size="icon">
-                  <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className={`${isFavorite ? 'bg-red-50 text-red-500 hover:text-red-500 hover:bg-red-50' : ''}`}
+                  onClick={toggleFavorite}
+                >
+                  <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${isFavorite ? 'fill-current' : ''}`} />
                 </Button>
                 <Popover>
                   <PopoverTrigger asChild>
