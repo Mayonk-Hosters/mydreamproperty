@@ -1567,12 +1567,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid message ID" });
       }
 
-      const success = await storage.markContactMessageAsRead(id);
-      if (!success) {
-        return res.status(404).json({ message: "Message not found" });
+      try {
+        // Try using storage method first
+        const success = await storage.markContactMessageAsRead(id);
+        if (success) {
+          return res.json({ success: true });
+        }
+      } catch (storageError) {
+        console.error("Error marking message as read using storage method:", storageError);
       }
-
-      res.json({ success: true });
+      
+      // Fallback to direct SQL
+      try {
+        const result = await pool.query(`
+          UPDATE contact_messages
+          SET is_read = true
+          WHERE id = $1
+          RETURNING id
+        `, [id]);
+        
+        if (result.rowCount === 0) {
+          return res.status(404).json({ message: "Message not found" });
+        }
+        
+        return res.json({ success: true });
+      } catch (sqlError) {
+        console.error("Error marking message as read using SQL:", sqlError);
+        throw sqlError; // Re-throw for the outer catch
+      }
     } catch (error) {
       console.error("Error marking contact message as read:", error);
       res.status(500).json({ message: "Failed to mark message as read" });
@@ -1594,12 +1616,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid message ID" });
       }
 
-      const success = await storage.deleteContactMessage(id);
-      if (!success) {
-        return res.status(404).json({ message: "Message not found" });
+      try {
+        // First try using the storage method
+        const success = await storage.deleteContactMessage(id);
+        if (success) {
+          return res.status(204).end();
+        }
+      } catch (storageError) {
+        console.error("Error deleting message using storage method:", storageError);
       }
-
-      res.status(204).end();
+      
+      // Fallback to direct SQL
+      try {
+        const result = await pool.query(`
+          DELETE FROM contact_messages
+          WHERE id = $1
+          RETURNING id
+        `, [id]);
+        
+        if (result.rowCount === 0) {
+          return res.status(404).json({ message: "Message not found" });
+        }
+        
+        return res.status(204).end();
+      } catch (sqlError) {
+        console.error("Error deleting message using SQL:", sqlError);
+        throw sqlError; // Re-throw for the outer catch
+      }
     } catch (error) {
       console.error("Error deleting contact message:", error);
       res.status(500).json({ message: "Failed to delete contact message" });
