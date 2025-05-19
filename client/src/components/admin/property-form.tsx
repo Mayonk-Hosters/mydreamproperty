@@ -69,6 +69,7 @@ const formSchema = insertPropertySchema.extend({
   area: z.number().int().nonnegative("Area must be a non-negative integer"),
   yearBuilt: z.number().int().min(1800).max(new Date().getFullYear()).optional(),
   propertyNumber: z.string().optional(),
+  mapUrl: z.string().url("Please enter a valid URL").optional(),
   // Add location hierarchy fields as optional
   stateId: z.string().optional(),
   districtId: z.string().optional(),
@@ -194,6 +195,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     area: 0,
     yearBuilt: new Date().getFullYear(), // Default to current year
     features: [], // Initialize with empty array
+    mapUrl: "", // Google Maps location URL
     propertyType: DEFAULT_PROPERTY_TYPES[0],
     type: "buy", // Default to buy
     status: PROPERTY_STATUS[0],
@@ -418,6 +420,8 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         type: data.type || 'buy',
         status: data.status || 'active',
         featured: Boolean(data.featured),
+        // Include Google Maps URL if provided
+        mapUrl: data.mapUrl || null,
         // Properly handle features data
         features: Array.isArray(data.features) ? data.features : 
                  (typeof data.features === 'string' ? 
@@ -888,6 +892,26 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                       <FormControl>
                         <Input placeholder="Enter full address" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="mapUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Google Maps Location Link</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Paste Google Maps URL here (e.g., https://maps.google.com/?q=...)" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Paste a Google Maps link to help buyers find the exact property location
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
