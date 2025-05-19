@@ -418,6 +418,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         type: data.type || 'buy',
         status: data.status || 'active',
         featured: Boolean(data.featured),
+        // Properly handle features data
+        features: Array.isArray(data.features) ? data.features : 
+                 (typeof data.features === 'string' ? 
+                   (data.features ? JSON.parse(data.features) : []) : []),
         images: updatedImages,
         agentId: data.agentId ? parseInt(data.agentId.toString()) : 1
       };

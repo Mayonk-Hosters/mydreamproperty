@@ -266,7 +266,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                         </li>
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Year Built: 2018</span>
+                          <span>Year Built: {property.yearBuilt || 'Not specified'}</span>
                         </li>
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
@@ -301,8 +301,25 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               <TabsContent value="features">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* First column with custom property features */}
                     <div>
-                      <h3 className="font-medium text-sm sm:text-base mb-2">Interior Features</h3>
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Property Features</h3>
+                      {Array.isArray(property.features) && property.features.length > 0 ? (
+                        <ul className="space-y-1.5 sm:space-y-2">
+                          {property.features.map((feature, index) => (
+                            <li key={index} className="flex items-center text-xs sm:text-sm">
+                              <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-500 text-xs sm:text-sm">No custom features added to this property.</p>
+                      )}
+                    </div>
+                    {/* Second column with standard features */}
+                    <div className="mt-3 sm:mt-0">
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Standard Features</h3>
                       <ul className="space-y-1.5 sm:space-y-2">
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
@@ -314,28 +331,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                         </li>
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Modern Kitchen</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Hardwood Floors</span>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="mt-3 sm:mt-0">
-                      <h3 className="font-medium text-sm sm:text-base mb-2">Exterior Features</h3>
-                      <ul className="space-y-1.5 sm:space-y-2">
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Backyard</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Garage</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Swimming Pool</span>
+                          <span>Parking</span>
                         </li>
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
