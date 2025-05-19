@@ -69,6 +69,7 @@ export const properties = pgTable("properties", {
   type: text("type").notNull().default("buy"), // Property transaction type: buy, rent, sell
   status: text("status").default("active"),
   featured: boolean("featured").default(false),
+  features: jsonb("features").default([]), // Property features/amenities
   images: jsonb("images").notNull().default([]),
   agentId: integer("agent_id").notNull().references(() => agents.id, { onDelete: 'cascade' }),
   neighborhoodId: integer("neighborhood_id").references(() => neighborhoods.id),

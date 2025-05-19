@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -53,10 +53,12 @@ import {
   PopoverTrigger 
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getPropertyImage, getInteriorImage } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Extend the property schema with additional validation but make validation more flexible
 const formSchema = insertPropertySchema.extend({
@@ -186,6 +188,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     type: "buy", // Default to buy
     status: PROPERTY_STATUS[0],
     featured: false,
+    features: [], // Default empty features array
     images: [
       getPropertyImage(0),
       getPropertyImage(1),
