@@ -1,17 +1,32 @@
 import { Router, Request, Response } from 'express';
 import { db } from '../db';
-import { neighborhoods, neighborhoodMetrics } from '@shared/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { neighborhoods, neighborhoodMetrics, properties } from '@shared/schema';
+import { eq, inArray, isNotNull, count } from 'drizzle-orm';
 
 const router = Router();
 
 /**
- * Get all neighborhoods
+ * Get all neighborhoods with property counts - only returning neighborhoods that have properties
  */
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    const allNeighborhoods = await db.select().from(neighborhoods);
-    res.json(allNeighborhoods);
+    // Join with properties to get only neighborhoods that have properties
+    const neighborhoodsWithProperties = await db
+      .select({
+        id: neighborhoods.id,
+        name: neighborhoods.name,
+        city: neighborhoods.city,
+        description: neighborhoods.description,
+        locationData: neighborhoods.locationData,
+        createdAt: neighborhoods.createdAt,
+        propertyCount: count(properties.id)
+      })
+      .from(neighborhoods)
+      .leftJoin(properties, eq(properties.neighborhoodId, neighborhoods.id))
+      .groupBy(neighborhoods.id)
+      .having(count(properties.id), gt => gt(0)); // Only neighborhoods with at least 1 property
+    
+    res.json(neighborhoodsWithProperties);
   } catch (error) {
     console.error('Error fetching neighborhoods:', error);
     res.status(500).json({ message: 'Failed to fetch neighborhoods' });
