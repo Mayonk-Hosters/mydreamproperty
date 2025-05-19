@@ -70,6 +70,8 @@ const formSchema = insertPropertySchema.extend({
   yearBuilt: z.number().int().min(1800).max(new Date().getFullYear()).optional(),
   propertyNumber: z.string().optional(),
   mapUrl: z.string().url("Please enter a valid URL").optional(),
+  // MahaRERA registration status
+  maharera_registered: z.boolean().optional().default(false),
   // Add location hierarchy fields as optional
   stateId: z.string().optional(),
   districtId: z.string().optional(),
@@ -200,6 +202,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     type: "buy", // Default to buy
     status: PROPERTY_STATUS[0],
     featured: false,
+    maharera_registered: false, // Default MahaRERA registration to false
     images: [
       getPropertyImage(0),
       getPropertyImage(1),
@@ -420,6 +423,8 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         type: data.type || 'buy',
         status: data.status || 'active',
         featured: Boolean(data.featured),
+        // Include MahaRERA registration status
+        maharera_registered: Boolean(data.maharera_registered),
         // Include Google Maps URL if provided
         mapUrl: data.mapUrl || null,
         // Properly handle features data
