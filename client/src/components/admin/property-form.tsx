@@ -291,11 +291,27 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     if (!newFeature.trim()) return;
     
     // Get current features from form
-    const currentFeatures = form.getValues("features") || [];
+    let currentFeatures = form.getValues("features");
+    
+    // Handle various data types that might come from the database
+    if (!currentFeatures || currentFeatures === null) {
+      currentFeatures = [];
+    } else if (typeof currentFeatures === 'string') {
+      try {
+        currentFeatures = JSON.parse(currentFeatures);
+      } catch (e) {
+        currentFeatures = [];
+      }
+    }
+    
+    if (!Array.isArray(currentFeatures)) {
+      currentFeatures = [];
+    }
     
     // Add new feature if it doesn't already exist
     if (!currentFeatures.includes(newFeature.trim())) {
       form.setValue("features", [...currentFeatures, newFeature.trim()]);
+      console.log("Feature added:", [...currentFeatures, newFeature.trim()]);
       setNewFeature("");
       
       // Focus back on input for adding another feature
