@@ -71,6 +71,7 @@ export const properties = pgTable("properties", {
   featured: boolean("featured").default(false),
   features: jsonb("features").default([]), // Property features/amenities
   images: jsonb("images").notNull().default([]),
+  mapUrl: text("map_url"), // Google Maps URL for property location
   agentId: integer("agent_id").notNull().references(() => agents.id, { onDelete: 'cascade' }),
   neighborhoodId: integer("neighborhood_id").references(() => neighborhoods.id),
   // Location hierarchy fields
