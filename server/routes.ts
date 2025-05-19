@@ -1669,30 +1669,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (id !== undefined) {
         messageIds = [id];
       } else if (!ids) {
-        // If no ids provided, mark ALL unread messages as read
-        // Direct SQL query to get unread messages
-        const result = await pool.query(`
-          SELECT id FROM contact_messages WHERE is_read = false
-        `);
-        
-        messageIds = result.rows.map(row => row.id);
+        // If no ids provided, mark ALL unread messages as read using direct SQL
+        try {
+          // Mark all unread messages
+          await pool.query(`
+            UPDATE contact_messages
+            SET is_read = true
+            WHERE is_read = false
+          `);
+          
+          return res.status(200).json({ 
+            success: true, 
+            message: "All unread messages marked as read" 
+          });
+        } catch (sqlError) {
+          console.error("Error marking all messages as read:", sqlError);
+          throw sqlError;
+        }
       }
       
       if (messageIds.length === 0) {
         return res.status(200).json({ success: true, message: "No messages to mark as read" });
       }
       
-      // Mark each message as read
-      const results = await Promise.all(messageIds.map(async (id: number) => {
-        return await storage.markContactMessageAsRead(id);
-      }));
+      // Try to mark specific messages as read
+      try {
+        // Try storage method first
+        const success = await storage.markContactMessagesAsRead(messageIds);
+        if (success) {
+          return res.json({ success: true });
+        }
+      } catch (storageError) {
+        console.error("Error marking messages as read using storage method:", storageError);
+      }
       
-      const successCount = results.filter(success => success).length;
+      // Fallback to direct SQL
+      try {
+        const result = await pool.query(`
+          UPDATE contact_messages
+          SET is_read = true
+          WHERE id = ANY($1)
+          RETURNING id
+        `, [messageIds]);
+        
+        if (result.rowCount === 0) {
+          return res.status(404).json({ message: "No messages found with the provided IDs" });
+        }
+        
+        return res.json({ success: true });
+      } catch (sqlError) {
+        console.error("Error marking messages as read using SQL:", sqlError);
+        throw sqlError; // Re-throw for the outer catch
+      }
       
-      console.log(`Marked ${successCount} of ${messageIds.length} messages as read`);
-      res.status(200).json({ 
-        success: true, 
-        message: `Marked ${successCount} of ${messageIds.length} messages as read` 
+      // If we reached here, both methods failed for specific IDs
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to mark messages as read" 
       });
     } catch (error) {
       console.error("Error marking messages as read:", error);

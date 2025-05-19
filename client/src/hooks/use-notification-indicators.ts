@@ -1,108 +1,126 @@
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
 import { apiRequest } from "@/lib/queryClient";
-import type { ContactMessage, Inquiry } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+
+interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  phone: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
+
+interface Inquiry {
+  id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  message: string;
+  propertyId: number;
+  isRead: boolean;
+  createdAt: string;
+}
 
 export function useNotificationIndicators() {
   const queryClient = useQueryClient();
-
-  // Get unread contact messages
+  const { toast } = useToast();
+  const [lastCheckedTime, setLastCheckedTime] = useState<Date>(new Date(0));
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const [hasUnreadInquiries, setHasUnreadInquiries] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  
+  // Get messages
   const { 
-    data: contactMessages = [] as ContactMessage[],
+    data: messages = [],
     isLoading: isLoadingMessages,
     refetch: refetchMessages
   } = useQuery<ContactMessage[]>({
     queryKey: ['/api/contact-messages'],
-    queryFn: async () => {
-      const response = await fetch('/api/contact-messages');
-      if (!response.ok) {
-        throw new Error('Failed to fetch contact messages');
-      }
-      return response.json();
-    },
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000 // Consider data stale after 10 seconds
+    staleTime: 30000, // 30 seconds
   });
-
-  // Get unread inquiries
+  
+  // Get inquiries
   const { 
-    data: inquiries = [] as Inquiry[], 
+    data: inquiries = [],
     isLoading: isLoadingInquiries,
     refetch: refetchInquiries
   } = useQuery<Inquiry[]>({
     queryKey: ['/api/inquiries'],
-    queryFn: async () => {
-      const response = await fetch('/api/inquiries');
-      if (!response.ok) {
-        throw new Error('Failed to fetch inquiries');
-      }
-      return response.json();
-    },
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000 // Consider data stale after 10 seconds
+    staleTime: 30000, // 30 seconds
   });
-
-  // Filter for unread items
-  const unreadMessages = contactMessages.filter((message: ContactMessage) => !message.isRead);
-  const unreadInquiries = inquiries.filter((inquiry: Inquiry) => !inquiry.isRead);
   
-  // Total unread count
-  const unreadMessagesCount = unreadMessages.length;
-  const unreadInquiriesCount = unreadInquiries.length;
-  const totalUnreadCount = unreadMessagesCount + unreadInquiriesCount;
-
-  // Refresh all notification data
-  const refreshNotifications = useCallback(async () => {
-    await Promise.all([
-      refetchMessages(),
-      refetchInquiries()
-    ]);
+  // Calculate unread counts
+  const unreadMessages = messages?.filter(msg => !msg.isRead) || [];
+  const unreadInquiries = inquiries?.filter(inq => !inq.isRead) || [];
+  
+  // Set unread states
+  useEffect(() => {
+    if (!isLoadingMessages) {
+      setHasUnreadMessages(unreadMessages.length > 0);
+    }
+  }, [unreadMessages.length, isLoadingMessages]);
+  
+  useEffect(() => {
+    if (!isLoadingInquiries) {
+      setHasUnreadInquiries(unreadInquiries.length > 0);
+    }
+  }, [unreadInquiries.length, isLoadingInquiries]);
+  
+  // Update total unread count
+  useEffect(() => {
+    setUnreadCount(unreadMessages.length + unreadInquiries.length);
+  }, [unreadMessages.length, unreadInquiries.length]);
+  
+  // Check for new messages
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refetchMessages();
+      refetchInquiries();
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(intervalId);
   }, [refetchMessages, refetchInquiries]);
-
-  // Mark messages as read
+  
+  // Mark all messages as read
   const markMessagesAsRead = useCallback(async () => {
     try {
-      if (unreadMessages.length > 0) {
-        await apiRequest('PATCH', '/api/contact-messages/mark-read', {
-          ids: unreadMessages.map((msg: ContactMessage) => msg.id)
-        });
-        
-        // Invalidate the messages cache to force a refresh
-        queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
-      }
+      await apiRequest("PATCH", "/api/contact-messages/mark-read", {});
+      queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
+      setHasUnreadMessages(false);
     } catch (error) {
-      console.error('Error marking messages as read:', error);
+      console.error("Failed to mark messages as read:", error);
     }
-  }, [unreadMessages, queryClient]);
-
-  // Mark inquiries as read
+  }, [queryClient]);
+  
+  // Mark all inquiries as read
   const markInquiriesAsRead = useCallback(async () => {
     try {
-      if (unreadInquiries.length > 0) {
-        await apiRequest('PATCH', '/api/inquiries/mark-read', {
-          ids: unreadInquiries.map((inq: Inquiry) => inq.id)
-        });
-        
-        // Invalidate the inquiries cache to force a refresh
-        queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
-      }
+      await apiRequest("PATCH", "/api/inquiries/mark-read", {});
+      queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
+      setHasUnreadInquiries(false);
     } catch (error) {
-      console.error('Error marking inquiries as read:', error);
+      console.error("Failed to mark inquiries as read:", error);
     }
-  }, [unreadInquiries, queryClient]);
-
+  }, [queryClient]);
+  
   return {
+    hasUnreadMessages,
+    hasUnreadInquiries,
     unreadMessages,
     unreadInquiries,
-    unreadMessagesCount,
-    unreadInquiriesCount,
-    totalUnreadCount,
-    hasUnreadMessages: unreadMessagesCount > 0,
-    hasUnreadInquiries: unreadInquiriesCount > 0,
-    hasUnread: totalUnreadCount > 0,
+    unreadMessagesCount: unreadMessages.length,
+    unreadInquiriesCount: unreadInquiries.length,
+    totalUnreadCount: unreadCount,
     isLoading: isLoadingMessages || isLoadingInquiries,
     markMessagesAsRead,
     markInquiriesAsRead,
-    refreshNotifications
+    refetchAll: useCallback(() => {
+      refetchMessages();
+      refetchInquiries();
+    }, [refetchMessages, refetchInquiries])
   };
 }
