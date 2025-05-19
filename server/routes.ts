@@ -278,8 +278,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate property number if not provided
       if (!requestData.propertyNumber) {
         try {
-          // Check property type to determine prefix (MSP-B for buy, MSP-R for rent)
-          const prefix = propertyData.type === 'rent' ? 'MSP-R' : 'MSP-B';
+          // Check property type to determine prefix (MDP-B for buy, MDP-R for rent)
+          const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
           
           // Query directly for properties with this property type and prefix
           const query = `
@@ -317,7 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('Error generating property number:', error);
           // Fallback to a timestamp-based number if query fails
           const timestamp = new Date().getTime().toString().slice(-6);
-          const prefix = propertyData.type === 'rent' ? 'MSP-R' : 'MSP-B';
+          const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
           propertyData.propertyNumber = `${prefix}-${timestamp}`;
           console.log(`Fallback property number generated: ${propertyData.propertyNumber}`);
         }

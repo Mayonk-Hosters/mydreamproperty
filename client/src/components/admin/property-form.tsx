@@ -425,7 +425,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                   <div className="flex space-x-2">
                     <FormControl>
                       <Input 
-                        placeholder="MSP-XXX (Auto-generated if left empty)" 
+                        placeholder="MDP-XXX (Auto-generated if left empty)" 
                         {...field} 
                         value={field.value || ""} 
                         disabled={!!property}
@@ -438,7 +438,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         onClick={() => {
                           // Generate property code based on property type (buy/rent)
                           const type = form.getValues('type') || 'buy';
-                          const prefix = type === 'rent' ? 'MSP-R' : 'MSP-B';
+                          const prefix = type === 'rent' ? 'MDP-R' : 'MDP-B';
                           
                           // Get count of existing properties for each type
                           const existingProperties = propertiesData || [];
@@ -466,7 +466,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                   <FormDescription>
                     {property ? 
                       "Property number cannot be changed after creation" : 
-                      "Click 'Generate Code' to create a property number (MSP-B for buying, MSP-R for rental)"}
+                      "Click 'Generate Code' to create a property number (MDP-B for buying, MDP-R for rental)"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
