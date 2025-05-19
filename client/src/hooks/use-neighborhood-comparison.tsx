@@ -13,6 +13,7 @@ export interface Neighborhood {
     boundaries?: Array<{lat: number, lng: number}>;
   };
   createdAt: string;
+  propertyCount?: number; // Count of properties in this neighborhood
 }
 
 export interface NeighborhoodMetrics {

@@ -10,21 +10,38 @@ const router = Router();
  */
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    // Join with properties to get only neighborhoods that have properties
-    const neighborhoodsWithProperties = await db
+    // Get all neighborhoods first
+    const allNeighborhoods = await db
       .select({
         id: neighborhoods.id,
         name: neighborhoods.name,
         city: neighborhoods.city,
         description: neighborhoods.description,
         locationData: neighborhoods.locationData,
-        createdAt: neighborhoods.createdAt,
-        propertyCount: count(properties.id)
+        createdAt: neighborhoods.createdAt
       })
-      .from(neighborhoods)
-      .leftJoin(properties, eq(properties.neighborhoodId, neighborhoods.id))
-      .groupBy(neighborhoods.id)
-      .having(count(properties.id), gt => gt(0)); // Only neighborhoods with at least 1 property
+      .from(neighborhoods);
+    
+    // Count properties for each neighborhood
+    const propertyCounts = await db
+      .select({
+        neighborhoodId: properties.neighborhoodId,
+        count: count(properties.id)
+      })
+      .from(properties)
+      .where(isNotNull(properties.neighborhoodId))
+      .groupBy(properties.neighborhoodId);
+    
+    // Combine the data and filter for neighborhoods that have properties
+    const neighborhoodsWithProperties = allNeighborhoods
+      .map(neighborhood => {
+        const propertyData = propertyCounts.find(p => p.neighborhoodId === neighborhood.id);
+        return {
+          ...neighborhood,
+          propertyCount: propertyData ? propertyData.count : 0
+        };
+      })
+      .filter(neighborhood => neighborhood.propertyCount > 0);
     
     res.json(neighborhoodsWithProperties);
   } catch (error) {

@@ -210,15 +210,27 @@ const NeighborhoodComparisonContent = () => {
                     <SelectValue placeholder="Select a neighborhood" />
                   </SelectTrigger>
                   <SelectContent>
-                    {allNeighborhoods?.map(neighborhood => (
-                      <SelectItem 
-                        key={neighborhood.id} 
-                        value={neighborhood.id.toString()}
-                        disabled={selectedNeighborhoods.includes(neighborhood.id)}
-                      >
-                        {neighborhood.name}
-                      </SelectItem>
-                    ))}
+                    {allNeighborhoods
+                      ?.sort((a, b) => {
+                        // Sort by property count (descending)
+                        const countA = (a as any).propertyCount || 0;
+                        const countB = (b as any).propertyCount || 0;
+                        return countB - countA;
+                      })
+                      .map(neighborhood => (
+                        <SelectItem 
+                          key={neighborhood.id} 
+                          value={neighborhood.id.toString()}
+                          disabled={selectedNeighborhoods.includes(neighborhood.id)}
+                        >
+                          {neighborhood.name} {(neighborhood as any).propertyCount > 0 && 
+                            <span className="text-xs ml-1 text-gray-500">
+                              ({(neighborhood as any).propertyCount} properties)
+                            </span>
+                          }
+                        </SelectItem>
+                      ))
+                    }
                   </SelectContent>
                 </Select>
 
