@@ -529,24 +529,19 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                         type="button" 
                         variant="outline" 
                         onClick={() => {
-                          // Generate property code based on property type (buy/rent)
-                          const type = form.getValues('type') || 'buy';
-                          const prefix = type === 'rent' ? 'MDP-R' : 'MDP-B';
+                          setGeneratingPropertyNumber(true);
+                          // This will just initiate the request, the server will generate the number
+                          // since it needs to check the database for the highest current number
+                          // to ensure sequential numbering
                           
-                          // Get count of existing properties for each type
-                          const existingProperties = propertiesData || [];
-                          const sameTypeProperties = existingProperties.filter(p => 
-                            p.type === type &&
-                            p.propertyNumber?.startsWith(prefix)
-                          );
+                          // Let server generate a sequential MDP-NUMBER-XXXX code
+                          // The client doesn't need to calculate anything, since the server checks the entire database
                           
-                          // Generate sequential number
-                          const nextNumber = sameTypeProperties.length + 1;
-                          // Format with leading zeros (001, 002, etc.)
-                          const paddedNumber = nextNumber.toString().padStart(3, '0');
-                          const propertyNumber = `${prefix}-${paddedNumber}`;
-                          
-                          field.onChange(propertyNumber);
+                          setTimeout(() => {
+                            setGeneratingPropertyNumber(false);
+                            // Use a placeholder indicating it will be auto-generated on the server
+                            field.onChange("AUTO-GENERATE");
+                          }, 500);
                         }}
                         disabled={generatingPropertyNumber}
                       >
@@ -559,7 +554,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                   <FormDescription>
                     {property ? 
                       "Property number cannot be changed after creation" : 
-                      "Click 'Generate Code' to create a property number (MDP-B for buying, MDP-R for rental)"}
+                      "Click 'Generate Code' to create a unique sequential property number (MDP-NUMBER format)"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

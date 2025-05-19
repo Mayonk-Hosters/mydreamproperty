@@ -281,13 +281,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         propertyData.tehsilId = Number(requestData.tehsilId);
       }
       
-      // Generate property number if not provided
-      if (!requestData.propertyNumber) {
+      // Generate property number if not provided or set to AUTO-GENERATE
+      if (!requestData.propertyNumber || requestData.propertyNumber === "AUTO-GENERATE") {
         try {
-          // Check property type to determine prefix (MDP-B for buy, MDP-R for rent)
-          const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
+          // Use the new MDP-NUMBER prefix for all properties
+          const prefix = 'MDP-NUMBER';
           
-          // Query directly for properties with this property type and prefix
+          // Query directly for properties with the MDP-NUMBER prefix
           const query = `
             SELECT property_number 
             FROM properties 
@@ -316,15 +316,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Generate sequential number with leading zeros (next number after highest found)
           const nextNumber = highestNumber + 1;
-          const paddedNumber = nextNumber.toString().padStart(3, '0');
+          const paddedNumber = nextNumber.toString().padStart(4, '0'); // Using 4 digits for more capacity
           propertyData.propertyNumber = `${prefix}-${paddedNumber}`;
           console.log(`Generated property number: ${propertyData.propertyNumber} (highest was ${highestNumber})`);
         } catch (error) {
           console.error('Error generating property number:', error);
           // Fallback to a timestamp-based number if query fails
           const timestamp = new Date().getTime().toString().slice(-6);
-          const prefix = propertyData.type === 'rent' ? 'MDP-R' : 'MDP-B';
-          propertyData.propertyNumber = `${prefix}-${timestamp}`;
+          propertyData.propertyNumber = `MDP-NUMBER-${timestamp}`;
           console.log(`Fallback property number generated: ${propertyData.propertyNumber}`);
         }
       } else {
