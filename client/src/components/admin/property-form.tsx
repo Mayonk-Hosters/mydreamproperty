@@ -65,6 +65,7 @@ const formSchema = insertPropertySchema.extend({
   beds: z.number().int().nonnegative("Beds must be a non-negative integer"),
   baths: z.number().nonnegative("Baths must be a non-negative number"),
   area: z.number().int().nonnegative("Area must be a non-negative integer"),
+  yearBuilt: z.number().int().min(1800).max(new Date().getFullYear()).optional(),
   propertyNumber: z.string().optional(),
   // Add location hierarchy fields as optional
   stateId: z.string().optional(),
@@ -180,6 +181,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     beds: 0,
     baths: 0,
     area: 0,
+    yearBuilt: new Date().getFullYear(), // Default to current year
     propertyType: DEFAULT_PROPERTY_TYPES[0],
     type: "buy", // Default to buy
     status: PROPERTY_STATUS[0],
