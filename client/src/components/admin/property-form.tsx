@@ -161,6 +161,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     enabled: true,
   });
   
+  // Track the selected agent for display
+  const [selectedAgent, setSelectedAgent] = useState(null);
+  
   // Fetch all properties (needed for property number generation)
   const { data: propertiesData } = useQuery<Property[]>({
     queryKey: ['/api/properties'],

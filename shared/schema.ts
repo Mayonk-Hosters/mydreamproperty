@@ -38,6 +38,8 @@ export const agents = pgTable("agents", {
   name: text("name").notNull(),
   title: text("title").notNull(),
   image: text("image").notNull(),
+  contactNumber: text("contact_number"),
+  email: text("email"),
   deals: integer("deals").default(0),
   rating: real("rating").default(0),
   createdAt: timestamp("created_at").defaultNow(),
