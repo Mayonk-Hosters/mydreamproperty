@@ -64,6 +64,7 @@ export const properties = pgTable("properties", {
   beds: integer("beds").notNull(),
   baths: real("baths").notNull(),
   area: integer("area").notNull(),
+  yearBuilt: integer("year_built"), // Year the property was built
   propertyType: text("property_type").notNull(),
   type: text("type").notNull().default("buy"), // Property transaction type: buy, rent, sell
   status: text("status").default("active"),
