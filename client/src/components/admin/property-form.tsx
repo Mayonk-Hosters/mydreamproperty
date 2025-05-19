@@ -936,6 +936,71 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
               />
             </div>
 
+            {/* Property Features Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Property Features</h3>
+              <div className="flex items-center space-x-2">
+                <Input
+                  placeholder="Add a property feature..."
+                  value={newFeature}
+                  onChange={(e) => setNewFeature(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addFeature();
+                    }
+                  }}
+                  ref={featureInputRef}
+                  className="flex-1"
+                />
+                <Button type="button" onClick={addFeature} variant="secondary" size="sm">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add
+                </Button>
+              </div>
+              
+              <div className="bg-gray-50 rounded-md p-4">
+                <FormField
+                  control={form.control}
+                  name="features"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          {Array.isArray(field.value) && field.value.length > 0 ? (
+                            <ScrollArea className="h-28 w-full">
+                              <div className="flex flex-wrap gap-2 p-1">
+                                {field.value.map((feature, index) => (
+                                  <Badge key={index} variant="secondary" className="group">
+                                    {feature}
+                                    <button
+                                      type="button"
+                                      onClick={() => removeFeature(feature)}
+                                      className="ml-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </Badge>
+                                ))}
+                              </div>
+                            </ScrollArea>
+                          ) : (
+                            <div className="text-center py-4 text-gray-500">
+                              No features added yet. Add features to highlight property amenities.
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        Add features like "Air Conditioning", "Swimming Pool", "Garden", etc.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
