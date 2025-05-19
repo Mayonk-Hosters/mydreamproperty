@@ -37,6 +37,10 @@ const formSchema = z.object({
     z.string(),
     z.array(z.string())
   ]),
+  contactNumber: z.string().optional(),
+  email: z.string().email({
+    message: "Please enter a valid email address",
+  }).optional(),
   deals: z.coerce.number().nonnegative().default(0),
   rating: z.coerce.number().min(0).max(5).default(0),
 });
@@ -50,6 +54,8 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
     name: agent?.name || "",
     title: agent?.title || "",
     image: agent?.image || getAgentImage(0),
+    contactNumber: agent?.contactNumber || "",
+    email: agent?.email || "",
     deals: agent?.deals || 0,
     rating: agent?.rating || 0,
   };
@@ -67,6 +73,8 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
         name: agent.name,
         title: agent.title,
         image: agent.image,
+        contactNumber: agent.contactNumber || "",
+        email: agent.email || "",
         deals: agent.deals || 0,
         rating: agent.rating || 0,
       });
@@ -88,6 +96,8 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
         name: data.name,
         title: data.title,
         image: agentImage, // Use the processed image
+        contactNumber: data.contactNumber,
+        email: data.email,
         deals: data.deals,
         rating: data.rating,
       };
@@ -166,6 +176,42 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
             </FormItem>
           )}
         />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="contactNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contact Number</FormLabel>
+                <FormControl>
+                  <Input placeholder="+91 9876543210" {...field} />
+                </FormControl>
+                <FormDescription>
+                  The agent's contact phone number.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="agent@example.com" type="email" {...field} />
+                </FormControl>
+                <FormDescription>
+                  The agent's email address.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         
         <FormField
           control={form.control}
