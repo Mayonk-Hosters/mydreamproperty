@@ -254,6 +254,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         type: requestData.type || 'buy',
         status: requestData.status || 'active',
         featured: Boolean(requestData.featured),
+        // Handle features - ensure it's always saved as a proper JSON array
+        features: Array.isArray(requestData.features) ? requestData.features : 
+                 (typeof requestData.features === 'string' ? 
+                   (requestData.features ? JSON.parse(requestData.features) : []) : []),
+        // Save Google Maps URL if provided
+        map_url: requestData.mapUrl || null,
         images: Array.isArray(requestData.images) ? requestData.images : [],
         agentId: Number(requestData.agentId) || 1
       };
@@ -348,7 +354,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid property ID" });
       }
 
-      const propertyData = insertPropertySchema.parse(req.body);
+      const requestData = req.body;
+      
+      // Process the data to handle features and map URL correctly
+      // Make sure features is properly saved as a JSON array
+      if (requestData.features) {
+        requestData.features = Array.isArray(requestData.features) ? requestData.features : 
+                               (typeof requestData.features === 'string' ? 
+                                 (requestData.features ? JSON.parse(requestData.features) : []) : []);
+      }
+      
+      // Make sure map_url is saved correctly from mapUrl field
+      if (requestData.mapUrl) {
+        requestData.map_url = requestData.mapUrl;
+      }
+      
+      const propertyData = insertPropertySchema.parse(requestData);
       const updatedProperty = await storage.updateProperty(id, propertyData);
       
       if (!updatedProperty) {
