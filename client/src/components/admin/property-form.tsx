@@ -815,7 +815,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
           </div>
 
           <div className="space-y-6">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
               <FormField
                 control={form.control}
                 name="beds"
@@ -865,6 +865,27 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                       <Input
                         type="number"
                         placeholder="Square footage"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="yearBuilt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Year Built</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="1800"
+                        max={new Date().getFullYear()}
+                        placeholder="Year property was built"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                       />
