@@ -301,11 +301,15 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               <TabsContent value="features">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
                   {/* Display property features */}
-                  {Array.isArray(property.features) && property.features.length > 0 ? (
+                  {property.features && 
+                   ((Array.isArray(property.features) && property.features.length > 0) || 
+                    (typeof property.features === 'string' && property.features.length > 0)) ? (
                     <div>
                       <h3 className="font-medium text-sm sm:text-base mb-3">Property Features</h3>
                       <div className="flex flex-wrap gap-2">
-                        {property.features.map((feature, index) => (
+                        {(Array.isArray(property.features) ? property.features : 
+                           (typeof property.features === 'string' ? 
+                             JSON.parse(property.features) : [])).map((feature, index) => (
                           <div key={index} className="flex items-center bg-white border border-gray-200 px-3 py-2 rounded-md text-xs sm:text-sm">
                             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
                             <span>{feature}</span>
