@@ -1697,10 +1697,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Try storage method first
         const success = await storage.markContactMessagesAsRead(messageIds);
         if (success) {
-          return res.json({ success: true });
+          return res.json({ success: true, message: `Marked ${messageIds.length} messages as read` });
         }
+        
+        // If storage method returns false but doesn't throw an error,
+        // fallback to direct SQL query
       } catch (storageError) {
         console.error("Error marking messages as read using storage method:", storageError);
+        // Continue to SQL fallback
       }
       
       // Fallback to direct SQL
@@ -1716,13 +1720,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(404).json({ message: "No messages found with the provided IDs" });
         }
         
-        return res.json({ success: true });
+        return res.json({ 
+          success: true, 
+          message: `Marked ${result.rowCount} of ${messageIds.length} messages as read` 
+        });
       } catch (sqlError) {
         console.error("Error marking messages as read using SQL:", sqlError);
-        throw sqlError; // Re-throw for the outer catch
+        
+        // Last resort: try marking messages one by one
+        try {
+          let successCount = 0;
+          
+          for (const id of messageIds) {
+            try {
+              const result = await pool.query(`
+                UPDATE contact_messages
+                SET is_read = true
+                WHERE id = $1
+                RETURNING id
+              `, [id]);
+              
+              if (result.rowCount > 0) {
+                successCount++;
+              }
+            } catch (e) {
+              console.error(`Failed to mark message ${id} as read:`, e);
+            }
+          }
+          
+          if (successCount > 0) {
+            return res.json({ 
+              success: true, 
+              message: `Marked ${successCount} of ${messageIds.length} messages as read` 
+            });
+          }
+        } catch (fallbackError) {
+          console.error("Error in one-by-one fallback:", fallbackError);
+        }
       }
       
-      // If we reached here, both methods failed for specific IDs
+      // If we reached here, all methods failed
       res.status(500).json({ 
         success: false, 
         message: "Failed to mark messages as read" 

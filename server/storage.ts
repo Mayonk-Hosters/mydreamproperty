@@ -79,6 +79,7 @@ export interface IStorage {
   getContactMessage(id: number): Promise<ContactMessage | undefined>;
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   markContactMessageAsRead(id: number): Promise<boolean>;
+  markContactMessagesAsRead(ids: number[]): Promise<boolean>;
   deleteContactMessage(id: number): Promise<boolean>;
   
   // India location methods
@@ -714,6 +715,22 @@ export class MemStorage implements IStorage {
     return true;
   }
   
+  async markContactMessagesAsRead(ids: number[]): Promise<boolean> {
+    if (ids.length === 0) return false;
+    
+    let modifiedCount = 0;
+    for (const id of ids) {
+      const message = this.contactMessages.get(id);
+      if (message && !message.isRead) {
+        message.isRead = true;
+        this.contactMessages.set(id, message);
+        modifiedCount++;
+      }
+    }
+    
+    return modifiedCount > 0;
+  }
+  
   async deleteContactMessage(id: number): Promise<boolean> {
     return this.contactMessages.delete(id);
   }
@@ -1234,6 +1251,18 @@ export class DatabaseStorage implements IStorage {
       .set({ isRead: true })
       .where(eq(contactMessages.id, id));
     return result.rowCount !== null && result.rowCount > 0;
+  }
+  
+  async markContactMessagesAsRead(ids: number[]): Promise<boolean> {
+    if (ids.length === 0) return false;
+    
+    const result = await db
+      .update(contactMessages)
+      .set({ isRead: true })
+      .where(sql`id = ANY(${ids})`)
+      .returning();
+      
+    return result.length > 0;
   }
   
   async deleteContactMessage(id: number): Promise<boolean> {
