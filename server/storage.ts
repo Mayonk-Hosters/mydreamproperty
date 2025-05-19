@@ -15,6 +15,7 @@ import {
   DEFAULT_PROPERTY_TYPES,
   sessions
 } from "@shared/schema";
+import { eq, desc, and, inArray, like } from "drizzle-orm";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
 import connectPg from "connect-pg-simple";

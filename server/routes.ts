@@ -1484,8 +1484,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      const messages = await storage.getAllContactMessages();
-      res.json(messages);
+      try {
+        // First try using the storage method
+        const messages = await storage.getAllContactMessages();
+        if (messages && messages.length > 0) {
+          res.json(messages);
+        } else {
+          // Fallback to direct SQL query if storage method returns empty
+          const result = await pool.query(`
+            SELECT id, name, email, phone, subject, message, is_read as "isRead", created_at as "createdAt"
+            FROM contact_messages
+            ORDER BY created_at DESC
+          `);
+          
+          console.log("Contact messages from direct query:", result.rows.length);
+          res.json(result.rows);
+        }
+      } catch (queryError) {
+        console.error("Error in contact messages query:", queryError);
+        // Final fallback to ensure we return something
+        const result = await pool.query(`
+          SELECT * FROM contact_messages ORDER BY created_at DESC
+        `);
+        const formattedMessages = result.rows.map(row => ({
+          id: row.id,
+          name: row.name,
+          email: row.email,
+          phone: row.phone || null,
+          subject: row.subject,
+          message: row.message,
+          isRead: row.is_read,
+          createdAt: row.created_at
+        }));
+        
+        res.json(formattedMessages);
+      }
     } catch (error) {
       console.error("Error fetching contact messages:", error);
       res.status(500).json({ message: "Failed to fetch contact messages" });
@@ -1594,10 +1627,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         messageIds = [id];
       } else if (!ids) {
         // If no ids provided, mark ALL unread messages as read
-        const messages = await storage.getAllContactMessages();
-        messageIds = messages
-          .filter(msg => !msg.isRead)
-          .map(msg => msg.id);
+        // Direct SQL query to get unread messages
+        const result = await pool.query(`
+          SELECT id FROM contact_messages WHERE is_read = false
+        `);
+        
+        messageIds = result.rows.map(row => row.id);
       }
       
       if (messageIds.length === 0) {
