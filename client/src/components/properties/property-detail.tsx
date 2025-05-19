@@ -328,7 +328,25 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                     <p className="text-gray-500 text-sm sm:text-base mb-3 sm:mb-4">
                       {property.address}, {property.location}
                     </p>
-                    <Button variant="outline" size="sm" className="text-sm">View on Maps</Button>
+                    {property.mapUrl ? (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-sm"
+                        onClick={() => window.open(property.mapUrl, '_blank')}
+                      >
+                        View on Google Maps
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-sm opacity-50"
+                        disabled
+                      >
+                        Map Not Available
+                      </Button>
+                    )}
                   </div>
                 </div>
               </TabsContent>
