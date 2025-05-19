@@ -299,6 +299,14 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     }
   }, [selectedTehsilId, form]);
   
+  // Initialize selected agent when form loads or property changes
+  useEffect(() => {
+    if (property && property.agentId && agentsQuery.data) {
+      const agent = agentsQuery.data.find(a => a.id === property.agentId);
+      setSelectedAgent(agent || null);
+    }
+  }, [property, agentsQuery.data]);
+  
   // Feature management functions
   const addFeature = () => {
     if (!newFeature.trim()) return;
