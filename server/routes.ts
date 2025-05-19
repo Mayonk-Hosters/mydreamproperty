@@ -315,11 +315,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
           
-          // Generate sequential number with leading zeros (next number after highest found)
-          const nextNumber = highestNumber + 1;
-          const paddedNumber = nextNumber.toString().padStart(4, '0'); // Using 4 digits for more capacity
+          // Keep track of last used number in memory to prevent duplicates within the same session
+          // This ensures we don't reuse the same number for multiple properties created in quick succession
+          if (!global.lastUsedPropertyNumber) {
+            global.lastUsedPropertyNumber = highestNumber;
+          }
+          
+          // Use either the highest number from database or the last used number, whichever is higher
+          const nextNumber = Math.max(highestNumber, global.lastUsedPropertyNumber) + 1;
+          global.lastUsedPropertyNumber = nextNumber;
+          
+          // Format with leading zeros (4 digits)
+          const paddedNumber = nextNumber.toString().padStart(4, '0');
           propertyData.propertyNumber = `MDP-${paddedNumber}`;
-          console.log(`Generated property number: ${propertyData.propertyNumber} (highest was ${highestNumber})`);
+          console.log(`Generated property number: ${propertyData.propertyNumber} (highest was ${highestNumber}, last used: ${global.lastUsedPropertyNumber - 1})`);
         } catch (error) {
           console.error('Error generating property number:', error);
           // Fallback to a timestamp-based number if query fails
