@@ -250,6 +250,24 @@ export function PropertyCard({ property }: PropertyCardProps) {
             </span>
           </div>
           
+          {/* Property Features */}
+          {Array.isArray(property.features) && property.features.length > 0 && (
+            <div className="mb-3">
+              <div className="flex flex-wrap gap-1.5">
+                {property.features.slice(0, 3).map((feature, index) => (
+                  <Badge key={index} variant="outline" className="text-xs bg-gray-50 text-gray-700">
+                    {feature}
+                  </Badge>
+                ))}
+                {property.features.length > 3 && (
+                  <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700">
+                    +{property.features.length - 3} more
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+          
           <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
             <div className="flex items-center">
               <img 
