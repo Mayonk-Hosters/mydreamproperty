@@ -53,7 +53,7 @@ import {
   PopoverTrigger 
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Phone, Mail } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getPropertyImage, getInteriorImage } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
