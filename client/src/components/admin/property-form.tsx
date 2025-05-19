@@ -91,6 +91,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   const [isAddPropertyTypeOpen, setIsAddPropertyTypeOpen] = useState(false);
   const [generatingPropertyNumber, setGeneratingPropertyNumber] = useState(false);
   
+  // State for property features management
+  const [newFeature, setNewFeature] = useState<string>("");
+  const featureInputRef = useRef<HTMLInputElement>(null);
+  
   // Fetch states
   const statesQuery = useQuery<State[]>({
     queryKey: ['/api/locations/states'],
@@ -281,6 +285,39 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       form.setValue('tehsilId', selectedTehsilId);
     }
   }, [selectedTehsilId, form]);
+  
+  // Feature management functions
+  const addFeature = () => {
+    if (!newFeature.trim()) return;
+    
+    // Get current features from form
+    const currentFeatures = form.getValues("features") || [];
+    
+    // Add new feature if it doesn't already exist
+    if (!currentFeatures.includes(newFeature.trim())) {
+      form.setValue("features", [...currentFeatures, newFeature.trim()]);
+      setNewFeature("");
+      
+      // Focus back on input for adding another feature
+      if (featureInputRef.current) {
+        featureInputRef.current.focus();
+      }
+    } else {
+      toast({
+        title: "Feature already exists",
+        description: "This feature has already been added to the property.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const removeFeature = (feature: string) => {
+    const currentFeatures = form.getValues("features") || [];
+    form.setValue(
+      "features",
+      currentFeatures.filter((f) => f !== feature)
+    );
+  };
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
