@@ -332,12 +332,13 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                     <p className="text-gray-500 text-sm sm:text-base mb-3 sm:mb-4">
                       {property.address}, {property.location}
                     </p>
-                    {property.mapUrl ? (
+                    {/* Support both mapUrl and map_url field names for backward compatibility */}
+                    {(property.mapUrl || property.map_url) ? (
                       <Button 
                         variant="outline" 
                         size="sm" 
                         className="text-sm"
-                        onClick={() => window.open(property.mapUrl, '_blank')}
+                        onClick={() => window.open(property.mapUrl || property.map_url, '_blank')}
                       >
                         View on Google Maps
                       </Button>
