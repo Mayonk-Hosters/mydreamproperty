@@ -300,46 +300,24 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </TabsContent>
               <TabsContent value="features">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* First column with custom property features */}
+                  {/* Display property features */}
+                  {Array.isArray(property.features) && property.features.length > 0 ? (
                     <div>
-                      <h3 className="font-medium text-sm sm:text-base mb-2">Property Features</h3>
-                      {Array.isArray(property.features) && property.features.length > 0 ? (
-                        <ul className="space-y-1.5 sm:space-y-2">
-                          {property.features.map((feature, index) => (
-                            <li key={index} className="flex items-center text-xs sm:text-sm">
-                              <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                              <span>{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-gray-500 text-xs sm:text-sm">No custom features added to this property.</p>
-                      )}
+                      <h3 className="font-medium text-sm sm:text-base mb-3">Property Features</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {property.features.map((feature, index) => (
+                          <div key={index} className="flex items-center bg-white border border-gray-200 px-3 py-2 rounded-md text-xs sm:text-sm">
+                            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    {/* Second column with standard features */}
-                    <div className="mt-3 sm:mt-0">
-                      <h3 className="font-medium text-sm sm:text-base mb-2">Standard Features</h3>
-                      <ul className="space-y-1.5 sm:space-y-2">
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Central Air Conditioning</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Heating System</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Parking</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Garden</span>
-                        </li>
-                      </ul>
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <p>No specific features have been added for this property.</p>
                     </div>
-                  </div>
+                  )}
                 </div>
               </TabsContent>
               <TabsContent value="location">
