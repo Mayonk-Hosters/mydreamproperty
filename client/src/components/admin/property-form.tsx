@@ -1131,26 +1131,49 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="featured"
-              render={({ field }) => (
-                <FormItem className="flex items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Featured Property</FormLabel>
-                    <p className="text-sm text-gray-500">
-                      This property will be displayed in the featured section.
-                    </p>
-                  </div>
-                </FormItem>
-              )}
-            />
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="featured"
+                render={({ field }) => (
+                  <FormItem className="flex items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Featured Property</FormLabel>
+                      <p className="text-sm text-gray-500">
+                        This property will be displayed in the featured section.
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="maharera_registered"
+                render={({ field }) => (
+                  <FormItem className="flex items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>MahaRERA Registered</FormLabel>
+                      <p className="text-sm text-gray-500">
+                        Is this property registered under Maharashtra Real Estate Regulatory Authority (MahaRERA)?
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="border rounded-md p-4">
               <FormLabel className="block mb-3">Property Images</FormLabel>
