@@ -554,7 +554,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                   <FormDescription>
                     {property ? 
                       "Property number cannot be changed after creation" : 
-                      "Click 'Generate Code' to create a unique sequential property number (MDP-NUMBER format)"}
+                      "Click 'Generate Code' to create a unique sequential property number (MDP format)"}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

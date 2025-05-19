@@ -284,10 +284,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate property number if not provided or set to AUTO-GENERATE
       if (!requestData.propertyNumber || requestData.propertyNumber === "AUTO-GENERATE") {
         try {
-          // Use the new MDP-NUMBER prefix for all properties
-          const prefix = 'MDP-NUMBER';
+          // Use the simple MDP prefix for all properties
+          const prefix = 'MDP';
           
-          // Query directly for properties with the MDP-NUMBER prefix
+          // Query directly for properties with the MDP prefix
           const query = `
             SELECT property_number 
             FROM properties 
@@ -323,7 +323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('Error generating property number:', error);
           // Fallback to a timestamp-based number if query fails
           const timestamp = new Date().getTime().toString().slice(-6);
-          propertyData.propertyNumber = `MDP-NUMBER-${timestamp}`;
+          propertyData.propertyNumber = `MDP-${timestamp}`;
           console.log(`Fallback property number generated: ${propertyData.propertyNumber}`);
         }
       } else {
