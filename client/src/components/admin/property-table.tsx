@@ -48,6 +48,15 @@ export function PropertyTable() {
     queryKey: ['/api/properties'],
   });
 
+  // Helper function to determine if a property is featured
+  const isFeatured = (property: any) => {
+    return property.featured === true || 
+           property.featured === 't' || 
+           property.featured === 'true' || 
+           property.featured === 1 || 
+           property.featured === '1';
+  };
+
   // Filter and sort properties based on search query and filters
   const filteredProperties = useMemo(() => {
     if (!properties) return [];
@@ -237,14 +246,21 @@ export function PropertyTable() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className={property.featured ? "text-primary hover:text-primary/80" : "text-gray-400 hover:text-gray-500"}
+                      className={
+                        isFeatured(property) 
+                          ? "text-primary hover:text-primary/80" 
+                          : "text-gray-400 hover:text-gray-500"
+                      }
                       onClick={async () => {
                         try {
                           await apiRequest("PATCH", `/api/properties/${property.id}/toggle-featured`);
                           queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
+                          
+                          const isFeatured = property.featured === true || property.featured === 't' || property.featured === 'true';
+                          
                           toast({
-                            title: property.featured ? "Property unfeatured" : "Property featured",
-                            description: property.featured 
+                            title: isFeatured ? "Property unfeatured" : "Property featured",
+                            description: isFeatured 
                               ? `${property.title} has been removed from featured properties.` 
                               : `${property.title} is now featured on the homepage.`,
                           });
@@ -257,7 +273,7 @@ export function PropertyTable() {
                         }
                       }}
                     >
-                      {property.featured ? (
+                      {(property.featured === true || property.featured === 't' || property.featured === 'true') ? (
                         <Badge className="bg-primary text-white">Featured ✓</Badge>
                       ) : (
                         <span className="text-gray-400 text-sm">Set as Featured</span>

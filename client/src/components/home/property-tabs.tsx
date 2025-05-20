@@ -26,19 +26,33 @@ export function PropertyTabs() {
   useEffect(() => {
     if (properties) {
       console.log("Total properties:", properties.length);
-      console.log("Featured properties:", properties.filter(p => p.featured === true).length);
-      console.log("Featured property example:", properties.find(p => p.featured === true));
+      console.log("Properties data:", properties);
+      
+      // Check different types of featured flags
+      const booleanFeatured = properties.filter(p => typeof p.featured === 'boolean' && p.featured === true);
+      const stringFeatured = properties.filter(p => typeof p.featured === 'string' && (p.featured === 't' || p.featured === 'true'));
+      
+      console.log("Boolean featured properties:", booleanFeatured.length);
+      console.log("String featured properties:", stringFeatured.length);
+      console.log("First property featured value:", properties[0]?.featured, "type:", typeof properties[0]?.featured);
     }
   }, [properties]);
   
-  // Derived state for featured properties - properly handle PostgreSQL boolean values
-  const featuredProperties = properties?.filter(property => 
-    property.featured === true || property.featured === 't'
-  ) || [];
+  // Helper function to determine if a property is featured
+  const isFeatured = (property: any) => {
+    return property.featured === true || 
+           property.featured === 't' || 
+           property.featured === 'true' || 
+           property.featured === 1 || 
+           property.featured === '1';
+  };
+
+  // Derived state for featured properties
+  const featuredProperties = properties?.filter(isFeatured) || [];
   
   // Derived state for buy properties - sorted by newest first
   const buyProperties = properties?.filter(property => 
-    property.type === 'buy' && property.featured !== true && property.featured !== 't'
+    property.type === 'buy' && !isFeatured(property)
   ).sort((a, b) => b.id - a.id) || [];
   
   // Featured buy properties
@@ -46,7 +60,7 @@ export function PropertyTabs() {
   
   // Derived state for rent properties - sorted by newest first
   const rentProperties = properties?.filter(property => 
-    property.type === 'rent' && property.featured !== true && property.featured !== 't'
+    property.type === 'rent' && !isFeatured(property)
   ).sort((a, b) => b.id - a.id) || [];
   
   // Featured rent properties
