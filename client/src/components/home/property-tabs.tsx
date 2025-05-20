@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -22,12 +22,21 @@ export function PropertyTabs() {
     select: (data) => data.filter(property => property.status === 'active'),
   });
   
-  // Derived state for featured properties
-  const featuredProperties = properties?.filter(property => property.featured) || [];
+  // Add debugging to see what's being loaded
+  useEffect(() => {
+    if (properties) {
+      console.log("Total properties:", properties.length);
+      console.log("Featured properties:", properties.filter(p => p.featured === true).length);
+      console.log("Featured property example:", properties.find(p => p.featured === true));
+    }
+  }, [properties]);
+  
+  // Derived state for featured properties - ensure boolean comparison
+  const featuredProperties = properties?.filter(property => property.featured === true) || [];
   
   // Derived state for buy properties - sorted by newest first
   const buyProperties = properties?.filter(property => 
-    property.type === 'buy' && !property.featured
+    property.type === 'buy' && property.featured !== true
   ).sort((a, b) => b.id - a.id) || [];
   
   // Featured buy properties
@@ -35,7 +44,7 @@ export function PropertyTabs() {
   
   // Derived state for rent properties - sorted by newest first
   const rentProperties = properties?.filter(property => 
-    property.type === 'rent' && !property.featured
+    property.type === 'rent' && property.featured !== true
   ).sort((a, b) => b.id - a.id) || [];
   
   // Featured rent properties
