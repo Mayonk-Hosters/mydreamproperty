@@ -561,6 +561,10 @@ export class MemStorage implements IStorage {
     return true;
   }
   
+  async deleteInquiry(id: number): Promise<boolean> {
+    return this.inquiries.delete(id);
+  }
+  
   // India Location methods
   // States
   async getAllStates(): Promise<State[]> {
