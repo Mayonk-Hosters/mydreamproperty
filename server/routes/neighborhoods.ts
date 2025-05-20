@@ -5,6 +5,27 @@ import { eq, inArray, isNotNull, count } from 'drizzle-orm';
 
 const router = Router();
 
+// Important: Handle /compare route first, before any other routes with parameters
+router.get('/compare', (_req: Request, res: Response) => {
+  res.status(403).json({ 
+    message: 'The Neighborhood Comparison feature has been disabled',
+    disabled: true
+  });
+});
+
+/**
+ * Compare multiple neighborhoods - DISABLED
+ * This feature has been disabled as per user request
+ * NOTE: This must be placed before the /:id route to ensure it gets matched first
+ */
+router.get('/compare', (req: Request, res: Response) => {
+  // Fixed implementation that doesn't try to access database
+  res.status(403).json({ 
+    message: 'The Neighborhood Comparison feature has been disabled',
+    disabled: true
+  });
+});
+
 /**
  * Get all neighborhoods with property counts - only returning neighborhoods that have properties
  */
@@ -91,16 +112,6 @@ router.get('/:id/metrics', async (req: Request, res: Response) => {
   }
 });
 
-/**
- * Compare multiple neighborhoods - DISABLED
- * This feature has been disabled as per user request
- */
-router.get('/compare', (_req: Request, res: Response) => {
-  // Fixed implementation that doesn't try to access database
-  res.status(403).json({ 
-    message: 'The Neighborhood Comparison feature has been disabled',
-    disabled: true
-  });
-});
+
 
 export default router;
