@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Property } from "@shared/schema";
-import { PropertyPreference } from "../../server/ai-recommendation";
+import { PropertyPreference, RecommendationResult } from "@shared/types/recommendation";
 import { apiRequest } from "@/lib/queryClient";
 
-type RecommendationResult = {
-  property: Property;
-  score: number;
-  reason: string;
-};
+// Using the imported RecommendationResult type
 
 export const usePropertyRecommendations = () => {
   const { toast } = useToast();

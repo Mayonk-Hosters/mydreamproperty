@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DEFAULT_PROPERTY_TYPES } from "@shared/schema";
-import { PropertyPreference } from "../../../server/ai-recommendation";
+import { PropertyPreference } from "@shared/types/recommendation";
 
 const recommendationFormSchema = z.object({
   budget: z.string().optional(),

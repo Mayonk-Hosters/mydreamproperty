@@ -11,6 +11,7 @@ import { ProtectedAdminRoute } from "@/components/admin/protected-admin-route";
 import HomePage from "@/pages/index";
 import PropertiesPage from "@/pages/properties";
 import PropertyPage from "@/pages/property";
+import PropertyFinderPage from "@/pages/property-finder";
 import AgentsPage from "@/pages/agents";
 import ContactPage from "@/pages/contact";
 import PropertyCalculatorPage from "@/pages/property-calculator";
@@ -45,6 +46,7 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/properties" component={PropertiesPage} />
       <Route path="/property/:id" component={PropertyPage} />
+      <Route path="/property-finder" component={PropertyFinderPage} />
       <Route path="/mdp-properties" component={MDPPropertiesPage} />
       <Route path="/agents" component={AgentsPage} />
       <Route path="/property-calculator" component={PropertyCalculatorPage} />

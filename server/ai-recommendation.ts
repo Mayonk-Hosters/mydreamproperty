@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { Property } from "@shared/schema";
+import { PropertyPreference } from "@shared/types/recommendation";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const MODEL = "gpt-4o";
@@ -8,19 +9,6 @@ const MODEL = "gpt-4o";
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
 });
-
-// Interface for user preferences
-export interface PropertyPreference {
-  budget?: number;
-  minBeds?: number;
-  minBaths?: number;
-  location?: string;
-  propertyType?: string;
-  features?: string[];
-  lifestyle?: string;
-  commute?: string;
-  familySize?: number;
-}
 
 /**
  * Generate AI-powered property recommendations based on user preferences

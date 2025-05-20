@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { pool } from "./db";
-import { getPropertyRecommendations, type PropertyPreference } from "./ai-recommendation";
+import { getPropertyRecommendations } from "./ai-recommendation";
+import { PropertyPreference } from "@shared/types/recommendation";
 import { 
   insertPropertySchema, 
   insertAgentSchema, 
