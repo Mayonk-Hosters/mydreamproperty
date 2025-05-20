@@ -1,4 +1,4 @@
-import { Menu, Bell, ChevronDown, Settings, LogOut, User } from "lucide-react";
+import { Menu, Bell, ChevronDown, Settings, LogOut, User, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { User as UserType } from "@shared/schema";
+import { User as UserType, ContactMessage, Inquiry } from "@shared/schema";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useNotificationIndicators } from "@/hooks/use-notification-indicators";
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -29,6 +30,13 @@ export function Header({ toggleSidebar }: HeaderProps) {
   });
   
   const { settings } = useSiteSettings();
+  
+  // Use the notification indicators hook to get unread counts
+  const { 
+    unreadMessagesCount, 
+    unreadInquiriesCount, 
+    totalUnreadCount 
+  } = useNotificationIndicators();
 
   // Determine the display name and initials
   const displayName = profile?.fullName || profile?.username || "Admin";
@@ -67,18 +75,71 @@ export function Header({ toggleSidebar }: HeaderProps) {
         </div>
         
         <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <Bell className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs flex items-center justify-center rounded-full p-0">
-                3
-              </Badge>
-            </Button>
-          </div>
+          {/* Notification Bell with Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <Bell className="h-5 w-5" />
+                  {totalUnreadCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs flex items-center justify-center rounded-full p-0">
+                      {totalUnreadCount > 9 ? '9+' : totalUnreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end">
+              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              {totalUnreadCount === 0 ? (
+                <div className="py-4 px-2 text-center text-muted-foreground">
+                  No new notifications
+                </div>
+              ) : (
+                <>
+                  {unreadInquiriesCount > 0 && (
+                    <Link href="/admin/inquiries">
+                      <DropdownMenuItem>
+                        <MessageCircle className="mr-2 h-4 w-4 text-primary" />
+                        <div>
+                          <div className="font-medium">New Property Inquiries</div>
+                          <div className="text-xs text-muted-foreground">
+                            {unreadInquiriesCount} unread inquiries from potential clients
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
+                  {unreadMessagesCount > 0 && (
+                    <Link href="/admin/contact-messages">
+                      <DropdownMenuItem>
+                        <MessageCircle className="mr-2 h-4 w-4 text-primary" />
+                        <div>
+                          <div className="font-medium">Contact Messages</div>
+                          <div className="text-xs text-muted-foreground">
+                            {unreadMessagesCount} unread contact messages
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
+                </>
+              )}
+              
+              <DropdownMenuSeparator />
+              <Link href="/admin/message-dashboard">
+                <DropdownMenuItem>
+                  <span className="text-xs text-center w-full">View all notifications</span>
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -117,10 +178,6 @@ export function Header({ toggleSidebar }: HeaderProps) {
                 queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
-                // Force garbage collection of any unmounted components
-                setTimeout(() => {
-                  queryClient.gc();
-                }, 100);
               }}>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
@@ -138,7 +195,6 @@ export function Header({ toggleSidebar }: HeaderProps) {
             queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
             queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
             queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
-            // Remove this operation as queryClient.gc() is not available in this version
           }}>
             <Button variant="outline" size="sm" className="ml-2 px-3 py-1.5 bg-gray-100 rounded text-sm hover:bg-gray-200 transition-all">
               Exit Admin
