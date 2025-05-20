@@ -99,12 +99,6 @@ export function Navbar() {
             </nav>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Link href="/admin" className="hidden sm:block">
-              <Button variant="outline" size="sm" className="px-3 py-1.5 bg-gray-100 rounded text-sm hover:bg-gray-200 transition-all">
-                <User className="h-4 w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Admin</span>
-              </Button>
-            </Link>
             <LoginButton />
             <div className="md:hidden">
               <Button 
@@ -203,12 +197,6 @@ export function Navbar() {
               }`}
             >
               Contact
-            </Link>
-            <Link 
-              href="/login" 
-              className="py-2.5 px-2 font-medium text-base rounded-md text-gray-800 hover:text-primary hover:bg-gray-50"
-            >
-              Admin Login
             </Link>
             <div className="py-2.5 px-2">
               <LoginButton />
