@@ -75,6 +75,7 @@ export interface IStorage {
   getInquiry(id: number): Promise<Inquiry | undefined>;
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
   markInquiryAsRead(id: number): Promise<boolean>;
+  deleteInquiry(id: number): Promise<boolean>;
   
   // Contact Information methods
   getContactInfo(): Promise<ContactInfo | undefined>;
