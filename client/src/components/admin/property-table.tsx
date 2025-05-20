@@ -49,12 +49,18 @@ export function PropertyTable() {
   });
 
   // Helper function to determine if a property is featured
-  const isFeatured = (property: any) => {
-    return property.featured === true || 
-           property.featured === 't' || 
-           property.featured === 'true' || 
-           property.featured === 1 || 
-           property.featured === '1';
+  const isFeatured = (property: Property) => {
+    const feat = property.featured;
+    // Handle different data types that might come from the database
+    if (typeof feat === 'boolean') {
+      return feat === true;
+    } else if (typeof feat === 'string') {
+      return feat === 't' || feat === 'true' || feat === '1';
+    } else if (typeof feat === 'number') {
+      return feat === 1;
+    } else {
+      return false;
+    }
   };
 
   // Filter and sort properties based on search query and filters
@@ -256,11 +262,12 @@ export function PropertyTable() {
                           await apiRequest("PATCH", `/api/properties/${property.id}/toggle-featured`);
                           queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
                           
-                          const isFeatured = property.featured === true || property.featured === 't' || property.featured === 'true';
+                          // Get the current featured status
+                          const currentFeaturedStatus = isFeatured(property);
                           
                           toast({
-                            title: isFeatured ? "Property unfeatured" : "Property featured",
-                            description: isFeatured 
+                            title: currentFeaturedStatus ? "Property unfeatured" : "Property featured",
+                            description: currentFeaturedStatus 
                               ? `${property.title} has been removed from featured properties.` 
                               : `${property.title} is now featured on the homepage.`,
                           });
@@ -273,7 +280,7 @@ export function PropertyTable() {
                         }
                       }}
                     >
-                      {(property.featured === true || property.featured === 't' || property.featured === 'true') ? (
+                      {isFeatured(property) ? (
                         <Badge className="bg-primary text-white">Featured ✓</Badge>
                       ) : (
                         <span className="text-gray-400 text-sm">Set as Featured</span>

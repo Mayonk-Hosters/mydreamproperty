@@ -39,12 +39,18 @@ export function PropertyTabs() {
   }, [properties]);
   
   // Helper function to determine if a property is featured
-  const isFeatured = (property: any) => {
-    return property.featured === true || 
-           property.featured === 't' || 
-           property.featured === 'true' || 
-           property.featured === 1 || 
-           property.featured === '1';
+  const isFeatured = (property: Property) => {
+    const feat = property.featured;
+    // Handle different data types that might come from the database
+    if (typeof feat === 'boolean') {
+      return feat === true;
+    } else if (typeof feat === 'string') {
+      return feat === 't' || feat === 'true' || feat === '1';
+    } else if (typeof feat === 'number') {
+      return feat === 1;
+    } else {
+      return false;
+    }
   };
 
   // Derived state for featured properties
