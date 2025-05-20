@@ -155,6 +155,11 @@ async function setupDatabase() {
     const conn = connect({url: DATABASE_URL});
     console.log('Connected to TiDB Cloud');
     
+    // Test connection with a simple query first
+    console.log('Testing connection...');
+    const testResult = await conn.execute('SELECT 1 as test');
+    console.log('Connection test successful:', testResult);
+    
     // Execute the schema creation queries
     console.log('Creating tables...');
     await conn.execute(createTablesQuery);
