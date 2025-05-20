@@ -8,6 +8,7 @@ import { SiteSettingsProvider } from "@/hooks/use-site-settings";
 import { ProtectedAdminRoute } from "@/components/admin/protected-admin-route";
 import { ProtectedAgentRoute } from "@/components/auth/protected-agent-route";
 import { ProtectedClientRoute } from "@/components/auth/protected-client-route";
+import { AdminSignoutTracker } from "@/components/admin/admin-signout";
 
 // Public Pages
 import HomePage from "@/pages/index";
@@ -140,6 +141,7 @@ function App() {
       <SiteSettingsProvider>
         <TooltipProvider>
           <Toaster />
+          <AdminSignoutTracker />
           <Router />
         </TooltipProvider>
       </SiteSettingsProvider>

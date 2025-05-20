@@ -1,24 +1,22 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { Loader2 } from "lucide-react";
 
 export default function DirectAdminAccess() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    // Set the admin credentials in localStorage
-    localStorage.setItem("admin_username", "Smileplz004");
-    localStorage.setItem("admin_password", "9923000500@rahul");
-    
-    // Redirect to admin dashboard
-    setLocation("/admin");
+    // Automatically direct to admin page
+    // This is a simple bridge page that routes to admin
+    setTimeout(() => {
+      setLocation("/admin");
+    }, 1000);
   }, [setLocation]);
-  
+
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">Redirecting to Admin Dashboard...</h1>
-        <p>Please wait while we authenticate you.</p>
-      </div>
+    <div className="flex h-screen w-full flex-col items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="mt-4 text-lg">Accessing admin panel...</p>
     </div>
   );
 }
