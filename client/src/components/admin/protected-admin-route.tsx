@@ -43,13 +43,16 @@ export function ProtectedAdminRoute({ component: Component }: ProtectedAdminRout
     );
   }
 
-  // TEMPORARY: Direct access to admin panel without authentication
-  // Remove this code when authentication is fixed
-  return <Component />;
+  // Check for specific admin credentials in localStorage
+  const storedUsername = localStorage.getItem("admin_username");
+  const isDirectAdmin = storedUsername === "Smileplz004";
   
-  // COMMENTED OUT AUTHENTICATION CHECK:
-  // Redirect to login if not authenticated
-  /*
+  // Allow direct access with specific admin credentials
+  if (isDirectAdmin) {
+    return <Component />;
+  }
+  
+  // Standard authentication check
   if (!user) {
     return <Redirect to="/login" />;
   }
@@ -58,5 +61,7 @@ export function ProtectedAdminRoute({ component: Component }: ProtectedAdminRout
   if (!isAdminUser) {
     return <Redirect to="/" />;
   }
-  */
+  
+  // If user is authenticated and is admin, render the component
+  return <Component />;
 }

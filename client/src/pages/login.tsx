@@ -42,21 +42,29 @@ export default function LoginPage() {
   });
 
   async function onSubmit(data: LoginFormData) {
-    // Always set userType as admin
-    loginMutation.mutate({
-      ...data,
-      userType: "admin"
-    }, {
-      onSuccess: (user) => {
-        // Redirect to admin dashboard
-        if (user.isAdmin) {
-          setLocation("/admin");
-        } else {
-          // Fallback to home page
-          setLocation("/");
-        }
-      }
-    });
+    const { toast } = useToast();
+    
+    // Check for the specific admin credentials
+    if (data.username === "Smileplz004" && data.password === "9923000500@rahul") {
+      // Store the username in localStorage for direct admin access
+      localStorage.setItem("admin_username", "Smileplz004");
+      
+      // Skip the API call and redirect directly
+      toast({
+        title: "Login successful",
+        description: "Welcome to the admin dashboard",
+      });
+      
+      // Redirect to admin dashboard
+      setLocation("/admin");
+    } else {
+      // Show an error toast for invalid credentials
+      toast({
+        title: "Login failed",
+        description: "Invalid username or password",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
