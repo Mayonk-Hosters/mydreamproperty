@@ -20,7 +20,14 @@ import {
 import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+// Use local authentication when running locally (set by the LOCAL_DEV environment variable)
+import { setupAuth as setupReplitAuth, isAuthenticated as isReplitAuthenticated } from "./replitAuth";
+import { setupAuth as setupLocalAuth, isAuthenticated as isLocalAuthenticated } from "./localAuth";
+
+// Determine which auth system to use based on environment
+const isLocalDev = process.env.LOCAL_DEV === 'true';
+const setupAuth = isLocalDev ? setupLocalAuth : setupReplitAuth;
+const isAuthenticated = isLocalDev ? isLocalAuthenticated : isReplitAuthenticated;
 import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
 import { sendInquiryNotification } from "./email-service";
