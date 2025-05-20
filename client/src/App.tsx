@@ -49,6 +49,7 @@ import AdminProfilePage from "@/pages/admin/profile";
 import AdminPropertyTypesPage from "@/pages/admin/property-types";
 import AdminContactMessagesPage from "@/pages/admin/contact-messages";
 import MessageDashboardPage from "@/pages/admin/message-dashboard";
+import ClientManagementPage from "@/pages/admin/client-management";
 
 function Router() {
   return (
@@ -127,6 +128,9 @@ function Router() {
       </Route>
       <Route path="/admin/message-dashboard">
         <ProtectedAdminRoute component={MessageDashboardPage} />
+      </Route>
+      <Route path="/admin/client-management">
+        <ProtectedAdminRoute component={ClientManagementPage} />
       </Route>
       
       {/* Fallback to 404 */}
