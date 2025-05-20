@@ -1599,6 +1599,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get contact information endpoint
+  app.get("/api/contact-info", async (req, res) => {
+    try {
+      const contactInfo = await storage.getContactInfo();
+      
+      if (!contactInfo) {
+        return res.status(404).json({ message: "Contact information not found" });
+      }
+      
+      res.json(contactInfo);
+    } catch (error) {
+      console.error("Error fetching contact information:", error);
+      res.status(500).json({ message: "Failed to fetch contact information" });
+    }
+  });
+
   app.get("/api/contact-messages/:id", async (req, res) => {
     try {
       // In development mode, skip authentication check
