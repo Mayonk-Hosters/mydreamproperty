@@ -118,12 +118,13 @@ export function Footer() {
           <p className="mt-2 text-xs">
             Optimized for iOS and Android devices
             <span className="mx-1">·</span>
-            <span
-              className="text-gray-500"
+            <Link 
+              to="/admin" 
+              className="text-gray-500 hover:text-gray-500 cursor-default"
               title="Site version 2.5.1"
             >
               v2.5.1
-            </span>
+            </Link>
           </p>
         </div>
       </div>
