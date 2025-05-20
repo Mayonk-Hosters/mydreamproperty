@@ -68,6 +68,7 @@ const formSchema = insertPropertySchema.extend({
   baths: z.number().nonnegative("Baths must be a non-negative number"),
   area: z.number().int().nonnegative("Area must be a non-negative integer"),
   yearBuilt: z.number().int().min(1800).max(new Date().getFullYear()).optional(),
+  parking: z.number().int().nonnegative("Parking spaces must be a non-negative integer").optional(),
   propertyNumber: z.string().optional(),
   mapUrl: z.string().url("Please enter a valid URL").optional(),
   // MahaRERA registration status
@@ -434,6 +435,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         type: data.type || 'buy',
         status: data.status || 'active',
         featured: Boolean(data.featured),
+        // Include year built if provided
+        yearBuilt: data.yearBuilt || null,
+        // Include parking spaces if provided
+        parking: data.parking !== undefined ? Math.floor(data.parking) : null,
         // Include MahaRERA registration status
         maharera_registered: Boolean(data.maharera_registered),
         // Include Google Maps URL if provided
@@ -932,7 +937,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
           </div>
 
           <div className="space-y-6">
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-5 gap-4">
               <FormField
                 control={form.control}
                 name="beds"
@@ -982,6 +987,25 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                       <Input
                         type="number"
                         placeholder="Square footage"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="parking"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Parking Spaces</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Number of parking spaces"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                       />
