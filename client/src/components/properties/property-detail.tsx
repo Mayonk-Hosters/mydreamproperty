@@ -316,7 +316,23 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                         </li>
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Transaction Type: {property.type === 'buy' ? 'For Sale' : property.type === 'rent' ? 'For Rent' : property.type}</span>
+                        </li>
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
                           <span>Status: {property.status}</span>
+                        </li>
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Beds: {property.beds}</span>
+                        </li>
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Baths: {property.baths}</span>
+                        </li>
+                        <li className="flex items-center text-xs sm:text-sm">
+                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                          <span>Area: {property.area} sq ft</span>
                         </li>
                         {property.yearBuilt !== undefined && property.yearBuilt !== null && (
                           <li className="flex items-center text-xs sm:text-sm">
@@ -328,6 +344,42 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                           <li className="flex items-center text-xs sm:text-sm">
                             <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
                             <span>Parking: {property.parking} {property.parking === 1 ? 'Space' : 'Spaces'}</span>
+                          </li>
+                        )}
+                        {property.propertyNumber && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Property ID: {property.propertyNumber}</span>
+                          </li>
+                        )}
+                        {property.maharera_registered && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>MahaRERA Registered</span>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Additional Information</h3>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        {property.agentId && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Contact Agent</span>
+                          </li>
+                        )}
+                        {property.featured && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Featured Property</span>
+                          </li>
+                        )}
+                        {property.neighborhoodId && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Neighborhood Information Available</span>
                           </li>
                         )}
                       </ul>
