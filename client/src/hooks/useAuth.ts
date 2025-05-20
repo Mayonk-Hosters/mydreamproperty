@@ -70,11 +70,6 @@ export function useAuth() {
       
       // Force refetch to ensure we have the latest data
       refetch();
-      
-      // Redirect to admin dashboard after a short delay
-      setTimeout(() => {
-        window.location.href = "/admin";
-      }, 500);
     },
     onError: (error: Error) => {
       toast({
@@ -84,6 +79,39 @@ export function useAuth() {
       });
     },
   });
+  
+  // Logout function
+  const logout = async () => {
+    try {
+      const res = await fetch("/api/logout", {
+        method: "POST",
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        // Clear cache
+        queryClient.setQueryData(["/api/auth/user"], null);
+        
+        // Show success message
+        toast({
+          title: "Logout successful",
+          description: "You have been logged out",
+        });
+        
+        // Force refetch
+        refetch();
+      } else {
+        throw new Error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Logout failed",
+        description: "An error occurred during logout",
+        variant: "destructive",
+      });
+    }
+  };
 
   return {
     user,
@@ -91,5 +119,6 @@ export function useAuth() {
     error,
     isAdmin,
     loginMutation,
+    logout,
   };
 }

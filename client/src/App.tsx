@@ -17,6 +17,8 @@ import PropertyCalculatorPage from "@/pages/property-calculator";
 import NeighborhoodComparisonPage from "@/pages/neighborhood-comparison";
 import LoginPage from "@/pages/login";
 import MDPPropertiesPage from "@/pages/mdp-properties-page";
+import AgentDashboardPage from "@/pages/agent-dashboard";
+import ClientDashboardPage from "@/pages/client-dashboard";
 
 // Admin Pages
 import AdminDashboardPage from "@/pages/admin/index";
@@ -51,6 +53,8 @@ function Router() {
       <Route path="/neighborhood-comparison" component={NeighborhoodComparisonPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/agent-dashboard" component={AgentDashboardPage} />
+      <Route path="/client-dashboard" component={ClientDashboardPage} />
       
       {/* Admin pages */}
       <Route path="/admin">

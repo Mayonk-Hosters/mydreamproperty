@@ -162,7 +162,32 @@ export function setupAuth(app: Express) {
 
   // Temporary route for checking admin status during development
   app.get("/api/auth/check-admin", (req, res) => {
-    // For development, always return isAdmin: true
-    res.json({ isAdmin: true });
+    if (!req.isAuthenticated()) {
+      return res.json({ isAdmin: false, userType: null });
+    }
+    
+    // In development mode, get user type from session if available
+    const userType = req.session.userType || (req.user.isAdmin ? 'admin' : 'client');
+    
+    return res.json({ 
+      isAdmin: !!req.user.isAdmin,
+      userType: userType
+    });
+  });
+  
+  // User info endpoint
+  app.get("/api/auth/user", (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    // Return user data with role information
+    const userData = req.user;
+    const userType = req.session.userType || (userData.isAdmin ? 'admin' : 'client');
+    
+    return res.json({
+      ...userData,
+      role: userData.role || userType
+    });
   });
 }
