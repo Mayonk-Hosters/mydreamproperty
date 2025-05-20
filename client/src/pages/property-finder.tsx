@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { PageLayout } from "@/components/common/page-layout";
+// Use regular layout instead of the missing PageLayout
+import { MainNav } from "@/components/main-nav";
 import { PropertyRecommendationForm } from "@/components/home/property-recommendation-form";
 import { PropertyRecommendations } from "@/components/home/property-recommendations";
 import { usePropertyRecommendations } from "@/hooks/use-property-recommendations";
@@ -30,7 +31,7 @@ export default function PropertyFinderPage() {
   };
 
   return (
-    <PageLayout>
+    <>
       <Helmet>
         <title>AI Property Finder | My Dream Property</title>
         <meta 
@@ -38,6 +39,7 @@ export default function PropertyFinderPage() {
           content="Find your dream property with our AI-powered recommendation engine. Tell us your preferences and we'll match you with the perfect properties."
         />
       </Helmet>
+      <MainNav />
       
       <div className="container mx-auto py-10 px-4">
         <div className="text-center mb-10">
@@ -89,6 +91,6 @@ export default function PropertyFinderPage() {
           </div>
         )}
       </div>
-    </PageLayout>
+    </>
   );
 }
