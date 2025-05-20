@@ -8,16 +8,30 @@ import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 import { authStorage } from "./auth-storage";
 
+// For local development, don't require REPLIT_DOMAINS
 if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
+  console.warn("Environment variable REPLIT_DOMAINS not provided, using default localhost");
+  process.env.REPLIT_DOMAINS = "localhost";
 }
 
 // Cache OIDC configuration for 1 hour
 const getOidcConfig = memoize(
   async () => {
+    // In development mode with no REPL_ID, use a mock configuration
+    if (!process.env.REPL_ID && process.env.NODE_ENV === 'development') {
+      console.log("Running in local development mode with mock OIDC configuration");
+      return {
+        issuer: 'https://localhost/oidc',
+        authorization_endpoint: 'https://localhost/auth',
+        token_endpoint: 'https://localhost/token',
+        jwks_uri: 'https://localhost/jwks',
+        userinfo_endpoint: 'https://localhost/userinfo'
+      };
+    }
+    
     return await client.discovery(
       new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID!
+      process.env.REPL_ID || 'local-dev'
     );
   },
   { maxAge: 3600 * 1000 }
