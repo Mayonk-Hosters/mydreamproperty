@@ -1817,6 +1817,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI-powered property recommendations
+  app.post("/api/properties/recommendations", async (req, res) => {
+    try {
+      const preferences: PropertyPreference = req.body;
+      
+      // Validate the preferences
+      if (!preferences || Object.keys(preferences).length === 0) {
+        return res.status(400).json({ 
+          message: "Please provide preferences for property recommendations" 
+        });
+      }
+      
+      // Get all properties
+      const properties = await storage.getAllProperties();
+      
+      // Filter to only active properties
+      const activeProperties = properties.filter(p => p.status === 'active');
+      
+      if (!activeProperties || activeProperties.length === 0) {
+        return res.status(404).json({ 
+          message: "No active properties available for recommendations" 
+        });
+      }
+      
+      // Get recommendations based on user preferences
+      const recommendations = await getPropertyRecommendations(
+        activeProperties, 
+        preferences,
+        5 // Limit to 5 recommendations
+      );
+      
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Error generating property recommendations:", error);
+      res.status(500).json({ 
+        message: "Failed to generate property recommendations",
+        error: process.env.NODE_ENV === 'development' ? error.toString() : undefined
+      });
+    }
+  });
+
   // Neighborhoods API
   app.use('/api/neighborhoods', neighborhoodsRoutes);
 
