@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { useAdmin } from "@/hooks/use-admin";
-import { Loader2, Search, Mail, Phone, Home, Calendar, User } from "lucide-react";
+import { Loader2, Search, Mail, Phone, Home, Calendar, User, Trash2, AlertTriangle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -24,17 +24,33 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Inquiry, Property } from "@shared/schema";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminInquiriesPage() {
   const { isAdmin, isLoading, requireAdmin } = useAdmin();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [viewInquiry, setViewInquiry] = useState<Inquiry | null>(null);
+  const [deleteInquiryId, setDeleteInquiryId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   // Fetch inquiries
   const { data: inquiries, isLoading: isLoadingInquiries } = useQuery<Inquiry[]>({
@@ -47,6 +63,41 @@ export default function AdminInquiriesPage() {
     queryKey: ["/api/properties"],
     enabled: !isLoading,
   });
+  
+  // Function to delete an inquiry
+  const deleteInquiry = async (id: number) => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/inquiries/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Inquiry has been deleted successfully",
+        });
+        // Invalidate and refetch inquiries
+        queryClient.invalidateQueries({ queryKey: ["/api/inquiries"] });
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to delete inquiry",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteInquiryId(null);
+    }
+  };
   
   // Check if user is admin
   useEffect(() => {
@@ -156,13 +207,22 @@ export default function AdminInquiriesPage() {
                             : 'N/A'}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setViewInquiry(inquiry)}
-                          >
-                            View Details
-                          </Button>
+                          <div className="flex justify-end space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setViewInquiry(inquiry)}
+                            >
+                              View Details
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => setDeleteInquiryId(inquiry.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
@@ -245,6 +305,16 @@ export default function AdminInquiriesPage() {
                   Close
                 </Button>
                 <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setViewInquiry(null);
+                    setDeleteInquiryId(viewInquiry.id);
+                  }}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Inquiry
+                </Button>
+                <Button
                   variant="default"
                   onClick={() => {
                     window.location.href = `mailto:${viewInquiry.email}?subject=RE: Your Inquiry about Property&body=Dear ${viewInquiry.name},%0D%0A%0D%0AThank you for your inquiry about the property.%0D%0A%0D%0ABest regards,%0D%0AMy Dream Property Team`;
@@ -258,6 +328,34 @@ export default function AdminInquiriesPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!deleteInquiryId} onOpenChange={(open) => !open && setDeleteInquiryId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the inquiry from the database.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isDeleting}
+              onClick={(e) => {
+                e.preventDefault();
+                if (deleteInquiryId) {
+                  deleteInquiry(deleteInquiryId);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 }
