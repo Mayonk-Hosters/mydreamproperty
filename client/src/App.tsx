@@ -6,8 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { SiteSettingsProvider } from "@/hooks/use-site-settings";
 import { ProtectedAdminRoute } from "@/components/admin/protected-admin-route";
+import { ProtectedAgentRoute } from "@/components/auth/protected-agent-route";
+import { ProtectedClientRoute } from "@/components/auth/protected-client-route";
 
-// Pages
+// Public Pages
 import HomePage from "@/pages/index";
 import PropertiesPage from "@/pages/properties";
 import PropertyPage from "@/pages/property";
@@ -17,8 +19,14 @@ import PropertyCalculatorPage from "@/pages/property-calculator";
 import NeighborhoodComparisonPage from "@/pages/neighborhood-comparison";
 import LoginPage from "@/pages/login";
 import MDPPropertiesPage from "@/pages/mdp-properties-page";
+
+// Agent Pages
 import AgentDashboardPage from "@/pages/agent-dashboard";
+import AgentPropertiesPage from "@/pages/agent/properties";
+
+// Client Pages
 import ClientDashboardPage from "@/pages/client-dashboard";
+import ClientDashboardHomePage from "@/pages/client/dashboard";
 
 // Admin Pages
 import AdminDashboardPage from "@/pages/admin/index";
@@ -53,10 +61,16 @@ function Router() {
       <Route path="/neighborhood-comparison" component={NeighborhoodComparisonPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/login" component={LoginPage} />
-      <Route path="/agent-dashboard" component={AgentDashboardPage} />
-      <Route path="/client-dashboard" component={ClientDashboardPage} />
       
-      {/* Admin pages */}
+      {/* Agent pages - protected with agent-specific auth */}
+      <Route path="/agent-dashboard" component={AgentDashboardPage} />
+      <Route path="/agent/properties" component={AgentPropertiesPage} />
+      
+      {/* Client pages - protected with client-specific auth */}
+      <Route path="/client-dashboard" component={ClientDashboardPage} />
+      <Route path="/client/dashboard" component={ClientDashboardHomePage} />
+      
+      {/* Admin pages - protected with admin-specific auth */}
       <Route path="/admin">
         <ProtectedAdminRoute component={AdminDashboardPage} />
       </Route>
