@@ -121,18 +121,6 @@ export default function ContactPage() {
               <MapPin className="h-5 w-5 text-primary" />
               <span>{contactInfo?.address || "Mumbai, Maharashtra 400001"}</span>
             </div>
-            {contactInfo?.phone2 && (
-              <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
-                <Phone className="h-5 w-5 text-primary" />
-                <span>{contactInfo.phone2}</span>
-              </div>
-            )}
-            {contactInfo?.email2 && (
-              <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
-                <Mail className="h-5 w-5 text-primary" />
-                <span>{contactInfo.email2}</span>
-              </div>
-            )}
           </div>
           
           <Form {...form}>

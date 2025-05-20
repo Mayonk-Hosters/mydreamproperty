@@ -4,11 +4,16 @@ import type { ContactInfo } from "@shared/schema";
 
 export interface SiteSettings {
   siteName: string;
+  contactEmail: string;
+  contactPhone: string;
+  contactInfo?: ContactInfo;
 }
 
 // Default values
 const defaultSettings: SiteSettings = {
-  siteName: "My Dream Property"
+  siteName: "My Dream Property",
+  contactEmail: "info@mydreamproperty.com",
+  contactPhone: "+91 98765 43210"
 };
 
 type SiteSettingsContextType = {
@@ -32,7 +37,12 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   
   // Use data if available, otherwise use default settings
   const settings: SiteSettings = data 
-    ? { siteName: data.siteName || defaultSettings.siteName }
+    ? { 
+        siteName: data.siteName || defaultSettings.siteName,
+        contactEmail: data.email1 || defaultSettings.contactEmail,
+        contactPhone: data.phone1 || defaultSettings.contactPhone,
+        contactInfo: data
+      }
     : defaultSettings;
   
   return (
