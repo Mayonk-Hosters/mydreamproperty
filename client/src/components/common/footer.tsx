@@ -99,16 +99,38 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin className="mt-0.5 mr-2 h-4 w-4 flex-shrink-0" />
-                <span className="text-gray-400 text-sm md:text-base">123 Real Estate Ave, New York, NY 10001</span>
+                <span className="text-gray-400 text-sm md:text-base">
+                  {settings.contactInfo?.address || "123 Real Estate Ave, New York, NY 10001"}
+                </span>
               </li>
               <li className="flex items-center">
                 <Phone className="mr-2 h-4 w-4 flex-shrink-0" />
-                <span className="text-gray-400 text-sm md:text-base">(123) 456-7890</span>
+                <span className="text-gray-400 text-sm md:text-base">
+                  {settings.contactInfo?.phone1 || settings.contactInfo?.phone || settings.contactPhone || "(123) 456-7890"}
+                </span>
               </li>
+              {settings.contactInfo?.phone2 && (
+                <li className="flex items-center">
+                  <Phone className="mr-2 h-4 w-4 flex-shrink-0" />
+                  <span className="text-gray-400 text-sm md:text-base">
+                    {settings.contactInfo.phone2}
+                  </span>
+                </li>
+              )}
               <li className="flex items-center">
                 <Mail className="mr-2 h-4 w-4 flex-shrink-0" />
-                <span className="text-gray-400 text-sm md:text-base break-all">info@realestatepro.com</span>
+                <span className="text-gray-400 text-sm md:text-base break-all">
+                  {settings.contactInfo?.email1 || settings.contactInfo?.email || settings.contactEmail || "info@mydreamproperty.com"}
+                </span>
               </li>
+              {settings.contactInfo?.email2 && (
+                <li className="flex items-center">
+                  <Mail className="mr-2 h-4 w-4 flex-shrink-0" />
+                  <span className="text-gray-400 text-sm md:text-base break-all">
+                    {settings.contactInfo.email2}
+                  </span>
+                </li>
+              )}
             </ul>
           </div>
         </div>

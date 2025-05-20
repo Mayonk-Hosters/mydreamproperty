@@ -111,16 +111,28 @@ export default function ContactPage() {
           <div className="flex flex-wrap gap-6 mb-8 justify-center">
             <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
               <Phone className="h-5 w-5 text-primary" />
-              <span>+91 98765 43210</span>
+              <span>{contactInfo?.phone1 || contactInfo?.phone || "+91 98765 43210"}</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
               <Mail className="h-5 w-5 text-primary" />
-              <span>info@mydreamproperty.com</span>
+              <span>{contactInfo?.email1 || contactInfo?.email || "info@mydreamproperty.com"}</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
               <MapPin className="h-5 w-5 text-primary" />
-              <span>Mumbai, Maharashtra 400001</span>
+              <span>{contactInfo?.address || "Mumbai, Maharashtra 400001"}</span>
             </div>
+            {contactInfo?.phone2 && (
+              <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
+                <Phone className="h-5 w-5 text-primary" />
+                <span>{contactInfo.phone2}</span>
+              </div>
+            )}
+            {contactInfo?.email2 && (
+              <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
+                <Mail className="h-5 w-5 text-primary" />
+                <span>{contactInfo.email2}</span>
+              </div>
+            )}
           </div>
           
           <Form {...form}>
