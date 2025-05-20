@@ -318,10 +318,12 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
                           <span>Status: {property.status}</span>
                         </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Year Built: {property.yearBuilt ? property.yearBuilt : 'Not specified'}</span>
-                        </li>
+                        {property.yearBuilt !== undefined && property.yearBuilt !== null && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Year Built: {property.yearBuilt}</span>
+                          </li>
+                        )}
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
                           <span>Parking: 2 Spaces</span>
