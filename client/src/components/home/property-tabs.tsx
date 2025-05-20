@@ -31,12 +31,14 @@ export function PropertyTabs() {
     }
   }, [properties]);
   
-  // Derived state for featured properties - ensure boolean comparison
-  const featuredProperties = properties?.filter(property => property.featured === true) || [];
+  // Derived state for featured properties - properly handle PostgreSQL boolean values
+  const featuredProperties = properties?.filter(property => 
+    property.featured === true || property.featured === 't'
+  ) || [];
   
   // Derived state for buy properties - sorted by newest first
   const buyProperties = properties?.filter(property => 
-    property.type === 'buy' && property.featured !== true
+    property.type === 'buy' && property.featured !== true && property.featured !== 't'
   ).sort((a, b) => b.id - a.id) || [];
   
   // Featured buy properties
@@ -44,7 +46,7 @@ export function PropertyTabs() {
   
   // Derived state for rent properties - sorted by newest first
   const rentProperties = properties?.filter(property => 
-    property.type === 'rent' && property.featured !== true
+    property.type === 'rent' && property.featured !== true && property.featured !== 't'
   ).sort((a, b) => b.id - a.id) || [];
   
   // Featured rent properties
