@@ -300,10 +300,11 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             </div>
             
             <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-6 sm:mb-8">
-              <TabsList className="grid grid-cols-3 w-full">
+              <TabsList className="grid grid-cols-4 w-full">
                 <TabsTrigger value="details" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Details</TabsTrigger>
                 <TabsTrigger value="features" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Features</TabsTrigger>
                 <TabsTrigger value="location" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Location</TabsTrigger>
+                <TabsTrigger value="agent" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Agent</TabsTrigger>
               </TabsList>
               <TabsContent value="details">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
@@ -476,6 +477,49 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                           </li>
                         )}
                       </ul>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+              
+              {/* Agent Tab */}
+              <TabsContent value="agent">
+                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                  {property.agentId ? (
+                    <div className="flex flex-col items-center sm:flex-row sm:items-start">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-full mb-3 sm:mb-0 sm:mr-4 bg-gray-200 flex-shrink-0">
+                        <img 
+                          src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256"
+                          alt="Agent"
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-base sm:text-lg">Property Agent</h3>
+                        <p className="text-primary font-medium mb-1">Agent ID: {property.agentId}</p>
+                        <p className="text-gray-600 text-sm sm:text-base mb-3">
+                          Our property expert will guide you through every step of your real estate journey.
+                        </p>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => setIsInquiryFormOpen(true)}
+                          >
+                            Contact Agent
+                          </Button>
+                          <Button
+                            size="sm"
+                          >
+                            View Listings
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <p>No agent information available for this property.</p>
                     </div>
                   )}
                 </div>
