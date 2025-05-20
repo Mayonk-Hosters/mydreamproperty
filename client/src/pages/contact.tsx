@@ -111,11 +111,11 @@ export default function ContactPage() {
           <div className="flex flex-wrap gap-6 mb-8 justify-center">
             <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
               <Phone className="h-5 w-5 text-primary" />
-              <span>{contactInfo?.phone1 || contactInfo?.phone || "+91 98765 43210"}</span>
+              <span>{contactInfo?.phone1 || "9822854499"}</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
               <Mail className="h-5 w-5 text-primary" />
-              <span>{contactInfo?.email1 || contactInfo?.email || "info@mydreamproperty.com"}</span>
+              <span>{contactInfo?.email1 || "info@mydreamproperty.co.in"}</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-50 px-4 py-3 rounded-md">
               <MapPin className="h-5 w-5 text-primary" />

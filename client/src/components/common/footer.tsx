@@ -106,13 +106,13 @@ export function Footer() {
               <li className="flex items-center">
                 <Phone className="mr-2 h-4 w-4 flex-shrink-0" />
                 <span className="text-gray-400 text-sm md:text-base">
-                  {settings.contactInfo?.phone1 || settings.contactPhone || "(123) 456-7890"}
+                  {settings.contactInfo?.phone1 || "9822854499"}
                 </span>
               </li>
               <li className="flex items-center">
                 <Mail className="mr-2 h-4 w-4 flex-shrink-0" />
                 <span className="text-gray-400 text-sm md:text-base break-all">
-                  {settings.contactInfo?.email1 || settings.contactEmail || "info@mydreamproperty.com"}
+                  {settings.contactInfo?.email1 || "info@mydreamproperty.co.in"}
                 </span>
               </li>
             </ul>
