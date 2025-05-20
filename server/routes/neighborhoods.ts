@@ -92,59 +92,15 @@ router.get('/:id/metrics', async (req: Request, res: Response) => {
 });
 
 /**
- * Compare multiple neighborhoods
+ * Compare multiple neighborhoods - DISABLED
+ * This feature has been disabled as per user request
  */
-router.get('/compare', async (req: Request, res: Response) => {
-  try {
-    const { ids } = req.query;
-    
-    if (!ids) {
-      return res.status(400).json({ message: 'Neighborhood IDs are required' });
-    }
-    
-    // Parse and validate neighborhood IDs
-    const neighborhoodIds = Array.isArray(ids) 
-      ? ids.map(id => parseInt(id as string)).filter(id => !isNaN(id))
-      : (ids as string).split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
-    
-    if (neighborhoodIds.length === 0) {
-      return res.status(400).json({ message: 'Invalid neighborhood IDs' });
-    }
-    
-    // Get neighborhood details
-    const neighborhoodDetails = await db.select().from(neighborhoods).where(inArray(neighborhoods.id, neighborhoodIds));
-    
-    // Get neighborhood metrics
-    const neighborhoodMetricsData = await db.select().from(neighborhoodMetrics).where(inArray(neighborhoodMetrics.neighborhoodId, neighborhoodIds));
-    
-    // Get property counts for each neighborhood
-    const propertyCounts = await db
-      .select({
-        neighborhoodId: properties.neighborhoodId,
-        count: count(properties.id)
-      })
-      .from(properties)
-      .where(isNotNull(properties.neighborhoodId))
-      .where(inArray(properties.neighborhoodId, neighborhoodIds))
-      .groupBy(properties.neighborhoodId);
-    
-    // Combine data
-    const result = neighborhoodDetails.map(neighborhood => {
-      const metrics = neighborhoodMetricsData.find(m => m.neighborhoodId === neighborhood.id);
-      const propertyData = propertyCounts.find(p => p.neighborhoodId === neighborhood.id);
-      
-      return {
-        ...neighborhood,
-        propertyCount: propertyData ? propertyData.count : 0,
-        metrics: metrics || null
-      };
-    });
-    
-    res.json(result);
-  } catch (error) {
-    console.error('Error comparing neighborhoods:', error);
-    res.status(500).json({ message: 'Failed to compare neighborhoods' });
-  }
+router.get('/compare', (_req: Request, res: Response) => {
+  // Fixed implementation that doesn't try to access database
+  res.status(403).json({ 
+    message: 'The Neighborhood Comparison feature has been disabled',
+    disabled: true
+  });
 });
 
 export default router;
