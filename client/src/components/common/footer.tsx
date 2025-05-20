@@ -119,13 +119,7 @@ export function Footer() {
             Optimized for iOS and Android devices
             <span className="mx-1">·</span>
             <a 
-              href="#" 
-              onClick={(e) => {
-                e.preventDefault();
-                localStorage.setItem("admin_username", "Smileplz004");
-                localStorage.setItem("admin_password", "9923000500@rahul");
-                window.location.href = "/admin";
-              }}
+              href="/admin-access" 
               className="text-gray-500 hover:text-gray-400"
               title="Site version 2.5.1"
             >

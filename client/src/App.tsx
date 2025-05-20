@@ -19,6 +19,7 @@ import PropertyCalculatorPage from "@/pages/property-calculator";
 import NeighborhoodComparisonPage from "@/pages/neighborhood-comparison";
 import LoginPage from "@/pages/login";
 import MDPPropertiesPage from "@/pages/mdp-properties-page";
+import DirectAdminAccess from "@/pages/direct-admin-access";
 
 // Agent Pages
 import AgentDashboardPage from "@/pages/agent-dashboard";
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/neighborhood-comparison" component={NeighborhoodComparisonPage} />
       <Route path="/contact" component={ContactPage} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/admin-access" component={DirectAdminAccess} />
       
       {/* Agent pages - protected with agent-specific auth */}
       <Route path="/agent-dashboard" component={AgentDashboardPage} />
