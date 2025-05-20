@@ -40,11 +40,11 @@ export function setupAdminLogin(app: Express) {
 
       // Development mode - provide test users for each type
       if (process.env.NODE_ENV === 'development') {
-        // Admin login in development mode
-        if (userType === 'admin' && username === 'admin') {
+        // Admin login in development mode with specific credentials
+        if (userType === 'admin' && username === 'Smileplz004' && password === '9923000500@rahul') {
           const adminUser = {
             id: "admin-dev",
-            username: "admin",
+            username: "Smileplz004",
             fullName: "Admin User",
             email: "admin@example.com",
             isAdmin: true,
