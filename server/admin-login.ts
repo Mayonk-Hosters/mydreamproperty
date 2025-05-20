@@ -206,7 +206,7 @@ export function setupAdminLogin(app: Express) {
   app.get("/api/auth/check-admin", (req: Request, res: Response) => {
     // In development mode for testing
     if (process.env.NODE_ENV === 'development' && req.isAuthenticated()) {
-      if (req.user && (req.user as any).username === 'admin') {
+      if (req.user && (req.user as any).username === 'Smileplz004') {
         return res.json({ isAdmin: true });
       }
     }

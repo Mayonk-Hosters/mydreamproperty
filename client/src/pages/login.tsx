@@ -82,7 +82,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="admin" {...field} />
+                      <Input placeholder="Smileplz004" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
