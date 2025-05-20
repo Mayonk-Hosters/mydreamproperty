@@ -43,6 +43,9 @@ router.get('/', async (_req: Request, res: Response) => {
       })
       .filter(neighborhood => neighborhood.propertyCount > 0);
     
+    // Log the neighborhoods with properties for debugging
+    console.log(`Found ${neighborhoodsWithProperties.length} neighborhoods with properties`);
+    
     res.json(neighborhoodsWithProperties);
   } catch (error) {
     console.error('Error fetching neighborhoods:', error);
@@ -114,11 +117,25 @@ router.get('/compare', async (req: Request, res: Response) => {
     // Get neighborhood metrics
     const neighborhoodMetricsData = await db.select().from(neighborhoodMetrics).where(inArray(neighborhoodMetrics.neighborhoodId, neighborhoodIds));
     
+    // Get property counts for each neighborhood
+    const propertyCounts = await db
+      .select({
+        neighborhoodId: properties.neighborhoodId,
+        count: count(properties.id)
+      })
+      .from(properties)
+      .where(isNotNull(properties.neighborhoodId))
+      .where(inArray(properties.neighborhoodId, neighborhoodIds))
+      .groupBy(properties.neighborhoodId);
+    
     // Combine data
     const result = neighborhoodDetails.map(neighborhood => {
       const metrics = neighborhoodMetricsData.find(m => m.neighborhoodId === neighborhood.id);
+      const propertyData = propertyCounts.find(p => p.neighborhoodId === neighborhood.id);
+      
       return {
         ...neighborhood,
+        propertyCount: propertyData ? propertyData.count : 0,
         metrics: metrics || null
       };
     });

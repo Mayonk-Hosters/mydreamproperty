@@ -119,7 +119,10 @@ export const useNeighborhoods = () => {
       if (!res.ok) {
         throw new Error(`Error fetching neighborhoods: ${res.status}`);
       }
-      return res.json();
+      const neighborhoods = await res.json();
+      // This endpoint already filters neighborhoods that have properties
+      // The server is configured to only return neighborhoods with propertyCount > 0
+      return neighborhoods;
     }
   });
 };
