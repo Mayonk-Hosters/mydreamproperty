@@ -56,6 +56,13 @@ export function Sidebar() {
           icon: <Users className="h-5 w-5" />
         },
         {
+          name: "Client Management",
+          path: "/admin/client-management",
+          icon: <Users className="h-5 w-5" />,
+          hasNotification: hasUnread,
+          notificationCount: totalUnreadCount
+        },
+        {
           name: "Inquiries",
           path: "/admin/inquiries",
           icon: <MessageCircle className="h-5 w-5" />,
