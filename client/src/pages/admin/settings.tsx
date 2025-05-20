@@ -53,9 +53,7 @@ export default function AdminSettingsPage() {
     siteName: z.string().min(2, {
       message: "Site name must be at least 2 characters.",
     }),
-    siteUrl: z.string().url({
-      message: "Please enter a valid URL.",
-    }),
+    siteUrl: z.string().optional(),
     contactEmail: z.string().email({
       message: "Please enter a valid email address.",
     }),
@@ -78,7 +76,7 @@ export default function AdminSettingsPage() {
     resolver: zodResolver(generalFormSchema),
     defaultValues: {
       siteName: "My Dream Property",
-      siteUrl: "https://realestatepro.com",
+      siteUrl: "https://mydreamproperty.com",
       contactEmail: "info@realestatepro.com",
       contactPhone: "(123) 456-7890",
       currency: "INR",
