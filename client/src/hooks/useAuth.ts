@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 type LoginCredentials = {
   username: string;
   password: string;
+  userType?: string;
 };
 
 export function useAuth() {

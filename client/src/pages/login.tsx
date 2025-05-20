@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,10 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
+  userType: z.string().optional(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -20,11 +22,18 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation } = useAuth();
+  const [userType, setUserType] = useState("admin");
 
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      setLocation("/");
+      if (user.isAdmin) {
+        setLocation("/admin");
+      } else if (user.role === "agent") {
+        setLocation("/agent-dashboard");
+      } else {
+        setLocation("/client-dashboard");
+      }
     }
   }, [user, setLocation]);
 
@@ -33,14 +42,30 @@ export default function LoginPage() {
     defaultValues: {
       username: "",
       password: "",
+      userType: "admin",
     },
   });
 
+  // Update form value when tab changes
+  useEffect(() => {
+    form.setValue("userType", userType);
+  }, [userType, form]);
+
   async function onSubmit(data: LoginFormData) {
-    loginMutation.mutate(data, {
-      onSuccess: () => {
-        // Redirect to admin panel on successful login
-        setLocation("/admin");
+    // Include the user type in the login data
+    loginMutation.mutate({
+      ...data,
+      userType: userType
+    }, {
+      onSuccess: (user) => {
+        // Redirect based on user type
+        if (user.isAdmin) {
+          setLocation("/admin");
+        } else if (user.role === "agent") {
+          setLocation("/agent-dashboard");
+        } else {
+          setLocation("/client-dashboard");
+        }
       }
     });
   }
@@ -49,12 +74,38 @@ export default function LoginPage() {
     <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-16rem)] px-4 py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
+          <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
-            Enter your credentials to access the admin panel
+            Choose your user type and enter your credentials
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <Tabs defaultValue="admin" onValueChange={setUserType} className="mb-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="admin">Admin</TabsTrigger>
+              <TabsTrigger value="agent">Agent</TabsTrigger>
+              <TabsTrigger value="client">Client</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="admin">
+              <p className="text-sm text-muted-foreground mt-2 mb-4">
+                Login as an administrator to manage the entire platform
+              </p>
+            </TabsContent>
+            
+            <TabsContent value="agent">
+              <p className="text-sm text-muted-foreground mt-2 mb-4">
+                Login as an agent to manage your property listings and client inquiries
+              </p>
+            </TabsContent>
+            
+            <TabsContent value="client">
+              <p className="text-sm text-muted-foreground mt-2 mb-4">
+                Login as a client to view saved properties and track your inquiries
+              </p>
+            </TabsContent>
+          </Tabs>
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -64,7 +115,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="admin" {...field} />
+                      <Input placeholder={userType === "admin" ? "admin" : "username"} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -83,6 +134,7 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+              <input type="hidden" {...form.register("userType")} />
               <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
                 {loginMutation.isPending ? (
                   <>

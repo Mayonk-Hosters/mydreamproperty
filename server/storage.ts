@@ -42,6 +42,12 @@ export interface IStorage {
   updateUser(id: string, userData: Partial<typeof users.$inferInsert>): Promise<User>;
   deleteUser(id: string): Promise<boolean>;
   
+  // Authentication methods
+  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getAgentByUsername(username: string): Promise<Agent | undefined>;
+  getClientByUsername(username: string): Promise<User | undefined>;
+  
   // Property methods
   getAllProperties(filters?: PropertyFilters): Promise<Property[]>;
   getProperty(id: number): Promise<Property | undefined>;

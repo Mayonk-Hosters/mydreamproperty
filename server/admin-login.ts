@@ -32,55 +32,136 @@ export function setupAdminLogin(app: Express) {
   // Admin login endpoint - Simple version for development
   app.post("/api/traditional-login", async (req: Request, res: Response) => {
     try {
-      const { username, password } = req.body;
+      const { username, password, userType } = req.body;
       
       if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
       }
 
-      // Allow admin access with any password in development mode
-      if (process.env.NODE_ENV === 'development' && username === 'admin') {
-        // Create an admin user for the session
-        const adminUser = {
-          id: "admin-dev",
-          username: "admin",
-          fullName: "Admin User",
-          email: "admin@example.com",
-          isAdmin: true,
-          profileImage: null
-        };
-        
-        // Set up the admin session
-        req.login(adminUser, (err) => {
-          if (err) {
-            console.error("Login error:", err);
-            return res.status(500).json({ message: "Login failed" });
-          }
+      // Development mode - provide test users for each type
+      if (process.env.NODE_ENV === 'development') {
+        // Admin login in development mode
+        if (userType === 'admin' && username === 'admin') {
+          const adminUser = {
+            id: "admin-dev",
+            username: "admin",
+            fullName: "Admin User",
+            email: "admin@example.com",
+            isAdmin: true,
+            role: "admin",
+            profileImage: null
+          };
           
-          // Explicitly set admin flag in session
-          req.session.isAdmin = true;
-          
-          // Save the session
-          req.session.save((err) => {
+          req.login(adminUser, (err) => {
             if (err) {
-              console.error("Session save error:", err);
+              console.error("Login error:", err);
+              return res.status(500).json({ message: "Login failed" });
             }
             
-            // Return admin user data
-            res.status(200).json(adminUser);
+            req.session.isAdmin = true;
+            req.session.userType = "admin";
+            
+            req.session.save((err) => {
+              if (err) console.error("Session save error:", err);
+              res.status(200).json(adminUser);
+            });
           });
-        });
-        return;
+          return;
+        }
+        
+        // Agent login in development mode
+        if (userType === 'agent' && username === 'agent') {
+          const agentUser = {
+            id: "agent-dev",
+            username: "agent",
+            fullName: "Agent User",
+            email: "agent@example.com",
+            isAdmin: false,
+            role: "agent",
+            profileImage: null
+          };
+          
+          req.login(agentUser, (err) => {
+            if (err) {
+              console.error("Login error:", err);
+              return res.status(500).json({ message: "Login failed" });
+            }
+            
+            req.session.isAdmin = false;
+            req.session.userType = "agent";
+            
+            req.session.save((err) => {
+              if (err) console.error("Session save error:", err);
+              res.status(200).json(agentUser);
+            });
+          });
+          return;
+        }
+        
+        // Client login in development mode
+        if (userType === 'client' && username === 'client') {
+          const clientUser = {
+            id: "client-dev",
+            username: "client",
+            fullName: "Client User",
+            email: "client@example.com",
+            isAdmin: false,
+            role: "client",
+            profileImage: null
+          };
+          
+          req.login(clientUser, (err) => {
+            if (err) {
+              console.error("Login error:", err);
+              return res.status(500).json({ message: "Login failed" });
+            }
+            
+            req.session.isAdmin = false;
+            req.session.userType = "client";
+            
+            req.session.save((err) => {
+              if (err) console.error("Session save error:", err);
+              res.status(200).json(clientUser);
+            });
+          });
+          return;
+        }
       }
 
-      // Attempt database login for production
-      const user = await storage.getUserByUsername(username);
+      // Production login - look for users in the database
+      let user;
+      
+      // Determine which storage method to use based on user type
+      if (userType === 'admin') {
+        user = await storage.getUserByUsername(username);
+      } else if (userType === 'agent') {
+        // You can implement agent-specific storage methods
+        user = await storage.getAgentByUsername(username);
+        if (user) {
+          user.role = "agent";
+        }
+      } else if (userType === 'client') {
+        // You can implement client-specific storage methods
+        user = await storage.getClientByUsername(username);
+        if (user) {
+          user.role = "client";
+        }
+      } else {
+        // Default to regular user lookup if userType is not specified
+        user = await storage.getUserByUsername(username);
+      }
       
       if (!user) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
       
-      const passwordsMatch = await comparePasswords(password, user.password || "");
+      // Special case for development mode - any password works
+      let passwordsMatch = false;
+      if (process.env.NODE_ENV === 'development') {
+        passwordsMatch = true;
+      } else {
+        passwordsMatch = await comparePasswords(password, user.password || "");
+      }
       
       if (!passwordsMatch) {
         return res.status(401).json({ message: "Invalid username or password" });
@@ -91,9 +172,8 @@ export function setupAdminLogin(app: Express) {
         if (err) return res.status(500).json({ message: "Login failed" });
         
         // Set admin flag in session if user is admin
-        if (user.isAdmin) {
-          req.session.isAdmin = true;
-        }
+        req.session.isAdmin = !!user.isAdmin;
+        req.session.userType = user.role || (user.isAdmin ? "admin" : "client");
         
         // Save the session
         req.session.save((err) => {
