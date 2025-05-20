@@ -1025,6 +1025,11 @@ export class DatabaseStorage implements IStorage {
     const [inquiry] = await db.select().from(inquiries).where(eq(inquiries.id, id));
     return inquiry;
   }
+  
+  async deleteInquiry(id: number): Promise<boolean> {
+    const result = await db.delete(inquiries).where(eq(inquiries.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
 
   async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
     const [newInquiry] = await db.insert(inquiries).values(inquiry).returning();
