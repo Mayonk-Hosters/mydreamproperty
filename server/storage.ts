@@ -335,6 +335,39 @@ export class MemStorage implements IStorage {
       (user) => user.username === username
     );
   }
+  
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email
+    );
+  }
+  
+  async getAgentByUsername(username: string): Promise<Agent | undefined> {
+    // For now, we'll use the agent's name field as username
+    const agent = Array.from(this.agents.values()).find(
+      (agent) => agent.name === username
+    );
+    
+    // If agent is found, add a role property to it
+    if (agent) {
+      (agent as any).role = "agent";
+    }
+    
+    return agent;
+  }
+  
+  async getClientByUsername(username: string): Promise<User | undefined> {
+    // For now, clients are just users that are not admins
+    const user = Array.from(this.users.values()).find(
+      (user) => user.username === username && !user.isAdmin
+    );
+    
+    if (user) {
+      (user as any).role = "client";
+    }
+    
+    return user;
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
