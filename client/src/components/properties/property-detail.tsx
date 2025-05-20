@@ -55,6 +55,12 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
     queryKey: [`/api/properties/${propertyId}`],
   });
   
+  // Fetch agent data when we have a property with an agentId
+  const { data: agent } = useQuery({
+    queryKey: ['/api/agents', property?.agentId],
+    enabled: !!property?.agentId,
+  });
+  
   // Check if property is in favorites on load
   useEffect(() => {
     if (propertyId) {
@@ -485,20 +491,53 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               {/* Agent Tab */}
               <TabsContent value="agent">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                  {property.agentId ? (
+                  {property?.agentId ? (
                     <div className="flex flex-col items-center sm:flex-row sm:items-start">
                       <div className="w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-full mb-3 sm:mb-0 sm:mr-4 bg-gray-200 flex-shrink-0">
-                        <img 
-                          src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256"
-                          alt="Agent"
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
+                        {agent?.image ? (
+                          <img 
+                            src={agent.image}
+                            alt={agent.name || "Agent"}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <img 
+                            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256"
+                            alt="Agent"
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        )}
                       </div>
                       <div>
-                        <h3 className="font-medium text-base sm:text-lg">Property Agent</h3>
-                        <p className="text-primary font-medium mb-1">Agent ID: {property.agentId}</p>
-                        <p className="text-gray-600 text-sm sm:text-base mb-3">
+                        <h3 className="font-medium text-base sm:text-lg">
+                          {agent?.name ? agent.name : "Property Agent"}
+                        </h3>
+                        <p className="text-primary font-medium text-sm">
+                          {agent?.title ? agent.title : "Real Estate Agent"}
+                        </p>
+                        {agent?.contactNumber && (
+                          <p className="text-gray-700 text-sm mt-2">
+                            Contact: {agent.contactNumber}
+                          </p>
+                        )}
+                        {agent?.email && (
+                          <p className="text-gray-700 text-sm">
+                            Email: {agent.email}
+                          </p>
+                        )}
+                        {agent?.deals && (
+                          <p className="text-gray-700 text-sm">
+                            Deals Closed: {agent.deals}
+                          </p>
+                        )}
+                        {agent?.rating && (
+                          <p className="text-gray-700 text-sm">
+                            Rating: {agent.rating}/5
+                          </p>
+                        )}
+                        <p className="text-gray-600 text-sm sm:text-base my-3">
                           Our property expert will guide you through every step of your real estate journey.
                         </p>
                         <div className="flex gap-2">
