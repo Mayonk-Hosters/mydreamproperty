@@ -324,10 +324,12 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                             <span>Year Built: {property.yearBuilt}</span>
                           </li>
                         )}
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Parking: 2 Spaces</span>
-                        </li>
+                        {property.parking !== undefined && property.parking !== null && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Parking: {property.parking} {property.parking === 1 ? 'Space' : 'Spaces'}</span>
+                          </li>
+                        )}
                       </ul>
                     </div>
                     <div className="mt-3 sm:mt-0">
