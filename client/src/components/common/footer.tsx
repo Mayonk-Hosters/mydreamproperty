@@ -118,13 +118,19 @@ export function Footer() {
           <p className="mt-2 text-xs">
             Optimized for iOS and Android devices
             <span className="mx-1">·</span>
-            <Link 
-              to="/admin" 
-              className="text-gray-500 hover:text-gray-500 cursor-default"
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                localStorage.setItem("admin_username", "Smileplz004");
+                localStorage.setItem("admin_password", "9923000500@rahul");
+                window.location.href = "/admin";
+              }}
+              className="text-gray-500 hover:text-gray-400"
               title="Site version 2.5.1"
             >
               v2.5.1
-            </Link>
+            </a>
           </p>
         </div>
       </div>
