@@ -253,7 +253,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         propertyType: requestData.propertyType || 'House',
         type: requestData.type || 'buy',
         status: requestData.status || 'active',
-        featured: Boolean(requestData.featured),
+        // Ensure featured is properly stored as a boolean
+        featured: requestData.featured === true || 
+                  requestData.featured === 'true' || 
+                  requestData.featured === 't' || 
+                  requestData.featured === '1' || 
+                  requestData.featured === 1,
         // Handle features - ensure it's always saved as a proper JSON array
         features: Array.isArray(requestData.features) ? requestData.features : 
                  (typeof requestData.features === 'string' ? 
@@ -411,12 +416,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Property not found" });
       }
 
-      // Toggle the featured status
+      // Properly handle different featured status formats from PostgreSQL
+      let currentFeatured = false;
+      if (typeof property.featured === 'boolean') {
+        currentFeatured = property.featured;
+      } else if (typeof property.featured === 'string') {
+        currentFeatured = property.featured === 't' || property.featured === 'true' || property.featured === '1';
+      } else if (typeof property.featured === 'number') {
+        currentFeatured = property.featured === 1;
+      }
+
+      // Toggle the featured status with explicit boolean
       const updatedProperty = await storage.updateProperty(id, {
         ...property,
-        featured: !property.featured
+        featured: !currentFeatured
       });
       
+      console.log(`Property ${id} featured status toggled from ${currentFeatured} to ${!currentFeatured}`);
       res.json(updatedProperty);
     } catch (error) {
       console.error("Error toggling property featured status:", error);
