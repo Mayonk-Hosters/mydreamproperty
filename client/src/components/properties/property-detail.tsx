@@ -415,8 +415,8 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 </div>
               </TabsContent>
               <TabsContent value="location">
-                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg h-[250px] sm:h-[300px] flex items-center justify-center">
-                  <div className="text-center">
+                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                  <div className="text-center mb-4">
                     <MapPin className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400 mx-auto mb-3 sm:mb-4" />
                     <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">Property Location</h3>
                     <p className="text-gray-500 text-sm sm:text-base mb-3 sm:mb-4">
@@ -430,6 +430,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                         className="text-sm"
                         onClick={() => window.open(property.mapUrl || property.map_url, '_blank')}
                       >
+                        <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                         View on Google Maps
                       </Button>
                     ) : (
@@ -443,6 +444,39 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                       </Button>
                     )}
                   </div>
+                  
+                  {/* Display location hierarchy information if available */}
+                  {(property.stateId || property.districtId || property.talukaId || property.tehsilId) && (
+                    <div className="mt-4 border-t pt-4">
+                      <h3 className="font-medium text-sm sm:text-base mb-2">Location Details</h3>
+                      <ul className="space-y-1.5 sm:space-y-2">
+                        {property.stateId && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>State Available</span>
+                          </li>
+                        )}
+                        {property.districtId && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>District Available</span>
+                          </li>
+                        )}
+                        {property.talukaId && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Taluka Available</span>
+                          </li>
+                        )}
+                        {property.tehsilId && (
+                          <li className="flex items-center text-xs sm:text-sm">
+                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
+                            <span>Tehsil Available</span>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>
