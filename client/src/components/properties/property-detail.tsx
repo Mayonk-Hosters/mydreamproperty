@@ -332,23 +332,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                         )}
                       </ul>
                     </div>
-                    <div className="mt-3 sm:mt-0">
-                      <h3 className="font-medium text-sm sm:text-base mb-2">Interior Details</h3>
-                      <ul className="space-y-1.5 sm:space-y-2">
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Bedrooms: {property.beds}</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Bathrooms: {property.baths}</span>
-                        </li>
-                        <li className="flex items-center text-xs sm:text-sm">
-                          <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Total Area: {property.area} sq ft</span>
-                        </li>
-                      </ul>
-                    </div>
+
                   </div>
                 </div>
               </TabsContent>
