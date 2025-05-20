@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -23,8 +24,17 @@ export default function LoginPage() {
 
   // Redirect if already logged in
   useEffect(() => {
+    // Check if admin credentials have been entered
+    const storedUsername = localStorage.getItem("admin_username");
+    if (storedUsername === "Smileplz004") {
+      setLocation("/admin");
+      return;
+    }
+    
+    // Regular user login check
     if (user) {
-      if (user.isAdmin) {
+      const isAdmin = user.isAdmin || false;
+      if (isAdmin) {
         setLocation("/admin");
       } else {
         // Fallback to home page for any other type of user
@@ -41,9 +51,9 @@ export default function LoginPage() {
     },
   });
 
+  const { toast } = useToast();
+  
   async function onSubmit(data: LoginFormData) {
-    const { toast } = useToast();
-    
     // Check for the specific admin credentials
     if (data.username === "Smileplz004" && data.password === "9923000500@rahul") {
       // Store the username in localStorage for direct admin access
