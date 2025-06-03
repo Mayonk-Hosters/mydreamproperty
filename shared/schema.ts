@@ -78,10 +78,10 @@ export const properties = pgTable("properties", {
   maharera_registered: boolean("maharera_registered").default(false), // Whether the property is MahaRERA registered
   agentId: integer("agent_id").notNull().references(() => agents.id, { onDelete: 'cascade' }),
   // Location hierarchy fields
-  stateId: integer("state_id").references(() => states.id),
-  districtId: integer("district_id").references(() => districts.id),
-  talukaId: integer("taluka_id").references(() => talukas.id),
-  tehsilId: integer("tehsil_id").references(() => tehsils.id),
+  stateId: integer("stateId").references(() => states.id),
+  districtId: integer("districtId").references(() => districts.id),
+  talukaId: integer("talukaId").references(() => talukas.id),
+  tehsilId: integer("tehsilId").references(() => tehsils.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
