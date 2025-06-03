@@ -334,7 +334,7 @@ Please assist with the home loan process. Thank you!`;
                     ) : (
                       <>
                         <MessageCircle className="h-6 w-6" />
-                        Submit Inquiry via WhatsApp
+                        Submit Inquiry
                       </>
                     )}
                   </Button>
