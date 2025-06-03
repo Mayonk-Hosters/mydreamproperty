@@ -31,7 +31,6 @@ const isAuthenticated = isLocalDev ? isLocalAuthenticated : isReplitAuthenticate
 import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
 import { sendInquiryNotification } from "./email-service";
-import neighborhoodsRoutes from "./routes/neighborhoods";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
@@ -1869,8 +1868,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // AI-powered property recommendations route removed
 
-  // Neighborhoods API
-  app.use('/api/neighborhoods', neighborhoodsRoutes);
+
 
   const httpServer = createServer(app);
   return httpServer;
