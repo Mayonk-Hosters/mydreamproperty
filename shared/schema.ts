@@ -306,6 +306,8 @@ export const insertHomeLoanInquirySchema = createInsertSchema(homeLoanInquiries)
   id: true,
   isRead: true,
   createdAt: true,
+}).extend({
+  monthlyIncome: z.number().or(z.string()).transform((val) => String(val)),
 });
 
 export type HomeLoanInquiry = typeof homeLoanInquiries.$inferSelect;
