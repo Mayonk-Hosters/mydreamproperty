@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Home, MessageCircle } from "lucide-react";
+import { Link } from "wouter";
+import { Home, MessageCircle, ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -120,6 +121,14 @@ export default function HomeLoanPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      {/* Navigation Header */}
+      <div className="flex items-center mb-8">
+        <Link href="/" className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          Back to Home
+        </Link>
+      </div>
+
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
           Home Loan Services
