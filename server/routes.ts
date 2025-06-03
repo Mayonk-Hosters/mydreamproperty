@@ -14,6 +14,7 @@ import {
   insertContactInfoSchema,
   insertPropertyTypeSchema,
   insertContactMessageSchema,
+  insertHomeLoanInquirySchema,
   DEFAULT_PROPERTY_TYPES,
   PROPERTY_STATUS
 } from "@shared/schema";
@@ -1866,9 +1867,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI-powered property recommendations route removed
+  // Home Loan Inquiries routes
+  
+  // Create home loan inquiry
+  app.post("/api/home-loan-inquiries", async (req, res) => {
+    try {
+      const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
+      const newInquiry = await storage.createHomeLoanInquiry(inquiryData);
+      
+      res.status(201).json(newInquiry);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedError = fromZodError(error);
+        return res.status(400).json({ message: formattedError.message });
+      }
+      console.error("Error creating home loan inquiry:", error);
+      res.status(500).json({ message: "Failed to create home loan inquiry" });
+    }
+  });
 
+  // Get all home loan inquiries (admin only)
+  app.get("/api/home-loan-inquiries", isAuthenticated, async (req, res) => {
+    try {
+      const inquiries = await storage.getAllHomeLoanInquiries();
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching home loan inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch home loan inquiries" });
+    }
+  });
 
+  // Get specific home loan inquiry (admin only)
+  app.get("/api/home-loan-inquiries/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+
+      const inquiry = await storage.getHomeLoanInquiry(id);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Home loan inquiry not found" });
+      }
+
+      res.json(inquiry);
+    } catch (error) {
+      console.error("Error fetching home loan inquiry:", error);
+      res.status(500).json({ message: "Failed to fetch home loan inquiry" });
+    }
+  });
+
+  // Mark home loan inquiry as read (admin only)
+  app.patch("/api/home-loan-inquiries/:id/read", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+
+      const success = await storage.markHomeLoanInquiryAsRead(id);
+      if (!success) {
+        return res.status(404).json({ message: "Home loan inquiry not found" });
+      }
+
+      res.json({ message: "Home loan inquiry marked as read" });
+    } catch (error) {
+      console.error("Error marking home loan inquiry as read:", error);
+      res.status(500).json({ message: "Failed to mark inquiry as read" });
+    }
+  });
+
+  // Delete home loan inquiry (admin only)
+  app.delete("/api/home-loan-inquiries/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+
+      const success = await storage.deleteHomeLoanInquiry(id);
+      if (!success) {
+        return res.status(404).json({ message: "Home loan inquiry not found" });
+      }
+
+      res.json({ message: "Home loan inquiry deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting home loan inquiry:", error);
+      res.status(500).json({ message: "Failed to delete inquiry" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

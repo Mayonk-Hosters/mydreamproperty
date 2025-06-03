@@ -73,11 +73,25 @@ export default function HomeLoanPage() {
     { value: "pensioner", label: "Pensioner" },
   ];
 
-  function onSubmit(values: z.infer<typeof homeLoanSchema>) {
+  async function onSubmit(values: z.infer<typeof homeLoanSchema>) {
     setIsSubmitting(true);
     
-    // Format the WhatsApp message
-    const message = `🏠 *Home Loan Inquiry - My Dream Property*
+    try {
+      // Save to database first
+      const response = await fetch('/api/home-loan-inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit inquiry');
+      }
+
+      // Format the WhatsApp message
+      const message = `🏠 *Home Loan Inquiry - My Dream Property*
 
 *Personal Details:*
 👤 Name: ${values.name}
@@ -95,18 +109,22 @@ export default function HomeLoanPage() {
 
 Please assist with the home loan process. Thank you!`;
 
-    // WhatsApp number for My Dream Property
-    const phoneNumber = "919923000500";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
-    // Open WhatsApp
-    window.open(whatsappUrl, '_blank');
-    
-    setTimeout(() => {
-      setIsSubmitting(false);
+      // WhatsApp number for My Dream Property
+      const phoneNumber = "919923000500";
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      
+      // Open WhatsApp
+      window.open(whatsappUrl, '_blank');
+      
       // Reset form after successful submission
       form.reset();
-    }, 2000);
+      
+    } catch (error) {
+      console.error('Error submitting inquiry:', error);
+      alert('Failed to submit inquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (

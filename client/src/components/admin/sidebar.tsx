@@ -77,6 +77,11 @@ export function Sidebar() {
           notificationCount: unreadMessagesCount
         },
         {
+          name: "Home Loan Inquiries",
+          path: "/admin/home-loan-inquiries",
+          icon: <Home className="h-5 w-5" />
+        },
+        {
           name: "Message Dashboard",
           path: "/admin/message-dashboard",
           icon: <PieChart className="h-5 w-5" />,
