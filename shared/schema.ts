@@ -287,6 +287,30 @@ export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({
 export type ContactInfo = typeof contactInfo.$inferSelect;
 export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
 
+// Home loan inquiries schema
+export const homeLoanInquiries = pgTable("home_loan_inquiries", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email").notNull(),
+  loanType: text("loan_type").notNull(),
+  loanAmount: integer("loan_amount").notNull(),
+  propertyLocation: text("property_location").notNull(),
+  monthlyIncome: integer("monthly_income").notNull(),
+  employment: text("employment").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertHomeLoanInquirySchema = createInsertSchema(homeLoanInquiries).omit({
+  id: true,
+  isRead: true,
+  createdAt: true,
+});
+
+export type HomeLoanInquiry = typeof homeLoanInquiries.$inferSelect;
+export type InsertHomeLoanInquiry = z.infer<typeof insertHomeLoanInquirySchema>;
+
 // Property types table
 export const propertyTypes = pgTable("property_types", {
   id: serial("id").primaryKey(),

@@ -8,7 +8,7 @@ import {
   talukas, type Taluka, type InsertTaluka,
   tehsils, type Tehsil, type InsertTehsil,
   contactInfo, type ContactInfo, type InsertContactInfo,
-
+  homeLoanInquiries, type HomeLoanInquiry, type InsertHomeLoanInquiry,
   propertyTypes, type PropertyType, type InsertPropertyType,
   contactMessages, type ContactMessage, type InsertContactMessage,
   DEFAULT_PROPERTY_TYPES,
@@ -117,7 +117,13 @@ export interface IStorage {
   updateTehsil(id: number, tehsil: Partial<InsertTehsil>): Promise<Tehsil>;
   deleteTehsil(id: number): Promise<boolean>;
 
-
+  // Home Loan Inquiries
+  getAllHomeLoanInquiries(): Promise<HomeLoanInquiry[]>;
+  getHomeLoanInquiry(id: number): Promise<HomeLoanInquiry | undefined>;
+  createHomeLoanInquiry(inquiry: InsertHomeLoanInquiry): Promise<HomeLoanInquiry>;
+  updateHomeLoanInquiry(id: number, inquiry: Partial<InsertHomeLoanInquiry>): Promise<HomeLoanInquiry>;
+  deleteHomeLoanInquiry(id: number): Promise<boolean>;
+  markHomeLoanInquiryAsRead(id: number): Promise<boolean>;
 
   // Session store
   sessionStore: session.Store;
@@ -135,6 +141,7 @@ export class MemStorage implements IStorage {
   private contactInfo: ContactInfo | undefined;
   private propertyTypes: Map<number, PropertyType>;
   private contactMessages: Map<number, ContactMessage>;
+  private homeLoanInquiries: Map<number, HomeLoanInquiry>;
 
   
   private userIdCounter: number;
@@ -147,6 +154,7 @@ export class MemStorage implements IStorage {
   private tehsilIdCounter: number;
   private propertyTypeIdCounter: number;
   private contactMessageIdCounter: number;
+  private homeLoanInquiryIdCounter: number;
   
   public sessionStore: session.Store;
 
@@ -161,6 +169,7 @@ export class MemStorage implements IStorage {
     this.tehsils = new Map();
     this.propertyTypes = new Map();
     this.contactMessages = new Map();
+    this.homeLoanInquiries = new Map();
     
     this.userIdCounter = 1;
     this.propertyIdCounter = 1;
@@ -172,6 +181,7 @@ export class MemStorage implements IStorage {
     this.tehsilIdCounter = 1;
     this.propertyTypeIdCounter = 1;
     this.contactMessageIdCounter = 1;
+    this.homeLoanInquiryIdCounter = 1;
     
     // Initialize a basic session store
     this.sessionStore = new session.MemoryStore({
@@ -1301,6 +1311,48 @@ export class DatabaseStorage implements IStorage {
   
   async deleteContactMessage(id: number): Promise<boolean> {
     const result = await db.delete(contactMessages).where(eq(contactMessages.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Home Loan Inquiries methods
+  async getAllHomeLoanInquiries(): Promise<HomeLoanInquiry[]> {
+    return await db.select().from(homeLoanInquiries).orderBy(desc(homeLoanInquiries.createdAt));
+  }
+  
+  async getHomeLoanInquiry(id: number): Promise<HomeLoanInquiry | undefined> {
+    const [inquiry] = await db.select().from(homeLoanInquiries).where(eq(homeLoanInquiries.id, id));
+    return inquiry;
+  }
+  
+  async createHomeLoanInquiry(inquiry: InsertHomeLoanInquiry): Promise<HomeLoanInquiry> {
+    const [newInquiry] = await db.insert(homeLoanInquiries).values(inquiry).returning();
+    return newInquiry;
+  }
+  
+  async updateHomeLoanInquiry(id: number, inquiryData: Partial<InsertHomeLoanInquiry>): Promise<HomeLoanInquiry> {
+    const [updatedInquiry] = await db
+      .update(homeLoanInquiries)
+      .set(inquiryData)
+      .where(eq(homeLoanInquiries.id, id))
+      .returning();
+      
+    if (!updatedInquiry) {
+      throw new Error("Home loan inquiry not found");
+    }
+    
+    return updatedInquiry;
+  }
+  
+  async deleteHomeLoanInquiry(id: number): Promise<boolean> {
+    const result = await db.delete(homeLoanInquiries).where(eq(homeLoanInquiries.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+  
+  async markHomeLoanInquiryAsRead(id: number): Promise<boolean> {
+    const result = await db
+      .update(homeLoanInquiries)
+      .set({ isRead: true })
+      .where(eq(homeLoanInquiries.id, id));
     return result.rowCount !== null && result.rowCount > 0;
   }
 }
