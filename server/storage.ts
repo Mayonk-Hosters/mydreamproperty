@@ -810,6 +810,56 @@ export class MemStorage implements IStorage {
   async deletePropertyType(id: number): Promise<boolean> {
     return this.propertyTypes.delete(id);
   }
+
+  // Home Loan Inquiry methods
+  async getAllHomeLoanInquiries(): Promise<HomeLoanInquiry[]> {
+    return Array.from(this.homeLoanInquiries.values()).sort((a, b) => 
+      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    );
+  }
+  
+  async getHomeLoanInquiry(id: number): Promise<HomeLoanInquiry | undefined> {
+    return this.homeLoanInquiries.get(id);
+  }
+  
+  async createHomeLoanInquiry(inquiry: InsertHomeLoanInquiry): Promise<HomeLoanInquiry> {
+    const id = this.homeLoanInquiryIdCounter++;
+    const now = new Date();
+    const newInquiry: HomeLoanInquiry = {
+      ...inquiry,
+      id,
+      isRead: false,
+      createdAt: now
+    };
+    
+    this.homeLoanInquiries.set(id, newInquiry);
+    return newInquiry;
+  }
+  
+  async updateHomeLoanInquiry(id: number, inquiryData: Partial<InsertHomeLoanInquiry>): Promise<HomeLoanInquiry> {
+    const existingInquiry = this.homeLoanInquiries.get(id);
+    
+    if (!existingInquiry) {
+      throw new Error("Home loan inquiry not found");
+    }
+    
+    const updatedInquiry: HomeLoanInquiry = { ...existingInquiry, ...inquiryData };
+    this.homeLoanInquiries.set(id, updatedInquiry);
+    return updatedInquiry;
+  }
+  
+  async markHomeLoanInquiryAsRead(id: number): Promise<boolean> {
+    const inquiry = this.homeLoanInquiries.get(id);
+    if (!inquiry) return false;
+    
+    inquiry.isRead = true;
+    this.homeLoanInquiries.set(id, inquiry);
+    return true;
+  }
+  
+  async deleteHomeLoanInquiry(id: number): Promise<boolean> {
+    return this.homeLoanInquiries.delete(id);
+  }
 }
 
 // Database implementation

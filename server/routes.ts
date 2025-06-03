@@ -1869,7 +1869,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Home Loan Inquiries routes
   
-  // Create home loan inquiry
+  // Create home loan inquiry (public endpoint)
   app.post("/api/home-loan-inquiries", async (req, res) => {
     try {
       const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
