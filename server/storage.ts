@@ -8,8 +8,7 @@ import {
   talukas, type Taluka, type InsertTaluka,
   tehsils, type Tehsil, type InsertTehsil,
   contactInfo, type ContactInfo, type InsertContactInfo,
-  neighborhoods, type Neighborhood, type InsertNeighborhood,
-  neighborhoodMetrics, type NeighborhoodMetrics, type InsertNeighborhoodMetrics,
+
   propertyTypes, type PropertyType, type InsertPropertyType,
   contactMessages, type ContactMessage, type InsertContactMessage,
   DEFAULT_PROPERTY_TYPES,
@@ -118,20 +117,7 @@ export interface IStorage {
   updateTehsil(id: number, tehsil: Partial<InsertTehsil>): Promise<Tehsil>;
   deleteTehsil(id: number): Promise<boolean>;
 
-  // Neighborhood methods
-  getAllNeighborhoods(): Promise<Neighborhood[]>;
-  getNeighborhood(id: number): Promise<Neighborhood | undefined>;
-  createNeighborhood(neighborhood: InsertNeighborhood): Promise<Neighborhood>;
-  updateNeighborhood(id: number, neighborhood: Partial<InsertNeighborhood>): Promise<Neighborhood>;
-  deleteNeighborhood(id: number): Promise<boolean>;
-  
-  // Neighborhood Metrics methods
-  getNeighborhoodMetrics(neighborhoodId: number): Promise<NeighborhoodMetrics | undefined>;
-  createNeighborhoodMetrics(metrics: InsertNeighborhoodMetrics): Promise<NeighborhoodMetrics>;
-  updateNeighborhoodMetrics(neighborhoodId: number, metrics: Partial<InsertNeighborhoodMetrics>): Promise<NeighborhoodMetrics>;
-  
-  // Compare Neighborhoods
-  compareNeighborhoods(neighborhoodIds: number[]): Promise<NeighborhoodMetrics[]>;
+
 
   // Session store
   sessionStore: session.Store;
@@ -149,8 +135,7 @@ export class MemStorage implements IStorage {
   private contactInfo: ContactInfo | undefined;
   private propertyTypes: Map<number, PropertyType>;
   private contactMessages: Map<number, ContactMessage>;
-  private neighborhoods: Map<number, Neighborhood>;
-  private neighborhoodMetrics: Map<number, NeighborhoodMetrics>;
+
   
   private userIdCounter: number;
   private propertyIdCounter: number;
