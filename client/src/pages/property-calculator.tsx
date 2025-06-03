@@ -153,7 +153,7 @@ function AreaConverter() {
   const form = useForm<z.infer<typeof calculatorSchema>>({
     resolver: zodResolver(calculatorSchema),
     defaultValues: {
-      value: 0,
+      value: 1000,
       fromUnit: "squareFeet",
       toUnit: "squareMeters",
     },
@@ -170,20 +170,27 @@ function AreaConverter() {
     const toUnit = form.getValues("toUnit");
     form.setValue("fromUnit", toUnit);
     form.setValue("toUnit", fromUnit);
+    // Recalculate on swap
+    if (form.getValues("value") > 0) {
+      onSubmit(form.getValues());
+    }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <ArrowRightLeft className="h-5 w-5" />
-          Area Unit Converter
-        </CardTitle>
-        <CardDescription>
-          Convert between different property area units
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className="max-w-4xl mx-auto">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-blue-50/50">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-3 text-2xl">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <ArrowRightLeft className="h-6 w-6" />
+            </div>
+            Property Area Converter
+          </CardTitle>
+          <CardDescription className="text-blue-100 text-lg">
+            Convert between different area units with precision and ease
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -280,8 +287,9 @@ function AreaConverter() {
             <p className="text-2xl font-bold">{result.toLocaleString(undefined, { maximumFractionDigits: 6 })}</p>
           </div>
         )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -415,31 +423,55 @@ export default function PropertyCalculatorPage() {
         />
       </Helmet>
       
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6">Property Calculators</h1>
-        
-        <p className="text-gray-600 mb-8">
-          Use our calculators to help with your property decisions. Convert between different area units 
-          or calculate your potential home loan EMI payments.
-        </p>
-        
-        <Tabs defaultValue="area" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="area" className="flex items-center space-x-2">
-              <ArrowRightLeft className="h-4 w-4" />
-              <span>Area Converter</span>
-            </TabsTrigger>
-            <TabsTrigger value="emi" className="flex items-center space-x-2">
-              <Calculator className="h-4 w-4" />
-              <span>EMI Calculator</span>
-            </TabsTrigger>
-          </TabsList>
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="container mx-auto py-16 px-4">
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Property Calculators
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Smart tools to help you make informed property decisions. Convert area units instantly 
+              and calculate your home loan EMI with precision.
+            </p>
+            <div className="flex justify-center gap-6 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>Accurate Calculations</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>Multiple Units</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>Real-time Results</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto py-12 px-4">
+        <Tabs defaultValue="area" className="space-y-8">
+          <div className="flex justify-center">
+            <TabsList className="grid w-full max-w-md grid-cols-2 h-12 bg-white shadow-lg border">
+              <TabsTrigger value="area" className="flex items-center space-x-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                <ArrowRightLeft className="h-4 w-4" />
+                <span>Area Converter</span>
+              </TabsTrigger>
+              <TabsTrigger value="emi" className="flex items-center space-x-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                <Calculator className="h-4 w-4" />
+                <span>EMI Calculator</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
-          <TabsContent value="area" className="mt-6">
+          <TabsContent value="area" className="mt-8">
             <AreaConverter />
           </TabsContent>
           
-          <TabsContent value="emi" className="mt-6">
+          <TabsContent value="emi" className="mt-8">
             <EMICalculator />
           </TabsContent>
         </Tabs>
