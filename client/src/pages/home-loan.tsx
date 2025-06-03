@@ -90,31 +90,8 @@ export default function HomeLoanPage() {
         throw new Error('Failed to submit inquiry');
       }
 
-      // Format the WhatsApp message
-      const message = `🏠 *Home Loan Inquiry - My Dream Property*
-
-*Personal Details:*
-👤 Name: ${values.name}
-📞 Phone: ${values.phone}
-📧 Email: ${values.email}
-
-*Loan Requirements:*
-🏦 Loan Type: ${loanTypes.find(t => t.value === values.loanType)?.label}
-💰 Loan Amount: ₹${values.loanAmount.toLocaleString()}
-📍 Property Location: ${values.propertyLocation}
-
-*Financial Details:*
-💼 Employment: ${employmentTypes.find(e => e.value === values.employment)?.label}
-💵 Monthly Income: ₹${values.monthlyIncome.toLocaleString()}
-
-Please assist with the home loan process. Thank you!`;
-
-      // WhatsApp number for My Dream Property
-      const phoneNumber = "919923000500";
-      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-      
-      // Open WhatsApp
-      window.open(whatsappUrl, '_blank');
+      // Show success message
+      alert('Your home loan inquiry has been submitted successfully! Our team will contact you soon.');
       
       // Reset form after successful submission
       form.reset();
