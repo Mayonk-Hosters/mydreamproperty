@@ -47,14 +47,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configure session
   app.use(session({
     secret: process.env.SESSION_SECRET || 'local-dev-secret',
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Always false for development
       sameSite: 'lax'
-    }
+    },
+    name: 'sessionId'
   }));
   
   // Setup passport
