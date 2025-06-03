@@ -287,7 +287,7 @@ export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({
 export type ContactInfo = typeof contactInfo.$inferSelect;
 export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
 
-// Home loan inquiries schema
+// Home Loan Inquiry schema
 export const homeLoanInquiries = pgTable("home_loan_inquiries", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
