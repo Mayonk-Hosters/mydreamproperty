@@ -210,8 +210,15 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 };
 
 export const isAdmin: RequestHandler = async (req, res, next) => {
+  // Check session-based admin access first (for traditional login)
+  if (req.session && req.session.isAdmin) {
+    return next();
+  }
+  
+  // Check authenticated user admin status (for OAuth login)
   if (req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
     return next();
   }
+  
   return res.status(403).json({ message: "Access denied" });
 };
