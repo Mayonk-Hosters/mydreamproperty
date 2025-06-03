@@ -58,17 +58,16 @@ export function Navbar() {
               </Link>
               {/* Sell link removed */}
               {/* Agents link removed and moved to footer */}
-              <a 
-                href="https://moneycapital.co.in/sign-in" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="font-medium text-sm lg:text-base text-primary hover:text-primary-dark flex items-center"
+              <Link 
+                href="/home-loan" 
+                className={`font-medium text-sm lg:text-base ${
+                  location === '/home-loan' 
+                    ? 'text-primary' 
+                    : 'text-gray-800 hover:text-primary'
+                }`}
               >
-                <span className="relative">
-                  Home Loan
-                  <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                </span>
-              </a>
+                Home Loan
+              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger className={`font-medium text-sm lg:text-base flex items-center ${location === '/#services' || location === '/property-calculator' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
                   Property Services <ChevronDown className="h-4 w-4 ml-1" />
