@@ -138,17 +138,16 @@ export function Navbar() {
             >
               Rent
             </Link>
-            <a 
-              href="https://moneycapital.co.in/sign-in" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="py-2.5 px-2 font-medium text-base text-primary hover:text-primary-dark flex items-center rounded-md hover:bg-gray-50"
+            <Link 
+              href="/home-loan" 
+              className={`py-2.5 px-2 font-medium text-base rounded-md ${
+                location === '/home-loan' 
+                  ? 'text-primary bg-blue-50' 
+                  : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+              }`}
             >
-              <span className="relative">
-                Home Loan
-                <span className="absolute -top-1.5 -right-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-              </span>
-            </a>
+              Home Loan
+            </Link>
             <div className="flex flex-col">
               <Link 
                 href="/#services" 

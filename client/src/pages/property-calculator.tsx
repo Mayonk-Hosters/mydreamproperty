@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ArrowRightLeft, Calculator, DollarSign, Home, MessageCircle } from "lucide-react";
+import { ArrowRightLeft, Calculator, DollarSign } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -760,15 +760,12 @@ export default function PropertyCalculatorPage() {
       </div>
 
       <Tabs defaultValue="area" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-8 h-14">
+        <TabsList className="grid w-full grid-cols-2 mb-8 h-14">
           <TabsTrigger value="area" className="text-lg font-semibold">
             Area Converter
           </TabsTrigger>
           <TabsTrigger value="emi" className="text-lg font-semibold">
             EMI Calculator
-          </TabsTrigger>
-          <TabsTrigger value="loan" className="text-lg font-semibold">
-            Home Loan
           </TabsTrigger>
         </TabsList>
         
@@ -778,10 +775,6 @@ export default function PropertyCalculatorPage() {
         
         <TabsContent value="emi" className="space-y-6">
           <EMICalculator />
-        </TabsContent>
-        
-        <TabsContent value="loan" className="space-y-6">
-          <HomeLoanInquiry />
         </TabsContent>
       </Tabs>
     </div>
