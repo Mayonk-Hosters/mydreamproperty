@@ -1887,11 +1887,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug route to check session state
+  app.get("/api/debug/session", (req, res) => {
+    res.json({
+      isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+      session: req.session,
+      user: req.user,
+      sessionID: req.sessionID
+    });
+  });
+
   // Get all home loan inquiries (admin only)
-  app.get("/api/home-loan-inquiries", isAdmin, async (req, res) => {
+  app.get("/api/home-loan-inquiries", async (req, res) => {
     try {
-      const inquiries = await storage.getAllHomeLoanInquiries();
-      res.json(inquiries);
+      // Debug: Check session state
+      console.log("Home loan inquiries request - Session state:", {
+        isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+        sessionIsAdmin: req.session?.isAdmin,
+        sessionUserType: req.session?.userType,
+        user: req.user
+      });
+
+      // Check session-based admin access first (for traditional login)
+      if (req.session && req.session.isAdmin) {
+        const inquiries = await storage.getAllHomeLoanInquiries();
+        return res.json(inquiries);
+      }
+      
+      // Check authenticated user admin status (for OAuth login)
+      if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        const inquiries = await storage.getAllHomeLoanInquiries();
+        return res.json(inquiries);
+      }
+      
+      return res.status(403).json({ message: "Access denied" });
     } catch (error) {
       console.error("Error fetching home loan inquiries:", error);
       res.status(500).json({ message: "Failed to fetch home loan inquiries" });
