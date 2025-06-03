@@ -22,13 +22,14 @@ import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 // Use local authentication when running locally (set by the LOCAL_DEV environment variable)
-import { setupAuth as setupReplitAuth, isAuthenticated as isReplitAuthenticated } from "./replitAuth";
-import { setupAuth as setupLocalAuth, isAuthenticated as isLocalAuthenticated } from "./localAuth";
+import { setupAuth as setupReplitAuth, isAuthenticated as isReplitAuthenticated, isAdmin as isReplitAdmin } from "./replitAuth";
+import { setupAuth as setupLocalAuth, isAuthenticated as isLocalAuthenticated, isAdmin as isLocalAdmin } from "./localAuth";
 
 // Determine which auth system to use based on environment
 const isLocalDev = process.env.LOCAL_DEV === 'true';
 const setupAuth = isLocalDev ? setupLocalAuth : setupReplitAuth;
 const isAuthenticated = isLocalDev ? isLocalAuthenticated : isReplitAuthenticated;
+const isAdmin = isLocalDev ? isLocalAdmin : isReplitAdmin;
 import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
 import { sendInquiryNotification } from "./email-service";
@@ -1887,7 +1888,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all home loan inquiries (admin only)
-  app.get("/api/home-loan-inquiries", isAuthenticated, async (req, res) => {
+  app.get("/api/home-loan-inquiries", isAdmin, async (req, res) => {
     try {
       const inquiries = await storage.getAllHomeLoanInquiries();
       res.json(inquiries);
@@ -1898,7 +1899,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get specific home loan inquiry (admin only)
-  app.get("/api/home-loan-inquiries/:id", isAuthenticated, async (req, res) => {
+  app.get("/api/home-loan-inquiries/:id", isAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
