@@ -384,12 +384,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                             <span>Featured Property</span>
                           </li>
                         )}
-                        {property.neighborhoodId && (
-                          <li className="flex items-center text-xs sm:text-sm">
-                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                            <span>Neighborhood Information Available</span>
-                          </li>
-                        )}
+
                       </ul>
                     </div>
 

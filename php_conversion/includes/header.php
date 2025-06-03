@@ -94,9 +94,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 <li><a class="dropdown-item" href="/property-calculator.php">Property Calculator</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo $current_page === 'neighborhood-comparison.php' ? 'active' : ''; ?>" href="/neighborhood-comparison.php">Neighborhood Comparison</a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link <?php echo $current_page === 'contact.php' ? 'active' : ''; ?>" href="/contact.php">Contact</a>
                         </li>

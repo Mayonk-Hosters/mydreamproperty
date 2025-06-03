@@ -79,12 +79,7 @@ export function Navbar() {
                       All Services
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/neighborhood-comparison" className="flex items-center w-full cursor-pointer">
-                      <BarChart className="h-4 w-4 mr-2" />
-                      Neighborhood Comparison
-                    </Link>
-                  </DropdownMenuItem>
+
                   <DropdownMenuItem asChild>
                     <Link href="/property-calculator" className="flex items-center w-full cursor-pointer">
                       <ArrowRightLeft className="h-4 w-4 mr-2" />
@@ -165,17 +160,7 @@ export function Navbar() {
               >
                 Property Services
               </Link>
-              <Link 
-                href="/neighborhood-comparison" 
-                className={`py-2 px-8 font-medium text-sm rounded-md flex items-center ${
-                  location === '/neighborhood-comparison' 
-                    ? 'text-primary bg-blue-50' 
-                    : 'text-gray-700 hover:text-primary hover:bg-gray-50'
-                }`}
-              >
-                <BarChart className="h-3.5 w-3.5 mr-2" />
-                Neighborhood Comparison
-              </Link>
+
               <Link 
                 href="/property-calculator" 
                 className={`py-2 px-8 font-medium text-sm rounded-md flex items-center ${

@@ -20,7 +20,7 @@
                         <li><a href="/services/buying.php" class="text-white">Buying</a></li>
                         <li><a href="/services/selling.php" class="text-white">Selling</a></li>
                         <li><a href="/services/renting.php" class="text-white">Renting</a></li>
-                        <li><a href="/neighborhood-comparison.php" class="text-white">Neighborhood Comparison</a></li>
+
                         <li><a href="/contact.php" class="text-white">Contact Us</a></li>
                         <li><a href="/agents.php" class="text-white">Our Agents</a></li>
                     </ul>
