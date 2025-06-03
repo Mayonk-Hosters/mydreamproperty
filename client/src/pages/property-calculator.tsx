@@ -1,146 +1,103 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
-import { 
-  Form, 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from "@/components/ui/form";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calculator, ArrowRightLeft, Landmark } from "lucide-react";
-import { Layout } from "@/components/common/layout";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { ArrowRightLeft, Calculator, DollarSign } from "lucide-react";
 
-// Define conversion factors
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+// Area conversion factors (all relative to square feet)
 const CONVERSION_FACTORS = {
-  // Area conversions
   squareFeet: {
     squareFeet: 1,
     squareMeters: 0.092903,
+    acres: 0.000022957,
+    hectares: 0.000009290304,
     squareYards: 0.111111,
-    acres: 0.0000229568,
-    hectares: 0.0000092903,
-    bigha: 0.0000458333, // Indian Bigha (varies by region)
-    guntha: 0.0009182736,
-    marla: 0.00222395,
+    squareInches: 144,
   },
   squareMeters: {
     squareFeet: 10.7639,
     squareMeters: 1,
-    squareYards: 1.19599,
     acres: 0.000247105,
     hectares: 0.0001,
-    bigha: 0.0004935, // Indian Bigha (varies by region)
-    guntha: 0.009884215,
-    marla: 0.02395,
-  },
-  squareYards: {
-    squareFeet: 9,
-    squareMeters: 0.836127,
-    squareYards: 1,
-    acres: 0.000206612,
-    hectares: 0.0000836127,
-    bigha: 0.000412458, // Indian Bigha (varies by region)
-    guntha: 0.008264463,
-    marla: 0.02,
+    squareYards: 1.19599,
+    squareInches: 1550,
   },
   acres: {
     squareFeet: 43560,
     squareMeters: 4046.86,
-    squareYards: 4840,
     acres: 1,
     hectares: 0.404686,
-    bigha: 2, // Indian Bigha (varies by region)
-    guntha: 40,
-    marla: 96.8,
+    squareYards: 4840,
+    squareInches: 6272640,
   },
   hectares: {
     squareFeet: 107639,
     squareMeters: 10000,
-    squareYards: 11959.9,
     acres: 2.47105,
     hectares: 1,
-    bigha: 4.9421, // Indian Bigha (varies by region)
-    guntha: 98.84215,
-    marla: 239.5,
+    squareYards: 11959.9,
+    squareInches: 15500031,
   },
-  bigha: {
-    squareFeet: 21780, // Indian Bigha (varies by region)
-    squareMeters: 2025.32,
-    squareYards: 2420,
-    acres: 0.5,
-    hectares: 0.2023,
-    bigha: 1,
-    guntha: 20,
-    marla: 48.8,
+  squareYards: {
+    squareFeet: 9,
+    squareMeters: 0.836127,
+    acres: 0.000206612,
+    hectares: 0.000083612736,
+    squareYards: 1,
+    squareInches: 1296,
   },
-  guntha: {
-    squareFeet: 1089,
-    squareMeters: 101.17,
-    squareYards: 121,
-    acres: 0.025,
-    hectares: 0.0101,
-    bigha: 0.05, // Indian Bigha (varies by region)
-    guntha: 1,
-    marla: 2.42,
-  },
-  marla: {
-    squareFeet: 450,
-    squareMeters: 41.81,
-    squareYards: 50,
-    acres: 0.01033,
-    hectares: 0.004181,
-    bigha: 0.02066, // Indian Bigha (varies by region)
-    guntha: 0.4132,
-    marla: 1,
+  squareInches: {
+    squareFeet: 0.00694444,
+    squareMeters: 0.00064516,
+    acres: 1.5942e-7,
+    hectares: 6.4516e-8,
+    squareYards: 0.000771605,
+    squareInches: 1,
   },
 };
 
 const areaUnits = [
-  { label: "Square Feet", value: "squareFeet" },
-  { label: "Square Meters", value: "squareMeters" },
-  { label: "Square Yards", value: "squareYards" },
-  { label: "Acres", value: "acres" },
-  { label: "Hectares", value: "hectares" },
-  { label: "Bigha", value: "bigha" },
-  { label: "Guntha", value: "guntha" },
-  { label: "Marla", value: "marla" },
+  { value: "squareFeet", label: "Square Feet (sq ft)" },
+  { value: "squareMeters", label: "Square Meters (sq m)" },
+  { value: "acres", label: "Acres" },
+  { value: "hectares", label: "Hectares" },
+  { value: "squareYards", label: "Square Yards (sq yd)" },
+  { value: "squareInches", label: "Square Inches (sq in)" },
 ];
 
-// Define form schema
 const calculatorSchema = z.object({
   value: z.coerce.number().positive("Value must be positive"),
-  fromUnit: z.string(),
-  toUnit: z.string(),
+  fromUnit: z.string().min(1, "Please select a unit"),
+  toUnit: z.string().min(1, "Please select a unit"),
 });
 
-// Loan Schema
 const loanSchema = z.object({
   amount: z.coerce.number().positive("Loan amount must be positive"),
   interestRate: z.coerce.number().positive("Interest rate must be positive"),
@@ -191,102 +148,121 @@ function AreaConverter() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="value"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Value</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Enter value" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-[1fr,auto,1fr] items-center gap-2">
-              <FormField
-                control={form.control}
-                name="fromUnit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>From</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <FormField
+                  control={form.control}
+                  name="value"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg font-semibold text-gray-700">Value to Convert</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select unit" />
-                        </SelectTrigger>
+                        <Input 
+                          type="number" 
+                          step="0.01" 
+                          {...field} 
+                          className="h-14 text-xl border-2 border-blue-200 focus:border-blue-500 rounded-lg"
+                          placeholder="Enter area value"
+                        />
                       </FormControl>
-                      <SelectContent>
-                        {areaUnits.map((unit) => (
-                          <SelectItem key={unit.value} value={unit.value}>
-                            {unit.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormDescription className="text-gray-500">Enter the area value you want to convert</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="mt-4"
-                onClick={swapUnits}
-              >
-                <ArrowRightLeft className="h-4 w-4" />
-              </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                  <FormField
+                    control={form.control}
+                    name="fromUnit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold text-gray-700">From Unit</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger className="h-12 border-2 border-green-200 focus:border-green-500 rounded-lg">
+                              <SelectValue placeholder="Select from unit" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {areaUnits.map((unit) => (
+                                <SelectItem key={unit.value} value={unit.value}>
+                                  {unit.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-              <FormField
-                control={form.control}
-                name="toUnit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>To</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select unit" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {areaUnits.map((unit) => (
-                          <SelectItem key={unit.value} value={unit.value}>
-                            {unit.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                  <FormField
+                    control={form.control}
+                    name="toUnit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold text-gray-700">To Unit</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger className="h-12 border-2 border-purple-200 focus:border-purple-500 rounded-lg">
+                              <SelectValue placeholder="Select to unit" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {areaUnits.map((unit) => (
+                                <SelectItem key={unit.value} value={unit.value}>
+                                  {unit.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <Button 
+                  type="submit" 
+                  className="flex-1 h-14 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg"
+                >
+                  Convert Area
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={swapUnits}
+                  className="h-14 px-6 border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50"
+                >
+                  <ArrowRightLeft className="h-5 w-5" />
+                </Button>
+              </div>
+            </form>
+          </Form>
+
+          {result !== null && (
+            <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border-2 border-green-200">
+              <div className="text-center">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">Conversion Result</h3>
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                    {result.toLocaleString()} {areaUnits.find(u => u.value === form.getValues("toUnit"))?.label}
+                  </p>
+                  <p className="text-gray-500 mt-2">
+                    {form.getValues("value")} {areaUnits.find(u => u.value === form.getValues("fromUnit"))?.label} = {result.toLocaleString()} {areaUnits.find(u => u.value === form.getValues("toUnit"))?.label}
+                  </p>
+                </div>
+              </div>
             </div>
-
-            <Button type="submit" className="w-full">Convert</Button>
-          </form>
-        </Form>
-
-        {result !== null && (
-          <div className="mt-4 p-4 bg-muted rounded-md">
-            <p className="text-sm font-medium">Result:</p>
-            <p className="text-2xl font-bold">{result.toLocaleString(undefined, { maximumFractionDigits: 6 })}</p>
-          </div>
-        )}
+          )}
         </CardContent>
       </Card>
     </div>
@@ -320,162 +296,172 @@ function EMICalculator() {
     
     const totalPayment = emi * loanTermMonths;
     const totalInterest = totalPayment - amount;
-    
-    setResult({
-      emi,
-      totalInterest,
-      totalPayment
-    });
+
+    setResult({ emi, totalInterest, totalPayment });
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Landmark className="h-5 w-5" />
-          Home Loan EMI Calculator
-        </CardTitle>
-        <CardDescription>
-          Calculate your monthly EMI, total interest and payment
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Loan Amount (₹)</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormDescription>Enter the principal loan amount</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="interestRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Interest Rate (% per annum)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.1" {...field} />
-                  </FormControl>
-                  <FormDescription>Enter the annual interest rate</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="loanTerm"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Loan Term (years)</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormDescription>Enter the loan duration in years</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full">Calculate EMI</Button>
-          </form>
-        </Form>
-
-        {result !== null && (
-          <div className="mt-4 p-4 bg-muted rounded-md space-y-2">
-            <div>
-              <p className="text-sm font-medium">Monthly EMI:</p>
-              <p className="text-xl font-bold">₹ {result.emi.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+    <div className="max-w-4xl mx-auto">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-green-50/50">
+        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-3 text-2xl">
+            <div className="p-2 bg-white/20 rounded-lg">
+              <Calculator className="h-6 w-6" />
             </div>
-            <div>
-              <p className="text-sm font-medium">Total Interest Payable:</p>
-              <p className="text-lg font-semibold">₹ {result.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+            EMI Calculator
+          </CardTitle>
+          <CardDescription className="text-green-100 text-lg">
+            Calculate your monthly loan payments with detailed breakdown
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-8">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                          <DollarSign className="h-5 w-5 text-green-600" />
+                          Loan Amount
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="1000" 
+                            {...field} 
+                            className="h-12 text-lg border-2 border-green-200 focus:border-green-500 rounded-lg"
+                            placeholder="Enter loan amount"
+                          />
+                        </FormControl>
+                        <FormDescription className="text-gray-500">Principal loan amount in rupees</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                  <FormField
+                    control={form.control}
+                    name="interestRate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold text-gray-700">Interest Rate (%)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.1" 
+                            {...field} 
+                            className="h-12 text-lg border-2 border-blue-200 focus:border-blue-500 rounded-lg"
+                            placeholder="Enter interest rate"
+                          />
+                        </FormControl>
+                        <FormDescription className="text-gray-500">Annual interest rate percentage</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                  <FormField
+                    control={form.control}
+                    name="loanTerm"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold text-gray-700">Loan Term (Years)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="1" 
+                            {...field} 
+                            className="h-12 text-lg border-2 border-purple-200 focus:border-purple-500 rounded-lg"
+                            placeholder="Enter loan term"
+                          />
+                        </FormControl>
+                        <FormDescription className="text-gray-500">Loan duration in years</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <Button 
+                  type="submit" 
+                  className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 shadow-lg"
+                >
+                  Calculate EMI
+                </Button>
+              </div>
+            </form>
+          </Form>
+
+          {result && (
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border-2 border-blue-200">
+                <h3 className="text-lg font-semibold mb-2 text-blue-800">Monthly EMI</h3>
+                <p className="text-3xl font-bold text-blue-600">
+                  ₹{result.emi.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl border-2 border-orange-200">
+                <h3 className="text-lg font-semibold mb-2 text-orange-800">Total Interest</h3>
+                <p className="text-3xl font-bold text-orange-600">
+                  ₹{result.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200">
+                <h3 className="text-lg font-semibold mb-2 text-green-800">Total Payment</h3>
+                <p className="text-3xl font-bold text-green-600">
+                  ₹{result.totalPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium">Total Payment (Principal + Interest):</p>
-              <p className="text-lg font-semibold">₹ {result.totalPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
 export default function PropertyCalculatorPage() {
   return (
-    <Layout>
-      <Helmet>
-        <title>Property Calculators | My Dream Property</title>
-        <meta 
-          name="description" 
-          content="Use our property calculators to convert between different area units and calculate your home loan EMI." 
-        />
-      </Helmet>
-      
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="container mx-auto py-16 px-4">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Property Calculators
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Smart tools to help you make informed property decisions. Convert area units instantly 
-              and calculate your home loan EMI with precision.
-            </p>
-            <div className="flex justify-center gap-6 text-sm text-gray-500">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Accurate Calculations</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Multiple Units</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span>Real-time Results</span>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="container mx-auto py-8 px-4 space-y-8">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          Property Calculators
+        </h1>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          Essential tools for property calculations - convert area units and calculate loan EMIs with precision
+        </p>
       </div>
 
-      <div className="container mx-auto py-12 px-4">
-        <Tabs defaultValue="area" className="space-y-8">
-          <div className="flex justify-center">
-            <TabsList className="grid w-full max-w-md grid-cols-2 h-12 bg-white shadow-lg border">
-              <TabsTrigger value="area" className="flex items-center space-x-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white">
-                <ArrowRightLeft className="h-4 w-4" />
-                <span>Area Converter</span>
-              </TabsTrigger>
-              <TabsTrigger value="emi" className="flex items-center space-x-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white">
-                <Calculator className="h-4 w-4" />
-                <span>EMI Calculator</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          
-          <TabsContent value="area" className="mt-8">
-            <AreaConverter />
-          </TabsContent>
-          
-          <TabsContent value="emi" className="mt-8">
-            <EMICalculator />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </Layout>
+      <Tabs defaultValue="area" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-8 h-14">
+          <TabsTrigger value="area" className="text-lg font-semibold">
+            Area Converter
+          </TabsTrigger>
+          <TabsTrigger value="emi" className="text-lg font-semibold">
+            EMI Calculator
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="area" className="space-y-6">
+          <AreaConverter />
+        </TabsContent>
+        
+        <TabsContent value="emi" className="space-y-6">
+          <EMICalculator />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
