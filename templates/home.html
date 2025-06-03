@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h1>My Dream Property</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/properties">Properties</a></li>
+                    <li><a href="/agents">Agents</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Find Your Dream Property</h1>
+                <p>Discover the perfect home for you and your family</p>
+                <a href="/properties" class="cta-button">Browse Properties</a>
+            </div>
+        </section>
+
+        <!-- Featured Properties -->
+        <section class="featured-properties">
+            <div class="container">
+                <h2>Featured Properties</h2>
+                <div class="properties-grid">
+                    {{featuredProperties}}
+                </div>
+            </div>
+        </section>
+
+        <!-- All Properties -->
+        <section class="all-properties">
+            <div class="container">
+                <h2>Latest Properties</h2>
+                <div class="properties-grid">
+                    {{allProperties}}
+                </div>
+                <div class="view-all">
+                    <a href="/properties" class="view-all-button">View All Properties</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services">
+            <div class="container">
+                <h2>Our Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h3>Buy Properties</h3>
+                        <p>Find your perfect home from our extensive collection of properties</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Sell Properties</h3>
+                        <p>Get the best value for your property with our expert agents</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Rent Properties</h3>
+                        <p>Discover rental properties that match your lifestyle and budget</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>My Dream Property</h3>
+                <p>Find your perfect home with us. Professional real estate services you can trust.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/properties">Properties</a></li>
+                    <li><a href="/agents">Our Agents</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Info</h4>
+                <p>Phone: +1-555-123-4567</p>
+                <p>Email: info@mydreamproperty.com</p>
+                <p>Address: 123 Real Estate St, City, State 12345</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 My Dream Property. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

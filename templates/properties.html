@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h1>My Dream Property</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/properties">Properties</a></li>
+                    <li><a href="/agents">Agents</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>All Properties</h1>
+                <p>Browse through our extensive collection of properties</p>
+            </div>
+        </section>
+
+        <section class="properties-listing">
+            <div class="container">
+                <div class="filters">
+                    <form class="filter-form">
+                        <select name="type">
+                            <option value="">All Types</option>
+                            <option value="House">House</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Condo">Condo</option>
+                        </select>
+                        <select name="priceRange">
+                            <option value="">Price Range</option>
+                            <option value="0-500000">$0 - $500,000</option>
+                            <option value="500000-1000000">$500,000 - $1,000,000</option>
+                            <option value="1000000-5000000">$1,000,000 - $5,000,000</option>
+                            <option value="5000000+">$5,000,000+</option>
+                        </select>
+                        <input type="text" name="location" placeholder="Location">
+                        <button type="submit">Filter</button>
+                    </form>
+                </div>
+
+                <div class="properties-grid">
+                    {{properties}}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>My Dream Property</h3>
+                <p>Find your perfect home with us. Professional real estate services you can trust.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/properties">Properties</a></li>
+                    <li><a href="/agents">Our Agents</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Info</h4>
+                <p>Phone: +1-555-123-4567</p>
+                <p>Email: info@mydreamproperty.com</p>
+                <p>Address: 123 Real Estate St, City, State 12345</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 My Dream Property. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
