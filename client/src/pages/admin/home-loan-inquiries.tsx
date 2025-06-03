@@ -12,8 +12,10 @@ import {
   Building, 
   User,
   Briefcase,
-  Calendar
+  Calendar,
+  ArrowLeft
 } from "lucide-react";
+import { useLocation } from "wouter";
 
 import { AdminHeader } from "@/components/admin/admin-header";
 import { Button } from "@/components/ui/button";
@@ -76,6 +78,7 @@ export default function AdminHomeLoanInquiriesPage() {
   const [selectedInquiry, setSelectedInquiry] = useState<HomeLoanInquiry | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   const { data: inquiries = [], isLoading } = useQuery<HomeLoanInquiry[]>({
     queryKey: ['/api/home-loan-inquiries'],
@@ -305,6 +308,17 @@ export default function AdminHomeLoanInquiriesPage() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          onClick={() => setLocation('/admin')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Admin
+        </Button>
+      </div>
+      
       <AdminHeader 
         title="Home Loan Inquiries" 
         description="Manage home loan inquiry submissions from the website" 

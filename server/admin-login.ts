@@ -52,19 +52,22 @@ export function setupAdminLogin(app: Express) {
             profileImage: null
           };
           
-          req.login(adminUser, (err) => {
+          // Set session properties directly without passport
+          req.session.isAdmin = true;
+          req.session.userType = "admin";
+          req.session.user = adminUser;
+          
+          req.session.save((err) => {
             if (err) {
-              console.error("Login error:", err);
-              return res.status(500).json({ message: "Login failed" });
+              console.error("Session save error:", err);
+              return res.status(500).json({ message: "Session save failed" });
             }
-            
-            req.session.isAdmin = true;
-            req.session.userType = "admin";
-            
-            req.session.save((err) => {
-              if (err) console.error("Session save error:", err);
-              res.status(200).json(adminUser);
+            console.log("Admin session saved successfully:", {
+              isAdmin: req.session.isAdmin,
+              userType: req.session.userType,
+              sessionID: req.sessionID
             });
+            res.status(200).json(adminUser);
           });
           return;
         }
