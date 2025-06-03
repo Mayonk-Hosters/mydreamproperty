@@ -74,9 +74,19 @@ export default function HomeLoanPage() {
   ];
 
   async function onSubmit(values: z.infer<typeof homeLoanSchema>) {
+    console.log('Form submission triggered with values:', values);
+    
+    // Check for validation errors
+    const errors = form.formState.errors;
+    if (Object.keys(errors).length > 0) {
+      console.log('Form has validation errors:', errors);
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
+      console.log('Sending API request...');
       // Save to database first
       const response = await fetch('/api/home-loan-inquiries', {
         method: 'POST',
@@ -86,7 +96,11 @@ export default function HomeLoanPage() {
         body: JSON.stringify(values),
       });
 
+      console.log('API response status:', response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API error:', errorText);
         throw new Error('Failed to submit inquiry');
       }
 
@@ -324,20 +338,20 @@ export default function HomeLoanPage() {
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        Connecting to WhatsApp...
+                        Submitting Inquiry...
                       </>
                     ) : (
                       <>
-                        <MessageCircle className="h-6 w-6" />
+                        <Home className="h-6 w-6" />
                         Submit Inquiry
                       </>
                     )}
                   </Button>
                 </div>
 
-                <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                  <p className="text-sm text-orange-800 text-center">
-                    <strong>Note:</strong> Your inquiry will be sent directly to our loan specialists via WhatsApp for immediate assistance.
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-800 text-center">
+                    <strong>Note:</strong> Your inquiry will be saved to our database and our loan specialists will contact you within 24 hours.
                     We'll help you with loan eligibility, documentation, and approval process.
                   </p>
                 </div>
