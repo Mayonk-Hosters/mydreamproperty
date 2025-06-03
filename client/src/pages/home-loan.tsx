@@ -62,7 +62,6 @@ export default function HomeLoanPage() {
     { value: "home-purchase", label: "Home Purchase Loan" },
     { value: "home-construction", label: "Home Construction Loan" },
     { value: "home-improvement", label: "Home Improvement Loan" },
-    { value: "plot-purchase", label: "Plot Purchase Loan" },
     { value: "balance-transfer", label: "Balance Transfer" },
     { value: "top-up", label: "Top-up Loan" },
   ];
