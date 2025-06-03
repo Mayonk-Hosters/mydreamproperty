@@ -296,7 +296,7 @@ export const homeLoanInquiries = pgTable("home_loan_inquiries", {
   loanType: text("loan_type").notNull(),
   loanAmount: integer("loan_amount").notNull(),
   propertyLocation: text("property_location").notNull(),
-  monthlyIncome: integer("monthly_income").notNull(),
+  monthlyIncome: decimal("monthly_income").notNull(),
   employment: text("employment").notNull(),
   isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
