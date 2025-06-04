@@ -1028,8 +1028,8 @@ export class DatabaseStorage implements IStorage {
             )
           );
           
-          // Each term must match at least one field
-          conditions.push(and(...locationConditions));
+          // Any term can match any field
+          conditions.push(or(...locationConditions));
         }
       }
       
