@@ -617,14 +617,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                   4.9 <span className="text-yellow-400 ml-1">★</span>
                 </span>
               </div>
-              <Button 
-                variant="outline" 
-                className="w-full text-xs sm:text-sm h-8 sm:h-10"
-                onClick={() => agent?.id && setLocation(`/agent/${agent.id}`)}
-                disabled={!agent?.id}
-              >
-                View Agent Profile
-              </Button>
+
             </div>
           </div>
         </div>
