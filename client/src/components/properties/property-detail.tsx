@@ -58,6 +58,12 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   // Fetch agent data when we have a property with an agentId
   const { data: agent } = useQuery({
     queryKey: ['/api/agents', property?.agentId],
+    queryFn: async () => {
+      if (!property?.agentId) return null;
+      const response = await fetch(`/api/agents/${property.agentId}`);
+      if (!response.ok) throw new Error('Failed to fetch agent');
+      return response.json();
+    },
     enabled: !!property?.agentId,
   });
   
