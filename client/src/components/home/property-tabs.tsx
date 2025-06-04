@@ -57,13 +57,15 @@ export function PropertyTabs() {
   // Derived state for featured properties
   const featuredProperties = properties?.filter(isFeatured) || [];
   
-  // Derived state for buy properties - sorted by newest first
+  // Derived state for buy properties (includes both 'buy' and 'sell' types) - sorted by newest first
   const buyProperties = properties?.filter(property => 
-    property.type === 'buy' && !isFeatured(property)
+    (property.type === 'buy' || property.type === 'sell') && !isFeatured(property)
   ).sort((a, b) => b.id - a.id) || [];
   
-  // Featured buy properties
-  const featuredBuyProperties = featuredProperties.filter(property => property.type === 'buy');
+  // Featured buy properties (includes both 'buy' and 'sell' types)
+  const featuredBuyProperties = featuredProperties.filter(property => 
+    property.type === 'buy' || property.type === 'sell'
+  );
   
   // Derived state for rent properties - sorted by newest first
   const rentProperties = properties?.filter(property => 
