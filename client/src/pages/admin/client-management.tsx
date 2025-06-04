@@ -423,6 +423,17 @@ export default function ClientManagementPage() {
             </TabsContent>
 
             <TabsContent value="messages" className="mt-0">
+              <div className="mb-4 flex justify-end">
+                <Button 
+                  onClick={() => exportContactMessagesToExcel(contactMessages || [])} 
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  disabled={!contactMessages || contactMessages.length === 0}
+                >
+                  <Download className="h-4 w-4" />
+                  Export Contact Messages to Excel
+                </Button>
+              </div>
               <ClientTable 
                 data={filteredData.filter(item => item.type === 'message')}
                 onView={(item) => handleViewMessage(item.data)}
