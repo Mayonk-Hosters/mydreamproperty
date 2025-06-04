@@ -261,6 +261,16 @@ export default function AdminInquiriesPage() {
                 </div>
               </div>
               
+              {viewInquiry.phone && (
+                <div className="flex items-start space-x-3">
+                  <Phone className="text-gray-400 mt-0.5" size={20} />
+                  <div>
+                    <h3 className="font-semibold text-sm">Phone</h3>
+                    <p className="text-lg">{viewInquiry.phone}</p>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex items-start space-x-3">
                 <Home className="text-gray-400 mt-0.5" size={20} />
                 <div>
