@@ -1000,7 +1000,11 @@ export class DatabaseStorage implements IStorage {
         if (filters.type === "rent") {
           conditions.push(eq(properties.type, "rent"));
         } else if (filters.type === "buy") {
-          conditions.push(eq(properties.type, "buy"));
+          // Include both 'buy' and 'sell' type properties under "Buy" filter
+          conditions.push(or(
+            eq(properties.type, "buy"),
+            eq(properties.type, "sell")
+          ));
         } else if (filters.type === "sell") {
           conditions.push(eq(properties.type, "sell"));
         }
