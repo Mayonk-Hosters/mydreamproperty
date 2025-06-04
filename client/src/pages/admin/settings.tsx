@@ -125,10 +125,19 @@ export default function AdminSettingsPage() {
   // Mutation for updating contact info
   const updateContactInfoMutation = useMutation({
     mutationFn: async (data: z.infer<typeof generalFormSchema>) => {
-      return apiRequest(`/api/contact-info`, {
-        method: "PUT",
+      const response = await fetch('/api/contact-info', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update settings');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/contact-info"] });
@@ -239,12 +248,12 @@ export default function AdminSettingsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={generalForm.control}
-                        name="contactEmail"
+                        name="email1"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Contact Email</FormLabel>
+                            <FormLabel>Primary Email</FormLabel>
                             <FormControl>
-                              <Input placeholder="info@realestatepro.com" {...field} />
+                              <Input placeholder="info@mydreamproperty.com" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -253,12 +262,12 @@ export default function AdminSettingsPage() {
                       
                       <FormField
                         control={generalForm.control}
-                        name="contactPhone"
+                        name="email2"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Contact Phone</FormLabel>
+                            <FormLabel>Secondary Email (Optional)</FormLabel>
                             <FormControl>
-                              <Input placeholder="(123) 456-7890" {...field} />
+                              <Input placeholder="support@mydreamproperty.com" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -266,34 +275,47 @@ export default function AdminSettingsPage() {
                       />
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={generalForm.control}
+                        name="phone1"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Primary Phone</FormLabel>
+                            <FormControl>
+                              <Input placeholder="+91 98765 43210" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={generalForm.control}
+                        name="phone2"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Secondary Phone (Optional)</FormLabel>
+                            <FormControl>
+                              <Input placeholder="+91 12345 67890" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
                     <FormField
                       control={generalForm.control}
-                      name="currency"
+                      name="mapUrl"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Currency</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select currency" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="USD">US Dollar (USD)</SelectItem>
-                              <SelectItem value="EUR">Euro (EUR)</SelectItem>
-                              <SelectItem value="GBP">British Pound (GBP)</SelectItem>
-                              <SelectItem value="INR">Indian Rupee (INR)</SelectItem>
-                              <SelectItem value="AUD">Australian Dollar (AUD)</SelectItem>
-                              <SelectItem value="CAD">Canadian Dollar (CAD)</SelectItem>
-                              <SelectItem value="JPY">Japanese Yen (JPY)</SelectItem>
-                              <SelectItem value="CNY">Chinese Yuan (CNY)</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <FormLabel>Google Maps URL (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://maps.google.com/..." {...field} />
+                          </FormControl>
                           <FormDescription>
-                            Select the currency that will be used for all property prices on the website.
+                            Link to your business location on Google Maps.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -301,7 +323,12 @@ export default function AdminSettingsPage() {
                     />
                     
                     <div className="mt-4 flex justify-end">
-                      <Button type="submit">Save Changes</Button>
+                      <Button 
+                        type="submit" 
+                        disabled={updateContactInfoMutation.isPending || contactInfoLoading}
+                      >
+                        {updateContactInfoMutation.isPending ? "Saving..." : "Save Changes"}
+                      </Button>
                     </div>
                   </form>
                 </Form>
