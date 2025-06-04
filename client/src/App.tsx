@@ -35,7 +35,7 @@ import ClientDashboardHomePage from "@/pages/client/dashboard";
 import AdminDashboardPage from "@/pages/admin/index";
 import AdminPropertiesPage from "@/pages/admin/properties";
 import AdminPropertyNewPage from "@/pages/admin/properties/new";
-import AdminPropertyEditPage from "@/pages/admin/properties/edit";
+import AdminPropertyEditPage from "@/pages/admin/property-edit";
 import AdminSettingsPage from "@/pages/admin/settings";
 import AdminUsersPage from "@/pages/admin/users";
 import AdminLocationsPage from "@/pages/admin/locations";
