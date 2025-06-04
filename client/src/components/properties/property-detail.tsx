@@ -605,19 +605,9 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover mx-auto mb-2 sm:mb-3"
                 loading="lazy"
               />
-              <h3 className="font-semibold text-base sm:text-lg">
-                {agent?.name || 'Property Agent'}
-              </h3>
-              <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3">
+              <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">
                 {agent?.title || 'Real Estate Specialist'}
               </p>
-              <div className="flex justify-center space-x-2 mb-3 sm:mb-4">
-                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full text-xs">120+ Deals</span>
-                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-100 rounded-full text-xs flex items-center">
-                  4.9 <span className="text-yellow-400 ml-1">★</span>
-                </span>
-              </div>
-
             </div>
           </div>
         </div>
