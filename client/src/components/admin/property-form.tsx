@@ -177,13 +177,28 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   const getDefaultValues = (): FormData => {
     if (property) {
       return {
-        ...property,
+        title: property.title,
+        description: property.description,
+        price: property.price,
+        location: property.location,
+        address: property.address,
+        beds: property.beds,
+        baths: property.baths,
+        area: property.area,
+        propertyType: property.propertyType,
+        type: property.type,
+        status: property.status,
+        featured: property.featured,
+        agentId: property.agentId,
+        propertyNumber: property.propertyNumber || "",
+        yearBuilt: property.yearBuilt || new Date().getFullYear(),
+        parking: property.parking || 0,
+        mapUrl: property.mapUrl || "",
         stateId: property.stateId ? property.stateId.toString() : "",
         districtId: property.districtId ? property.districtId.toString() : "",
         talukaId: property.talukaId ? property.talukaId.toString() : "",
         tehsilId: property.tehsilId ? property.tehsilId.toString() : "",
-        maharera_registered: property.maharera_registered || false,
-        parking: property.parking || 0,
+        maharera_registered: property.maharera_registered ?? false,
         features: property.features ? 
           (Array.isArray(property.features) ? property.features : 
            (typeof property.features === 'string' ? 
@@ -302,7 +317,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
 
   // Track the selected agent for display
   useEffect(() => {
-    const agents = agentsQuery.data || [];
+    const agents = (agentsQuery.data as any[]) || [];
     const currentAgentId = form.watch('agentId');
     const agent = agents.find((a: any) => a.id === currentAgentId);
     setSelectedAgent(agent);
@@ -335,21 +350,17 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     setGeneratingPropertyNumber(true);
     
     try {
-      const response = await apiRequest('/api/properties/generate-number', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: form.getValues('type')
-        })
+      const response = await apiRequest('POST', '/api/properties/generate-number', {
+        type: form.getValues('type')
       });
+      
+      const data = await response.json();
 
-      if (response.propertyNumber) {
-        form.setValue('propertyNumber', response.propertyNumber);
+      if (data.propertyNumber) {
+        form.setValue('propertyNumber', data.propertyNumber);
         toast({
           title: "Property Number Generated",
-          description: `Generated: ${response.propertyNumber}`,
+          description: `Generated: ${data.propertyNumber}`,
         });
       }
     } catch (error) {
@@ -372,13 +383,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   // Add new property type
   const addPropertyType = useMutation({
     mutationFn: async (data: { name: string; active: boolean }) => {
-      return apiRequest('/api/property-types', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      return apiRequest('POST', '/api/property-types', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/property-types'] });
@@ -413,13 +418,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         tehsilId: data.tehsilId ? parseInt(data.tehsilId) : null,
       };
       
-      return apiRequest(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submitData),
-      });
+      return apiRequest(method, url, submitData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
@@ -824,8 +823,12 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                       </Button>
                     </DialogTrigger>
                     <PropertyTypeDialog 
-                      onSuccess={() => setIsAddPropertyTypeOpen(false)}
-                      addPropertyType={addPropertyType}
+                      open={isAddPropertyTypeOpen}
+                      onOpenChange={setIsAddPropertyTypeOpen}
+                      onPropertyTypeCreated={(name) => {
+                        form.setValue('propertyType', name);
+                        setIsAddPropertyTypeOpen(false);
+                      }}
                     />
                   </Dialog>
                 </div>
