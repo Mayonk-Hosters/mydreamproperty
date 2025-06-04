@@ -126,6 +126,14 @@ export interface IStorage {
   deleteHomeLoanInquiry(id: number): Promise<boolean>;
   markHomeLoanInquiryAsRead(id: number): Promise<boolean>;
 
+  // Homepage Images methods
+  getAllHomepageImages(): Promise<HomepageImage[]>;
+  getHomepageImagesByType(imageType: string): Promise<HomepageImage[]>;
+  getHomepageImage(id: number): Promise<HomepageImage | undefined>;
+  createHomepageImage(image: InsertHomepageImage): Promise<HomepageImage>;
+  updateHomepageImage(id: number, image: Partial<InsertHomepageImage>): Promise<HomepageImage>;
+  deleteHomepageImage(id: number): Promise<boolean>;
+
   // Session store
   sessionStore: session.Store;
 }
@@ -1471,6 +1479,46 @@ export class DatabaseStorage implements IStorage {
       .update(homeLoanInquiries)
       .set({ isRead: true })
       .where(eq(homeLoanInquiries.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Homepage Images methods
+  async getAllHomepageImages(): Promise<HomepageImage[]> {
+    return await db.select().from(homepageImages).orderBy(asc(homepageImages.sortOrder), desc(homepageImages.createdAt));
+  }
+
+  async getHomepageImagesByType(imageType: string): Promise<HomepageImage[]> {
+    return await db.select().from(homepageImages)
+      .where(eq(homepageImages.imageType, imageType))
+      .orderBy(asc(homepageImages.sortOrder), desc(homepageImages.createdAt));
+  }
+
+  async getHomepageImage(id: number): Promise<HomepageImage | undefined> {
+    const [image] = await db.select().from(homepageImages).where(eq(homepageImages.id, id));
+    return image;
+  }
+
+  async createHomepageImage(image: InsertHomepageImage): Promise<HomepageImage> {
+    const [newImage] = await db.insert(homepageImages).values(image).returning();
+    return newImage;
+  }
+
+  async updateHomepageImage(id: number, imageData: Partial<InsertHomepageImage>): Promise<HomepageImage> {
+    const [updatedImage] = await db
+      .update(homepageImages)
+      .set({ ...imageData, updatedAt: sql`NOW()` })
+      .where(eq(homepageImages.id, id))
+      .returning();
+      
+    if (!updatedImage) {
+      throw new Error("Homepage image not found");
+    }
+    
+    return updatedImage;
+  }
+
+  async deleteHomepageImage(id: number): Promise<boolean> {
+    const result = await db.delete(homepageImages).where(eq(homepageImages.id, id));
     return result.rowCount !== null && result.rowCount > 0;
   }
 }

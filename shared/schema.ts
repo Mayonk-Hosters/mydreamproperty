@@ -350,6 +350,28 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 
+// Homepage Images schema for admin management
+export const homepageImages = pgTable("homepage_images", {
+  id: serial("id").primaryKey(),
+  imageType: text("image_type").notNull(), // 'hero', 'feature', 'banner', etc.
+  imageUrl: text("image_url").notNull(),
+  title: text("title"),
+  description: text("description"),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertHomepageImageSchema = createInsertSchema(homepageImages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type HomepageImage = typeof homepageImages.$inferSelect;
+export type InsertHomepageImage = z.infer<typeof insertHomepageImageSchema>;
+
 
 
 
