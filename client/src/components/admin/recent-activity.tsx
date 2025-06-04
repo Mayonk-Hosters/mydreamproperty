@@ -31,14 +31,14 @@ export function RecentActivity() {
   });
 
   // Combine and sort all recent activities
-  const activities = [];
+  const activities: any[] = [];
 
   // Recent properties (last 5)
   if (properties) {
     properties
       .slice(0, 5)
       .forEach(property => {
-        activities.push({
+        (activities as any[]).push({
           type: 'property',
           id: property.id,
           title: property.title,
@@ -56,7 +56,7 @@ export function RecentActivity() {
     inquiries
       .slice(0, 5)
       .forEach(inquiry => {
-        activities.push({
+        (activities as any[]).push({
           type: 'inquiry',
           id: inquiry.id,
           title: `Inquiry from ${inquiry.name}`,
@@ -74,7 +74,7 @@ export function RecentActivity() {
     contactMessages
       .slice(0, 3)
       .forEach(message => {
-        activities.push({
+        (activities as any[]).push({
           type: 'message',
           id: message.id,
           title: `Message from ${message.name}`,
@@ -92,7 +92,7 @@ export function RecentActivity() {
     homeLoanInquiries
       .slice(0, 3)
       .forEach(loan => {
-        activities.push({
+        (activities as any[]).push({
           type: 'home-loan',
           id: loan.id,
           title: `Loan Request from ${loan.name}`,
