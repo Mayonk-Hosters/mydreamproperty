@@ -14,7 +14,7 @@ import {
   DEFAULT_PROPERTY_TYPES,
   sessions
 } from "@shared/schema";
-import { eq, desc, and, inArray, like, or, sql } from "drizzle-orm";
+import { eq, desc, and, inArray, like, or, sql, gte, lte } from "drizzle-orm";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -992,13 +992,8 @@ export class DatabaseStorage implements IStorage {
   async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
     let query = db.select().from(properties);
     
-    // By default, only show active properties unless explicitly filtered
-    const conditions = [
-      or(
-        eq(properties.status, 'active'),
-        eq(sql`${properties.status}`, sql`NULL`)
-      )
-    ];
+    // By default, only show active properties
+    const conditions = [eq(properties.status, 'active')];
     
     if (filters) {
       if (filters.type) {
