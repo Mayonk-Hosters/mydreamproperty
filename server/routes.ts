@@ -38,7 +38,7 @@ import session from "express-session";
 import passport from "passport";
 
 import mdpPropertiesRoutes from './routes/mdp-properties';
-import { eq, like } from 'drizzle-orm';
+import { eq, like, or, sql, gte, lte, asc } from 'drizzle-orm';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure cookie parser
