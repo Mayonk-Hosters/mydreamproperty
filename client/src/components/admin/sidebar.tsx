@@ -117,7 +117,12 @@ export function Sidebar() {
           name: "Property Types",
           path: "/admin/property-types",
           icon: <Building className="h-5 w-5" />
-        },
+        }
+      ]
+    },
+    {
+      title: "Reports",
+      items: [
         {
           name: "Analytics",
           path: "/admin/analytics",
