@@ -2060,6 +2060,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Homepage Images API endpoints (admin only)
+  
+  // Get all homepage images
+  app.get("/api/homepage-images", async (req, res) => {
+    try {
+      const { imageType } = req.query;
+      
+      let images;
+      if (imageType) {
+        images = await storage.getHomepageImagesByType(imageType as string);
+      } else {
+        images = await storage.getAllHomepageImages();
+      }
+      
+      res.json(images);
+    } catch (error) {
+      console.error("Error fetching homepage images:", error);
+      res.status(500).json({ message: "Failed to fetch homepage images" });
+    }
+  });
+
+  // Get single homepage image
+  app.get("/api/homepage-images/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid image ID" });
+      }
+
+      const image = await storage.getHomepageImage(id);
+      if (!image) {
+        return res.status(404).json({ message: "Image not found" });
+      }
+
+      res.json(image);
+    } catch (error) {
+      console.error("Error fetching homepage image:", error);
+      res.status(500).json({ message: "Failed to fetch homepage image" });
+    }
+  });
+
+  // Create new homepage image (admin only)
+  app.post("/api/homepage-images", async (req, res) => {
+    try {
+      // Check admin access
+      if (req.session && req.session.isAdmin) {
+        // Session-based admin access (traditional login)
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        // OAuth-based admin access
+      } else if (process.env.NODE_ENV === 'development') {
+        // Development mode access
+      } else {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const imageData = req.body;
+      const newImage = await storage.createHomepageImage(imageData);
+      res.status(201).json(newImage);
+    } catch (error) {
+      console.error("Error creating homepage image:", error);
+      res.status(500).json({ message: "Failed to create homepage image" });
+    }
+  });
+
+  // Update homepage image (admin only)
+  app.patch("/api/homepage-images/:id", async (req, res) => {
+    try {
+      // Check admin access
+      if (req.session && req.session.isAdmin) {
+        // Session-based admin access (traditional login)
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        // OAuth-based admin access
+      } else if (process.env.NODE_ENV === 'development') {
+        // Development mode access
+      } else {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid image ID" });
+      }
+
+      const imageData = req.body;
+      const updatedImage = await storage.updateHomepageImage(id, imageData);
+      res.json(updatedImage);
+    } catch (error) {
+      console.error("Error updating homepage image:", error);
+      res.status(500).json({ message: "Failed to update homepage image" });
+    }
+  });
+
+  // Delete homepage image (admin only)
+  app.delete("/api/homepage-images/:id", async (req, res) => {
+    try {
+      // Check admin access
+      if (req.session && req.session.isAdmin) {
+        // Session-based admin access (traditional login)
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        // OAuth-based admin access
+      } else if (process.env.NODE_ENV === 'development') {
+        // Development mode access
+      } else {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid image ID" });
+      }
+
+      const success = await storage.deleteHomepageImage(id);
+      if (success) {
+        res.json({ message: "Homepage image deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Homepage image not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting homepage image:", error);
+      res.status(500).json({ message: "Failed to delete homepage image" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

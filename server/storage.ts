@@ -11,6 +11,7 @@ import {
   homeLoanInquiries, type HomeLoanInquiry, type InsertHomeLoanInquiry,
   propertyTypes, type PropertyType, type InsertPropertyType,
   contactMessages, type ContactMessage, type InsertContactMessage,
+  homepageImages, type HomepageImage, type InsertHomepageImage,
   DEFAULT_PROPERTY_TYPES,
   sessions
 } from "@shared/schema";

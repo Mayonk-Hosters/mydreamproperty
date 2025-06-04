@@ -50,6 +50,7 @@ import AdminProfilePage from "@/pages/admin/profile";
 import AdminPropertyTypesPage from "@/pages/admin/property-types";
 import AdminContactMessagesPage from "@/pages/admin/contact-messages";
 import AdminHomeLoanInquiriesPage from "@/pages/admin/home-loan-inquiries";
+import AdminHomepageImagesPage from "@/pages/admin/homepage-images";
 import MessageDashboardPage from "@/pages/admin/message-dashboard";
 import ClientManagementPage from "@/pages/admin/client-management";
 
