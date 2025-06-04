@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/use-site-settings";
-import { DEFAULT_PROPERTY_TYPES, PropertyType } from "@shared/schema";
+import { DEFAULT_PROPERTY_TYPES, PropertyType, HomepageImage } from "@shared/schema";
 
 export function HeroSection() {
   const [, setLocation] = useLocation();
@@ -29,6 +29,12 @@ export function HeroSection() {
   // Fetch property types from API
   const { data: propertyTypes, isLoading } = useQuery<PropertyType[]>({
     queryKey: ['/api/property-types'],
+  });
+
+  // Fetch hero background images from API
+  const { data: heroImages } = useQuery<HomepageImage[]>({
+    queryKey: ['/api/homepage-images'],
+    select: (data) => data?.filter(img => img.imageType === 'hero' && img.isActive) || [],
   });
 
   const handleSearch = (e?: React.FormEvent) => {
@@ -54,12 +60,17 @@ export function HeroSection() {
     setLocation(`/properties?${queryParams.toString()}`);
   };
 
+  // Get the first active hero image or fallback
+  const backgroundImage = heroImages && heroImages.length > 0 
+    ? heroImages[0].imageUrl 
+    : "https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=800";
+
   return (
     <section className="relative">
       <div 
         className="h-[500px] bg-cover bg-center"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=800')"
+          backgroundImage: `url('${backgroundImage}')`
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
