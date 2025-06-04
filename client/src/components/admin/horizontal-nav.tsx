@@ -135,33 +135,39 @@ export function HorizontalNav() {
   const NavItem = ({ item, className = "" }: { item: any; className?: string }) => (
     <Link href={item.path}>
       <div className={cn(
-        "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+        "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group relative overflow-hidden",
         isActiveLink(item.path) 
-          ? "bg-primary text-primary-foreground" 
-          : "text-muted-foreground hover:text-foreground hover:bg-muted",
+          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105" 
+          : "text-slate-300 hover:text-white hover:bg-slate-700/50 hover:shadow-md hover:scale-105",
         className
       )}>
-        <div className="relative">
+        <div className="relative z-10">
           {item.icon}
           {item.hasNotification && (
             <NotificationIndicator count={item.notificationCount} />
           )}
         </div>
-        <span className="hidden lg:block">{item.name}</span>
+        <span className="hidden lg:block relative z-10 font-medium">{item.name}</span>
+        {/* Hover effect overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
       </div>
     </Link>
   );
 
   return (
-    <nav className="bg-background border-b border-border sticky top-0 z-50">
+    <nav className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 sticky top-0 z-50 shadow-lg backdrop-blur-sm">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo and Brand */}
           <div className="flex items-center">
-            <div className="flex items-center space-x-2">
-              <Home className="h-6 w-6 text-primary" />
-              <span className="font-bold text-lg">{settings.siteName}</span>
-              <span className="hidden sm:block text-xs text-muted-foreground">Admin</span>
+            <div className="flex items-center space-x-3 group">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300">
+                <Home className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-lg text-white tracking-tight">{settings.siteName}</span>
+                <span className="hidden sm:block text-xs text-slate-300 font-medium">Admin Dashboard</span>
+              </div>
             </div>
           </div>
 
@@ -178,36 +184,37 @@ export function HorizontalNav() {
                 <Button 
                   variant="ghost" 
                   className={cn(
-                    "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group relative overflow-hidden",
                     messageNavItems.some(item => isActiveLink(item.path))
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105" 
+                      : "text-slate-300 hover:text-white hover:bg-slate-700/50 hover:shadow-md hover:scale-105"
                   )}
                 >
-                  <div className="relative">
+                  <div className="relative z-10">
                     <MessageCircle className="h-4 w-4" />
                     {hasUnread && (
                       <NotificationIndicator count={totalUnreadCount} />
                     )}
                   </div>
-                  <span>Messages</span>
-                  <ChevronDown className="h-3 w-3" />
+                  <span className="relative z-10 font-medium">Messages</span>
+                  <ChevronDown className="h-3 w-3 relative z-10 transition-transform group-hover:rotate-180" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>Message Management</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+              <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-slate-700 shadow-xl">
+                <DropdownMenuLabel className="text-slate-200 font-semibold">Message Management</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-slate-700" />
                 {messageNavItems.map((item) => (
                   <DropdownMenuItem key={item.path} asChild>
                     <Link href={item.path}>
-                      <div className="flex items-center space-x-2 w-full">
+                      <div className="flex items-center space-x-3 w-full p-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded transition-all duration-200">
                         <div className="relative">
                           {item.icon}
                           {item.hasNotification && (
                             <NotificationIndicator count={item.notificationCount} />
                           )}
                         </div>
-                        <span>{item.name}</span>
+                        <span className="font-medium">{item.name}</span>
                       </div>
                     </Link>
                   </DropdownMenuItem>
@@ -221,26 +228,27 @@ export function HorizontalNav() {
                 <Button 
                   variant="ghost" 
                   className={cn(
-                    "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group relative overflow-hidden",
                     managementItems.some(item => isActiveLink(item.path))
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105" 
+                      : "text-slate-300 hover:text-white hover:bg-slate-700/50 hover:shadow-md hover:scale-105"
                   )}
                 >
-                  <Settings className="h-4 w-4" />
-                  <span>Management</span>
-                  <ChevronDown className="h-3 w-3" />
+                  <Settings className="h-4 w-4 relative z-10" />
+                  <span className="relative z-10 font-medium">Management</span>
+                  <ChevronDown className="h-3 w-3 relative z-10 transition-transform group-hover:rotate-180" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>System Management</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+              <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-slate-700 shadow-xl">
+                <DropdownMenuLabel className="text-slate-200 font-semibold">System Management</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-slate-700" />
                 {managementItems.map((item) => (
                   <DropdownMenuItem key={item.path} asChild>
                     <Link href={item.path}>
-                      <div className="flex items-center space-x-2 w-full">
+                      <div className="flex items-center space-x-3 w-full p-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded transition-all duration-200">
                         {item.icon}
-                        <span>{item.name}</span>
+                        <span className="font-medium">{item.name}</span>
                       </div>
                     </Link>
                   </DropdownMenuItem>
@@ -267,9 +275,13 @@ export function HorizontalNav() {
               queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
               queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
             }}>
-              <Button variant="outline" size="sm" className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white border-red-400 hover:border-red-500 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
                 <LogOut className="h-4 w-4" />
-                <span className="hidden sm:block">Exit Admin</span>
+                <span className="hidden sm:block font-medium">Exit Admin</span>
               </Button>
             </Link>
 
