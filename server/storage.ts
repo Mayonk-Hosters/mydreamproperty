@@ -14,7 +14,7 @@ import {
   DEFAULT_PROPERTY_TYPES,
   sessions
 } from "@shared/schema";
-import { eq, desc, and, inArray, like } from "drizzle-orm";
+import { eq, desc, and, inArray, like, or, sql } from "drizzle-orm";
 import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src/lib/utils";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -1094,7 +1094,13 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db
       .select({ count: sql<number>`count(*)` })
       .from(properties)
-      .where(eq(properties.propertyType, propertyType));
+      .where(and(
+        eq(properties.propertyType, propertyType),
+        or(
+          eq(properties.status, 'active'),
+          sql`${properties.status} IS NULL`
+        )
+      ));
     
     return result?.count || 0;
   }
