@@ -107,17 +107,6 @@ export function PropertyCard({ property }: PropertyCardProps) {
             new Date(property.createdAt.toString()) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
               <Badge className="bg-secondary text-white text-xs">New</Badge>
             )}
-            {/* MahaRERA Registration Status */}
-            {property.maharera_registered === true && (
-              <Badge className="bg-green-600 text-white text-xs font-semibold shadow-md">
-                MahaRERA Registered
-              </Badge>
-            )}
-            {property.maharera_registered === false && (
-              <Badge className="bg-orange-500 text-white text-xs font-semibold shadow-md">
-                Not MahaRERA Registered
-              </Badge>
-            )}
           </div>
           
           {/* Action buttons optimized for touch */}
@@ -263,16 +252,18 @@ export function PropertyCard({ property }: PropertyCardProps) {
           
           {/* MahaRERA Status - Prominent Display */}
           {(property.maharera_registered === true || property.maharera_registered === false) && (
-            <div className="mb-3">
+            <div className="mb-3 p-2 rounded-lg border">
               <div className="flex items-center gap-2">
                 {property.maharera_registered === true ? (
-                  <Badge className="bg-green-100 text-green-800 border-green-300 text-xs font-semibold">
-                    ✓ MahaRERA Registered
-                  </Badge>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="font-medium text-green-700">MahaRERA Registered</span>
+                  </div>
                 ) : (
-                  <Badge className="bg-orange-100 text-orange-800 border-orange-300 text-xs font-semibold">
-                    ⚠ Not MahaRERA Registered
-                  </Badge>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <span className="font-medium text-orange-700">Not MahaRERA Registered</span>
+                  </div>
                 )}
               </div>
             </div>
