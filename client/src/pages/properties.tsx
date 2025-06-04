@@ -52,7 +52,11 @@ export default function PropertiesPage() {
     if (type) {
       updatedFilters.type = type;
       setActiveTab(type as "buy" | "rent");
+    } else if (propertyType) {
+      // When browsing by property type, don't apply transaction type filter
+      updatedFilters.type = "";
     }
+    
     if (propertyType) updatedFilters.propertyType = propertyType;
     if (locationParam) updatedFilters.location = locationParam;
     if (minPrice) updatedFilters.minPrice = parseInt(minPrice);
