@@ -1293,9 +1293,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all users
   app.get("/api/users", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
-      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-        return res.status(403).json({ message: "Forbidden" });
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
       }
       
       const users = await storage.getAllUsers();
@@ -1342,9 +1345,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new user
   app.post("/api/users", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
-      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-        return res.status(403).json({ message: "Forbidden" });
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
       }
       
       const { username, password, isAdmin } = req.body;
