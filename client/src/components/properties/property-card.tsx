@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatRelativeTime } from "@/lib/utils";
 import { PropertyModal } from "./property-modal";
 import { InquiryForm } from "./inquiry-form";
+import { useQuery } from "@tanstack/react-query";
 import { 
   FacebookShareButton, 
   TwitterShareButton, 
@@ -30,6 +31,17 @@ export function PropertyCard({ property }: PropertyCardProps) {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const shareDropdownRef = useRef<HTMLDivElement>(null);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Fetch agent information for this property
+  const { data: agent } = useQuery({
+    queryKey: ['/api/agents', property.agentId],
+    queryFn: async () => {
+      const response = await fetch(`/api/agents/${property.agentId}`);
+      if (!response.ok) throw new Error('Failed to fetch agent');
+      return response.json();
+    },
+    enabled: !!property.agentId,
+  });
   
   // Use the first image as the main display image
   const mainImage = Array.isArray(property.images) && property.images.length > 0 
@@ -286,7 +298,9 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
                 loading="lazy"
               />
-              <span className="ml-1.5 sm:ml-2 text-xs sm:text-sm">Agent Name</span>
+              <span className="ml-1.5 sm:ml-2 text-xs sm:text-sm">
+                {agent?.name || 'Loading...'}
+              </span>
             </div>
             <Link href={`/property/${property.id}`}>
               <Button 
