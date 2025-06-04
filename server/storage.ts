@@ -30,6 +30,7 @@ interface PropertyFilters {
   minBeds?: number;
   minBaths?: number;
   featured?: boolean;
+  agentId?: number;
 }
 
 // Storage interface
@@ -448,6 +449,10 @@ export class MemStorage implements IStorage {
       
       if (filters.featured !== undefined) {
         properties = properties.filter(p => p.featured === filters.featured);
+      }
+      
+      if (filters.agentId !== undefined) {
+        properties = properties.filter(p => p.agentId === filters.agentId);
       }
     }
     
