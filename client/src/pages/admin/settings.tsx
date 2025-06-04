@@ -40,29 +40,41 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import type { ContactInfo } from "@shared/schema";
 
 export default function AdminSettingsPage() {
   const { isAdmin, isLoading, requireAdmin } = useAdmin();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   useEffect(() => {
     requireAdmin();
   }, [isLoading, isAdmin]);
 
+  // Load contact info data
+  const { data: contactInfoData, isLoading: contactInfoLoading } = useQuery<ContactInfo>({
+    queryKey: ["/api/contact-info"],
+    retry: 1,
+  });
+
   const generalFormSchema = z.object({
     siteName: z.string().min(2, {
       message: "Site name must be at least 2 characters.",
     }),
-    siteUrl: z.string().optional(),
-    contactEmail: z.string().email({
+    address: z.string().min(1, {
+      message: "Address is required.",
+    }),
+    email1: z.string().email({
       message: "Please enter a valid email address.",
     }),
-    contactPhone: z.string().min(10, {
+    email2: z.string().email().optional().or(z.literal("")),
+    phone1: z.string().min(10, {
       message: "Please enter a valid phone number.",
     }),
-    currency: z.string({
-      required_error: "Please select a currency.",
-    }),
+    phone2: z.string().optional(),
+    mapUrl: z.string().optional(),
   });
 
   const notificationFormSchema = z.object({
@@ -75,13 +87,30 @@ export default function AdminSettingsPage() {
   const generalForm = useForm<z.infer<typeof generalFormSchema>>({
     resolver: zodResolver(generalFormSchema),
     defaultValues: {
-      siteName: "My Dream Property",
-      siteUrl: "https://mydreamproperty.com",
-      contactEmail: "info@realestatepro.com",
-      contactPhone: "(123) 456-7890",
-      currency: "INR",
+      siteName: contactInfoData?.siteName || "My Dream Property",
+      address: contactInfoData?.address || "",
+      email1: contactInfoData?.email1 || "",
+      email2: contactInfoData?.email2 || "",
+      phone1: contactInfoData?.phone1 || "",
+      phone2: contactInfoData?.phone2 || "",
+      mapUrl: contactInfoData?.mapUrl || "",
     },
   });
+
+  // Update form values when data loads
+  useEffect(() => {
+    if (contactInfoData) {
+      generalForm.reset({
+        siteName: contactInfoData.siteName || "My Dream Property",
+        address: contactInfoData.address || "",
+        email1: contactInfoData.email1 || "",
+        email2: contactInfoData.email2 || "",
+        phone1: contactInfoData.phone1 || "",
+        phone2: contactInfoData.phone2 || "",
+        mapUrl: contactInfoData.mapUrl || "",
+      });
+    }
+  }, [contactInfoData, generalForm]);
 
   const notificationForm = useForm<z.infer<typeof notificationFormSchema>>({
     resolver: zodResolver(notificationFormSchema),
@@ -93,12 +122,32 @@ export default function AdminSettingsPage() {
     },
   });
 
+  // Mutation for updating contact info
+  const updateContactInfoMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof generalFormSchema>) => {
+      return apiRequest(`/api/contact-info`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/contact-info"] });
+      toast({
+        title: "Settings updated",
+        description: "Your general settings have been saved successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update settings. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   function onGeneralSubmit(values: z.infer<typeof generalFormSchema>) {
-    toast({
-      title: "Settings updated",
-      description: "Your general settings have been saved.",
-    });
-    console.log(values);
+    updateContactInfoMutation.mutate(values);
   }
 
   function onNotificationSubmit(values: z.infer<typeof notificationFormSchema>) {
@@ -172,13 +221,16 @@ export default function AdminSettingsPage() {
                     
                     <FormField
                       control={generalForm.control}
-                      name="siteUrl"
+                      name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Site URL</FormLabel>
+                          <FormLabel>Business Address</FormLabel>
                           <FormControl>
-                            <Input placeholder="https://realestatepro.com" {...field} />
+                            <Input placeholder="123 Main Street, City, State, ZIP" {...field} />
                           </FormControl>
+                          <FormDescription>
+                            Complete business address for contact purposes.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
