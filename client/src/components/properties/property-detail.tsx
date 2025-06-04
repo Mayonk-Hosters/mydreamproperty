@@ -597,19 +597,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             </div>
           </div>
           
-          <div className="bg-white shadow-sm sm:shadow-md rounded-lg p-4 sm:p-6">
-            <div className="text-center">
-              <img 
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"
-                alt="Agent" 
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover mx-auto mb-2 sm:mb-3"
-                loading="lazy"
-              />
-              <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">
-                {agent?.title || 'Real Estate Specialist'}
-              </p>
-            </div>
-          </div>
+
         </div>
       </div>
 
