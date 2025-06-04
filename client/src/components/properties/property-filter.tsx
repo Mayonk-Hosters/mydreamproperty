@@ -217,7 +217,6 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               <SelectContent>
                 <SelectItem value="buy" className="text-xs sm:text-sm">Buy</SelectItem>
                 <SelectItem value="rent" className="text-xs sm:text-sm">Rent</SelectItem>
-                <SelectItem value="sell" className="text-xs sm:text-sm">Sell</SelectItem>
               </SelectContent>
             </Select>
           </div>

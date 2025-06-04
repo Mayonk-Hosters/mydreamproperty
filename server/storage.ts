@@ -996,7 +996,7 @@ export class DatabaseStorage implements IStorage {
     const conditions = [eq(properties.status, 'active')];
     
     if (filters) {
-      if (filters.type) {
+      if (filters.type && filters.type !== "") {
         if (filters.type === "rent") {
           conditions.push(eq(properties.type, "rent"));
         } else if (filters.type === "buy") {

@@ -53,8 +53,9 @@ export default function PropertiesPage() {
       updatedFilters.type = type;
       setActiveTab(type as "buy" | "rent");
     } else if (propertyType) {
-      // When browsing by property type, don't apply transaction type filter
-      updatedFilters.type = "";
+      // When browsing by property type, don't filter by transaction type
+      updatedFilters.type = ""; // Allow all transaction types
+      setActiveTab("buy"); // Default tab for display purposes
     }
     
     if (propertyType) updatedFilters.propertyType = propertyType;
