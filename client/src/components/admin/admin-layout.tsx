@@ -1,32 +1,19 @@
-import { ReactNode, useState } from "react";
-import { Sidebar } from "./sidebar";
-import { Header } from "./header";
+import { ReactNode } from "react";
+import { HorizontalNav } from "./horizontal-nav";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar - Hidden on mobile unless toggled */}
-      <div className={`${sidebarOpen ? 'block' : 'hidden'} md:block`}>
-        <Sidebar />
-      </div>
+    <div className="min-h-screen bg-background">
+      <HorizontalNav />
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header toggleSidebar={toggleSidebar} />
-        
-        {/* Main Content Scrollable Area */}
-        <main className="flex-1 overflow-y-auto bg-gray-100 p-4">
-          {children}
-        </main>
-      </div>
+      <main className="container mx-auto px-4 py-6">
+        {children}
+      </main>
     </div>
   );
 }
