@@ -355,9 +355,23 @@ export default function ClientManagementPage() {
                   <SelectItem value="unread">Unread</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={exportToCSV} variant="outline">
+              <Button 
+                onClick={() => {
+                  if (activeTab === 'messages') {
+                    exportContactMessagesToExcel(contactMessages || []);
+                  } else if (activeTab === 'inquiries') {
+                    // Will be handled by inquiries page
+                    window.location.href = '/admin/inquiries';
+                  } else {
+                    // Export all data in separate sheets
+                    exportContactMessagesToExcel(contactMessages || []);
+                  }
+                }} 
+                variant="outline"
+                disabled={(!contactMessages || contactMessages.length === 0) && (!inquiries || inquiries.length === 0)}
+              >
                 <Download className="mr-2 h-4 w-4" />
-                Export Data
+                Export to Excel
               </Button>
             </div>
           </div>

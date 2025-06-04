@@ -13,7 +13,8 @@ import {
   User,
   Briefcase,
   Calendar,
-  ArrowLeft
+  ArrowLeft,
+  Download
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -44,6 +45,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { exportHomeLoanInquiriesToExcel } from "@/lib/excel-export";
 
 interface HomeLoanInquiry {
   id: number;
@@ -326,10 +328,23 @@ export default function AdminHomeLoanInquiriesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Inquiries</CardTitle>
-          <CardDescription>
-            {inquiries.length} total inquiries
-          </CardDescription>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <CardTitle>Recent Inquiries</CardTitle>
+              <CardDescription>
+                {inquiries.length} total inquiries
+              </CardDescription>
+            </div>
+            <Button 
+              onClick={() => exportHomeLoanInquiriesToExcel(inquiries)} 
+              variant="outline"
+              className="flex items-center gap-2"
+              disabled={inquiries.length === 0}
+            >
+              <Download className="h-4 w-4" />
+              Export to Excel
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {inquiries.length === 0 ? (
