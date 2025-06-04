@@ -183,18 +183,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
+      // Build filters object with only defined values
+      const filters: any = {};
+      
+      if (type) filters.type = type as string;
+      if (propertyType) filters.propertyType = propertyType as string;
+      if (location) filters.location = location as string;
+      if (minPrice) filters.minPrice = parseFloat(minPrice as string);
+      if (maxPrice) filters.maxPrice = parseFloat(maxPrice as string);
+      if (minBeds) filters.minBeds = parseInt(minBeds as string);
+      if (minBaths) filters.minBaths = parseFloat(minBaths as string);
+      if (featured === "true") filters.featured = true;
+      if (agentId) filters.agentId = parseInt(agentId as string);
+
       // Get all properties with filters applied
-      const properties = await storage.getAllProperties({
-        type: type as string,
-        propertyType: propertyType as string,
-        location: location as string,
-        minPrice: minPrice ? parseFloat(minPrice as string) : undefined,
-        maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
-        minBeds: minBeds ? parseInt(minBeds as string) : undefined,
-        minBaths: minBaths ? parseFloat(minBaths as string) : undefined,
-        featured: featured === "true",
-        agentId: agentId ? parseInt(agentId as string) : undefined
-      });
+      const properties = await storage.getAllProperties(Object.keys(filters).length > 0 ? filters : undefined);
 
       res.json(properties);
     } catch (error) {
