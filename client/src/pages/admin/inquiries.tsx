@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { useAdmin } from "@/hooks/use-admin";
-import { Loader2, Search, Mail, Phone, Home, Calendar, User, Trash2, AlertTriangle, Download } from "lucide-react";
+import { Loader2, Search, Mail, Phone, Home, Calendar, User, Trash2, AlertTriangle, Download, Filter } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -38,6 +38,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Inquiry, Property } from "@shared/schema";
 import { format } from "date-fns";
@@ -47,6 +54,7 @@ import { exportInquiriesToExcel } from "@/lib/excel-export";
 export default function AdminInquiriesPage() {
   const { isAdmin, isLoading, requireAdmin } = useAdmin();
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterType, setFilterType] = useState<"all" | "read" | "unread">("all");
   const [viewInquiry, setViewInquiry] = useState<Inquiry | null>(null);
   const [deleteInquiryId, setDeleteInquiryId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -117,13 +125,24 @@ export default function AdminInquiriesPage() {
     return null; // Will redirect via the useAdmin hook
   }
   
-  // Filter inquiries based on search term
+  // Filter inquiries based on search term and read/unread status
   const filteredInquiries = inquiries 
-    ? inquiries.filter(inquiry => 
-        inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        inquiry.message.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? inquiries.filter(inquiry => {
+        // Apply search filter
+        const matchesSearch = inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          inquiry.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          inquiry.message.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        // Apply read/unread filter
+        let matchesFilter = true;
+        if (filterType === 'read') {
+          matchesFilter = inquiry.isRead === true;
+        } else if (filterType === 'unread') {
+          matchesFilter = inquiry.isRead === false || inquiry.isRead === null;
+        }
+        
+        return matchesSearch && matchesFilter;
+      })
     : [];
   
   // Find property details for an inquiry
@@ -143,6 +162,19 @@ export default function AdminInquiriesPage() {
           <p className="text-gray-600">Manage and respond to customer inquiries</p>
         </div>
         <div className="flex items-center gap-4">
+          <Select value={filterType} onValueChange={(value: "all" | "read" | "unread") => setFilterType(value)}>
+            <SelectTrigger className="w-[140px]">
+              <div className="flex items-center">
+                <Filter className="mr-2 h-4 w-4" />
+                <span>Filter Status</span>
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Inquiries</SelectItem>
+              <SelectItem value="read">Read</SelectItem>
+              <SelectItem value="unread">Unread</SelectItem>
+            </SelectContent>
+          </Select>
           <Button
             onClick={() => exportInquiriesToExcel(inquiries || [], properties || [])}
             variant="outline"
