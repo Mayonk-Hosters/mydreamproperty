@@ -1263,6 +1263,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PUT endpoint for updating contact info (for settings page)
+  app.put("/api/contact-info", async (req, res) => {
+    try {
+      // In development mode, skip authentication check
+      if (process.env.NODE_ENV !== "development") {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      }
+      
+      const contactData = insertContactInfoSchema.parse(req.body);
+      const updatedContact = await storage.updateContactInfo(contactData);
+      res.status(200).json(updatedContact);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating contact information:", error);
+      res.status(500).json({ message: "Failed to update contact information" });
+    }
+  });
+
   // User management endpoints
   // Get all users
   app.get("/api/users", async (req, res) => {
