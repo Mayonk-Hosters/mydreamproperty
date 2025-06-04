@@ -1057,36 +1057,8 @@ export class DatabaseStorage implements IStorage {
     // Apply all conditions
     query = query.where(and(...conditions));
     
-    // Sort by newest first  
-    const result = await query.orderBy(desc(properties.createdAt));
-    
-    // Debug logging to identify the issue
-    console.log(`Properties query returned ${result.length} properties`);
-    if (result.length === 22) {
-      console.log('Missing property IDs from result:', [29,32,35,37,40,42,44,51,52,54]);
-      // Check if these properties exist and are active
-      const missingCheck = await db.select().from(properties).where(
-        and(
-          eq(properties.status, 'active'),
-          or(
-            eq(properties.id, 29),
-            eq(properties.id, 32),
-            eq(properties.id, 35),
-            eq(properties.id, 37),
-            eq(properties.id, 40),
-            eq(properties.id, 42),
-            eq(properties.id, 44),
-            eq(properties.id, 51),
-            eq(properties.id, 52),
-            eq(properties.id, 54)
-          )
-        )
-      );
-      console.log(`Found ${missingCheck.length} of the missing properties in database`);
-      missingCheck.forEach(p => console.log(`Missing property ${p.id}: ${p.title} - status: ${p.status}`));
-    }
-    
-    return result;
+    // Sort by newest first
+    return await query.orderBy(desc(properties.createdAt));
   }
 
   async getProperty(id: number): Promise<Property | undefined> {

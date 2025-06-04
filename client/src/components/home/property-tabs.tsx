@@ -22,36 +22,7 @@ export function PropertyTabs() {
     select: (data) => data.filter(property => property.status === 'active'),
   });
   
-  // Add debugging to see what's being loaded
-  useEffect(() => {
-    if (properties) {
-      console.log("Total active properties:", properties.length);
-      const maharéraRegistered = properties.filter(p => p.maharera_registered === true);
-      console.log("MahaRERA registered properties:", maharéraRegistered.length);
-      
-      // Check different types of featured flags
-      const booleanFeatured = properties.filter(p => typeof p.featured === 'boolean' && p.featured === true);
-      const stringFeatured = properties.filter(p => typeof p.featured === 'string' && (p.featured === 't' || p.featured === 'true'));
-      
-      console.log("Featured properties:", booleanFeatured.length);
-      console.log("String featured properties:", stringFeatured.length);
-      console.log("First property MahaRERA status:", properties[0]?.maharera_registered, "Featured:", properties[0]?.featured);
-      
-      // Debug the newly added properties specifically
-      const newProperties = properties.filter(p => p.id === 59 || p.id === 60);
-      console.log("New properties found:", newProperties.length);
-      newProperties.forEach(p => {
-        console.log(`Property ${p.id}: ${p.title}, type: ${p.type}, status: ${p.status}, featured: ${p.featured}`);
-      });
-      
-      // Debug buy properties filtering
-      const buyProps = properties.filter(property => 
-        (property.type === 'buy' || property.type === 'sell') && !isFeatured(property)
-      );
-      console.log("Buy properties after filtering:", buyProps.length);
-      console.log("Buy property IDs:", buyProps.map(p => p.id));
-    }
-  }, [properties]);
+
   
   // Helper function to determine if a property is featured
   const isFeatured = (property: Property) => {

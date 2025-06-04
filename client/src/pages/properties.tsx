@@ -83,12 +83,7 @@ export default function PropertiesPage() {
     queryKey: [`/api/properties?${queryString}`],
   });
 
-  // Debug logging to track filter issues
-  useEffect(() => {
-    console.log('Properties page filters:', filters);
-    console.log('Query string:', queryString);
-    console.log('Properties count:', properties?.length || 0);
-  }, [filters, queryString, properties]);
+
 
   const getTitle = () => {
     switch (filters.type) {
