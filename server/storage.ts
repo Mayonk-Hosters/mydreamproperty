@@ -1058,7 +1058,15 @@ export class DatabaseStorage implements IStorage {
     query = query.where(and(...conditions));
     
     // Sort by newest first
-    return await query.orderBy(desc(properties.createdAt));
+    const result = await query.orderBy(desc(properties.createdAt));
+    
+    // Debug logging
+    console.log(`DatabaseStorage getAllProperties: Found ${result.length} properties`);
+    if (result.length < 30) {
+      console.log('Missing property IDs:', result.map(p => p.id));
+    }
+    
+    return result;
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
