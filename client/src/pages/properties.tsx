@@ -49,7 +49,8 @@ export default function PropertiesPage() {
 
     const updatedFilters = { ...filters };
     
-    if (type) {
+    if (type && !propertyType) {
+      // Only set transaction type filter if we're not browsing by property type
       updatedFilters.type = type;
       setActiveTab(type as "buy" | "rent");
     } else if (propertyType) {
@@ -87,6 +88,11 @@ export default function PropertiesPage() {
 
 
   const getTitle = () => {
+    // If browsing by property type, show that in the title
+    if (filters.propertyType) {
+      return `${filters.propertyType} Properties`;
+    }
+    
     switch (filters.type) {
       case "rent": return "Properties for Rent";
       case "sell": return "Properties for Sale";
