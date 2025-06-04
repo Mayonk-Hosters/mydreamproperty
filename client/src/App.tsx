@@ -133,6 +133,9 @@ function Router() {
       <Route path="/admin/home-loan-inquiries">
         <ProtectedAdminRoute component={AdminHomeLoanInquiriesPage} />
       </Route>
+      <Route path="/admin/homepage-images">
+        <ProtectedAdminRoute component={AdminHomepageImagesPage} />
+      </Route>
       <Route path="/admin/message-dashboard">
         <ProtectedAdminRoute component={MessageDashboardPage} />
       </Route>

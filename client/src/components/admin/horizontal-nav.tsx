@@ -13,6 +13,7 @@ import {
   MapPin,
   PhoneCall,
   ChevronDown,
+  Image as ImageIcon,
   Menu
 } from "lucide-react";
 import { NotificationIndicator } from "./notification-indicator";
@@ -129,6 +130,11 @@ export function HorizontalNav() {
       name: "Property Types",
       path: "/admin/property-types",
       icon: <Building className="h-4 w-4" />
+    },
+    {
+      name: "Homepage Images",
+      path: "/admin/homepage-images",
+      icon: <ImageIcon className="h-4 w-4" />
     }
   ];
 
