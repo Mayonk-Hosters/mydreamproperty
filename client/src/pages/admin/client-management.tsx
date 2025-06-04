@@ -360,18 +360,23 @@ export default function ClientManagementPage() {
                   if (activeTab === 'messages') {
                     exportContactMessagesToExcel(contactMessages || []);
                   } else if (activeTab === 'inquiries') {
-                    // Will be handled by inquiries page
                     window.location.href = '/admin/inquiries';
                   } else {
-                    // Export all data in separate sheets
+                    // Export contact messages for all tab
                     exportContactMessagesToExcel(contactMessages || []);
                   }
                 }} 
                 variant="outline"
-                disabled={(!contactMessages || contactMessages.length === 0) && (!inquiries || inquiries.length === 0)}
+                disabled={
+                  activeTab === 'messages' 
+                    ? (!contactMessages || contactMessages.length === 0)
+                    : activeTab === 'inquiries'
+                    ? (!inquiries || inquiries.length === 0)
+                    : (!contactMessages || contactMessages.length === 0)
+                }
               >
                 <Download className="mr-2 h-4 w-4" />
-                Export to Excel
+                {activeTab === 'messages' ? 'Export Messages' : activeTab === 'inquiries' ? 'Export Inquiries' : 'Export Data'}
               </Button>
             </div>
           </div>
