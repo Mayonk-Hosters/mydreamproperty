@@ -924,6 +924,64 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(users).where(eq(users.id, id));
     return result.rowCount !== null && result.rowCount > 0;
   }
+
+  // Authentication methods
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getAgentByUsername(username: string): Promise<Agent | undefined> {
+    // For now, we'll use the agent's name field as username
+    const [agent] = await db.select().from(agents).where(eq(agents.name, username));
+    
+    // If agent is found, add a role property to it
+    if (agent) {
+      (agent as any).role = "agent";
+    }
+    
+    return agent;
+  }
+
+  async getClientByUsername(username: string): Promise<User | undefined> {
+    // For now, clients are just users that are not admins
+    const [user] = await db.select().from(users)
+      .where(and(eq(users.username, username), eq(users.isAdmin, false)));
+    
+    if (user) {
+      (user as any).role = "client";
+    }
+    
+    return user;
+  }
+
+  async createUser(userData: {
+    username: string;
+    password: string;
+    email?: string;
+    isAdmin?: boolean;
+  }): Promise<User> {
+    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: userId,
+        username: userData.username,
+        password: userData.password,
+        email: userData.email,
+        isAdmin: userData.isAdmin || false,
+        createdAt: new Date(),
+      })
+      .returning();
+    
+    return user;
+  }
   
   // Property methods
   async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
