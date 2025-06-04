@@ -71,6 +71,7 @@ const formSchema = insertPropertySchema.extend({
   propertyNumber: z.string().optional(),
   mapUrl: z.string().url("Please enter a valid URL").optional(),
   maharera_registered: z.boolean().optional().default(false),
+  images: z.array(z.string()).optional(),
   stateId: z.string().optional(),
   districtId: z.string().optional(),
   talukaId: z.string().optional(),
@@ -199,6 +200,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         talukaId: property.talukaId ? property.talukaId.toString() : "",
         tehsilId: property.tehsilId ? property.tehsilId.toString() : "",
         maharera_registered: property.maharera_registered ?? false,
+        images: property.images ? 
+          (Array.isArray(property.images) ? property.images : 
+           (typeof property.images === 'string' ? 
+             JSON.parse(property.images) : [])) : [],
         features: property.features ? 
           (Array.isArray(property.features) ? property.features : 
            (typeof property.features === 'string' ? 
@@ -225,12 +230,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       status: PROPERTY_STATUS[0],
       featured: false,
       maharera_registered: false,
-      images: [
-        getPropertyImage(0),
-        getPropertyImage(1),
-        getInteriorImage(0),
-        getInteriorImage(1)
-      ],
+      images: [],
       agentId: 1,
       stateId: "",
       districtId: "",
@@ -987,6 +987,34 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Property Images */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Property Images</h3>
+          <FormField
+            control={form.control}
+            name="images"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Upload Images</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    onImageUpload={(imageUrls) => {
+                      field.onChange(imageUrls);
+                    }}
+                    defaultImages={field.value as string[] || []}
+                    multiple={true}
+                    maxImages={10}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Upload up to 10 high-quality images of your property. The first image will be used as the main display image.
+                </FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
