@@ -13,28 +13,30 @@ type PropertyType = "buy" | "rent";
 export function PropertyTabs() {
   const [activeTab, setActiveTab] = useState<PropertyType>("buy");
   
-  // Query for all active properties
+  // Query for all active properties that are MahaRERA registered
   const { 
     data: properties, 
     isLoading: isLoading 
   } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
-    select: (data) => data.filter(property => property.status === 'active'),
+    select: (data) => data.filter(property => 
+      property.status === 'active' && property.maharera_registered === true
+    ),
   });
   
   // Add debugging to see what's being loaded
   useEffect(() => {
     if (properties) {
-      console.log("Total properties:", properties.length);
-      console.log("Properties data:", properties);
+      console.log("Total MahaRERA registered properties:", properties.length);
+      console.log("MahaRERA registered properties data:", properties);
       
       // Check different types of featured flags
       const booleanFeatured = properties.filter(p => typeof p.featured === 'boolean' && p.featured === true);
       const stringFeatured = properties.filter(p => typeof p.featured === 'string' && (p.featured === 't' || p.featured === 'true'));
       
-      console.log("Boolean featured properties:", booleanFeatured.length);
+      console.log("Featured MahaRERA registered properties:", booleanFeatured.length);
       console.log("String featured properties:", stringFeatured.length);
-      console.log("First property featured value:", properties[0]?.featured, "type:", typeof properties[0]?.featured);
+      console.log("First property MahaRERA status:", properties[0]?.maharera_registered, "Featured:", properties[0]?.featured);
     }
   }, [properties]);
   

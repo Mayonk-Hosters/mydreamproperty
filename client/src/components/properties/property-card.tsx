@@ -250,24 +250,13 @@ export function PropertyCard({ property }: PropertyCardProps) {
             </span>
           </div>
           
-          {/* MahaRERA Status - Prominent Display */}
-          {(property.maharera_registered === true || property.maharera_registered === false) && (
-            <div className="mb-3 p-2 rounded-lg border">
-              <div className="flex items-center gap-2">
-                {property.maharera_registered === true ? (
-                  <div className="flex items-center gap-2 text-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="font-medium text-green-700">MahaRERA Registered</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-sm">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                    <span className="font-medium text-orange-700">Not MahaRERA Registered</span>
-                  </div>
-                )}
-              </div>
+          {/* MahaRERA Registered Badge - All properties on homepage are MahaRERA registered */}
+          <div className="mb-3 p-2 rounded-lg border border-green-200 bg-green-50">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="font-medium text-green-700 text-sm">MahaRERA Registered</span>
             </div>
-          )}
+          </div>
 
           {/* Property Features */}
           {Array.isArray(property.features) && property.features.length > 0 && (
