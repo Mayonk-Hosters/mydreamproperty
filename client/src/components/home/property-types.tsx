@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Building, Home, Store, Hotel } from "lucide-react";
+import { Building, Home, Store, Hotel, Castle, Crown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { DEFAULT_PROPERTY_TYPES, PropertyType } from "@shared/schema";
 
@@ -20,9 +20,9 @@ export function PropertyTypes() {
     queryKey: ['/api/properties/counts-by-type'],
   });
   
-  // Merge data to get active property types with their counts
-  const propertyTypes = propertyTypesData?.filter(pt => pt.active).map(pt => pt.name) || DEFAULT_PROPERTY_TYPES;
-  const isLoading = propertyTypesLoading || countsLoading;
+  // Use property types from the counts data (which includes all types that have properties)
+  const propertyTypes = countsData?.map(item => item.propertyType) || DEFAULT_PROPERTY_TYPES;
+  const isLoading = countsLoading;
 
   // Icons for each property type
   const getIconForType = (type: string) => {
@@ -35,6 +35,11 @@ export function PropertyTypes() {
         return <Hotel className="h-6 w-6 text-primary" />;
       case 'Commercial':
         return <Store className="h-6 w-6 text-primary" />;
+      case 'Bunglow':
+      case 'Twin Bunglow':
+        return <Castle className="h-6 w-6 text-primary" />;
+      case 'Penthouse':
+        return <Crown className="h-6 w-6 text-primary" />;
       default:
         return <Building className="h-6 w-6 text-primary" />;
     }
