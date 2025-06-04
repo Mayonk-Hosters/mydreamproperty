@@ -15,7 +15,7 @@ export function AgentProfile() {
   });
 
   const { data: properties, isLoading: propertiesLoading } = useQuery({
-    queryKey: [`/api/properties`, agentId],
+    queryKey: [`agent-properties`, agentId],
     queryFn: async () => {
       if (!agentId) return [];
       const response = await fetch(`/api/properties?agentId=${agentId}`);
