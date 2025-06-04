@@ -181,6 +181,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         agentId
       } = req.query;
 
+
+
       // Get all properties with filters applied
       const properties = await storage.getAllProperties({
         type: type as string,

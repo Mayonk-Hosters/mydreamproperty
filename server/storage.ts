@@ -990,10 +990,6 @@ export class DatabaseStorage implements IStorage {
   
   // Property methods
   async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
-    // Test with a simple query first to see if it's a query complexity issue
-    const simpleResult = await db.select().from(properties).where(eq(properties.status, 'active'));
-    console.log(`Simple query found ${simpleResult.length} properties`);
-    
     let query = db.select().from(properties);
     
     // By default, only show active properties
@@ -1062,14 +1058,7 @@ export class DatabaseStorage implements IStorage {
     query = query.where(and(...conditions));
     
     // Sort by newest first
-    const result = await query.orderBy(desc(properties.createdAt));
-    
-    // Debug logging - let's see what's actually being returned
-    console.log(`DatabaseStorage getAllProperties: Complex query found ${result.length} properties`);
-    console.log('Query conditions applied:', conditions.length);
-    console.log('Returned property IDs:', result.map(p => p.id));
-    
-    return result;
+    return await query.orderBy(desc(properties.createdAt));
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
