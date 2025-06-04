@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { useAdmin } from "@/hooks/use-admin";
-import { Loader2, Search, Mail, Phone, Home, Calendar, User, Trash2, AlertTriangle } from "lucide-react";
+import { Loader2, Search, Mail, Phone, Home, Calendar, User, Trash2, AlertTriangle, Download } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -42,6 +42,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Inquiry, Property } from "@shared/schema";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { exportInquiriesToExcel } from "@/lib/excel-export";
 
 export default function AdminInquiriesPage() {
   const { isAdmin, isLoading, requireAdmin } = useAdmin();
@@ -141,14 +142,25 @@ export default function AdminInquiriesPage() {
           <h1 className="text-2xl font-bold">Inquiries</h1>
           <p className="text-gray-600">Manage and respond to customer inquiries</p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-          <Input
-            placeholder="Search inquiries..."
-            className="pl-10 w-[250px]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={() => exportInquiriesToExcel(inquiries || [], properties || [])}
+            variant="outline"
+            className="flex items-center gap-2"
+            disabled={!inquiries || inquiries.length === 0}
+          >
+            <Download className="h-4 w-4" />
+            Export to Excel
+          </Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Input
+              placeholder="Search inquiries..."
+              className="pl-10 w-[250px]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
