@@ -177,7 +177,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxPrice,
         minBeds,
         minBaths,
-        featured
+        featured,
+        agentId
       } = req.query;
 
       // Get all properties with filters applied
@@ -189,7 +190,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxPrice: maxPrice ? parseFloat(maxPrice as string) : undefined,
         minBeds: minBeds ? parseInt(minBeds as string) : undefined,
         minBaths: minBaths ? parseFloat(minBaths as string) : undefined,
-        featured: featured === "true"
+        featured: featured === "true",
+        agentId: agentId ? parseInt(agentId as string) : undefined
       });
 
       res.json(properties);

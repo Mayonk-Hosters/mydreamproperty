@@ -21,6 +21,7 @@ import HomeLoanPage from "@/pages/home-loan";
 import LoginPage from "@/pages/login";
 import MDPPropertiesPage from "@/pages/mdp-properties-page";
 import DirectAdminAccess from "@/pages/direct-admin-access";
+import { AgentProfile } from "@/pages/agent-profile";
 
 // Agent Pages
 import AgentDashboardPage from "@/pages/agent-dashboard";
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/property/:id" component={PropertyPage} />
       <Route path="/mdp-properties" component={MDPPropertiesPage} />
       <Route path="/agents" component={AgentsPage} />
+      <Route path="/agent/:id" component={AgentProfile} />
       <Route path="/property-calculator" component={PropertyCalculatorPage} />
       <Route path="/home-loan" component={HomeLoanPage} />
       <Route path="/contact" component={ContactPage} />
