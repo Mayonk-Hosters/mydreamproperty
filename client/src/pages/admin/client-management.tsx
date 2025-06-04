@@ -58,8 +58,8 @@ import {
   Calendar,
   MessageSquare,
   Search,
-  Filter,
-  Download
+  Download,
+  Filter
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -71,6 +71,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { apiRequest } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
+import { exportContactMessagesToExcel } from "@/lib/excel-export";
 
 interface Inquiry {
   id: number;
