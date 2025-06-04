@@ -204,41 +204,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get property counts by type
   app.get("/api/properties/counts-by-type", async (_req, res) => {
     try {
-      // Always use the default property types for now, until we've fixed all the property type issues
-      const counts = await Promise.all(
-        DEFAULT_PROPERTY_TYPES.map(async (type) => {
-          const count = await storage.countPropertiesByType(type);
-          return { propertyType: type, count };
-        })
-      );
-      return res.json(counts);
+      // Get all properties and count by property type
+      const allProperties = await storage.getAllProperties();
       
-      /* 
-      // This code will be uncommented later when property types are fully implemented
-      // Use the dynamic property types from database
-      const propertyTypes = await storage.getAllPropertyTypes();
+      // Create a map to count properties by type
+      const typeCounts = new Map<string, number>();
       
-      if (propertyTypes.length === 0) {
-        // Fallback to default property types if none exist in database
-        const counts = await Promise.all(
-          DEFAULT_PROPERTY_TYPES.map(async (type) => {
-            const count = await storage.countPropertiesByType(type);
-            return { propertyType: type, count };
-          })
-        );
-        return res.json(counts);
-      }
+      allProperties.forEach(property => {
+        const type = property.propertyType;
+        if (type) {
+          typeCounts.set(type, (typeCounts.get(type) || 0) + 1);
+        }
+      });
       
-      // Use the actual property types from the database
-      const counts = await Promise.all(
-        propertyTypes.map(async (propertyType) => {
-          const count = await storage.countPropertiesByType(propertyType.name);
-          return { propertyType: propertyType.name, count };
-        })
-      );
+      // Convert to array format, prioritizing common types first
+      const priorityTypes = ['House', 'Apartment', 'Villa', 'Commercial'];
+      const counts: Array<{propertyType: string, count: number}> = [];
+      
+      // Add priority types first if they exist
+      priorityTypes.forEach(type => {
+        if (typeCounts.has(type)) {
+          counts.push({ propertyType: type, count: typeCounts.get(type)! });
+          typeCounts.delete(type);
+        }
+      });
+      
+      // Add remaining types sorted alphabetically
+      const remainingTypes = Array.from(typeCounts.entries()).sort(([a], [b]) => a.localeCompare(b));
+      remainingTypes.forEach(([type, count]) => {
+        counts.push({ propertyType: type, count });
+      });
       
       res.json(counts);
-      */
     } catch (error) {
       console.error("Error fetching property counts:", error);
       res.status(500).json({ message: "Failed to fetch property counts" });
