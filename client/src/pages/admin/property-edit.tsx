@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
-import { ArrowLeft, Save, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Save, AlertTriangle, Lightbulb, Info, DollarSign, MapPin, Home, Camera } from "lucide-react";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertPropertySchema, Property, Agent, PropertyType, DEFAULT_PROPERTY_TYPES, PROPERTY_STATUS } from "@shared/schema";
@@ -35,10 +47,145 @@ export default function AdminPropertyEditPage() {
   const { toast } = useToast();
   const { isAdmin, isLoading: isLoadingAuth, requireAdmin } = useAdmin();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showQuickTips, setShowQuickTips] = useState(true);
 
   useEffect(() => {
     requireAdmin();
   }, [isLoadingAuth, isAdmin]);
+
+  // Quick Tips Component
+  const QuickTipsCard = () => (
+    <Card className="mb-6 border-blue-200 bg-blue-50">
+      <Collapsible open={showQuickTips} onOpenChange={setShowQuickTips}>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="cursor-pointer hover:bg-blue-100 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Lightbulb className="h-5 w-5 text-blue-600" />
+                <CardTitle className="text-lg text-blue-800">Quick Edit Tips</CardTitle>
+              </div>
+              <Button variant="ghost" size="sm" className="text-blue-600">
+                {showQuickTips ? "Hide Tips" : "Show Tips"}
+              </Button>
+            </div>
+            <CardDescription className="text-blue-700">
+              Professional editing guidelines for optimal property listings
+            </CardDescription>
+          </CardHeader>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Pricing Tips */}
+              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
+                <DollarSign className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Pricing Guidelines</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Use market-competitive rates</li>
+                    <li>• Round to nearest thousand (₹25,00,000)</li>
+                    <li>• Consider location premium/discount</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Location Tips */}
+              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
+                <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Location Format</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Format: "Area, City"</li>
+                    <li>• Example: "Baner, Pune"</li>
+                    <li>• Use proper landmarks if needed</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
+                <Home className="h-5 w-5 text-orange-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Property Details</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Beds/Baths: Use realistic numbers</li>
+                    <li>• Area: Square feet preferred</li>
+                    <li>• Type: Match actual structure</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Images Tips */}
+              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
+                <Camera className="h-5 w-5 text-purple-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Image Guidelines</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Use high-quality, well-lit photos</li>
+                    <li>• Include exterior and interior shots</li>
+                    <li>• Separate URLs with commas</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="mt-4 p-3 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg">
+              <h4 className="font-semibold text-gray-800 mb-2 flex items-center">
+                <Info className="h-4 w-4 mr-2 text-blue-600" />
+                One-Click Actions
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentPrice = watch("price");
+                    if (currentPrice) {
+                      const roundedPrice = Math.round(currentPrice / 100000) * 100000;
+                      setValue("price", roundedPrice);
+                      toast({ title: "Price rounded to nearest lakh", description: `Set to ₹${roundedPrice.toLocaleString()}` });
+                    }
+                  }}
+                  className="text-xs"
+                >
+                  Round Price
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setValue("status", "active");
+                    toast({ title: "Status set to Active" });
+                  }}
+                  className="text-xs"
+                >
+                  Set Active
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentFeatures = watch("features");
+                    if (!currentFeatures) {
+                      setValue("features", '{"parking": true, "security": true, "maintenance": true}');
+                      toast({ title: "Basic features added" });
+                    }
+                  }}
+                  className="text-xs"
+                >
+                  Add Basic Features
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
+  );
 
   // Fetch property data
   const { data: property, isLoading: isLoadingProperty, error } = useQuery<Property>({
@@ -188,6 +335,8 @@ export default function AdminPropertyEditPage() {
           </Button>
         </div>
       </div>
+
+      <QuickTipsCard />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <div className="bg-white p-6 rounded-lg shadow">
