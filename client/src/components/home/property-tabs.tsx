@@ -36,6 +36,20 @@ export function PropertyTabs() {
       console.log("Featured properties:", booleanFeatured.length);
       console.log("String featured properties:", stringFeatured.length);
       console.log("First property MahaRERA status:", properties[0]?.maharera_registered, "Featured:", properties[0]?.featured);
+      
+      // Debug the newly added properties specifically
+      const newProperties = properties.filter(p => p.id === 59 || p.id === 60);
+      console.log("New properties found:", newProperties.length);
+      newProperties.forEach(p => {
+        console.log(`Property ${p.id}: ${p.title}, type: ${p.type}, status: ${p.status}, featured: ${p.featured}`);
+      });
+      
+      // Debug buy properties filtering
+      const buyProps = properties.filter(property => 
+        (property.type === 'buy' || property.type === 'sell') && !isFeatured(property)
+      );
+      console.log("Buy properties after filtering:", buyProps.length);
+      console.log("Buy property IDs:", buyProps.map(p => p.id));
     }
   }, [properties]);
   
