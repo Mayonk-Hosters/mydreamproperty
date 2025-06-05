@@ -569,13 +569,13 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <FormField
             control={form.control}
             name="area"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Area (sq ft)</FormLabel>
+                <FormLabel>Area</FormLabel>
                 <FormControl>
                   <Input 
                     type="number" 
@@ -584,6 +584,28 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="areaUnit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Unit</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select unit" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="sqft">Square Feet (SQFT)</SelectItem>
+                    <SelectItem value="acres">Acres</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

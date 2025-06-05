@@ -66,6 +66,7 @@ export const properties = pgTable("properties", {
   beds: integer("beds").notNull(),
   baths: real("baths").notNull(),
   area: integer("area").notNull(),
+  areaUnit: text("area_unit").notNull().default("sqft"), // Area measurement unit: sqft, acres
   yearBuilt: integer("year_built"), // Year the property was built
   parking: integer("parking"), // Number of parking spaces
   propertyType: text("property_type").notNull(),
