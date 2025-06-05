@@ -258,7 +258,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
               <Droplets className="mr-1 flex-shrink-0" size={12} /> {property.baths} baths
             </span>
             <span className="flex items-center">
-              <Ruler className="mr-1 flex-shrink-0" size={12} /> {property.area} sq ft
+              <Ruler className="mr-1 flex-shrink-0" size={12} /> {property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'sq ft'}
             </span>
           </div>
           

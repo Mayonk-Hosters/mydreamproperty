@@ -172,7 +172,7 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
                 </div>
                 <div className="flex flex-col items-center bg-gray-100 p-2 rounded-md">
                   <Ruler className="h-5 w-5 text-primary" /> 
-                  <span className="mt-1 text-sm font-medium">{property.area} sq ft</span>
+                  <span className="mt-1 text-sm font-medium">{property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'sq ft'}</span>
                 </div>
               </div>
 

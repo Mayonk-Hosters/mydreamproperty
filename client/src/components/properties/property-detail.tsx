@@ -300,7 +300,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </div>
               <div className="flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
                 <Ruler className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
-                <span>{property.area} sq ft</span>
+                <span>{property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'sq ft'}</span>
               </div>
               <div className="hidden lg:flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
                 <Tag className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
@@ -348,7 +348,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                         </li>
                         <li className="flex items-center text-xs sm:text-sm">
                           <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                          <span>Area: {property.area} sq ft</span>
+                          <span>Area: {property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'sq ft'}</span>
                         </li>
                         {property.yearBuilt !== undefined && property.yearBuilt !== null && (
                           <li className="flex items-center text-xs sm:text-sm">
