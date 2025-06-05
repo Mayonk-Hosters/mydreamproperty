@@ -38,7 +38,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
     propertyType: "",
     location: "",
     minPrice: 0,
-    maxPrice: 5000000,
+    maxPrice: 0, // Set to 0 to disable default max price filtering
     minBeds: 0,
     minBaths: 0,
   });
