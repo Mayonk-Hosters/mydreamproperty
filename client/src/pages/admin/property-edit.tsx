@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
-import { ArrowLeft, Save, AlertTriangle, Lightbulb, Info, DollarSign, MapPin, Home, Camera } from "lucide-react";
+import { ArrowLeft, Save, AlertTriangle, Lightbulb, Info, IndianRupee, MapPin, Home, Camera } from "lucide-react";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,7 +78,7 @@ export default function AdminPropertyEditPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Pricing Tips */}
               <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
-                <DollarSign className="h-5 w-5 text-green-600 mt-0.5" />
+                <IndianRupee className="h-5 w-5 text-green-600 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Pricing Guidelines</h4>
                   <ul className="text-sm text-gray-600 space-y-1">
