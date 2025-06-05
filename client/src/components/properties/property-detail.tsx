@@ -196,6 +196,27 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             ))}
           </div>
           
+          {/* Price Display - Highlighted Section */}
+          <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Price</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary">{formatCurrency(property.price)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600">Property Type</p>
+                <p className="text-lg font-semibold text-gray-800">{property.propertyType}</p>
+              </div>
+            </div>
+            {property.type && (
+              <div className="mt-2">
+                <span className="inline-block bg-primary text-white text-sm font-medium px-3 py-1 rounded-full">
+                  For {property.type.charAt(0).toUpperCase() + property.type.slice(1)}
+                </span>
+              </div>
+            )}
+          </div>
+          
           {/* Mobile Property Header */}
           <div className="block lg:hidden bg-white rounded-lg shadow-sm p-4 mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between mb-2">
