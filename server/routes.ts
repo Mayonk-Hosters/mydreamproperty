@@ -38,6 +38,23 @@ import session from "express-session";
 import passport from "passport";
 
 import mdpPropertiesRoutes from './routes/mdp-properties';
+
+// Utility function to check admin access consistently across all routes
+function checkAdminAccess(req: any): boolean {
+  // Session-based admin access (traditional login)
+  if (req.session && req.session.isAdmin) {
+    return true;
+  }
+  // OAuth-based admin access
+  if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+    return true;
+  }
+  // Development mode access
+  if (process.env.NODE_ENV === 'development') {
+    return true;
+  }
+  return false;
+}
 import { eq, like, or, sql, gte, lte, asc } from 'drizzle-orm';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -634,7 +651,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/inquiries/mark-read", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
@@ -1245,7 +1273,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/contact-info", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
@@ -1271,7 +1310,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/contact-info", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
@@ -1298,7 +1348,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/users", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
@@ -1350,7 +1411,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/users", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
@@ -1614,12 +1686,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact Messages API Routes
   app.get("/api/contact-messages", async (req, res) => {
     try {
-      // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
-        // Check for admin authentication in production
-        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-          return res.status(403).json({ message: "Forbidden" });
-        }
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      // Session-based admin access (traditional login)
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      }
+      // OAuth-based admin access
+      else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      }
+      // Development mode access
+      else if (process.env.NODE_ENV === 'development') {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
+        return res.status(403).json({ message: "Admin access required" });
       }
       
       try {
@@ -1681,12 +1765,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/contact-messages/:id", async (req, res) => {
     try {
-      // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
-        // Check for admin authentication in production
-        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
-          return res.status(403).json({ message: "Forbidden" });
-        }
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === 'development') {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
+        return res.status(403).json({ message: "Admin access required" });
       }
       
       const id = parseInt(req.params.id);
@@ -1709,7 +1800,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/contact-messages/:id/mark-read", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
@@ -1758,7 +1860,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/contact-messages/:id", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
@@ -1807,7 +1920,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/contact-messages/mark-read", async (req, res) => {
     try {
       // In development mode, skip authentication check
-      if (process.env.NODE_ENV !== "development") {
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
         // Check for admin authentication in production
         if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
           return res.status(403).json({ message: "Forbidden" });
