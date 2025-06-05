@@ -99,6 +99,14 @@ export function PropertyCard({ property }: PropertyCardProps) {
     setIsShareOpen(!isShareOpen);
   };
   
+  // Handler for heart/favorites button
+  const handleFavorites = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // For now, just show an alert - can be replaced with actual favorites functionality
+    alert('Added to favorites!');
+  };
+  
   return (
     <>
       <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
@@ -129,6 +137,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
               className="bg-white text-primary p-1.5 rounded-full hover:bg-gray-100 h-7 w-7 sm:h-8 sm:w-8"
               title="Add to favorites"
               aria-label="Add to favorites"
+              onClick={handleFavorites}
             >
               <Heart size={15} />
             </Button>
