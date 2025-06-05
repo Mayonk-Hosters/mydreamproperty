@@ -9,7 +9,7 @@ import {
   Mail, 
   Phone, 
   MapPin, 
-  DollarSign, 
+  IndianRupee, 
   Building, 
   User,
   Briefcase,
@@ -248,7 +248,7 @@ export default function AdminHomeLoanInquiriesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <IndianRupee className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Loan Amount</p>
                   <p className="text-sm text-muted-foreground">₹{inquiry.loanAmount.toLocaleString()}</p>
@@ -269,7 +269,7 @@ export default function AdminHomeLoanInquiriesPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
+              <IndianRupee className="h-4 w-4" />
               Financial Information
             </CardTitle>
           </CardHeader>
@@ -285,7 +285,7 @@ export default function AdminHomeLoanInquiriesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <IndianRupee className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Monthly Income</p>
                   <p className="text-sm text-muted-foreground">₹{inquiry.monthlyIncome.toLocaleString()}</p>

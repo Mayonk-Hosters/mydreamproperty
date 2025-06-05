@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { 
   Building, 
-  DollarSign, 
+  IndianRupee, 
   Users, 
   MessageCircle,
   Home,
@@ -57,7 +57,7 @@ export function DashboardOverview() {
     {
       title: "Total Sales Value",
       value: formatCurrency(totalSalesValue),
-      icon: <DollarSign className="h-6 w-6 text-green-600" />,
+      icon: <IndianRupee className="h-6 w-6 text-green-600" />,
       description: `From ${soldProperties} sold properties`,
       color: "bg-green-50 border-green-200"
     },
