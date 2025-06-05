@@ -169,88 +169,90 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm sm:shadow p-3 sm:p-5 mb-4 sm:mb-6">
-      <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <h3 className="font-semibold text-sm sm:text-base md:text-lg">Filter Properties</h3>
-        <div className="flex space-x-1.5 sm:space-x-2">
+    <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-lg">Filter Properties</h3>
+        <div className="flex space-x-2">
           <Button 
             variant="outline" 
             size="sm" 
-            className="md:hidden h-8 sm:h-9 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1"
+            className="md:hidden"
             onClick={() => setShowMobileFilters(!showMobileFilters)}
           >
-            <Filter className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" /> 
-            <span className="hidden sm:inline">Filters</span>
-            <span className="sm:hidden">Filter</span>
+            <Filter className="h-4 w-4 mr-1" /> 
+            Filters
           </Button>
           <Button 
             variant="outline" 
             size="sm"
-            className="h-8 sm:h-9 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1"
             onClick={resetFilters}
           >
-            <XCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-0.5 sm:mr-1" /> 
-            <span className="hidden sm:inline">Reset</span>
-            <span className="sm:hidden">Clear</span>
+            <XCircle className="h-4 w-4 mr-1" /> 
+            Reset
           </Button>
         </div>
       </div>
       
-      {/* Mobile filter panel with transition */}
+      {/* Mobile filter panel */}
       <div 
-        className={`space-y-3 sm:space-y-4 transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
           showMobileFilters 
-            ? 'max-h-[2000px] opacity-100' 
-            : 'max-h-0 opacity-0 md:max-h-[2000px] md:opacity-100'
+            ? 'max-h-[1000px] opacity-100' 
+            : 'max-h-0 opacity-0 md:max-h-[1000px] md:opacity-100'
         }`}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+        {/* Mobile: Stack filters vertically, Desktop: Grid layout */}
+        <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-3 md:gap-4">
+          
+          {/* Buy/Rent Selection */}
           <div>
-            <Label htmlFor="type" className="text-xs sm:text-sm font-medium mb-1 sm:mb-1.5 inline-block">Buy or Rent</Label>
+            <Label htmlFor="type" className="text-sm font-medium mb-2 block">Buy or Rent</Label>
             <Select 
               value={filters.type}
               onValueChange={(value) => handleFilterChange("type", value)}
             >
-              <SelectTrigger id="type" className="h-9 sm:h-10 text-xs sm:text-sm">
+              <SelectTrigger id="type" className="h-11 text-base">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="buy" className="text-xs sm:text-sm">Buy</SelectItem>
-                <SelectItem value="rent" className="text-xs sm:text-sm">Rent</SelectItem>
+                <SelectItem value="buy">Buy</SelectItem>
+                <SelectItem value="rent">Rent</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
+          {/* Property Type */}
           <div>
-            <Label htmlFor="propertyType" className="text-xs sm:text-sm font-medium mb-1 sm:mb-1.5 inline-block">Property Type</Label>
+            <Label htmlFor="propertyType" className="text-sm font-medium mb-2 block">Property Type</Label>
             <Select 
               value={filters.propertyType}
               onValueChange={(value) => handleFilterChange("propertyType", value)}
             >
-              <SelectTrigger id="propertyType" className="h-9 sm:h-10 text-xs sm:text-sm">
+              <SelectTrigger id="propertyType" className="h-11 text-base">
                 <SelectValue placeholder="Any type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="any" className="text-xs sm:text-sm">Any type</SelectItem>
+                <SelectItem value="any">Any type</SelectItem>
                 {propertyTypesLoading ? (
-                  <SelectItem value="loading" disabled className="text-xs sm:text-sm">Loading...</SelectItem>
+                  <SelectItem value="loading" disabled>Loading...</SelectItem>
                 ) : (
                   propertyTypes.map((type) => (
-                    <SelectItem key={type} value={type} className="text-xs sm:text-sm">{type}</SelectItem>
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
                   ))
                 )}
               </SelectContent>
             </Select>
           </div>
           
-          <div className="sm:col-span-2 md:col-span-1">
-            <Label htmlFor="location" className="text-xs sm:text-sm font-medium mb-1 sm:mb-1.5 inline-block">Search by Area</Label>
+          {/* Location Search */}
+          <div>
+            <Label htmlFor="location" className="text-sm font-medium mb-2 block">Search Area</Label>
             <div className="relative">
-              <Search className="absolute left-2 sm:left-2.5 top-2.5 sm:top-3 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
               <Input 
                 id="location"
-                className="pl-7 sm:pl-9 h-9 sm:h-10 text-xs sm:text-sm"
-                placeholder="Enter area name, neighborhood..." 
+                className="pl-10 h-11 text-base"
+                placeholder="Enter area name..." 
                 value={filters.location}
                 onChange={(e) => handleLocationChange(e.target.value)}
                 onKeyDown={(e) => {
@@ -262,35 +264,32 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               />
               {filters.location && (
                 <button 
-                  className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground hover:text-primary"
+                  className="absolute right-3 top-3.5 text-muted-foreground hover:text-primary"
                   onClick={() => handleLocationChange("")}
                   aria-label="Clear search"
                 >
-                  <XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <XCircle className="h-4 w-4" />
                 </button>
               )}
             </div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-              Search by area name, district, state or neighborhood
+            <p className="text-xs text-muted-foreground mt-1">
+              Search by area, district, or neighborhood
             </p>
-            {filters.location && filters.location.length >= 3 && (
-              <div className="flex items-center gap-1 sm:gap-2 mt-1.5 sm:mt-2 text-[10px] sm:text-xs bg-primary/10 text-primary rounded-md p-1 sm:p-1.5">
-                <Search className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                <span className="font-medium">Searching for:</span> "{filters.location}"
-              </div>
-            )}
           </div>
         </div>
         
-        <div className="space-y-3 sm:space-y-4">
+        {/* Advanced Filters - Collapsible on mobile */}
+        <div className="space-y-4 border-t pt-4 mt-4">
+          
+          {/* Price Range */}
           <div>
-            <div className="flex items-center justify-between mb-1 sm:mb-2">
-              <Label className="text-xs sm:text-sm font-medium">Price Range</Label>
-              <span className="text-xs text-gray-500">
+            <div className="flex items-center justify-between mb-3">
+              <Label className="text-sm font-medium">Price Range</Label>
+              <span className="text-sm text-gray-600 font-medium">
                 {formatCurrency(filters.minPrice)} - {formatCurrency(filters.maxPrice)}
               </span>
             </div>
-            <div className="pt-3 sm:pt-4 px-2">
+            <div className="px-2">
               <Slider 
                 defaultValue={[filters.minPrice, filters.maxPrice]} 
                 min={0} 
@@ -301,19 +300,20 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                   handleFilterChange("minPrice", value[0]);
                   handleFilterChange("maxPrice", value[1]);
                 }}
-                className="touch-action-none" /* Ensures better touch handling on mobile */
+                className="cursor-pointer"
               />
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          {/* Bedrooms and Bathrooms */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="minBeds" className="text-xs sm:text-sm font-medium mb-1 sm:mb-1.5 inline-block">Minimum Beds</Label>
+              <Label htmlFor="minBeds" className="text-sm font-medium mb-2 block">Min Bedrooms</Label>
               <Select 
                 value={filters.minBeds.toString()}
                 onValueChange={(value) => handleFilterChange("minBeds", parseInt(value))}
               >
-                <SelectTrigger id="minBeds" className="h-9 sm:h-10 text-xs sm:text-sm">
+                <SelectTrigger id="minBeds" className="h-11 text-base">
                   <SelectValue placeholder="Any" />
                 </SelectTrigger>
                 <SelectContent>
@@ -328,32 +328,34 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
             </div>
             
             <div>
-              <Label htmlFor="minBaths" className="text-xs sm:text-sm font-medium mb-1 sm:mb-1.5 inline-block">Minimum Baths</Label>
+              <Label htmlFor="minBaths" className="text-sm font-medium mb-2 block">Min Bathrooms</Label>
               <Select 
                 value={filters.minBaths.toString()}
                 onValueChange={(value) => handleFilterChange("minBaths", parseInt(value))}
               >
-                <SelectTrigger id="minBaths" className="h-9 sm:h-10 text-xs sm:text-sm">
+                <SelectTrigger id="minBaths" className="h-11 text-base">
                   <SelectValue placeholder="Any" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0" className="text-xs sm:text-sm">Any</SelectItem>
-                  <SelectItem value="1" className="text-xs sm:text-sm">1+</SelectItem>
-                  <SelectItem value="2" className="text-xs sm:text-sm">2+</SelectItem>
-                  <SelectItem value="3" className="text-xs sm:text-sm">3+</SelectItem>
-                  <SelectItem value="4" className="text-xs sm:text-sm">4+</SelectItem>
+                  <SelectItem value="0">Any</SelectItem>
+                  <SelectItem value="1">1+</SelectItem>
+                  <SelectItem value="2">2+</SelectItem>
+                  <SelectItem value="3">3+</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
+          
+          {/* Apply Filters Button */}
+          <Button 
+            className="w-full h-12 text-base font-medium mt-6" 
+            onClick={applyFilters}
+          >
+            <Search className="mr-2 h-5 w-5" /> 
+            Apply Filters
+          </Button>
         </div>
-        
-        <Button 
-          className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium mt-2" 
-          onClick={applyFilters}
-        >
-          <Search className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Apply Filters
-        </Button>
       </div>
     </div>
   );
