@@ -1689,20 +1689,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
+      console.log("Contact messages request - Session state:", {
+        isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+        sessionIsAdmin: req.session?.isAdmin,
+        sessionUserType: req.session?.userType,
+        user: req.user ? 'present' : 'not present'
+      });
+      
       // Session-based admin access (traditional login)
       if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
+        console.log("Access granted via session admin");
       }
       // OAuth-based admin access
       else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
+        console.log("Access granted via OAuth admin");
       }
       // Development mode access
       else if (process.env.NODE_ENV === 'development') {
         hasAdminAccess = true;
+        console.log("Development mode - granting access to contact messages");
       }
       
       if (!hasAdminAccess) {
+        console.log("Contact messages access denied - no admin privileges");
         return res.status(403).json({ message: "Admin access required" });
       }
       
