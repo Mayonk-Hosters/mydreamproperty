@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
-import { ArrowLeft, Save, AlertTriangle, Lightbulb, Info, IndianRupee, MapPin, Home, Camera } from "lucide-react";
+import { ArrowLeft, Save, AlertTriangle } from "lucide-react";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,18 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertPropertySchema, Property, Agent, PropertyType, DEFAULT_PROPERTY_TYPES, PROPERTY_STATUS } from "@shared/schema";
@@ -47,145 +35,10 @@ export default function AdminPropertyEditPage() {
   const { toast } = useToast();
   const { isAdmin, isLoading: isLoadingAuth, requireAdmin } = useAdmin();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showQuickTips, setShowQuickTips] = useState(true);
 
   useEffect(() => {
     requireAdmin();
   }, [isLoadingAuth, isAdmin]);
-
-  // Quick Tips Component
-  const QuickTipsCard = () => (
-    <Card className="mb-6 border-blue-200 bg-blue-50">
-      <Collapsible open={showQuickTips} onOpenChange={setShowQuickTips}>
-        <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-blue-100 transition-colors">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Lightbulb className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-lg text-blue-800">Quick Edit Tips</CardTitle>
-              </div>
-              <Button variant="ghost" size="sm" className="text-blue-600">
-                {showQuickTips ? "Hide Tips" : "Show Tips"}
-              </Button>
-            </div>
-            <CardDescription className="text-blue-700">
-              Professional editing guidelines for optimal property listings
-            </CardDescription>
-          </CardHeader>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Pricing Tips */}
-              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
-                <IndianRupee className="h-5 w-5 text-green-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">Pricing Guidelines</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Use market-competitive rates</li>
-                    <li>• Round to nearest thousand (₹25,00,000)</li>
-                    <li>• Consider location premium/discount</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Location Tips */}
-              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
-                <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">Location Format</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Format: "Area, City"</li>
-                    <li>• Example: "Baner, Pune"</li>
-                    <li>• Use proper landmarks if needed</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Property Details */}
-              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
-                <Home className="h-5 w-5 text-orange-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">Property Details</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Beds/Baths: Use realistic numbers</li>
-                    <li>• Area: Square feet preferred</li>
-                    <li>• Type: Match actual structure</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Images Tips */}
-              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border">
-                <Camera className="h-5 w-5 text-purple-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">Image Guidelines</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Use high-quality, well-lit photos</li>
-                    <li>• Include exterior and interior shots</li>
-                    <li>• Separate URLs with commas</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="mt-4 p-3 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg">
-              <h4 className="font-semibold text-gray-800 mb-2 flex items-center">
-                <Info className="h-4 w-4 mr-2 text-blue-600" />
-                One-Click Actions
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const currentPrice = watch("price");
-                    if (currentPrice) {
-                      const roundedPrice = Math.round(currentPrice / 100000) * 100000;
-                      setValue("price", roundedPrice);
-                      toast({ title: "Price rounded to nearest lakh", description: `Set to ₹${roundedPrice.toLocaleString()}` });
-                    }
-                  }}
-                  className="text-xs"
-                >
-                  Round Price
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setValue("status", "active");
-                    toast({ title: "Status set to Active" });
-                  }}
-                  className="text-xs"
-                >
-                  Set Active
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const currentFeatures = watch("features");
-                    if (!currentFeatures) {
-                      setValue("features", '{"parking": true, "security": true, "maintenance": true}');
-                      toast({ title: "Basic features added" });
-                    }
-                  }}
-                  className="text-xs"
-                >
-                  Add Basic Features
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible>
-    </Card>
-  );
 
   // Fetch property data
   const { data: property, isLoading: isLoadingProperty, error } = useQuery<Property>({
@@ -228,39 +81,91 @@ export default function AdminPropertyEditPage() {
       setValue("baths", property.baths);
       setValue("area", property.area);
       setValue("propertyType", property.propertyType);
-      setValue("type", property.type || "buy");
+      setValue("type", property.type);
       setValue("status", property.status || "active");
+      setValue("featured", property.featured || false);
       setValue("agentId", property.agentId);
-      setValue("mapUrl", property.mapUrl || "");
       setValue("yearBuilt", property.yearBuilt || undefined);
-      setValue("features", property.features ? JSON.stringify(property.features) : "");
-      setValue("images", Array.isArray(property.images) ? property.images.join(",") : "");
+      setValue("parking", property.parking || undefined);
+      setValue("mapUrl", property.mapUrl || "");
+      setValue("maharera_registered", property.maharera_registered || false);
+      
+      // Handle images
+      if (property.images) {
+        if (Array.isArray(property.images)) {
+          setValue("images", property.images.join(", "));
+        } else if (typeof property.images === "string") {
+          try {
+            const parsedImages = JSON.parse(property.images);
+            if (Array.isArray(parsedImages)) {
+              setValue("images", parsedImages.join(", "));
+            } else {
+              setValue("images", property.images);
+            }
+          } catch {
+            setValue("images", property.images);
+          }
+        }
+      }
+      
+      // Handle features
+      if (property.features) {
+        if (typeof property.features === "string") {
+          setValue("features", property.features);
+        } else {
+          setValue("features", JSON.stringify(property.features));
+        }
+      }
     }
   }, [property, setValue]);
 
   const onSubmit = async (data: EditPropertyFormData) => {
+    if (!property) return;
+    
     setIsSubmitting(true);
     try {
-      // Process images and features
-      const processedData = {
+      // Process images
+      let processedImages;
+      if (data.images && typeof data.images === "string") {
+        processedImages = data.images.split(",").map(url => url.trim()).filter(url => url);
+      } else {
+        processedImages = data.images || [];
+      }
+
+      // Process features
+      let processedFeatures;
+      if (data.features && typeof data.features === "string") {
+        try {
+          processedFeatures = JSON.parse(data.features);
+        } catch {
+          processedFeatures = data.features;
+        }
+      } else {
+        processedFeatures = data.features;
+      }
+
+      const updateData = {
         ...data,
-        images: data.images ? data.images.split(",").map(img => img.trim()).filter(Boolean) : [],
-        features: data.features ? JSON.parse(data.features) : null,
+        images: processedImages,
+        features: processedFeatures,
       };
 
-      await apiRequest("PATCH", `/api/properties/${params?.id}`, processedData);
+      await apiRequest(`/api/properties/${property.id}`, {
+        method: "PUT",
+        body: JSON.stringify(updateData),
+      });
 
       toast({
-        title: "Property updated",
-        description: "The property has been updated successfully.",
+        title: "Success",
+        description: "Property updated successfully",
       });
 
       setLocation("/admin/properties");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating property:", error);
       toast({
         title: "Error",
-        description: error.message || "There was an error updating the property. Please try again.",
+        description: "Failed to update property. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -269,46 +174,27 @@ export default function AdminPropertyEditPage() {
   };
 
   if (isLoadingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="w-16 h-16 border-4 border-t-primary rounded-full animate-spin"></div>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (!isAdmin) {
-    return null;
-  }
-
-  if (error) {
-    return (
-      <AdminLayout>
-        <div className="bg-red-50 p-4 rounded-md">
-          <div className="flex items-center">
-            <AlertTriangle className="h-6 w-6 text-red-500 mr-3" />
-            <h3 className="text-lg font-medium text-red-800">Error loading property</h3>
-          </div>
-          <div className="mt-2 text-sm text-red-700">
-            The property could not be found or there was an error loading it.
-          </div>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => setLocation("/admin/properties")}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Properties
-          </Button>
-        </div>
-      </AdminLayout>
-    );
+    return <div>Access denied</div>;
   }
 
   if (isLoadingProperty) {
     return (
       <AdminLayout>
-        <div className="min-h-96 flex items-center justify-center">
-          <div className="w-16 h-16 border-4 border-t-primary rounded-full animate-spin"></div>
+        <div>Loading property...</div>
+      </AdminLayout>
+    );
+  }
+
+  if (error || !property) {
+    return (
+      <AdminLayout>
+        <div className="text-red-600">
+          <AlertTriangle className="inline mr-2" />
+          Failed to load property
         </div>
       </AdminLayout>
     );
@@ -317,7 +203,7 @@ export default function AdminPropertyEditPage() {
   return (
     <AdminLayout>
       <Helmet>
-        <title>Edit Property | Admin | My Dream Property</title>
+        <title>Edit Property - My Dream Property Admin</title>
       </Helmet>
 
       <div className="mb-6">
@@ -335,8 +221,6 @@ export default function AdminPropertyEditPage() {
           </Button>
         </div>
       </div>
-
-      <QuickTipsCard />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <div className="bg-white p-6 rounded-lg shadow">
@@ -385,32 +269,20 @@ export default function AdminPropertyEditPage() {
             </div>
 
             <div>
-              <Label htmlFor="area">Area (sq ft)</Label>
-              <Input
-                id="area"
-                type="number"
-                {...register("area", { valueAsNumber: true })}
-                placeholder="Enter area in square feet"
-                className={errors.area ? "border-red-500" : ""}
-              />
-              {errors.area && (
-                <p className="text-red-500 text-sm mt-1">{errors.area.message}</p>
-              )}
-            </div>
-
-            <div>
               <Label htmlFor="propertyType">Property Type</Label>
-              <Select
-                value={watch("propertyType")}
-                onValueChange={(value) => setValue("propertyType", value)}
-              >
+              <Select onValueChange={(value) => setValue("propertyType", value)} value={watch("propertyType")}>
                 <SelectTrigger className={errors.propertyType ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select property type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(propertyTypes?.filter(pt => pt.active) || DEFAULT_PROPERTY_TYPES).map((type) => (
-                    <SelectItem key={typeof type === 'string' ? type : type.name} value={typeof type === 'string' ? type : type.name}>
-                      {typeof type === 'string' ? type : type.name}
+                  {DEFAULT_PROPERTY_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                  {propertyTypes?.map((type) => (
+                    <SelectItem key={type.id} value={type.name}>
+                      {type.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -421,81 +293,11 @@ export default function AdminPropertyEditPage() {
             </div>
 
             <div>
-              <Label htmlFor="type">Transaction Type</Label>
-              <Select
-                value={watch("type")}
-                onValueChange={(value) => setValue("type", value)}
-              >
-                <SelectTrigger className={errors.type ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select transaction type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="buy">Buy</SelectItem>
-                  <SelectItem value="rent">Rent</SelectItem>
-                  <SelectItem value="sell">Sell</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.type && (
-                <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={watch("status")}
-                onValueChange={(value) => setValue("status", value)}
-              >
-                <SelectTrigger className={errors.status ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PROPERTY_STATUS.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.status && (
-                <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="agentId">Assigned Agent</Label>
-              <Select
-                value={watch("agentId")?.toString()}
-                onValueChange={(value) => setValue("agentId", parseInt(value))}
-              >
-                <SelectTrigger className={errors.agentId ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select an agent" />
-                </SelectTrigger>
-                <SelectContent>
-                  {agents?.map((agent) => (
-                    <SelectItem key={agent.id} value={agent.id.toString()}>
-                      {agent.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.agentId && (
-                <p className="text-red-500 text-sm mt-1">{errors.agentId.message}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">Location & Details</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
               <Label htmlFor="location">Location</Label>
               <Input
                 id="location"
                 {...register("location")}
-                placeholder="Enter location (city, area)"
+                placeholder="Enter location (e.g., Baner, Pune)"
                 className={errors.location ? "border-red-500" : ""}
               />
               {errors.location && (
@@ -504,7 +306,7 @@ export default function AdminPropertyEditPage() {
             </div>
 
             <div>
-              <Label htmlFor="address">Full Address</Label>
+              <Label htmlFor="address">Address</Label>
               <Input
                 id="address"
                 {...register("address")}
@@ -515,7 +317,13 @@ export default function AdminPropertyEditPage() {
                 <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
               )}
             </div>
+          </div>
+        </div>
 
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">Property Details</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <Label htmlFor="beds">Bedrooms</Label>
               <Input
@@ -545,14 +353,36 @@ export default function AdminPropertyEditPage() {
             </div>
 
             <div>
+              <Label htmlFor="area">Area (sq ft)</Label>
+              <Input
+                id="area"
+                type="number"
+                {...register("area", { valueAsNumber: true })}
+                placeholder="Area in square feet"
+                className={errors.area ? "border-red-500" : ""}
+              />
+              {errors.area && (
+                <p className="text-red-500 text-sm mt-1">{errors.area.message}</p>
+              )}
+            </div>
+
+            <div>
               <Label htmlFor="yearBuilt">Year Built (Optional)</Label>
               <Input
                 id="yearBuilt"
                 type="number"
-                {...register("yearBuilt", { 
-                  setValueAs: (value) => value === "" ? undefined : parseInt(value)
-                })}
+                {...register("yearBuilt", { valueAsNumber: true })}
                 placeholder="Year built"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="parking">Parking Spaces (Optional)</Label>
+              <Input
+                id="parking"
+                type="number"
+                {...register("parking", { valueAsNumber: true })}
+                placeholder="Number of parking spaces"
               />
             </div>
 
@@ -596,6 +426,73 @@ export default function AdminPropertyEditPage() {
                 Enter features in JSON format, e.g., {"{\"parking\": true, \"garden\": false}"}
               </p>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <Label htmlFor="type">Transaction Type</Label>
+                <Select onValueChange={(value) => setValue("type", value)} value={watch("type")}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select transaction type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="buy">For Sale</SelectItem>
+                    <SelectItem value="rent">For Rent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select onValueChange={(value) => setValue("status", value)} value={watch("status")}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROPERTY_STATUS.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="agentId">Agent</Label>
+                <Select onValueChange={(value) => setValue("agentId", parseInt(value))} value={watch("agentId")?.toString()}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select agent" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {agents?.map((agent) => (
+                      <SelectItem key={agent.id} value={agent.id.toString()}>
+                        {agent.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  {...register("featured")}
+                  className="rounded border-gray-300"
+                />
+                <span>Featured Property</span>
+              </label>
+
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  {...register("maharera_registered")}
+                  className="rounded border-gray-300"
+                />
+                <span>MahaRERA Registered</span>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -608,17 +505,8 @@ export default function AdminPropertyEditPage() {
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin mr-2"></div>
-                Updating...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Update Property
-              </>
-            )}
+            <Save className="mr-2 h-4 w-4" />
+            {isSubmitting ? "Updating..." : "Update Property"}
           </Button>
         </div>
       </form>
