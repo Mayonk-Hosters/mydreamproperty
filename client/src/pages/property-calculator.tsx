@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ArrowRightLeft, Calculator, IndianRupee } from "lucide-react";
+import { ArrowRightLeft, Calculator, IndianRupee, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -439,6 +440,15 @@ function EMICalculator() {
 export default function PropertyCalculatorPage() {
   return (
     <div className="container mx-auto py-8 px-4 space-y-8">
+      <div className="flex items-center gap-4 mb-8">
+        <Link href="/">
+          <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        </Link>
+      </div>
+      
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
           Property Calculators
