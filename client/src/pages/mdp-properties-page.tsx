@@ -147,7 +147,7 @@ function PropertyCard({ property }: { property: Property }) {
             <Bath className="h-4 w-4 mr-1" /> {property.baths} {property.baths === 1 ? 'Bath' : 'Baths'}
           </div>
           <div className="flex items-center">
-            <Square className="h-4 w-4 mr-1" /> {property.area} ft²
+            <Square className="h-4 w-4 mr-1" /> {property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'ft²'}
           </div>
         </div>
         <p className="line-clamp-2 text-gray-600 text-sm">{property.description}</p>

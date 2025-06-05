@@ -168,7 +168,7 @@ function AgentPropertiesContent() {
                     <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4">
                       <span className="text-sm">{property.beds} Beds</span>
                       <span className="text-sm">{property.baths} Baths</span>
-                      <span className="text-sm">{property.area} sqft</span>
+                      <span className="text-sm">{property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'sqft'}</span>
                       <span className="text-sm">{property.propertyType}</span>
                       <span className="text-sm font-semibold">${property.price.toLocaleString()}</span>
                     </div>
