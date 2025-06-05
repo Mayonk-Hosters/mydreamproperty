@@ -230,12 +230,36 @@ export default function AdminHomepageImagesPage() {
                         <FormControl>
                           <FileUpload
                             value={field.value}
-                            onFileChange={(file) => {
+                            onFileChange={async (file) => {
                               if (file) {
-                                // For now, we'll use a placeholder URL since we don't have file upload backend
-                                // In production, you would upload the file and get back a URL
-                                const fakeUrl = `https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&h=600`;
-                                field.onChange(fakeUrl);
+                                try {
+                                  const formData = new FormData();
+                                  formData.append('image', file);
+                                  
+                                  const response = await fetch('/api/upload-image', {
+                                    method: 'POST',
+                                    body: formData,
+                                  });
+                                  
+                                  if (response.ok) {
+                                    const data = await response.json();
+                                    field.onChange(data.imageUrl);
+                                  } else {
+                                    console.error('Upload failed');
+                                    toast({
+                                      title: "Upload failed",
+                                      description: "Failed to upload image. Please try again.",
+                                      variant: "destructive"
+                                    });
+                                  }
+                                } catch (error) {
+                                  console.error('Upload error:', error);
+                                  toast({
+                                    title: "Upload error",
+                                    description: "An error occurred while uploading the image.",
+                                    variant: "destructive"
+                                  });
+                                }
                               } else {
                                 field.onChange("");
                               }

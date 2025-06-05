@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage as dbStorage } from "./storage";
 import { pool } from "./db";
 // AI recommendation imports removed
 import { 
@@ -49,7 +49,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Configure multer for file uploads
-const storage = multer.diskStorage({
+const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
   },
@@ -60,7 +60,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ 
-  storage: storage,
+  storage: multerStorage,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
@@ -203,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Store the contact form submission in the database
-      const newMessage = await storage.createContactMessage(contactData);
+      const newMessage = await dbStorage.createContactMessage(contactData);
       console.log("Contact form submission saved:", newMessage);
       
       // Here you would typically also send an email notification to admin
@@ -252,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (agentId) filters.agentId = parseInt(agentId as string);
 
       // Get all properties with filters applied
-      const properties = await storage.getAllProperties(Object.keys(filters).length > 0 ? filters : undefined);
+      const properties = await dbStorage.getAllProperties(Object.keys(filters).length > 0 ? filters : undefined);
 
       res.json(properties);
     } catch (error) {
@@ -265,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/properties/counts-by-type", async (_req, res) => {
     try {
       // Get all properties and count by property type
-      const allProperties = await storage.getAllProperties();
+      const allProperties = await dbStorage.getAllProperties();
       
       // Create a map to count properties by type
       const typeCounts = new Map<string, number>();
@@ -310,7 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid property ID" });
       }
 
-      const property = await storage.getProperty(id);
+      const property = await dbStorage.getProperty(id);
       if (!property) {
         return res.status(404).json({ message: "Property not found" });
       }
@@ -434,7 +434,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create the property using the sanitized data
-      const newProperty = await storage.createProperty(propertyData);
+      const newProperty = await dbStorage.createProperty(propertyData);
       res.status(201).json(newProperty);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -472,7 +472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const propertyData = insertPropertySchema.parse(requestData);
-      const updatedProperty = await storage.updateProperty(id, propertyData);
+      const updatedProperty = await dbStorage.updateProperty(id, propertyData);
       
       if (!updatedProperty) {
         return res.status(404).json({ message: "Property not found" });
@@ -499,7 +499,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid property ID" });
       }
 
-      const property = await storage.getProperty(id);
+      const property = await dbStorage.getProperty(id);
       if (!property) {
         return res.status(404).json({ message: "Property not found" });
       }
@@ -515,7 +515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Toggle the featured status with explicit boolean
-      const updatedProperty = await storage.updateProperty(id, {
+      const updatedProperty = await dbStorage.updateProperty(id, {
         ...property,
         featured: !currentFeatured
       });
@@ -536,7 +536,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid property ID" });
       }
 
-      const success = await storage.deleteProperty(id);
+      const success = await dbStorage.deleteProperty(id);
       
       if (!success) {
         return res.status(404).json({ message: "Property not found" });
@@ -552,7 +552,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all agents
   app.get("/api/agents", async (_req, res) => {
     try {
-      const agents = await storage.getAllAgents();
+      const agents = await dbStorage.getAllAgents();
       res.json(agents);
     } catch (error) {
       console.error("Error fetching agents:", error);
@@ -568,7 +568,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid agent ID" });
       }
 
-      const agent = await storage.getAgent(id);
+      const agent = await dbStorage.getAgent(id);
       if (!agent) {
         return res.status(404).json({ message: "Agent not found" });
       }
@@ -584,7 +584,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/agents", async (req, res) => {
     try {
       const agentData = insertAgentSchema.parse(req.body);
-      const newAgent = await storage.createAgent(agentData);
+      const newAgent = await dbStorage.createAgent(agentData);
       res.status(201).json(newAgent);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -606,13 +606,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid agent ID" });
       }
       
-      const agent = await storage.getAgent(id);
+      const agent = await dbStorage.getAgent(id);
       if (!agent) {
         return res.status(404).json({ message: "Agent not found" });
       }
       
       const agentData = insertAgentSchema.parse(req.body);
-      const updatedAgent = await storage.updateAgent(id, agentData);
+      const updatedAgent = await dbStorage.updateAgent(id, agentData);
       res.json(updatedAgent);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -634,12 +634,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid agent ID" });
       }
       
-      const agent = await storage.getAgent(id);
+      const agent = await dbStorage.getAgent(id);
       if (!agent) {
         return res.status(404).json({ message: "Agent not found" });
       }
       
-      await storage.deleteAgent(id);
+      await dbStorage.deleteAgent(id);
       res.status(204).end();
     } catch (error) {
       console.error("Error deleting agent:", error);
@@ -650,7 +650,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all inquiries
   app.get("/api/inquiries", async (_req, res) => {
     try {
-      const inquiries = await storage.getAllInquiries();
+      const inquiries = await dbStorage.getAllInquiries();
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching inquiries:", error);
@@ -667,13 +667,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if the inquiry exists
-      const inquiry = await storage.getInquiry(id);
+      const inquiry = await dbStorage.getInquiry(id);
       if (!inquiry) {
         return res.status(404).json({ message: "Inquiry not found" });
       }
       
       // Delete the inquiry
-      const deleted = await storage.deleteInquiry(id);
+      const deleted = await dbStorage.deleteInquiry(id);
       if (deleted) {
         res.json({ success: true, message: "Inquiry deleted successfully" });
       } else {
@@ -717,7 +717,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         inquiryIds = [id];
       } else if (!ids) {
         // If no ids provided, mark ALL unread inquiries as read
-        const inquiries = await storage.getAllInquiries();
+        const inquiries = await dbStorage.getAllInquiries();
         inquiryIds = inquiries
           .filter(inq => !inq.isRead)
           .map(inq => inq.id);
@@ -729,7 +729,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Mark each inquiry as read
       const results = await Promise.all(inquiryIds.map(async (id: number) => {
-        return await storage.markInquiryAsRead(id);
+        return await dbStorage.markInquiryAsRead(id);
       }));
       
       const successCount = results.filter(success => success).length;
@@ -753,12 +753,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: new Date().toISOString()
       });
       
-      const newInquiry = await storage.createInquiry(inquiryData);
+      const newInquiry = await dbStorage.createInquiry(inquiryData);
       
       // If property ID is provided, fetch property title for the email
       let propertyTitle;
       if (inquiryData.propertyId) {
-        const property = await storage.getProperty(inquiryData.propertyId);
+        const property = await dbStorage.getProperty(inquiryData.propertyId);
         if (property) {
           propertyTitle = property.title;
         }
@@ -795,7 +795,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // States
   app.get("/api/locations/states", async (_req, res) => {
     try {
-      const states = await storage.getAllStates();
+      const states = await dbStorage.getAllStates();
       res.json(states);
     } catch (error) {
       console.error("Error fetching states:", error);
@@ -810,7 +810,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid state ID" });
       }
 
-      const state = await storage.getState(id);
+      const state = await dbStorage.getState(id);
       if (!state) {
         return res.status(404).json({ message: "State not found" });
       }
@@ -833,7 +833,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       */
       
       const stateData = insertStateSchema.parse(req.body);
-      const newState = await storage.createState(stateData);
+      const newState = await dbStorage.createState(stateData);
       res.status(201).json(newState);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -862,7 +862,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const stateData = insertStateSchema.partial().parse(req.body);
-      const updatedState = await storage.updateState(id, stateData);
+      const updatedState = await dbStorage.updateState(id, stateData);
       res.json(updatedState);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -891,7 +891,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid state ID" });
       }
 
-      const success = await storage.deleteState(id);
+      const success = await dbStorage.deleteState(id);
       
       if (!success) {
         return res.status(404).json({ message: "State not found" });
@@ -908,7 +908,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/locations/districts", async (req, res) => {
     try {
       const stateId = req.query.stateId ? parseInt(req.query.stateId as string) : undefined;
-      const districts = await storage.getAllDistricts(stateId);
+      const districts = await dbStorage.getAllDistricts(stateId);
       res.json(districts);
     } catch (error) {
       console.error("Error fetching districts:", error);
@@ -923,7 +923,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid district ID" });
       }
 
-      const district = await storage.getDistrict(id);
+      const district = await dbStorage.getDistrict(id);
       if (!district) {
         return res.status(404).json({ message: "District not found" });
       }
@@ -948,12 +948,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const districtData = insertDistrictSchema.parse(req.body);
       
       // Check if state exists
-      const state = await storage.getState(districtData.stateId);
+      const state = await dbStorage.getState(districtData.stateId);
       if (!state) {
         return res.status(400).json({ message: "State not found" });
       }
       
-      const newDistrict = await storage.createDistrict(districtData);
+      const newDistrict = await dbStorage.createDistrict(districtData);
       res.status(201).json(newDistrict);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -986,13 +986,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If stateId is provided, check if state exists
       if (districtData.stateId !== undefined) {
-        const state = await storage.getState(districtData.stateId);
+        const state = await dbStorage.getState(districtData.stateId);
         if (!state) {
           return res.status(400).json({ message: "State not found" });
         }
       }
       
-      const updatedDistrict = await storage.updateDistrict(id, districtData);
+      const updatedDistrict = await dbStorage.updateDistrict(id, districtData);
       res.json(updatedDistrict);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1021,7 +1021,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid district ID" });
       }
 
-      const success = await storage.deleteDistrict(id);
+      const success = await dbStorage.deleteDistrict(id);
       
       if (!success) {
         return res.status(404).json({ message: "District not found" });
@@ -1038,7 +1038,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/locations/talukas", async (req, res) => {
     try {
       const districtId = req.query.districtId ? parseInt(req.query.districtId as string) : undefined;
-      const talukas = await storage.getAllTalukas(districtId);
+      const talukas = await dbStorage.getAllTalukas(districtId);
       res.json(talukas);
     } catch (error) {
       console.error("Error fetching talukas:", error);
@@ -1053,7 +1053,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid taluka ID" });
       }
 
-      const taluka = await storage.getTaluka(id);
+      const taluka = await dbStorage.getTaluka(id);
       if (!taluka) {
         return res.status(404).json({ message: "Taluka not found" });
       }
@@ -1078,12 +1078,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const talukaData = insertTalukaSchema.parse(req.body);
       
       // Check if district exists
-      const district = await storage.getDistrict(talukaData.districtId);
+      const district = await dbStorage.getDistrict(talukaData.districtId);
       if (!district) {
         return res.status(400).json({ message: "District not found" });
       }
       
-      const newTaluka = await storage.createTaluka(talukaData);
+      const newTaluka = await dbStorage.createTaluka(talukaData);
       res.status(201).json(newTaluka);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1116,13 +1116,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If districtId is provided, check if district exists
       if (talukaData.districtId !== undefined) {
-        const district = await storage.getDistrict(talukaData.districtId);
+        const district = await dbStorage.getDistrict(talukaData.districtId);
         if (!district) {
           return res.status(400).json({ message: "District not found" });
         }
       }
       
-      const updatedTaluka = await storage.updateTaluka(id, talukaData);
+      const updatedTaluka = await dbStorage.updateTaluka(id, talukaData);
       res.json(updatedTaluka);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1151,7 +1151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid taluka ID" });
       }
 
-      const success = await storage.deleteTaluka(id);
+      const success = await dbStorage.deleteTaluka(id);
       
       if (!success) {
         return res.status(404).json({ message: "Taluka not found" });
@@ -1168,7 +1168,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/locations/tehsils", async (req, res) => {
     try {
       const talukaId = req.query.talukaId ? parseInt(req.query.talukaId as string) : undefined;
-      const tehsils = await storage.getAllTehsils(talukaId);
+      const tehsils = await dbStorage.getAllTehsils(talukaId);
       res.json(tehsils);
     } catch (error) {
       console.error("Error fetching tehsils:", error);
@@ -1183,7 +1183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid tehsil ID" });
       }
 
-      const tehsil = await storage.getTehsil(id);
+      const tehsil = await dbStorage.getTehsil(id);
       if (!tehsil) {
         return res.status(404).json({ message: "Tehsil not found" });
       }
@@ -1208,12 +1208,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tehsilData = insertTehsilSchema.parse(req.body);
       
       // Check if taluka exists
-      const taluka = await storage.getTaluka(tehsilData.talukaId);
+      const taluka = await dbStorage.getTaluka(tehsilData.talukaId);
       if (!taluka) {
         return res.status(400).json({ message: "Taluka not found" });
       }
       
-      const newTehsil = await storage.createTehsil(tehsilData);
+      const newTehsil = await dbStorage.createTehsil(tehsilData);
       res.status(201).json(newTehsil);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1246,13 +1246,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If talukaId is provided, check if taluka exists
       if (tehsilData.talukaId !== undefined) {
-        const taluka = await storage.getTaluka(tehsilData.talukaId);
+        const taluka = await dbStorage.getTaluka(tehsilData.talukaId);
         if (!taluka) {
           return res.status(400).json({ message: "Taluka not found" });
         }
       }
       
-      const updatedTehsil = await storage.updateTehsil(id, tehsilData);
+      const updatedTehsil = await dbStorage.updateTehsil(id, tehsilData);
       res.json(updatedTehsil);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1281,7 +1281,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid tehsil ID" });
       }
 
-      const success = await storage.deleteTehsil(id);
+      const success = await dbStorage.deleteTehsil(id);
       
       if (!success) {
         return res.status(404).json({ message: "Tehsil not found" });
@@ -1297,7 +1297,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact Information API routes
   app.get("/api/contact-info", async (_req, res) => {
     try {
-      const contactInfo = await storage.getContactInfo();
+      const contactInfo = await dbStorage.getContactInfo();
       if (!contactInfo) {
         return res.status(404).json({ message: "Contact information not found" });
       }
@@ -1330,7 +1330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const contactData = insertContactInfoSchema.parse(req.body);
-      const updatedContact = await storage.updateContactInfo(contactData);
+      const updatedContact = await dbStorage.updateContactInfo(contactData);
       res.status(200).json(updatedContact);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1367,7 +1367,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const contactData = insertContactInfoSchema.parse(req.body);
-      const updatedContact = await storage.updateContactInfo(contactData);
+      const updatedContact = await dbStorage.updateContactInfo(contactData);
       res.status(200).json(updatedContact);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1404,7 +1404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      const users = await storage.getAllUsers();
+      const users = await dbStorage.getAllUsers();
       // Don't send passwords
       const sanitizedUsers = users.map(user => {
         const { password, ...rest } = user;
@@ -1431,7 +1431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid user ID" });
       }
 
-      const user = await storage.getUser(id);
+      const user = await dbStorage.getUser(id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -1470,7 +1470,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { username, password, isAdmin } = req.body;
       
       // Check if username already exists
-      const existingUser = await storage.getUserByUsername(username);
+      const existingUser = await dbStorage.getUserByUsername(username);
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
       }
@@ -1479,7 +1479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { hashPassword } = require('./auth');
       const hashedPassword = await hashPassword(password);
       
-      const newUser = await storage.createUser({
+      const newUser = await dbStorage.createUser({
         username,
         password: hashedPassword,
         isAdmin: isAdmin || false
@@ -1514,7 +1514,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get existing user
-      const existingUser = await storage.getUser(id);
+      const existingUser = await dbStorage.getUser(id);
       if (!existingUser) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -1523,7 +1523,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If username is being changed, check if it's already taken
       if (username !== existingUser.username) {
-        const userWithSameUsername = await storage.getUserByUsername(username);
+        const userWithSameUsername = await dbStorage.getUserByUsername(username);
         if (userWithSameUsername) {
           return res.status(400).json({ message: "Username already exists" });
         }
@@ -1540,7 +1540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updateData.password = await hashPassword(password);
       }
       
-      const updatedUser = await storage.updateUser(id, updateData);
+      const updatedUser = await dbStorage.updateUser(id, updateData);
       
       // Don't send password back
       const { password: _, ...sanitizedUser } = updatedUser;
@@ -1575,7 +1575,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cannot delete your own account" });
       }
 
-      const success = await storage.deleteUser(id);
+      const success = await dbStorage.deleteUser(id);
       
       if (!success) {
         return res.status(404).json({ message: "User not found" });
@@ -1592,7 +1592,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all property types
   app.get("/api/property-types", async (_req, res) => {
     try {
-      const propertyTypes = await storage.getAllPropertyTypes();
+      const propertyTypes = await dbStorage.getAllPropertyTypes();
       res.json(propertyTypes);
     } catch (error) {
       console.error("Error fetching property types:", error);
@@ -1608,7 +1608,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid property type ID" });
       }
 
-      const propertyType = await storage.getPropertyType(id);
+      const propertyType = await dbStorage.getPropertyType(id);
       
       if (!propertyType) {
         return res.status(404).json({ message: "Property type not found" });
@@ -1636,11 +1636,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const propertyTypeData = insertPropertyTypeSchema.parse(req.body);
       console.log("Parsed property type data:", propertyTypeData);
       try {
-        const newPropertyType = await storage.createPropertyType(propertyTypeData);
+        const newPropertyType = await dbStorage.createPropertyType(propertyTypeData);
         console.log("Created new property type:", newPropertyType);
         res.status(201).json(newPropertyType);
       } catch (storageError) {
-        console.error("Error in storage.createPropertyType:", storageError);
+        console.error("Error in dbStorage.createPropertyType:", storageError);
         throw storageError;
       }
     } catch (error) {
@@ -1672,7 +1672,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const propertyTypeData = insertPropertyTypeSchema.partial().parse(req.body);
-      const updatedPropertyType = await storage.updatePropertyType(id, propertyTypeData);
+      const updatedPropertyType = await dbStorage.updatePropertyType(id, propertyTypeData);
       
       res.json(updatedPropertyType);
     } catch (error) {
@@ -1708,7 +1708,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid property type ID" });
       }
 
-      const success = await storage.deletePropertyType(id);
+      const success = await dbStorage.deletePropertyType(id);
       
       if (!success) {
         return res.status(404).json({ message: "Property type not found" });
@@ -1757,7 +1757,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         // First try using the storage method
-        const messages = await storage.getAllContactMessages();
+        const messages = await dbStorage.getAllContactMessages();
         if (messages && messages.length > 0) {
           res.json(messages);
         } else {
@@ -1799,7 +1799,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get contact information endpoint
   app.get("/api/contact-info", async (req, res) => {
     try {
-      const contactInfo = await storage.getContactInfo();
+      const contactInfo = await dbStorage.getContactInfo();
       
       if (!contactInfo) {
         return res.status(404).json({ message: "Contact information not found" });
@@ -1834,7 +1834,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid message ID" });
       }
 
-      const message = await storage.getContactMessage(id);
+      const message = await dbStorage.getContactMessage(id);
       if (!message) {
         return res.status(404).json({ message: "Message not found" });
       }
@@ -1874,7 +1874,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Try using storage method first
-        const success = await storage.markContactMessageAsRead(id);
+        const success = await dbStorage.markContactMessageAsRead(id);
         if (success) {
           return res.json({ success: true });
         }
@@ -1934,7 +1934,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // First try using the storage method
-        const success = await storage.deleteContactMessage(id);
+        const success = await dbStorage.deleteContactMessage(id);
         if (success) {
           return res.status(204).end();
         }
@@ -2022,7 +2022,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Try to mark specific messages as read
       try {
         // Try storage method first
-        const success = await storage.markContactMessagesAsRead(messageIds);
+        const success = await dbStorage.markContactMessagesAsRead(messageIds);
         if (success) {
           return res.json({ success: true, message: `Marked ${messageIds.length} messages as read` });
         }
@@ -2103,7 +2103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/home-loan-inquiries", async (req, res) => {
     try {
       const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
-      const newInquiry = await storage.createHomeLoanInquiry(inquiryData);
+      const newInquiry = await dbStorage.createHomeLoanInquiry(inquiryData);
       
       res.status(201).json(newInquiry);
     } catch (error) {
@@ -2139,20 +2139,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check session-based admin access first (for traditional login)
       if (req.session && req.session.isAdmin) {
-        const inquiries = await storage.getAllHomeLoanInquiries();
+        const inquiries = await dbStorage.getAllHomeLoanInquiries();
         return res.json(inquiries);
       }
       
       // Check authenticated user admin status (for OAuth login)
       if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
-        const inquiries = await storage.getAllHomeLoanInquiries();
+        const inquiries = await dbStorage.getAllHomeLoanInquiries();
         return res.json(inquiries);
       }
       
       // Development mode - temporarily allow access to see the data
       if (process.env.NODE_ENV === 'development') {
         console.log("Development mode - granting access to home loan inquiries");
-        const inquiries = await storage.getAllHomeLoanInquiries();
+        const inquiries = await dbStorage.getAllHomeLoanInquiries();
         return res.json(inquiries);
       }
       
@@ -2171,7 +2171,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid inquiry ID" });
       }
 
-      const inquiry = await storage.getHomeLoanInquiry(id);
+      const inquiry = await dbStorage.getHomeLoanInquiry(id);
       if (!inquiry) {
         return res.status(404).json({ message: "Home loan inquiry not found" });
       }
@@ -2196,7 +2196,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid inquiry ID" });
       }
 
-      const success = await storage.markHomeLoanInquiryAsRead(id);
+      const success = await dbStorage.markHomeLoanInquiryAsRead(id);
       if (!success) {
         return res.status(404).json({ message: "Home loan inquiry not found" });
       }
@@ -2221,7 +2221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid inquiry ID" });
       }
 
-      const success = await storage.deleteHomeLoanInquiry(id);
+      const success = await dbStorage.deleteHomeLoanInquiry(id);
       if (!success) {
         return res.status(404).json({ message: "Home loan inquiry not found" });
       }
@@ -2263,9 +2263,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let images;
       if (imageType) {
-        images = await storage.getHomepageImagesByType(imageType as string);
+        images = await dbStorage.getHomepageImagesByType(imageType as string);
       } else {
-        images = await storage.getAllHomepageImages();
+        images = await dbStorage.getAllHomepageImages();
       }
       
       res.json(images);
@@ -2283,7 +2283,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid image ID" });
       }
 
-      const image = await storage.getHomepageImage(id);
+      const image = await dbStorage.getHomepageImage(id);
       if (!image) {
         return res.status(404).json({ message: "Image not found" });
       }
@@ -2310,7 +2310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const imageData = req.body;
-      const newImage = await storage.createHomepageImage(imageData);
+      const newImage = await dbStorage.createHomepageImage(imageData);
       res.status(201).json(newImage);
     } catch (error) {
       console.error("Error creating homepage image:", error);
@@ -2338,7 +2338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const imageData = req.body;
-      const updatedImage = await storage.updateHomepageImage(id, imageData);
+      const updatedImage = await dbStorage.updateHomepageImage(id, imageData);
       res.json(updatedImage);
     } catch (error) {
       console.error("Error updating homepage image:", error);
@@ -2365,7 +2365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid image ID" });
       }
 
-      const success = await storage.deleteHomepageImage(id);
+      const success = await dbStorage.deleteHomepageImage(id);
       if (success) {
         res.json({ message: "Homepage image deleted successfully" });
       } else {
