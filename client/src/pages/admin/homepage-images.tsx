@@ -16,12 +16,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Plus, Edit, Trash2, Image as ImageIcon, Eye, EyeOff } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, Image as ImageIcon, Eye, EyeOff, Upload } from "lucide-react";
 import { HomepageImage } from "@shared/schema";
+import { FileUpload } from "@/components/ui/file-upload";
 
 const imageFormSchema = z.object({
   imageType: z.string().min(1, "Image type is required"),
-  imageUrl: z.string().url("Please enter a valid URL"),
+  imageUrl: z.string().min(1, "Please upload an image"),
   title: z.string().optional(),
   description: z.string().optional(),
   isActive: z.boolean().default(true),
@@ -225,9 +226,15 @@ export default function AdminHomepageImagesPage() {
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Image URL</FormLabel>
+                        <FormLabel>Upload Image</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="https://example.com/image.jpg" />
+                          <FileUpload
+                            value={field.value}
+                            onChange={field.onChange}
+                            accept="image/*"
+                            maxSize={5}
+                            className="w-full"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
