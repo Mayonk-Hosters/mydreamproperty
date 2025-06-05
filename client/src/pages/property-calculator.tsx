@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ArrowRightLeft, Calculator, DollarSign } from "lucide-react";
+import { ArrowRightLeft, Calculator, IndianRupee } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -327,7 +327,7 @@ function EMICalculator() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                          <DollarSign className="h-5 w-5 text-green-600" />
+                          <IndianRupee className="h-5 w-5 text-green-600" />
                           Loan Amount
                         </FormLabel>
                         <FormControl>
