@@ -20,6 +20,8 @@ export function PropertyTabs() {
   } = useQuery<Property[]>({
     queryKey: ['/api/properties'],
     select: (data) => data.filter(property => property.status === 'active'),
+    staleTime: 0, // Force fresh data fetch
+    cacheTime: 0, // Don't cache the data
   });
   
 
