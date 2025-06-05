@@ -187,11 +187,29 @@ export default function PropertiesPage() {
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 sm:gap-0">
                   <p className="text-sm sm:text-base text-gray-600">{properties.length} properties found</p>
                   <div className="flex flex-wrap sm:flex-nowrap gap-2">
-                    <Button variant="outline" size="sm" className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1">
+                    <Button 
+                      variant={sortBy === "newest" ? "default" : "outline"} 
+                      size="sm" 
+                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
+                      onClick={() => handleSort("newest")}
+                    >
                       Newest First
                     </Button>
-                    <Button variant="outline" size="sm" className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1">
+                    <Button 
+                      variant={sortBy === "price-low" ? "default" : "outline"} 
+                      size="sm" 
+                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
+                      onClick={() => handleSort("price-low")}
+                    >
                       Price: Low to High
+                    </Button>
+                    <Button 
+                      variant={sortBy === "price-high" ? "default" : "outline"} 
+                      size="sm" 
+                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
+                      onClick={() => handleSort("price-high")}
+                    >
+                      Price: High to Low
                     </Button>
                   </div>
                 </div>
