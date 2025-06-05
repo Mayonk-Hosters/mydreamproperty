@@ -89,6 +89,12 @@ export default function AdminPropertyEditPage() {
       setValue("parking", property.parking || undefined);
       setValue("mapUrl", property.mapUrl || "");
       setValue("maharera_registered", property.maharera_registered || false);
+      setValue("areaUnit", (property as any).areaUnit || "sqft");
+      setValue("propertyNumber", property.propertyNumber || "");
+      setValue("stateId", property.stateId || undefined);
+      setValue("districtId", property.districtId || undefined);
+      setValue("talukaId", property.talukaId || undefined);
+      setValue("tehsilId", property.tehsilId || undefined);
       
       // Handle images
       if (property.images) {
@@ -148,12 +154,25 @@ export default function AdminPropertyEditPage() {
         ...data,
         images: processedImages,
         features: processedFeatures,
+        areaUnit: data.areaUnit || "sqft",
+        propertyNumber: data.propertyNumber || property.propertyNumber,
+        stateId: data.stateId || null,
+        districtId: data.districtId || null,
+        talukaId: data.talukaId || null,
+        tehsilId: data.tehsilId || null,
       };
 
-      await apiRequest(`/api/properties/${property.id}`, {
+      const response = await fetch(`/api/properties/${property.id}`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(updateData),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       toast({
         title: "Success",
@@ -269,6 +288,19 @@ export default function AdminPropertyEditPage() {
             </div>
 
             <div>
+              <Label htmlFor="propertyNumber">Property Number</Label>
+              <Input
+                id="propertyNumber"
+                {...register("propertyNumber")}
+                placeholder="Property number (auto-generated if empty)"
+                className={errors.propertyNumber ? "border-red-500" : ""}
+              />
+              {errors.propertyNumber && (
+                <p className="text-red-500 text-sm mt-1">{errors.propertyNumber.message}</p>
+              )}
+            </div>
+
+            <div>
               <Label htmlFor="propertyType">Property Type</Label>
               <Select onValueChange={(value) => setValue("propertyType", value)} value={watch("propertyType")}>
                 <SelectTrigger className={errors.propertyType ? "border-red-500" : ""}>
@@ -353,14 +385,25 @@ export default function AdminPropertyEditPage() {
             </div>
 
             <div>
-              <Label htmlFor="area">Area (sq ft)</Label>
-              <Input
-                id="area"
-                type="number"
-                {...register("area", { valueAsNumber: true })}
-                placeholder="Area in square feet"
-                className={errors.area ? "border-red-500" : ""}
-              />
+              <Label htmlFor="area">Area</Label>
+              <div className="flex space-x-2">
+                <Input
+                  id="area"
+                  type="number"
+                  {...register("area", { valueAsNumber: true })}
+                  placeholder="Enter area"
+                  className={errors.area ? "border-red-500" : ""}
+                />
+                <Select onValueChange={(value) => setValue("areaUnit", value)} value={watch("areaUnit")}>
+                  <SelectTrigger className="w-24">
+                    <SelectValue placeholder="Unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sqft">sq ft</SelectItem>
+                    <SelectItem value="acres">acres</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {errors.area && (
                 <p className="text-red-500 text-sm mt-1">{errors.area.message}</p>
               )}
