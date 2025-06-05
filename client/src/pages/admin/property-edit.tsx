@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
 import { ArrowLeft, Save, AlertTriangle } from "lucide-react";
 import { AdminLayout } from "@/components/admin/admin-layout";
@@ -35,6 +35,7 @@ export default function AdminPropertyEditPage() {
   const { toast } = useToast();
   const { isAdmin, isLoading: isLoadingAuth, requireAdmin } = useAdmin();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     requireAdmin();
@@ -173,6 +174,11 @@ export default function AdminPropertyEditPage() {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      // Invalidate relevant caches to ensure updates are reflected immediately
+      await queryClient.invalidateQueries({ queryKey: ["/api/properties"] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/properties/${property.id}`] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/properties/counts-by-type"] });
 
       toast({
         title: "Success",
