@@ -16,6 +16,7 @@ export default function PropertiesPage() {
   const [location, setLocation] = useLocation();
   const { settings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState<"buy" | "rent">("buy");
+  const [sortBy, setSortBy] = useState<"newest" | "price-low" | "price-high" | "">("");
   const [filters, setFilters] = useState({
     type: "buy",
     propertyType: "",
@@ -77,9 +78,27 @@ export default function PropertiesPage() {
     .join('&');
 
   // Fetch properties based on filters
-  const { data: properties, isLoading } = useQuery<Property[]>({
+  const { data: fetchedProperties, isLoading } = useQuery<Property[]>({
     queryKey: [`/api/properties?${queryString}`],
   });
+
+  // Sort properties based on sortBy state
+  const properties = fetchedProperties ? [...fetchedProperties].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      case "price-low":
+        return a.price - b.price;
+      case "price-high":
+        return b.price - a.price;
+      default:
+        return 0;
+    }
+  }) : [];
+
+  const handleSort = (sortType: "newest" | "price-low" | "price-high") => {
+    setSortBy(sortBy === sortType ? "" : sortType);
+  };
 
 
 
