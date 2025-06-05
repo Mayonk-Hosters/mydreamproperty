@@ -49,14 +49,10 @@ export default function PropertiesPage() {
 
     const updatedFilters = { ...filters };
     
-    if (type && !propertyType) {
-      // Only set transaction type filter if we're not browsing by property type
+    if (type) {
+      // Always respect the type parameter from URL
       updatedFilters.type = type;
       setActiveTab(type as "buy" | "rent");
-    } else if (propertyType) {
-      // When browsing by property type, don't filter by transaction type
-      updatedFilters.type = ""; // Allow all transaction types
-      setActiveTab("buy"); // Default tab for display purposes
     }
     
     if (propertyType) updatedFilters.propertyType = propertyType;
