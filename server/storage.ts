@@ -1111,7 +1111,47 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
-    const [property] = await db.select().from(properties).where(eq(properties.id, id));
+    const [property] = await db.select({
+      id: properties.id,
+      propertyNumber: properties.propertyNumber,
+      title: properties.title,
+      description: properties.description,
+      price: properties.price,
+      location: properties.location,
+      address: properties.address,
+      beds: properties.beds,
+      baths: properties.baths,
+      area: properties.area,
+      areaUnit: properties.areaUnit,
+      yearBuilt: properties.yearBuilt,
+      parking: properties.parking,
+      propertyType: properties.propertyType,
+      type: properties.type,
+      status: properties.status,
+      featured: properties.featured,
+      features: properties.features,
+      images: properties.images,
+      mapUrl: properties.mapUrl,
+      maharera_registered: properties.maharera_registered,
+      agentId: properties.agentId,
+      stateId: properties.stateId,
+      districtId: properties.districtId,
+      talukaId: properties.talukaId,
+      tehsilId: properties.tehsilId,
+      createdAt: properties.createdAt,
+      // Include location hierarchy names
+      stateName: states.name,
+      districtName: districts.name,
+      talukaName: talukas.name,
+      tehsilName: tehsils.name,
+      tehsilArea: tehsils.area,
+    }).from(properties)
+    .leftJoin(states, eq(properties.stateId, states.id))
+    .leftJoin(districts, eq(properties.districtId, districts.id))
+    .leftJoin(talukas, eq(properties.talukaId, talukas.id))
+    .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id))
+    .where(eq(properties.id, id));
+    
     return property;
   }
 

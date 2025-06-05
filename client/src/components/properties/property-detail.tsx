@@ -286,7 +286,15 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             
             <p className="text-gray-600 text-sm sm:text-base flex items-center mt-2 sm:mt-4 mb-3 sm:mb-4">
               <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-1 flex-shrink-0" /> 
-              <span>{property.address}, {property.location}</span>
+              <span>
+                {property.address}
+                {property.location && `, ${property.location}`}
+                {(property as any).tehsilArea && `, ${(property as any).tehsilArea}`}
+                {(property as any).tehsilName && `, ${(property as any).tehsilName}`}
+                {(property as any).talukaName && `, ${(property as any).talukaName}`}
+                {(property as any).districtName && `, ${(property as any).districtName}`}
+                {(property as any).stateName && `, ${(property as any).stateName}`}
+              </span>
             </p>
             
             <div className="flex flex-wrap gap-2 sm:gap-4 mb-4 sm:mb-6">
