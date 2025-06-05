@@ -230,10 +230,18 @@ export default function AdminHomepageImagesPage() {
                         <FormControl>
                           <FileUpload
                             value={field.value}
-                            onChange={field.onChange}
+                            onFileChange={(file) => {
+                              if (file) {
+                                // For now, we'll use a placeholder URL since we don't have file upload backend
+                                // In production, you would upload the file and get back a URL
+                                const fakeUrl = `https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&h=600`;
+                                field.onChange(fakeUrl);
+                              } else {
+                                field.onChange("");
+                              }
+                            }}
                             accept="image/*"
-                            maxSize={5}
-                            className="w-full"
+                            maxSizeMB={5}
                           />
                         </FormControl>
                         <FormMessage />

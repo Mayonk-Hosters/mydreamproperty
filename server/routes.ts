@@ -36,8 +36,46 @@ import { sendInquiryNotification } from "./email-service";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 import mdpPropertiesRoutes from './routes/mdp-properties';
+
+// Ensure upload directory exists
+const uploadDir = path.join(process.cwd(), 'static', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 // Utility function to check admin access consistently across all routes
 function checkAdminAccess(req: any): boolean {
@@ -2192,6 +2230,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting home loan inquiry:", error);
       res.status(500).json({ message: "Failed to delete inquiry" });
+    }
+  });
+
+  // File upload endpoint for images
+  app.post("/api/upload-image", upload.single('image'), async (req, res) => {
+    try {
+      // Check admin access
+      if (!checkAdminAccess(req) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // Return the URL path to the uploaded file
+      const imageUrl = `/uploads/${req.file.filename}`;
+      res.json({ imageUrl });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ message: "Failed to upload file" });
     }
   });
 

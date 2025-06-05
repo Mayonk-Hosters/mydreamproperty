@@ -161,7 +161,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
         
         <div className="p-3 sm:p-4">
           <div className="flex justify-between mb-1 sm:mb-2">
-            <span className="text-secondary font-semibold text-sm sm:text-base">{formatCurrency(property.price)}</span>
+            <span className="text-black font-bold text-sm sm:text-base">{formatCurrency(property.price)}</span>
             <span className="text-xs sm:text-sm text-gray-500">
               {property.createdAt ? formatRelativeTime(property.createdAt.toString()) : ''}
             </span>
