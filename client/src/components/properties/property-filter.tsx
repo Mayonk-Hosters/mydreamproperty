@@ -252,7 +252,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               <Input 
                 id="location"
                 className="pl-10 h-11 text-base"
-                placeholder="Enter area name..." 
+                placeholder="Search by area, district, taluka, tehsil..." 
                 value={filters.location}
                 onChange={(e) => handleLocationChange(e.target.value)}
                 onKeyDown={(e) => {
@@ -273,7 +273,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Search by area, district, or neighborhood
+              Search by any location: area, district, taluka, tehsil, or state
             </p>
           </div>
         </div>

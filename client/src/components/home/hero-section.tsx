@@ -125,7 +125,7 @@ export function HeroSection() {
                 <div className="flex-grow">
                   <Input 
                     type="text" 
-                    placeholder="Location" 
+                    placeholder="Search by area, district, taluka, tehsil..." 
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                     value={searchParams.location}
                     onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}

@@ -999,7 +999,40 @@ export class DatabaseStorage implements IStorage {
   
   // Property methods
   async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
-    let query = db.select().from(properties);
+    // Enhanced query with location joins for comprehensive search
+    let query = db.select({
+      id: properties.id,
+      propertyNumber: properties.propertyNumber,
+      title: properties.title,
+      description: properties.description,
+      price: properties.price,
+      location: properties.location,
+      address: properties.address,
+      beds: properties.beds,
+      baths: properties.baths,
+      area: properties.area,
+      areaUnit: properties.areaUnit,
+      yearBuilt: properties.yearBuilt,
+      parking: properties.parking,
+      propertyType: properties.propertyType,
+      type: properties.type,
+      status: properties.status,
+      featured: properties.featured,
+      features: properties.features,
+      images: properties.images,
+      mapUrl: properties.mapUrl,
+      maharera_registered: properties.maharera_registered,
+      agentId: properties.agentId,
+      stateId: properties.stateId,
+      districtId: properties.districtId,
+      talukaId: properties.talukaId,
+      tehsilId: properties.tehsilId,
+      createdAt: properties.createdAt,
+    }).from(properties)
+    .leftJoin(states, eq(properties.stateId, states.id))
+    .leftJoin(districts, eq(properties.districtId, districts.id))
+    .leftJoin(talukas, eq(properties.talukaId, talukas.id))
+    .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id));
     
     // By default, only show active properties
     const conditions = [eq(properties.status, 'active')];
@@ -1024,16 +1057,23 @@ export class DatabaseStorage implements IStorage {
       }
       
       if (filters.location) {
-        // Split the location input into tokens for more flexible search
+        // Enhanced location search supporting area, tehsil, district, taluka, and state
         const locationTerms = filters.location.toLowerCase().split(/\s+/).filter(term => term.length > 1);
         
         if (locationTerms.length > 0) {
           const locationConditions = locationTerms.map(term => 
             or(
+              // Property fields
               like(sql`lower(${properties.location})`, `%${term.toLowerCase()}%`),
               like(sql`lower(${properties.address})`, `%${term.toLowerCase()}%`),
               like(sql`lower(${properties.title})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${properties.description})`, `%${term.toLowerCase()}%`)
+              like(sql`lower(${properties.description})`, `%${term.toLowerCase()}%`),
+              // Location hierarchy fields
+              like(sql`lower(${states.name})`, `%${term.toLowerCase()}%`),
+              like(sql`lower(${districts.name})`, `%${term.toLowerCase()}%`),
+              like(sql`lower(${talukas.name})`, `%${term.toLowerCase()}%`),
+              like(sql`lower(${tehsils.name})`, `%${term.toLowerCase()}%`),
+              like(sql`lower(${tehsils.area})`, `%${term.toLowerCase()}%`)
             )
           );
           
