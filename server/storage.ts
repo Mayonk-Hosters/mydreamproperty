@@ -1082,11 +1082,11 @@ export class DatabaseStorage implements IStorage {
         }
       }
       
-      if (filters.minPrice !== undefined) {
+      if (filters.minPrice !== undefined && filters.minPrice > 0) {
         conditions.push(gte(properties.price, filters.minPrice));
       }
       
-      if (filters.maxPrice !== undefined) {
+      if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
         conditions.push(lte(properties.price, filters.maxPrice));
       }
       

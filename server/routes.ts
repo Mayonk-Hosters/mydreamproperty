@@ -249,14 +249,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (featured === "true") filters.featured = true;
       if (agentId) filters.agentId = parseInt(agentId as string);
 
-      // Debug logging
-      console.log('API Query params:', req.query);
-      console.log('Applied filters:', filters);
-
       // Get all properties with filters applied
       const properties = await dbStorage.getAllProperties(Object.keys(filters).length > 0 ? filters : undefined);
-      
-      console.log(`Returned ${properties.length} properties with filters:`, filters);
 
       res.json(properties);
     } catch (error) {
