@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator, MapPin, BarChart } from "lucide-react";
+import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator, MapPin, BarChart, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { LoginButton } from "@/components/auth/auth-buttons";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,20 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const { settings } = useSiteSettings();
+  
+  // Fetch contact information for customer care number
+  const { data: contactInfo } = useQuery<{
+    id: number;
+    siteName: string;
+    address: string;
+    phone1: string;
+    phone2?: string | null;
+    email1: string;
+    email2?: string | null;
+    mapUrl?: string | null;
+  }>({
+    queryKey: ["/api/contact-info"],
+  });
 
   // Close mobile menu when location changes
   useEffect(() => {
@@ -93,6 +108,17 @@ export function Navbar() {
             </nav>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Customer Care Number */}
+            {contactInfo?.phone1 && (
+              <div className="hidden lg:flex items-center space-x-2 text-primary bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
+                <Phone className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  <a href={`tel:${contactInfo.phone1}`} className="hover:underline">
+                    {contactInfo.phone1}
+                  </a>
+                </span>
+              </div>
+            )}
             <LoginButton />
             <div className="md:hidden">
               <Button 
@@ -181,6 +207,19 @@ export function Navbar() {
             >
               Contact
             </Link>
+            {/* Customer Care Number for Mobile */}
+            {contactInfo?.phone1 && (
+              <div className="py-2.5 px-2">
+                <div className="flex items-center space-x-2 text-primary bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
+                  <Phone className="h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    <a href={`tel:${contactInfo.phone1}`} className="hover:underline">
+                      {contactInfo.phone1}
+                    </a>
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="py-2.5 px-2">
               <LoginButton />
             </div>
