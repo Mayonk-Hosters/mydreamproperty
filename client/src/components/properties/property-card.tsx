@@ -123,10 +123,6 @@ export function PropertyCard({ property }: PropertyCardProps) {
             {property.featured && (
               <Badge className="bg-primary text-white text-xs">Featured</Badge>
             )}
-            {property.status === "active" && property.createdAt && 
-            new Date(property.createdAt.toString()) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
-              <Badge className="bg-secondary text-white text-xs">New</Badge>
-            )}
           </div>
           
 
