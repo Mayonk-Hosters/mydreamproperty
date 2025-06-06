@@ -240,7 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filters: any = {};
       
       if (type) filters.type = type as string;
-      if (propertyType) filters.propertyType = propertyType as string;
+      if (propertyType && propertyType !== "any") filters.propertyType = propertyType as string;
       if (location) filters.location = location as string;
       if (minPrice) filters.minPrice = parseFloat(minPrice as string);
       if (maxPrice) filters.maxPrice = parseFloat(maxPrice as string);
