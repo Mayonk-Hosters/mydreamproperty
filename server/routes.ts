@@ -352,7 +352,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Save Google Maps URL if provided
         map_url: requestData.mapUrl || null,
         images: Array.isArray(requestData.images) ? requestData.images : [],
-        agentId: Number(requestData.agentId) || 1
+        agentId: Number(requestData.agentId) || 1,
+        // Handle MahaRERA registration fields
+        maharera_registered: requestData.maharera_registered === true || 
+                            requestData.maharera_registered === 'true' || 
+                            requestData.maharera_registered === 't' || 
+                            requestData.maharera_registered === '1' || 
+                            requestData.maharera_registered === 1,
+        maharera_number: requestData.maharera_number || null
       };
       
       // Add optional location fields if provided
@@ -468,6 +475,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (requestData.mapUrl) {
         requestData.map_url = requestData.mapUrl;
       }
+      
+      // Handle MahaRERA registration fields
+      const maharera_registered = requestData.maharera_registered === true || 
+                                 requestData.maharera_registered === 'true' || 
+                                 requestData.maharera_registered === 't' || 
+                                 requestData.maharera_registered === '1' || 
+                                 requestData.maharera_registered === 1;
+      
+      const maharera_number = requestData.maharera_number || null;
+      
+      // Add MahaRERA fields to request data
+      requestData.maharera_registered = maharera_registered;
+      requestData.maharera_number = maharera_number;
       
       const propertyData = insertPropertySchema.parse(requestData);
       const updatedProperty = await dbStorage.updateProperty(id, propertyData);
