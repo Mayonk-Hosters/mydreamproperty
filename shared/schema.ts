@@ -77,6 +77,7 @@ export const properties = pgTable("properties", {
   images: jsonb("images").notNull().default([]),
   mapUrl: text("map_url"), // Google Maps URL for property location
   maharera_registered: boolean("maharera_registered").default(false), // Whether the property is MahaRERA registered
+  maharera_number: text("maharera_number"), // MahaRERA registration number
   agentId: integer("agent_id").notNull().references(() => agents.id, { onDelete: 'cascade' }),
   // Location hierarchy fields
   stateId: integer("stateId").references(() => states.id),
