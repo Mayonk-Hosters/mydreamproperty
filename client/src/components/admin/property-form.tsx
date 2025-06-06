@@ -410,6 +410,9 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
   // Handle form submission
   const createProperty = useMutation({
     mutationFn: async (data: FormData) => {
+      console.log('Property form submission started');
+      console.log('Form data received:', data);
+      
       const url = property ? `/api/properties/${property.id}` : '/api/properties';
       const method = property ? 'PUT' : 'POST';
       
@@ -422,7 +425,12 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         tehsilId: data.tehsilId ? parseInt(data.tehsilId) : null,
       };
       
-      return apiRequest(method, url, submitData);
+      console.log('Processed submit data:', submitData);
+      console.log('API call:', method, url);
+      
+      const response = await apiRequest(method, url, submitData);
+      console.log('API response received:', response);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/properties'] });
@@ -439,9 +447,10 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     },
     onError: (error) => {
       console.error('Error saving property:', error);
+      console.error('Error details:', error.message, error.stack);
       toast({
         title: "Error",
-        description: "Failed to save property",
+        description: `Failed to save property: ${error.message || 'Unknown error'}`,
         variant: "destructive",
       });
     },
