@@ -199,23 +199,30 @@ export function setupAdminLogin(app: Express) {
   // Current user endpoint
   app.get("/api/auth/user", (req: Request, res: Response) => {
     console.log("Auth user check - Session state:", {
+      sessionID: req.sessionID,
+      sessionExists: !!req.session,
       sessionIsAdmin: req.session?.isAdmin,
       sessionUserType: req.session?.userType,
       sessionUser: req.session?.user,
+      fullSession: req.session,
+      cookies: req.headers.cookie,
       isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
       user: req.user
     });
 
     // Check session-based authentication first (for traditional login)
     if (req.session && req.session.isAdmin && req.session.user) {
+      console.log("Session auth successful, returning user:", req.session.user);
       return res.json(req.session.user);
     }
     
     // Check passport-based authentication (for OAuth login)
     if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+      console.log("Passport auth successful, returning user:", req.user);
       return res.json(req.user);
     }
     
+    console.log("No valid authentication found");
     return res.status(401).json({ message: "Unauthorized" });
   });
 

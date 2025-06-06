@@ -36,6 +36,7 @@ import { sendInquiryNotification } from "./email-service";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
+import MemoryStore from "memorystore";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -99,11 +100,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configure cookie parser
   app.use(cookieParser());
   
+  // Create memory store for sessions
+  const MemoryStoreSession = MemoryStore(session);
+  
   // Configure session
   app.use(session({
     secret: process.env.SESSION_SECRET || 'local-dev-secret',
     resave: false,
     saveUninitialized: false,
+    store: new MemoryStoreSession({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    }),
     cookie: {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
