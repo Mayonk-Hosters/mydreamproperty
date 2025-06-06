@@ -1017,6 +1017,33 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
           />
         </div>
 
+        {/* MahaRERA Registration Number - Only show if property is registered */}
+        {form.watch('maharera_registered') && (
+          <FormField
+            control={form.control}
+            name="maharera_number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>MahaRERA Registration Number</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter MahaRERA registration number (e.g., P52100000123)"
+                    {...field}
+                    value={field.value || ''}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Enter the official MahaRERA registration number for this property
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        <div className="flex space-x-6">
+        </div>
+
         {/* Property Images */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Property Images</h3>
