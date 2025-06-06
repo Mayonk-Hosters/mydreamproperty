@@ -123,37 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup admin login routes
   setupAdminLogin(app);
   
-  // Auth user endpoint
-  app.get('/api/auth/user', async (req: any, res) => {
-    try {
-      // Check for session-based admin authentication first
-      if (req.session && req.session.isAdmin) {
-        const adminUser = {
-          id: "admin-dev",
-          username: "Smileplz004",
-          fullName: "Admin User",
-          email: "admin@example.com",
-          isAdmin: true,
-          role: "admin",
-          profileImage: null
-        };
-        return res.json(adminUser);
-      }
-      
-      // Check for OAuth authentication
-      if (req.isAuthenticated && req.isAuthenticated() && req.user) {
-        const userId = req.user.claims.sub;
-        // Use auth storage for authentication-related queries
-        const user = await authStorage.getUser(userId);
-        return res.json(user);
-      }
-      
-      return res.status(401).json({ message: "Unauthorized" });
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth user endpoint - removed duplicate, admin-login.ts handles this
   
   // Check if user is admin
   app.get('/api/auth/check-admin', async (req: any, res) => {

@@ -65,7 +65,8 @@ export function setupAdminLogin(app: Express) {
             console.log("Admin session saved successfully:", {
               isAdmin: req.session.isAdmin,
               userType: req.session.userType,
-              sessionID: req.sessionID
+              sessionID: req.sessionID,
+              sessionData: req.session
             });
             res.status(200).json(adminUser);
           });
