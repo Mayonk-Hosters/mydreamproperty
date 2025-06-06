@@ -66,18 +66,25 @@ export function HeroSection() {
     : "https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=800";
 
   return (
-    <section className="relative">
+    <section className="relative overflow-hidden">
       <div 
-        className="h-[500px] bg-cover bg-center"
+        className="h-[600px] bg-cover bg-center transition-all duration-1000 ease-in-out transform"
         style={{
           backgroundImage: `url('${backgroundImage}')`
         }}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center max-w-3xl px-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Welcome to {settings.siteName}</h1>
-            <p className="text-xl text-white mb-8">Discover the perfect property from our extensive listings</p>
+          <div className="text-center max-w-4xl px-4 animate-fade-in">
+            <div className="mb-6">
+              <HomeIcon className="h-16 w-16 text-white mx-auto mb-4 animate-bounce" />
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent animate-slide-up">
+              Welcome to {settings.siteName}
+            </h1>
+            <p className="text-xl md:text-2xl text-blue-100 mb-10 font-light animate-slide-up-delay leading-relaxed">
+              Discover your dream property from our premium collection of homes and commercial spaces
+            </p>
             
             {/* Search Form */}
             <form onSubmit={handleSearch} className="bg-white p-4 rounded-lg shadow-lg w-full">
