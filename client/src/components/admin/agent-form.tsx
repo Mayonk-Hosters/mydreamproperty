@@ -105,7 +105,7 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
         rating: data.rating,
       };
       
-      if (agent && agent.id) {
+      if (agent && typeof agent.id !== 'undefined' && agent.id !== null) {
         // Update existing agent
         console.log('Updating agent with ID:', agent.id, 'and data:', agentData);
         await apiRequest('PATCH', `/api/agents/${agent.id}`, agentData);
@@ -130,10 +130,11 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
         });
       } else {
         // Agent exists but has no ID - this shouldn't happen
-        console.error('Agent exists but has no ID:', agent);
+        console.error('Agent exists but has no valid ID. Agent object:', JSON.stringify(agent, null, 2));
+        console.error('Agent ID type:', typeof agent.id, 'Agent ID value:', agent.id);
         toast({
           title: "Error",
-          description: "Unable to update agent - missing agent ID.",
+          description: "Unable to update agent - missing or invalid agent ID.",
           variant: "destructive",
         });
         return;
