@@ -270,7 +270,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                       Property ID: {property.propertyNumber}
                     </div>
                   )}
-                  {property.maharera_registered && (
+                  {(property as any).maharera_registered && (
                     <div className="inline-block bg-green-100 text-green-800 text-xs sm:text-sm font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-md">
                       MahaRERA Registered
                     </div>
@@ -397,7 +397,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                             <span>Property ID: {property.propertyNumber}</span>
                           </li>
                         )}
-                        {property.maharera_registered && (
+                        {(property as any).maharera_registered && (
                           <li className="flex items-center text-xs sm:text-sm">
                             <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
                             <span>MahaRERA Registered</span>
