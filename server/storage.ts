@@ -1027,6 +1027,11 @@ export class DatabaseStorage implements IStorage {
       districtId: properties.districtId,
       talukaId: properties.talukaId,
       tehsilId: properties.tehsilId,
+      stateName: states.name,
+      districtName: districts.name,
+      talukaName: talukas.name,
+      tehsilName: tehsils.name,
+      tehsilArea: tehsils.area,
       createdAt: properties.createdAt,
     }).from(properties)
     .leftJoin(states, eq(properties.stateId, states.id))
