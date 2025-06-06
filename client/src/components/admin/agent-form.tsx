@@ -84,6 +84,9 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
   // Submit handler
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
+      console.log('Form submission started. Agent object:', agent);
+      console.log('Form data received:', data);
+      
       // Process image from the ImageUpload component
       let agentImage = data.image;
       
@@ -102,8 +105,9 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
         rating: data.rating,
       };
       
-      if (agent) {
+      if (agent && agent.id) {
         // Update existing agent
+        console.log('Updating agent with ID:', agent.id, 'and data:', agentData);
         await apiRequest('PATCH', `/api/agents/${agent.id}`, agentData);
         // Invalidate cache to refresh the data
         queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
@@ -113,8 +117,9 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
           title: "Agent updated",
           description: "The agent has been updated successfully.",
         });
-      } else {
+      } else if (!agent) {
         // Create new agent
+        console.log('Creating new agent with data:', agentData);
         await apiRequest('POST', '/api/agents', agentData);
         // Invalidate cache to refresh the data
         queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
@@ -123,6 +128,15 @@ export function AgentForm({ agent, onSuccess }: AgentFormProps) {
           title: "Agent created",
           description: "The agent has been created successfully.",
         });
+      } else {
+        // Agent exists but has no ID - this shouldn't happen
+        console.error('Agent exists but has no ID:', agent);
+        toast({
+          title: "Error",
+          description: "Unable to update agent - missing agent ID.",
+          variant: "destructive",
+        });
+        return;
       }
       
       if (onSuccess) {
