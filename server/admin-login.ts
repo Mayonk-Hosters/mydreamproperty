@@ -41,10 +41,10 @@ export function setupAdminLogin(app: Express) {
       // Development mode - provide test users for each type
       if (process.env.NODE_ENV === 'development') {
         // Admin login in development mode with specific credentials
-        if (userType === 'admin' && username === 'Smileplz004' && password === '9923000500@rahul') {
+        if (userType === 'admin' && (username === 'Smileplz004' || username === 'ahmednagarproperty') && password === '9923000500@rahul') {
           const adminUser = {
             id: "admin-dev",
-            username: "Smileplz004",
+            username: username,
             fullName: "Admin User",
             email: "admin@example.com",
             isAdmin: true,
@@ -197,12 +197,25 @@ export function setupAdminLogin(app: Express) {
 
   // Current user endpoint
   app.get("/api/auth/user", (req: Request, res: Response) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Unauthorized" });
+    console.log("Auth user check - Session state:", {
+      sessionIsAdmin: req.session?.isAdmin,
+      sessionUserType: req.session?.userType,
+      sessionUser: req.session?.user,
+      isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+      user: req.user
+    });
+
+    // Check session-based authentication first (for traditional login)
+    if (req.session && req.session.isAdmin && req.session.user) {
+      return res.json(req.session.user);
     }
     
-    // Return the authenticated user
-    res.json(req.user);
+    // Check passport-based authentication (for OAuth login)
+    if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+      return res.json(req.user);
+    }
+    
+    return res.status(401).json({ message: "Unauthorized" });
   });
 
   // Check if user is admin
