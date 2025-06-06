@@ -72,6 +72,7 @@ const formSchema = insertPropertySchema.extend({
   propertyNumber: z.string().optional(),
   mapUrl: z.string().url("Please enter a valid URL").optional(),
   maharera_registered: z.boolean().optional().default(false),
+  maharera_number: z.string().optional(),
   images: z.array(z.string()).optional(),
   stateId: z.string().optional(),
   districtId: z.string().optional(),
