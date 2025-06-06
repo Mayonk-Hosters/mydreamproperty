@@ -12,9 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { formatCurrency } from "@/lib/utils";
 import { DEFAULT_PROPERTY_TYPES, PropertyType } from "@shared/schema";
-import { Search, Filter, XCircle } from "lucide-react";
+import { Search, Filter, XCircle, ChevronDown, MapPin, Home, Bed, Bath, IndianRupee, RefreshCw } from "lucide-react";
 
 interface PropertyFilterProps {
   onFilterChange?: (filters: Record<string, any>) => void;
@@ -23,6 +25,7 @@ interface PropertyFilterProps {
 export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
   const [location, setLocation] = useLocation();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   
   // Fetch property types from API
   const { data: propertyTypesData, isLoading: propertyTypesLoading } = useQuery<PropertyType[]>({
@@ -38,7 +41,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
     propertyType: "",
     location: "",
     minPrice: 0,
-    maxPrice: 0, // Set to 0 to disable default max price filtering
+    maxPrice: 15000000, // Set a reasonable default max
     minBeds: 0,
     minBaths: 0,
   });
@@ -157,7 +160,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
       propertyType: "",
       location: "",
       minPrice: 0,
-      maxPrice: 5000000,
+      maxPrice: 15000000,
       minBeds: 0,
       minBaths: 0,
     });
@@ -169,253 +172,277 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-lg">Filter Properties</h3>
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="md:hidden"
-            onClick={() => setShowMobileFilters(!showMobileFilters)}
-          >
-            <Filter className="h-4 w-4 mr-1" /> 
-            Filters
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={resetFilters}
-          >
-            <XCircle className="h-4 w-4 mr-1" /> 
-            Reset
-          </Button>
-        </div>
-      </div>
-      
-      {/* Mobile filter panel */}
-      <div 
-        className={`transition-all duration-300 ease-in-out overflow-hidden ${
-          showMobileFilters 
-            ? 'max-h-[1000px] opacity-100' 
-            : 'max-h-0 opacity-0 md:max-h-[1000px] md:opacity-100'
-        }`}
-      >
-        {/* Mobile: Stack filters vertically, Desktop: Grid layout */}
-        <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-3 md:gap-4">
-          
-          {/* Buy/Rent Selection */}
-          <div>
-            <Label htmlFor="type" className="text-sm font-medium mb-2 block">Buy or Rent</Label>
-            <Select 
-              value={filters.type}
-              onValueChange={(value) => handleFilterChange("type", value)}
+    <div className="space-y-4">
+      {/* Header Card */}
+      <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Filter className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-lg font-bold text-gray-800">Find Your Perfect Property</CardTitle>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={resetFilters}
+              className="text-xs hover:bg-red-50 hover:text-red-600 border-red-200"
             >
-              <SelectTrigger id="type" className="h-11 text-base">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="buy">Buy</SelectItem>
-                <SelectItem value="rent">Rent</SelectItem>
-              </SelectContent>
-            </Select>
+              <RefreshCw className="h-3 w-3 mr-1" /> 
+              Reset All
+            </Button>
           </div>
-          
-          {/* Property Type */}
-          <div>
-            <Label htmlFor="propertyType" className="text-sm font-medium mb-2 block">Property Type</Label>
-            <Select 
-              value={filters.propertyType}
-              onValueChange={(value) => handleFilterChange("propertyType", value)}
-            >
-              <SelectTrigger id="propertyType" className="h-11 text-base">
-                <SelectValue placeholder="Any type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any type</SelectItem>
-                {propertyTypesLoading ? (
-                  <SelectItem value="loading" disabled>Loading...</SelectItem>
-                ) : (
-                  propertyTypes.map((type) => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))
+        </CardHeader>
+      </Card>
+
+      {/* Quick Search Card */}
+      <Card className="shadow-md">
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Buy/Rent Selection */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Home className="h-4 w-4 text-blue-600" />
+                <Label className="text-sm font-semibold text-gray-700">Transaction Type</Label>
+              </div>
+              <Select 
+                value={filters.type}
+                onValueChange={(value) => handleFilterChange("type", value)}
+              >
+                <SelectTrigger className="h-11 border-2 focus:border-blue-400">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="buy">🏠 Buy Property</SelectItem>
+                  <SelectItem value="rent">🏠 Rent Property</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Property Type */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Home className="h-4 w-4 text-green-600" />
+                <Label className="text-sm font-semibold text-gray-700">Property Type</Label>
+              </div>
+              <Select 
+                value={filters.propertyType}
+                onValueChange={(value) => handleFilterChange("propertyType", value)}
+              >
+                <SelectTrigger className="h-11 border-2 focus:border-green-400">
+                  <SelectValue placeholder="Any type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">🏢 Any Type</SelectItem>
+                  {propertyTypesLoading ? (
+                    <SelectItem value="loading" disabled>Loading...</SelectItem>
+                  ) : (
+                    propertyTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Location Search */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4 text-purple-600" />
+                <Label className="text-sm font-semibold text-gray-700">Location</Label>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                <Input 
+                  className="pl-10 h-11 border-2 focus:border-purple-400"
+                  placeholder="Search location..." 
+                  value={filters.location}
+                  onChange={(e) => handleLocationChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      applyFilters();
+                    }
+                  }}
+                />
+                {filters.location && (
+                  <button 
+                    className="absolute right-3 top-3.5 text-gray-400 hover:text-red-500 transition-colors"
+                    onClick={() => handleLocationChange("")}
+                    aria-label="Clear search"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
                 )}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          {/* Location Search */}
-          <div>
-            <Label htmlFor="location" className="text-sm font-medium mb-2 block">Search Area</Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                id="location"
-                className="pl-10 h-11 text-base"
-                placeholder="Search by area, district, taluka, tehsil..." 
-                value={filters.location}
-                onChange={(e) => handleLocationChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    applyFilters();
-                  }
-                }}
-              />
-              {filters.location && (
-                <button 
-                  className="absolute right-3 top-3.5 text-muted-foreground hover:text-primary"
-                  onClick={() => handleLocationChange("")}
-                  aria-label="Clear search"
-                >
-                  <XCircle className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Search by any location: area, district, taluka, tehsil, or state
-            </p>
-          </div>
-        </div>
-        
-        {/* Advanced Filters - Collapsible on mobile */}
-        <div className="space-y-4 border-t pt-4 mt-4">
-          
-          {/* Price Range */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <Label className="text-sm font-medium">Price Range</Label>
-              <span className="text-sm text-gray-600 font-medium">
-                {formatCurrency(filters.minPrice)} - {formatCurrency(filters.maxPrice)}
-              </span>
-            </div>
-            <div className="px-2">
-              <Slider 
-                defaultValue={[filters.minPrice, filters.maxPrice]} 
-                min={0} 
-                max={15000000} 
-                step={100000}
-                value={[filters.minPrice, filters.maxPrice]}
-                onValueChange={(value) => {
-                  handleFilterChange("minPrice", value[0]);
-                  handleFilterChange("maxPrice", value[1]);
-                }}
-                className="cursor-pointer"
-              />
-            </div>
-            
-            {/* Quick Price Range Presets */}
-            <div className="flex flex-wrap gap-2 mt-3">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  handleFilterChange("minPrice", 0);
-                  handleFilterChange("maxPrice", 3000000);
-                }}
-                className="text-xs"
-              >
-                Under ₹30L
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  handleFilterChange("minPrice", 3000000);
-                  handleFilterChange("maxPrice", 6000000);
-                }}
-                className="text-xs"
-              >
-                ₹30L - ₹60L
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  handleFilterChange("minPrice", 6000000);
-                  handleFilterChange("maxPrice", 10000000);
-                }}
-                className="text-xs"
-              >
-                ₹60L - ₹1Cr
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  handleFilterChange("minPrice", 10000000);
-                  handleFilterChange("maxPrice", 0);
-                }}
-                className="text-xs"
-              >
-                Above ₹1Cr
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => {
-                  handleFilterChange("minPrice", 0);
-                  handleFilterChange("maxPrice", 0);
-                }}
-                className="text-xs"
-              >
-                Any Price
-              </Button>
+              </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Advanced Filters Card */}
+      <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+        <Card className="shadow-md">
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <IndianRupee className="h-4 w-4 text-orange-600" />
+                  <CardTitle className="text-base font-semibold text-gray-700">Advanced Filters</CardTitle>
+                </div>
+                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isAdvancedOpen ? 'transform rotate-180' : ''}`} />
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
           
-          {/* Bedrooms and Bathrooms */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="minBeds" className="text-sm font-medium mb-2 block">Min Bedrooms</Label>
-              <Select 
-                value={filters.minBeds.toString()}
-                onValueChange={(value) => handleFilterChange("minBeds", parseInt(value))}
+          <CollapsibleContent>
+            <CardContent className="pt-0 space-y-6">
+              {/* Price Range */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <IndianRupee className="h-4 w-4 text-green-600" />
+                    <Label className="text-sm font-semibold text-gray-700">Price Range</Label>
+                  </div>
+                  <span className="text-sm text-gray-600 font-medium bg-gray-100 px-2 py-1 rounded">
+                    {formatCurrency(filters.minPrice)} - {formatCurrency(filters.maxPrice)}
+                  </span>
+                </div>
+                
+                <div className="px-3">
+                  <Slider 
+                    defaultValue={[filters.minPrice, filters.maxPrice]} 
+                    min={0} 
+                    max={15000000} 
+                    step={100000}
+                    value={[filters.minPrice, filters.maxPrice]}
+                    onValueChange={(value) => {
+                      handleFilterChange("minPrice", value[0]);
+                      handleFilterChange("maxPrice", value[1]);
+                    }}
+                    className="cursor-pointer"
+                  />
+                </div>
+                
+                {/* Quick Price Range Presets */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      handleFilterChange("minPrice", 0);
+                      handleFilterChange("maxPrice", 3000000);
+                    }}
+                    className="text-xs hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Under ₹30L
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      handleFilterChange("minPrice", 3000000);
+                      handleFilterChange("maxPrice", 6000000);
+                    }}
+                    className="text-xs hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    ₹30L - ₹60L
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      handleFilterChange("minPrice", 6000000);
+                      handleFilterChange("maxPrice", 10000000);
+                    }}
+                    className="text-xs hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    ₹60L - ₹1Cr
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      handleFilterChange("minPrice", 10000000);
+                      handleFilterChange("maxPrice", 15000000);
+                    }}
+                    className="text-xs hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Above ₹1Cr
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      handleFilterChange("minPrice", 0);
+                      handleFilterChange("maxPrice", 15000000);
+                    }}
+                    className="text-xs hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Any Price
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Bedrooms and Bathrooms */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Bed className="h-4 w-4 text-purple-600" />
+                    <Label className="text-sm font-semibold text-gray-700">Min Bedrooms</Label>
+                  </div>
+                  <Select 
+                    value={filters.minBeds.toString()}
+                    onValueChange={(value) => handleFilterChange("minBeds", parseInt(value))}
+                  >
+                    <SelectTrigger className="h-11 border-2 focus:border-purple-400">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">🛏️ Any</SelectItem>
+                      <SelectItem value="1">🛏️ 1+</SelectItem>
+                      <SelectItem value="2">🛏️ 2+</SelectItem>
+                      <SelectItem value="3">🛏️ 3+</SelectItem>
+                      <SelectItem value="4">🛏️ 4+</SelectItem>
+                      <SelectItem value="5">🛏️ 5+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Bath className="h-4 w-4 text-teal-600" />
+                    <Label className="text-sm font-semibold text-gray-700">Min Bathrooms</Label>
+                  </div>
+                  <Select 
+                    value={filters.minBaths.toString()}
+                    onValueChange={(value) => handleFilterChange("minBaths", parseInt(value))}
+                  >
+                    <SelectTrigger className="h-11 border-2 focus:border-teal-400">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">🚿 Any</SelectItem>
+                      <SelectItem value="1">🚿 1+</SelectItem>
+                      <SelectItem value="2">🚿 2+</SelectItem>
+                      <SelectItem value="3">🚿 3+</SelectItem>
+                      <SelectItem value="4">🚿 4+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Apply Filters Button */}
+              <Button 
+                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02]" 
+                onClick={applyFilters}
               >
-                <SelectTrigger id="minBeds" className="h-11 text-base">
-                  <SelectValue placeholder="Any" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0" className="text-xs sm:text-sm">Any</SelectItem>
-                  <SelectItem value="1" className="text-xs sm:text-sm">1+</SelectItem>
-                  <SelectItem value="2" className="text-xs sm:text-sm">2+</SelectItem>
-                  <SelectItem value="3" className="text-xs sm:text-sm">3+</SelectItem>
-                  <SelectItem value="4" className="text-xs sm:text-sm">4+</SelectItem>
-                  <SelectItem value="5" className="text-xs sm:text-sm">5+</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label htmlFor="minBaths" className="text-sm font-medium mb-2 block">Min Bathrooms</Label>
-              <Select 
-                value={filters.minBaths.toString()}
-                onValueChange={(value) => handleFilterChange("minBaths", parseInt(value))}
-              >
-                <SelectTrigger id="minBaths" className="h-11 text-base">
-                  <SelectValue placeholder="Any" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Any</SelectItem>
-                  <SelectItem value="1">1+</SelectItem>
-                  <SelectItem value="2">2+</SelectItem>
-                  <SelectItem value="3">3+</SelectItem>
-                  <SelectItem value="4">4+</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          {/* Apply Filters Button */}
-          <Button 
-            className="w-full h-12 text-base font-medium mt-6" 
-            onClick={applyFilters}
-          >
-            <Search className="mr-2 h-5 w-5" /> 
-            Apply Filters
-          </Button>
-        </div>
-      </div>
+                <Search className="mr-2 h-5 w-5" /> 
+                Search Properties
+              </Button>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
     </div>
   );
 }
