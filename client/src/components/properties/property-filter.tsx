@@ -293,8 +293,8 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               <Slider 
                 defaultValue={[filters.minPrice, filters.maxPrice]} 
                 min={0} 
-                max={5000000} 
-                step={50000}
+                max={15000000} 
+                step={100000}
                 value={[filters.minPrice, filters.maxPrice]}
                 onValueChange={(value) => {
                   handleFilterChange("minPrice", value[0]);
@@ -302,6 +302,65 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 }}
                 className="cursor-pointer"
               />
+            </div>
+            
+            {/* Quick Price Range Presets */}
+            <div className="flex flex-wrap gap-2 mt-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  handleFilterChange("minPrice", 0);
+                  handleFilterChange("maxPrice", 3000000);
+                }}
+                className="text-xs"
+              >
+                Under ₹30L
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  handleFilterChange("minPrice", 3000000);
+                  handleFilterChange("maxPrice", 6000000);
+                }}
+                className="text-xs"
+              >
+                ₹30L - ₹60L
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  handleFilterChange("minPrice", 6000000);
+                  handleFilterChange("maxPrice", 10000000);
+                }}
+                className="text-xs"
+              >
+                ₹60L - ₹1Cr
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  handleFilterChange("minPrice", 10000000);
+                  handleFilterChange("maxPrice", 0);
+                }}
+                className="text-xs"
+              >
+                Above ₹1Cr
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  handleFilterChange("minPrice", 0);
+                  handleFilterChange("maxPrice", 0);
+                }}
+                className="text-xs"
+              >
+                Any Price
+              </Button>
             </div>
           </div>
           
