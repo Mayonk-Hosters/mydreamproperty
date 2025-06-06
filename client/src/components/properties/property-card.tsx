@@ -203,8 +203,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
             </span>
           </div>
           
-          {/* MahaRERA Registered Badge - Always show for testing */}
-          {property.maharera_registered && (
+          {/* MahaRERA Registered Badge - Check all possible boolean values */}
+          {(property.maharera_registered === true || property.maharera_registered === 1 || property.maharera_registered === "true" || property.maharera_registered === "1") && (
             <div className="mb-3 p-3 rounded-lg border-2 border-green-400 bg-green-100" style={{display: 'block', visibility: 'visible'}}>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-600 rounded-full"></div>
