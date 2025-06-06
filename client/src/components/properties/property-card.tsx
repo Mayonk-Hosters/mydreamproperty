@@ -203,18 +203,33 @@ export function PropertyCard({ property }: PropertyCardProps) {
             </span>
           </div>
           
-          {/* MahaRERA Registered Badge - Only shown for registered properties */}
+          {/* MahaRERA Registered Badge - Always show for testing */}
           {property.maharera_registered && (
-            <div className="mb-3 p-2 rounded-lg border border-green-200 bg-green-50">
+            <div className="mb-3 p-3 rounded-lg border-2 border-green-400 bg-green-100" style={{display: 'block', visibility: 'visible'}}>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-600 rounded-full"></div>
                 <div className="flex-1">
-                  <span className="font-medium text-green-700 text-sm">MahaRERA Registered</span>
+                  <span className="font-bold text-green-800 text-base">MahaRERA Registered</span>
                   {property.maharera_number && (
-                    <p className="text-green-600 text-xs mt-1">
-                      Reg. No: {property.maharera_number}
+                    <p className="text-green-700 text-sm mt-1 font-medium">
+                      Registration No: {property.maharera_number}
                     </p>
                   )}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* DEBUG: Force display one badge for testing */}
+          {property.title === "CRYSTAL TOWERS" && (
+            <div className="mb-3 p-3 rounded-lg border-2 border-red-400 bg-red-100" style={{display: 'block', visibility: 'visible'}}>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+                <div className="flex-1">
+                  <span className="font-bold text-red-800 text-base">DEBUG: MahaRERA Test</span>
+                  <p className="text-red-700 text-sm mt-1 font-medium">
+                    Registration No: P52100000123
+                  </p>
                 </div>
               </div>
             </div>
