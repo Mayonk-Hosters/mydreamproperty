@@ -176,9 +176,19 @@ export function PropertyCard({ property }: PropertyCardProps) {
             )}
           </div>
           
-          <p className="text-gray-600 text-xs sm:text-sm mb-2 flex items-center line-clamp-1">
-            <MapPin className="inline-block mr-1 flex-shrink-0" size={12} /> 
-            <span>{property.location}</span>
+          <p className="text-gray-600 text-xs sm:text-sm mb-2 flex items-start line-clamp-2">
+            <MapPin className="inline-block mr-1 flex-shrink-0 mt-0.5" size={12} /> 
+            <span className="leading-relaxed">
+              {[
+                property.address,
+                property.location,
+                (property as any).tehsilArea,
+                (property as any).tehsilName,
+                (property as any).talukaName,
+                (property as any).districtName,
+                (property as any).stateName
+              ].filter(Boolean).join(', ')}
+            </span>
           </p>
           
           <div className="flex justify-between text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">
