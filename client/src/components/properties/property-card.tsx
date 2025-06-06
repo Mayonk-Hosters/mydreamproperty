@@ -204,15 +204,15 @@ export function PropertyCard({ property }: PropertyCardProps) {
           </div>
           
           {/* MahaRERA Registered Badge - Only shown for registered properties */}
-          {(property as any).maharera_registered === true && (
+          {property.maharera_registered === true && (
             <div className="mb-3 p-2 rounded-lg border border-green-200 bg-green-50">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="flex-1">
                   <span className="font-medium text-green-700 text-sm">MahaRERA Registered</span>
-                  {(property as any).maharera_number && (
+                  {property.maharera_number && (
                     <p className="text-green-600 text-xs mt-1">
-                      Reg. No: {(property as any).maharera_number}
+                      Reg. No: {property.maharera_number}
                     </p>
                   )}
                 </div>
