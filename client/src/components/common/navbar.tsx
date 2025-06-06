@@ -110,10 +110,10 @@ export function Navbar() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Customer Care Number */}
             {contactInfo?.phone1 && (
-              <div className="hidden lg:flex items-center space-x-2 text-primary bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
-                <Phone className="h-4 w-4" />
-                <span className="text-sm font-medium">
-                  <a href={`tel:${contactInfo.phone1}`} className="hover:underline">
+              <div className="hidden lg:flex items-center space-x-2 text-white bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-blue-700 hover:to-blue-800 transform hover:scale-105">
+                <Phone className="h-4 w-4 animate-pulse" />
+                <span className="text-sm font-semibold tracking-wide">
+                  <a href={`tel:${contactInfo.phone1}`} className="hover:text-blue-100 transition-colors">
                     {contactInfo.phone1}
                   </a>
                 </span>
@@ -210,13 +210,18 @@ export function Navbar() {
             {/* Customer Care Number for Mobile */}
             {contactInfo?.phone1 && (
               <div className="py-2.5 px-2">
-                <div className="flex items-center space-x-2 text-primary bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
-                  <Phone className="h-4 w-4" />
-                  <span className="text-sm font-medium">
-                    <a href={`tel:${contactInfo.phone1}`} className="hover:underline">
-                      {contactInfo.phone1}
-                    </a>
-                  </span>
+                <div className="flex items-center space-x-3 text-white bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:from-green-600 hover:to-green-700 transform hover:scale-105">
+                  <div className="flex items-center justify-center w-8 h-8 bg-white bg-opacity-20 rounded-full">
+                    <Phone className="h-4 w-4 animate-pulse" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-medium text-green-100 block">Customer Care</span>
+                    <span className="text-sm font-bold tracking-wide">
+                      <a href={`tel:${contactInfo.phone1}`} className="hover:text-green-100 transition-colors">
+                        {contactInfo.phone1}
+                      </a>
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
