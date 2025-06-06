@@ -198,7 +198,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
           </div>
           
           {/* MahaRERA Registered Badge - Only shown for registered properties */}
-          {property.maharera_registered === true && (
+          {(property as any).maharera_registered === true && (
             <div className="mb-3 p-2 rounded-lg border border-green-200 bg-green-50">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
