@@ -47,34 +47,50 @@ export function PropertyTypes() {
   };
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold mb-8 text-center">Browse By Property Type</h2>
+        <div className="text-center mb-16 animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Browse By Property Type
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Discover your perfect property from our diverse collection of residential and commercial spaces
+          </p>
+        </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {isLoading ? (
             // Loading placeholders - show 8 placeholder items to accommodate all possible property types
             Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all text-center animate-pulse">
-                <div className="mx-auto w-16 h-16 flex items-center justify-center bg-gray-200 rounded-full mb-4"></div>
-                <div className="h-6 bg-gray-200 rounded mb-1"></div>
+              <div key={index} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all text-center animate-pulse">
+                <div className="mx-auto w-20 h-20 flex items-center justify-center bg-gray-200 rounded-full mb-6"></div>
+                <div className="h-6 bg-gray-200 rounded mb-2"></div>
                 <div className="h-4 bg-gray-200 rounded w-24 mx-auto"></div>
               </div>
             ))
           ) : (
             // Actual property type counts
-            propertyTypes.map((type) => {
+            propertyTypes.map((type, index) => {
               const typeData = countsData?.find(item => item.propertyType === type);
               const count = typeData?.count || 0;
               
               return (
                 <Link key={type} href={`/properties?propertyType=${type}`} className="block">
-                  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all text-center cursor-pointer">
-                    <div className="mx-auto w-16 h-16 flex items-center justify-center bg-primary-light bg-opacity-10 rounded-full mb-4">
-                      {getIconForType(type)}
+                  <div className={`bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 text-center cursor-pointer transform hover:scale-105 hover:-translate-y-2 animate-slide-up group ${
+                    index % 2 === 0 ? 'animate-slide-in-left' : 'animate-slide-in-right'
+                  }`} style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div className="mx-auto w-20 h-20 flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 rounded-full mb-6 group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-300 animate-float">
+                      <div className="scale-125 group-hover:scale-150 transition-transform duration-300">
+                        {getIconForType(type)}
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold mb-1">{type}s</h3>
-                    <p className="text-gray-500 text-sm">{count} Properties</p>
+                    <h3 className="text-xl font-bold mb-2 text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
+                      {type}s
+                    </h3>
+                    <p className="text-gray-500 text-sm font-medium">
+                      {count} Properties Available
+                    </p>
+                    <div className="mt-4 w-0 group-hover:w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 mx-auto"></div>
                   </div>
                 </Link>
               );

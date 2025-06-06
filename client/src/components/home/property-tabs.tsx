@@ -69,17 +69,34 @@ export function PropertyTabs() {
   };
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">Browse Properties</h2>
+        <div className="text-center mb-16 animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+            Explore Our Properties
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Discover your perfect home from our curated collection of premium properties
+          </p>
         </div>
         
         <Tabs defaultValue="buy" value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full md:w-auto grid-cols-2 mb-8">
-            <TabsTrigger value="buy" className="px-6 py-2">Buy</TabsTrigger>
-            <TabsTrigger value="rent" className="px-6 py-2">Rent</TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center mb-12 animate-slide-up">
+            <TabsList className="bg-white p-2 rounded-2xl shadow-lg border border-gray-200">
+              <TabsTrigger 
+                value="buy" 
+                className="px-8 py-3 text-lg font-semibold rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600 transition-all duration-300"
+              >
+                For Sale
+              </TabsTrigger>
+              <TabsTrigger 
+                value="rent" 
+                className="px-8 py-3 text-lg font-semibold rounded-xl data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-green-600 transition-all duration-300"
+              >
+                For Rent
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
           <TabsContent value="buy" className="mt-0">
             {/* Featured Properties Section */}
