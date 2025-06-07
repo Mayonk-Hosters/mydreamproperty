@@ -683,7 +683,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all inquiries
-  app.get("/api/inquiries", async (_req, res) => {
+  app.get("/api/inquiries", requireAdmin, async (_req, res) => {
     try {
       const inquiries = await dbStorage.getAllInquiries();
       res.json(inquiries);
