@@ -171,24 +171,35 @@ export function setupAdminLogin(app: Express) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
       
-      // Login successful
-      req.login(user, (err) => {
-        if (err) return res.status(500).json({ message: "Login failed" });
+      // Login successful - set session properties directly for production deployment
+      req.session.isAdmin = !!user.isAdmin;
+      req.session.userType = user.role || (user.isAdmin ? "admin" : "client");
+      req.session.user = user;
+      
+      // For production deployment, also set passport session
+      if (req.session.passport) {
+        req.session.passport.user = user.id;
+      } else {
+        req.session.passport = { user: user.id };
+      }
+      
+      // Save the session and respond
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ message: "Session save failed" });
+        }
         
-        // Set admin flag in session if user is admin
-        req.session.isAdmin = !!user.isAdmin;
-        req.session.userType = user.role || (user.isAdmin ? "admin" : "client");
-        
-        // Save the session
-        req.session.save((err) => {
-          if (err) {
-            console.error("Session save error:", err);
-          }
-          
-          // Return user data (excluding password)
-          const { password, ...userData } = user;
-          res.status(200).json(userData);
+        console.log("Production login session established:", {
+          isAdmin: req.session.isAdmin,
+          userType: req.session.userType,
+          sessionID: req.sessionID,
+          passportUser: req.session.passport?.user
         });
+        
+        // Return user data (excluding password)
+        const { password, ...userData } = user;
+        res.status(200).json(userData);
       });
     } catch (error) {
       console.error("Login error:", error);

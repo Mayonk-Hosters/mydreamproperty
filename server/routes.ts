@@ -80,36 +80,52 @@ const upload = multer({
 
 // Utility function to check admin access consistently across all routes
 function checkAdminAccess(req: any): boolean {
+  // Log session details for debugging
+  console.log('Authentication check:', {
+    hasSession: !!req.session,
+    sessionKeys: req.session ? Object.keys(req.session) : [],
+    isAdmin: req.session?.isAdmin,
+    hasUser: !!req.user,
+    environment: process.env.NODE_ENV
+  });
+
   // Session-based admin access (traditional login)
   if (req.session && req.session.isAdmin) {
+    console.log('Access granted via session.isAdmin');
+    return true;
+  }
+  
+  // Check for authenticated session with admin user
+  if (req.session && req.session.passport && req.session.passport.user) {
+    console.log('Access granted via passport session');
     return true;
   }
   
   // OAuth-based admin access
   if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+    console.log('Access granted via OAuth admin');
     return true;
   }
   
   // Additional check for user object with isAdmin property
   if (req.user && (req.user as any)?.isAdmin) {
+    console.log('Access granted via user.isAdmin');
     return true;
   }
   
   // Check for admin username in session (fallback for production)
   if (req.session && req.session.user && req.session.user.username === 'ahmednagarproperty') {
-    return true;
-  }
-  
-  // Production environment fallback - check if logged in with admin credentials
-  if (process.env.NODE_ENV === 'production' && req.session && req.session.passport && req.session.passport.user) {
+    console.log('Access granted via admin username');
     return true;
   }
   
   // Development mode access
   if (process.env.NODE_ENV === 'development') {
+    console.log('Access granted via development mode');
     return true;
   }
   
+  console.log('Access denied - no valid authentication found');
   return false;
 }
 
