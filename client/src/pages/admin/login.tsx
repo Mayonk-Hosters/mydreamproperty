@@ -11,7 +11,7 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [, navigate] = useNavigate();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -24,12 +24,13 @@ export default function AdminLogin() {
         password
       });
 
-      if (response.isAdmin) {
+      if (response && response.isAdmin) {
         toast({
           title: "Login successful",
           description: "Welcome to the admin panel"
         });
-        navigate("/admin");
+        // Redirect to admin panel
+        window.location.href = "/admin";
       } else {
         toast({
           title: "Access denied",
