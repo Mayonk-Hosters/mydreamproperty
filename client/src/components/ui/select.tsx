@@ -115,10 +115,9 @@ const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
 >(({ className, children, value, ...props }, ref) => {
-  // Defensive check to ensure value is never empty
-  if (value === undefined || value === '') {
-    console.warn('SelectItem has an empty value, using fallback value');
-    value = 'fallback-value';
+  // Skip rendering if value is invalid
+  if (value === undefined || value === '' || value === null) {
+    return null;
   }
   
   return (
