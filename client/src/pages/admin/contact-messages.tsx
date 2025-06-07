@@ -98,23 +98,17 @@ export default function AdminContactMessagesPage() {
   const { data: contactMessages = [], isLoading, error } = useQuery<ContactMessage[]>({
     queryKey: ['/api/contact-messages'],
     queryFn: async () => {
-      const response = await fetch('/api/contact-messages');
-      if (!response.ok) {
-        throw new Error('Failed to fetch contact messages');
+      try {
+        return await apiRequest('GET', '/api/contact-messages');
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to fetch contact messages');
       }
-      return response.json();
     },
   });
 
   const markAsReadMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest('/api/contact-messages/mark-read', {
-        method: 'PATCH',
-        body: JSON.stringify({ messageId: id }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      return apiRequest('PATCH', `/api/contact-messages/${id}/mark-read`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
@@ -134,9 +128,7 @@ export default function AdminContactMessagesPage() {
 
   const deleteMessageMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/contact-messages/${id}`, {
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/contact-messages/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });

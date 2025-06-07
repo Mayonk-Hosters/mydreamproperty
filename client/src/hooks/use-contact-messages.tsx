@@ -18,6 +18,7 @@ export function useContactMessages() {
   
   const query = useQuery<ContactMessage[]>({
     queryKey: ["/api/contact-messages"],
+    queryFn: () => apiRequest("GET", "/api/contact-messages"),
   });
   
   const markAsReadMutation = useMutation({
