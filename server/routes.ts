@@ -90,7 +90,7 @@ function checkAdminAccess(req: any): boolean {
   });
 
   // Session-based admin access (traditional login)
-  if (req.session && req.session.isAdmin) {
+  if (req.session && (req.session as any).isAdmin) {
     console.log('Access granted via session.isAdmin');
     return true;
   }
@@ -568,6 +568,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Toggle the featured status with explicit boolean
       const updatedProperty = await dbStorage.updateProperty(id, {
         ...property,
+        features: property.features as any,
+        images: property.images as any,
         featured: !currentFeatured
       });
       
@@ -743,7 +745,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1365,7 +1367,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1402,7 +1404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1440,7 +1442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1503,7 +1505,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1857,7 +1859,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1917,7 +1919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1977,7 +1979,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -2143,7 +2145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Check session-based admin access first (for traditional login)
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         const inquiries = await dbStorage.getAllHomeLoanInquiries();
         return res.json(inquiries);
       }
@@ -2304,7 +2306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/homepage-images", async (req, res) => {
     try {
       // Check admin access
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         // Session-based admin access (traditional login)
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         // OAuth-based admin access
@@ -2327,7 +2329,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/homepage-images/:id", async (req, res) => {
     try {
       // Check admin access
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         // Session-based admin access (traditional login)
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         // OAuth-based admin access
@@ -2355,7 +2357,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/homepage-images/:id", async (req, res) => {
     try {
       // Check admin access
-      if (req.session && req.session.isAdmin) {
+      if (req.session && (req.session as any).isAdmin) {
         // Session-based admin access (traditional login)
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         // OAuth-based admin access

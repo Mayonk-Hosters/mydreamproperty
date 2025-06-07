@@ -53,9 +53,9 @@ export function setupAdminLogin(app: Express) {
           };
           
           // Set session properties directly without passport
-          req.session.isAdmin = true;
-          req.session.userType = "admin";
-          req.session.user = adminUser;
+          (req.session as any).isAdmin = true;
+          (req.session as any).userType = "admin";
+          (req.session as any).user = adminUser;
           
           req.session.save((err) => {
             if (err) {
@@ -63,8 +63,8 @@ export function setupAdminLogin(app: Express) {
               return res.status(500).json({ message: "Session save failed" });
             }
             console.log("Admin session saved successfully:", {
-              isAdmin: req.session.isAdmin,
-              userType: req.session.userType,
+              isAdmin: (req.session as any).isAdmin,
+              userType: (req.session as any).userType,
               sessionID: req.sessionID,
               sessionData: req.session
             });
@@ -91,8 +91,8 @@ export function setupAdminLogin(app: Express) {
               return res.status(500).json({ message: "Login failed" });
             }
             
-            req.session.isAdmin = false;
-            req.session.userType = "agent";
+            (req.session as any).isAdmin = false;
+            (req.session as any).userType = "agent";
             
             req.session.save((err) => {
               if (err) console.error("Session save error:", err);
@@ -120,8 +120,8 @@ export function setupAdminLogin(app: Express) {
               return res.status(500).json({ message: "Login failed" });
             }
             
-            req.session.isAdmin = false;
-            req.session.userType = "client";
+            (req.session as any).isAdmin = false;
+            (req.session as any).userType = "client";
             
             req.session.save((err) => {
               if (err) console.error("Session save error:", err);
@@ -172,9 +172,9 @@ export function setupAdminLogin(app: Express) {
       }
       
       // Login successful - set session properties directly for production deployment
-      req.session.isAdmin = !!user.isAdmin;
-      req.session.userType = user.role || (user.isAdmin ? "admin" : "client");
-      req.session.user = user;
+      (req.session as any).isAdmin = !!user.isAdmin;
+      (req.session as any).userType = user.role || (user.isAdmin ? "admin" : "client");
+      (req.session as any).user = user;
       
       // For production deployment, also set passport session
       if (req.session.passport) {
@@ -191,8 +191,8 @@ export function setupAdminLogin(app: Express) {
         }
         
         console.log("Production login session established:", {
-          isAdmin: req.session.isAdmin,
-          userType: req.session.userType,
+          isAdmin: (req.session as any).isAdmin,
+          userType: (req.session as any).userType,
           sessionID: req.sessionID,
           passportUser: req.session.passport?.user
         });
@@ -222,9 +222,9 @@ export function setupAdminLogin(app: Express) {
     });
 
     // Check session-based authentication first (for traditional login)
-    if (req.session && req.session.isAdmin && req.session.user) {
-      console.log("Session auth successful, returning user:", req.session.user);
-      return res.json(req.session.user);
+    if (req.session && (req.session as any).isAdmin && (req.session as any).user) {
+      console.log("Session auth successful, returning user:", (req.session as any).user);
+      return res.json((req.session as any).user);
     }
     
     // Check passport-based authentication (for OAuth login)

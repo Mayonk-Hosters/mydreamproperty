@@ -18,7 +18,10 @@ export function useContactMessages() {
   
   const query = useQuery<ContactMessage[]>({
     queryKey: ["/api/contact-messages"],
-    queryFn: () => apiRequest("GET", "/api/contact-messages"),
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/contact-messages");
+      return response.json();
+    },
   });
   
   const markAsReadMutation = useMutation({
