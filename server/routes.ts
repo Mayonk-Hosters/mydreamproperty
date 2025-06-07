@@ -397,19 +397,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Add optional location fields if provided
       if (requestData.stateId) {
-        propertyData.stateId = Number(requestData.stateId);
+        (propertyData as any).stateId = Number(requestData.stateId);
       }
       
       if (requestData.districtId) {
-        propertyData.districtId = Number(requestData.districtId);
+        (propertyData as any).districtId = Number(requestData.districtId);
       }
       
       if (requestData.talukaId) {
-        propertyData.talukaId = Number(requestData.talukaId);
+        (propertyData as any).talukaId = Number(requestData.talukaId);
       }
       
       if (requestData.tehsilId) {
-        propertyData.tehsilId = Number(requestData.tehsilId);
+        (propertyData as any).tehsilId = Number(requestData.tehsilId);
       }
       
       // Generate property number if not provided or set to AUTO-GENERATE
@@ -448,27 +448,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Keep track of last used number in memory to prevent duplicates within the same session
           // This ensures we don't reuse the same number for multiple properties created in quick succession
-          if (!global.lastUsedPropertyNumber) {
-            global.lastUsedPropertyNumber = highestNumber;
+          if (!(global as any).lastUsedPropertyNumber) {
+            (global as any).lastUsedPropertyNumber = highestNumber;
           }
           
           // Use either the highest number from database or the last used number, whichever is higher
-          const nextNumber = Math.max(highestNumber, global.lastUsedPropertyNumber) + 1;
-          global.lastUsedPropertyNumber = nextNumber;
+          const nextNumber = Math.max(highestNumber, (global as any).lastUsedPropertyNumber) + 1;
+          (global as any).lastUsedPropertyNumber = nextNumber;
           
           // Format with leading zeros (4 digits)
           const paddedNumber = nextNumber.toString().padStart(4, '0');
-          propertyData.propertyNumber = `MDP-${paddedNumber}`;
-          console.log(`Generated property number: ${propertyData.propertyNumber} (highest was ${highestNumber}, last used: ${global.lastUsedPropertyNumber - 1})`);
+          (propertyData as any).propertyNumber = `MDP-${paddedNumber}`;
+          console.log(`Generated property number: ${(propertyData as any).propertyNumber} (highest was ${highestNumber}, last used: ${(global as any).lastUsedPropertyNumber - 1})`);
         } catch (error) {
           console.error('Error generating property number:', error);
           // Fallback to a timestamp-based number if query fails
           const timestamp = new Date().getTime().toString().slice(-6);
-          propertyData.propertyNumber = `MDP-${timestamp}`;
-          console.log(`Fallback property number generated: ${propertyData.propertyNumber}`);
+          (propertyData as any).propertyNumber = `MDP-${timestamp}`;
+          console.log(`Fallback property number generated: ${(propertyData as any).propertyNumber}`);
         }
       } else {
-        propertyData.propertyNumber = requestData.propertyNumber;
+        (propertyData as any).propertyNumber = requestData.propertyNumber;
       }
       
       // Create the property using the sanitized data

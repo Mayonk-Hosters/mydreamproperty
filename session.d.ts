@@ -5,5 +5,6 @@ declare module 'express-session' {
     isAdmin?: boolean;
     userType?: string;
     user?: any;
+    passport?: any;
   }
 }
