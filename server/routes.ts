@@ -782,10 +782,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Mark each inquiry as read
       const results = await Promise.all(inquiryIds.map(async (id: number) => {
-        return await dbStorage.markInquiryAsRead(id);
+        return await (dbStorage as any).markInquiryAsRead(id);
       }));
       
-      const successCount = results.filter(success => success).length;
+      const successCount = results.filter((success: any) => success).length;
       
       console.log(`Marked ${successCount} of ${inquiryIds.length} inquiries as read`);
       res.status(200).json({ 
@@ -1898,7 +1898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           RETURNING id
         `, [id]);
         
-        if (result.rowCount === 0) {
+        if (result.rowCount === 0 || result.rowCount === null) {
           return res.status(404).json({ message: "Message not found" });
         }
         
@@ -1957,7 +1957,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           RETURNING id
         `, [id]);
         
-        if (result.rowCount === 0) {
+        if (result.rowCount === 0 || result.rowCount === null) {
           return res.status(404).json({ message: "Message not found" });
         }
         
@@ -2050,7 +2050,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           RETURNING id
         `, [messageIds]);
         
-        if (result.rowCount === 0) {
+        if (result.rowCount === 0 || result.rowCount === null) {
           return res.status(404).json({ message: "No messages found with the provided IDs" });
         }
         
