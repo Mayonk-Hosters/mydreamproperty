@@ -15,17 +15,31 @@ import { useSiteSettings } from "@/hooks/use-site-settings";
 export default function PropertiesPage() {
   const [location, setLocation] = useLocation();
   const { settings } = useSiteSettings();
-  const [activeTab, setActiveTab] = useState<"buy" | "rent">("buy");
+  
+  // Initialize tab and filters based on URL params
+  const getInitialState = () => {
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get("type");
+    const initialType = (type === "buy" || type === "rent") ? type : "buy";
+    
+    return {
+      activeTab: initialType as "buy" | "rent",
+      filters: {
+        type: initialType,
+        propertyType: params.get("propertyType") || "",
+        location: params.get("location") || "",
+        minPrice: parseInt(params.get("minPrice") || "0"),
+        maxPrice: parseInt(params.get("maxPrice") || "0"),
+        minBeds: parseInt(params.get("minBeds") || "0"),
+        minBaths: parseInt(params.get("minBaths") || "0"),
+      }
+    };
+  };
+  
+  const initialState = getInitialState();
+  const [activeTab, setActiveTab] = useState<"buy" | "rent">(initialState.activeTab);
   const [sortBy, setSortBy] = useState<"newest" | "price-low" | "price-high" | "">("");
-  const [filters, setFilters] = useState({
-    type: "buy",
-    propertyType: "",
-    location: "",
-    minPrice: 0,
-    maxPrice: 0, // Set to 0 to disable default max price filtering
-    minBeds: 0,
-    minBaths: 0,
-  });
+  const [filters, setFilters] = useState(initialState.filters);
   
   const handleTabChange = (value: string) => {
     setActiveTab(value as "buy" | "rent");
@@ -50,11 +64,10 @@ export default function PropertiesPage() {
 
     const updatedFilters = { ...filters };
     
-    if (type) {
-      // Always respect the type parameter from URL
-      updatedFilters.type = type;
-      setActiveTab(type as "buy" | "rent");
-    }
+    // Set default to buy if no type specified
+    const propertyTypeValue = type && (type === "buy" || type === "rent") ? type : "buy";
+    updatedFilters.type = propertyTypeValue;
+    setActiveTab(propertyTypeValue as "buy" | "rent");
     
     if (propertyType) updatedFilters.propertyType = propertyType;
     if (locationParam) updatedFilters.location = locationParam;
@@ -140,21 +153,13 @@ export default function PropertiesPage() {
             <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm grid grid-cols-2">
               <TabsTrigger 
                 value="buy" 
-                className={`px-6 py-3 text-base font-semibold rounded-md transition-all ${
-                  activeTab === 'buy' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-600 hover:text-blue-600'
-                }`}
+                className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600"
               >
                 For Sale
               </TabsTrigger>
               <TabsTrigger 
                 value="rent" 
-                className={`px-6 py-3 text-base font-semibold rounded-md transition-all ${
-                  activeTab === 'rent' 
-                    ? 'bg-emerald-600 text-white' 
-                    : 'text-gray-600 hover:text-emerald-600'
-                }`}
+                className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600"
               >
                 For Rent
               </TabsTrigger>
