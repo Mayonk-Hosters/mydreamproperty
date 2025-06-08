@@ -182,17 +182,16 @@ export default function PropertiesPage() {
           </Tabs>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
-          {/* Sidebar Filters */}
-          <div className="lg:col-span-1 order-1 sm:order-none">
-            <PropertyFilter 
-              onFilterChange={(newFilters) => setFilters(prev => ({ ...prev, ...newFilters }))} 
-            />
-          </div>
-          
-          {/* Property Listings */}
-          <div id="properties-results" className="lg:col-span-3 order-2 sm:order-none">
-            {isLoading ? (
+        {/* Horizontal Search Section */}
+        <div className="mb-6 sm:mb-8">
+          <PropertyFilter 
+            onFilterChange={(newFilters) => setFilters(prev => ({ ...prev, ...newFilters }))} 
+          />
+        </div>
+        
+        {/* Property Listings */}
+        <div id="properties-results" className="w-full">
+          {isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 {Array(6).fill(0).map((_, i) => (
                   <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">
