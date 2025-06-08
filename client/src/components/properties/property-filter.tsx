@@ -202,18 +202,18 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Home className="h-4 w-4 text-blue-600" />
-                <Label className="text-sm font-semibold text-gray-700">Transaction Type</Label>
+                <Label className="text-sm font-semibold text-gray-700">I want to</Label>
               </div>
               <Select 
                 value={filters.type}
                 onValueChange={(value) => handleFilterChange("type", value)}
               >
-                <SelectTrigger className="h-11 border-2 focus:border-blue-400">
-                  <SelectValue placeholder="Select type" />
+                <SelectTrigger className="h-12 border-2 focus:border-blue-400 bg-white shadow-sm hover:shadow-md transition-all">
+                  <SelectValue placeholder="Buy or Rent" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="buy">🏠 Buy Property</SelectItem>
-                  <SelectItem value="rent">🏠 Rent Property</SelectItem>
+                  <SelectItem value="rent">🏡 Rent Property</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -228,11 +228,11 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 value={filters.propertyType}
                 onValueChange={(value) => handleFilterChange("propertyType", value)}
               >
-                <SelectTrigger className="h-11 border-2 focus:border-green-400">
-                  <SelectValue placeholder="Any type" />
+                <SelectTrigger className="h-12 border-2 focus:border-green-400 bg-white shadow-sm hover:shadow-md transition-all">
+                  <SelectValue placeholder="Any Property Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="any">🏢 Any Type</SelectItem>
+                  <SelectItem value="">🏢 Any Type</SelectItem>
                   {propertyTypesLoading ? (
                     <SelectItem value="loading" disabled>Loading...</SelectItem>
                   ) : (
@@ -251,10 +251,10 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 <Label className="text-sm font-semibold text-gray-700">Location</Label>
               </div>
               <div className="relative">
-                <Search className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input 
-                  className="pl-10 h-11 border-2 focus:border-purple-400"
-                  placeholder="Search location..." 
+                  className="pl-12 h-12 border-2 focus:border-purple-400 bg-white shadow-sm hover:shadow-md transition-all"
+                  placeholder="Enter area, district, city..." 
                   value={filters.location}
                   onChange={(e) => handleLocationChange(e.target.value)}
                   onKeyDown={(e) => {
@@ -266,7 +266,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 />
                 {filters.location && (
                   <button 
-                    className="absolute right-3 top-3.5 text-gray-400 hover:text-red-500 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
                     onClick={() => handleLocationChange("")}
                     aria-label="Clear search"
                   >
@@ -274,7 +274,19 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                   </button>
                 )}
               </div>
+              <p className="text-xs text-gray-500">Try: Ahmednagar, Pune, Mumbai</p>
             </div>
+          </div>
+          
+          {/* Search Button */}
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <Button 
+              onClick={applyFilters}
+              className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Find Properties
+            </Button>
           </div>
         </CardContent>
       </Card>

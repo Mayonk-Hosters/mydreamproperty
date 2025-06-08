@@ -86,66 +86,125 @@ export function HeroSection() {
               Discover your dream property from our premium collection of homes and commercial spaces
             </p>
             
-            {/* Search Form */}
-            <form onSubmit={handleSearch} className="bg-white p-4 rounded-lg shadow-lg w-full">
-              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                <div className="flex-1">
-                  <Select 
-                    defaultValue="buy"
-                    onValueChange={(value) => setSearchParams({...searchParams, type: value})}
-                  >
-                    <SelectTrigger className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary">
-                      <SelectValue placeholder="Buy or Rent" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="buy">Buy</SelectItem>
-                      <SelectItem value="rent">Rent</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex-1">
-                  <Select
-                    onValueChange={(value) => setSearchParams({...searchParams, propertyType: value})}
-                  >
-                    <SelectTrigger className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary">
-                      <SelectValue placeholder="Property Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {isLoading ? (
-                        <SelectItem value="" disabled>Loading property types...</SelectItem>
-                      ) : propertyTypes && propertyTypes.length > 0 ? (
-                        propertyTypes.map((type) => (
-                          <SelectItem key={type.id} value={type.name}>
-                            {type.name}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        DEFAULT_PROPERTY_TYPES.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex-grow">
-                  <Input 
-                    type="text" 
-                    placeholder="Search by area, district, taluka, tehsil..." 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                    value={searchParams.location}
-                    onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
-                  />
-                </div>
-                <Button 
-                  type="submit"
-                  className="px-6 py-3 bg-primary text-white font-medium rounded-md hover:bg-primary/90 transition-all"
-                >
-                  <Search className="mr-1 h-4 w-4" /> Search
-                </Button>
+            {/* Enhanced Search Form */}
+            <div className="bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-2xl w-full max-w-5xl mx-auto border border-white/20">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">Find Your Perfect Property</h3>
+                <p className="text-gray-600">Search through thousands of verified listings</p>
               </div>
-            </form>
+              
+              <form onSubmit={handleSearch} className="space-y-6">
+                {/* Property Type Selection */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <HomeIcon className="h-4 w-4 text-blue-600" />
+                      I want to
+                    </label>
+                    <Select 
+                      defaultValue="buy"
+                      onValueChange={(value) => setSearchParams({...searchParams, type: value})}
+                    >
+                      <SelectTrigger className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm hover:shadow-md transition-all">
+                        <SelectValue placeholder="Buy or Rent" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="buy">🏠 Buy Property</SelectItem>
+                        <SelectItem value="rent">🏡 Rent Property</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <Search className="h-4 w-4 text-green-600" />
+                      Property Type
+                    </label>
+                    <Select
+                      onValueChange={(value) => setSearchParams({...searchParams, propertyType: value})}
+                    >
+                      <SelectTrigger className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white shadow-sm hover:shadow-md transition-all">
+                        <SelectValue placeholder="Any Property Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">🏢 Any Property Type</SelectItem>
+                        {isLoading ? (
+                          <SelectItem value="" disabled>Loading property types...</SelectItem>
+                        ) : propertyTypes && propertyTypes.length > 0 ? (
+                          propertyTypes.map((type) => (
+                            <SelectItem key={type.id} value={type.name}>
+                              {type.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          DEFAULT_PROPERTY_TYPES.map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Location Search */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <Search className="h-4 w-4 text-purple-600" />
+                    Location
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input 
+                      type="text" 
+                      placeholder="Enter area, district, taluka, tehsil or landmark..." 
+                      className="w-full h-12 pl-12 pr-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white shadow-sm hover:shadow-md transition-all text-base"
+                      value={searchParams.location}
+                      onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Try: "Ahmednagar", "Pune", "Mumbai" or any specific area</p>
+                </div>
+                
+                {/* Search Button */}
+                <div className="pt-4">
+                  <Button 
+                    type="submit"
+                    className="w-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
+                  >
+                    <Search className="mr-3 h-5 w-5" /> 
+                    Search Properties
+                    <span className="ml-2 text-sm opacity-90">({propertyTypes?.length || DEFAULT_PROPERTY_TYPES.length}+ types available)</span>
+                  </Button>
+                </div>
+              </form>
+              
+              {/* Quick Search Tags */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <p className="text-sm font-medium text-gray-600 mb-3">Popular searches:</p>
+                <div className="flex flex-wrap gap-2">
+                  {['House in Ahmednagar', 'Apartment for Rent', 'Commercial Property', 'Agricultural Land', 'Villa'].map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => {
+                        const [propertyType, location] = tag.includes('in') ? tag.split(' in ') : [tag, ''];
+                        setSearchParams({
+                          ...searchParams,
+                          propertyType: propertyType.includes('for') ? '' : propertyType,
+                          location: location || '',
+                          type: tag.includes('Rent') ? 'rent' : 'buy'
+                        });
+                        handleSearch();
+                      }}
+                      className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-700 rounded-full transition-colors border border-gray-200 hover:border-blue-300"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
