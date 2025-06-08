@@ -64,11 +64,11 @@ export function Navbar() {
               <Home className="text-primary text-xl sm:text-2xl" />
               <span className="font-bold text-lg sm:text-xl text-primary truncate max-w-[150px] sm:max-w-none">{settings.siteName}</span>
             </Link>
-            <nav className="hidden md:flex space-x-4 lg:space-x-6 ml-4 lg:ml-6">
-              <Link href="/properties?type=buy" className={`font-medium text-sm lg:text-base ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+            <nav className="hidden md:flex space-x-2 lg:space-x-3 ml-4 lg:ml-6">
+              <Link href="/properties?type=buy" className={`px-4 py-2 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'bg-blue-600 text-white border-blue-600 shadow-lg' : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500 hover:text-blue-600 hover:shadow-md'}`}>
                 Buy
               </Link>
-              <Link href="/properties?type=rent" className={`font-medium text-sm lg:text-base ${location.includes('type=rent') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+              <Link href="/properties?type=rent" className={`px-4 py-2 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 ${location.includes('type=rent') ? 'bg-green-600 text-white border-green-600 shadow-lg' : 'bg-white text-gray-700 border-gray-300 hover:border-green-500 hover:text-green-600 hover:shadow-md'}`}>
                 Rent
               </Link>
               {/* Sell link removed */}
