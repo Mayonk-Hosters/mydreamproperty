@@ -80,7 +80,8 @@ export function HeroSection() {
               <HomeIcon className="h-16 w-16 text-white mx-auto mb-4 animate-bounce" />
             </div>
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent animate-slide-up">
-              Welcome to {settings.siteName}
+              <div>Welcome to</div>
+              <div>{settings.siteName}</div>
             </h1>
             <p className="text-xl md:text-2xl text-blue-100 mb-10 font-light animate-slide-up-delay leading-relaxed">
               Discover your dream property from our premium collection of homes and commercial spaces
