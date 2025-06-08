@@ -135,11 +135,21 @@ export default function PropertiesPage() {
         <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">{pageTitle}</h1>
         
         {/* Property Type Tabs */}
-        <div className="mb-6 sm:mb-8">
-          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full sm:w-auto grid-cols-2 mb-4">
-              <TabsTrigger value="buy" className="px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base">Buy</TabsTrigger>
-              <TabsTrigger value="rent" className="px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base">Rent</TabsTrigger>
+        <div className="mb-6 sm:mb-8 flex justify-center">
+          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full max-w-md">
+            <TabsList className="bg-gradient-to-r from-slate-100 to-gray-100 p-2 rounded-2xl shadow-xl border-2 border-gray-200/50 backdrop-blur-sm grid grid-cols-2">
+              <TabsTrigger 
+                value="buy" 
+                className="px-6 py-3 text-base font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-blue-600 data-[state=inactive]:hover:bg-blue-50/50"
+              >
+                🏠 Buy
+              </TabsTrigger>
+              <TabsTrigger 
+                value="rent" 
+                className="px-6 py-3 text-base font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-emerald-600 data-[state=inactive]:hover:bg-emerald-50/50"
+              >
+                🏢 Rent
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
