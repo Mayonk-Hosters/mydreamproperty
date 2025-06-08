@@ -140,13 +140,21 @@ export default function PropertiesPage() {
             <TabsList className="bg-gradient-to-r from-slate-100 to-gray-100 p-3 rounded-2xl shadow-xl border-2 border-gray-200/50 backdrop-blur-sm grid grid-cols-2 gap-2">
               <TabsTrigger 
                 value="buy" 
-                className="px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-blue-600 data-[state=inactive]:hover:bg-blue-50/50 whitespace-nowrap"
+                className={`px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 whitespace-nowrap ${
+                  activeTab === 'buy' 
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-300/50' 
+                    : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50/50'
+                }`}
               >
                 🏠 For Sale
               </TabsTrigger>
               <TabsTrigger 
                 value="rent" 
-                className="px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-emerald-600 data-[state=inactive]:hover:bg-emerald-50/50 whitespace-nowrap"
+                className={`px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 whitespace-nowrap ${
+                  activeTab === 'rent' 
+                    ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg shadow-emerald-300/50' 
+                    : 'text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/50'
+                }`}
               >
                 🏢 For Rent
               </TabsTrigger>
