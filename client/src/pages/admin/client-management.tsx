@@ -388,17 +388,28 @@ export default function ClientManagementPage() {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="mb-4">
-              <TabsTrigger value="all" className="px-6">
-                All Communications
-              </TabsTrigger>
-              <TabsTrigger value="inquiries" className="px-6">
-                Property Inquiries
-              </TabsTrigger>
-              <TabsTrigger value="messages" className="px-6">
-                Contact Messages
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex justify-center mb-4">
+              <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm grid grid-cols-3 max-w-2xl">
+                <TabsTrigger 
+                  value="all"
+                  className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-gray-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-700"
+                >
+                  All Communications
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="inquiries"
+                  className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600"
+                >
+                  Property Inquiries
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="messages"
+                  className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600"
+                >
+                  Contact Messages
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Content for all tabs */}
             <TabsContent value="all" className="mt-0">

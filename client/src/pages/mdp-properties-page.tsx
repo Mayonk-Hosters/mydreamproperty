@@ -48,11 +48,28 @@ export default function MDPPropertiesPage() {
       </p>
       
       <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="all">All Properties</TabsTrigger>
-          <TabsTrigger value="rent">For Rent</TabsTrigger>
-          <TabsTrigger value="buy">For Sale</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-center mb-8">
+          <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm grid grid-cols-3 max-w-lg">
+            <TabsTrigger 
+              value="all"
+              className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-gray-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-700"
+            >
+              All Properties
+            </TabsTrigger>
+            <TabsTrigger 
+              value="rent"
+              className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600"
+            >
+              For Rent
+            </TabsTrigger>
+            <TabsTrigger 
+              value="buy"
+              className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600"
+            >
+              For Sale
+            </TabsTrigger>
+          </TabsList>
+        </div>
         
         <TabsContent value="all" className="mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

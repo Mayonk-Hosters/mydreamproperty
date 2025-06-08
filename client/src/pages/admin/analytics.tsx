@@ -108,11 +108,28 @@ export default function AdminAnalyticsPage() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="properties">Properties</TabsTrigger>
-          <TabsTrigger value="agents">Agents</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-center mb-6">
+          <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm grid grid-cols-3 max-w-md">
+            <TabsTrigger 
+              value="overview"
+              className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-gray-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-700"
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="properties"
+              className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600"
+            >
+              Properties
+            </TabsTrigger>
+            <TabsTrigger 
+              value="agents"
+              className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600"
+            >
+              Agents
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
