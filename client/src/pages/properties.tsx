@@ -136,27 +136,27 @@ export default function PropertiesPage() {
         
         {/* Property Type Tabs */}
         <div className="mb-6 sm:mb-8 flex justify-center">
-          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full max-w-lg">
-            <TabsList className="bg-gradient-to-r from-slate-100 to-gray-100 p-3 rounded-2xl shadow-xl border-2 border-gray-200/50 backdrop-blur-sm grid grid-cols-2 gap-2">
+          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full max-w-md">
+            <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm grid grid-cols-2">
               <TabsTrigger 
                 value="buy" 
-                className={`px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 whitespace-nowrap ${
+                className={`px-6 py-3 text-base font-semibold rounded-md transition-all ${
                   activeTab === 'buy' 
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-300/50' 
-                    : 'text-slate-700 hover:text-blue-600 hover:bg-blue-50/50'
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-600 hover:text-blue-600'
                 }`}
               >
-                🏠 For Sale
+                For Sale
               </TabsTrigger>
               <TabsTrigger 
                 value="rent" 
-                className={`px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 whitespace-nowrap ${
+                className={`px-6 py-3 text-base font-semibold rounded-md transition-all ${
                   activeTab === 'rent' 
-                    ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg shadow-emerald-300/50' 
-                    : 'text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/50'
+                    ? 'bg-emerald-600 text-white' 
+                    : 'text-gray-600 hover:text-emerald-600'
                 }`}
               >
-                🏢 For Rent
+                For Rent
               </TabsTrigger>
             </TabsList>
           </Tabs>

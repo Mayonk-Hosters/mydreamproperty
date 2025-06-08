@@ -81,19 +81,19 @@ export function PropertyTabs() {
         </div>
         
         <Tabs defaultValue="buy" value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <div className="flex justify-center mb-12 animate-slide-up">
-            <TabsList className="bg-gradient-to-r from-slate-100 to-gray-100 p-2 rounded-2xl shadow-xl border-2 border-gray-200/50 backdrop-blur-sm">
+          <div className="flex justify-center mb-12">
+            <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm">
               <TabsTrigger 
                 value="buy" 
-                className="px-10 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-blue-600 data-[state=inactive]:hover:bg-blue-50/50"
+                className="px-8 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600"
               >
-                🏠 For Sale
+                For Sale
               </TabsTrigger>
               <TabsTrigger 
                 value="rent" 
-                className="px-10 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-emerald-600 data-[state=inactive]:hover:bg-emerald-50/50"
+                className="px-8 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600"
               >
-                🏢 For Rent
+                For Rent
               </TabsTrigger>
             </TabsList>
           </div>
