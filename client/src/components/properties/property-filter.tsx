@@ -173,14 +173,14 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
 
   return (
     <div className="space-y-4">
-      {/* Header Card */}
-      <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+      {/* Compact Search Card */}
+      <Card className="shadow-lg border-0 bg-white">
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
               <Filter className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-lg font-bold text-gray-800">Find Your Perfect Property</CardTitle>
-            </div>
+              Search Properties
+            </h3>
             <Button 
               variant="outline" 
               size="sm"
@@ -188,105 +188,108 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               className="text-xs hover:bg-red-50 hover:text-red-600 border-red-200"
             >
               <RefreshCw className="h-3 w-3 mr-1" /> 
-              Reset All
+              Reset
             </Button>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Quick Search Card */}
-      <Card className="shadow-md">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Buy/Rent Selection */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Home className="h-4 w-4 text-blue-600" />
-                <Label className="text-sm font-semibold text-gray-700">I want to</Label>
-              </div>
-              <Select 
-                value={filters.type}
-                onValueChange={(value) => handleFilterChange("type", value)}
-              >
-                <SelectTrigger className="h-12 border-2 focus:border-blue-400 bg-white shadow-sm hover:shadow-md transition-all">
-                  <SelectValue placeholder="Buy or Rent" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="buy">🏠 Buy Property</SelectItem>
-                  <SelectItem value="rent">🏡 Rent Property</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Property Type */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Home className="h-4 w-4 text-green-600" />
-                <Label className="text-sm font-semibold text-gray-700">Property Type</Label>
-              </div>
-              <Select 
-                value={filters.propertyType}
-                onValueChange={(value) => handleFilterChange("propertyType", value)}
-              >
-                <SelectTrigger className="h-12 border-2 focus:border-green-400 bg-white shadow-sm hover:shadow-md transition-all">
-                  <SelectValue placeholder="Any Property Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">🏢 Any Type</SelectItem>
-                  {propertyTypesLoading ? (
-                    <SelectItem value="loading" disabled>Loading...</SelectItem>
-                  ) : (
-                    propertyTypes.map((type) => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Location Search */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-purple-600" />
-                <Label className="text-sm font-semibold text-gray-700">Location</Label>
-              </div>
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input 
-                  className="pl-12 h-12 border-2 focus:border-purple-400 bg-white shadow-sm hover:shadow-md transition-all"
-                  placeholder="Enter area, district, city..." 
-                  value={filters.location}
-                  onChange={(e) => handleLocationChange(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      applyFilters();
-                    }
-                  }}
-                />
-                {filters.location && (
-                  <button 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
-                    onClick={() => handleLocationChange("")}
-                    aria-label="Clear search"
-                  >
-                    <XCircle className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              <p className="text-xs text-gray-500">Try: Ahmednagar, Pune, Mumbai</p>
-            </div>
           </div>
           
-          {/* Search Button */}
-          <div className="mt-6 pt-4 border-t border-gray-200">
+          {/* Compact Single Row Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+            <Select 
+              value={filters.type}
+              onValueChange={(value) => handleFilterChange("type", value)}
+            >
+              <SelectTrigger className="h-11 border-2 focus:border-blue-400 bg-white">
+                <SelectValue placeholder="Buy/Rent" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="buy">🏠 Buy</SelectItem>
+                <SelectItem value="rent">🏡 Rent</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select 
+              value={filters.propertyType}
+              onValueChange={(value) => handleFilterChange("propertyType", value)}
+            >
+              <SelectTrigger className="h-11 border-2 focus:border-green-400 bg-white">
+                <SelectValue placeholder="Property Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Any Type</SelectItem>
+                {propertyTypesLoading ? (
+                  <SelectItem value="loading" disabled>Loading...</SelectItem>
+                ) : (
+                  propertyTypes.map((type) => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input 
+                className="pl-10 h-11 border-2 focus:border-purple-400 bg-white"
+                placeholder="Location..." 
+                value={filters.location}
+                onChange={(e) => handleLocationChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyFilters();
+                  }
+                }}
+              />
+              {filters.location && (
+                <button 
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
+                  onClick={() => handleLocationChange("")}
+                  aria-label="Clear search"
+                >
+                  <XCircle className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            
             <Button 
               onClick={applyFilters}
-              className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
+              className="h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
             >
-              <Search className="mr-2 h-4 w-4" />
-              Find Properties
+              <Search className="mr-1 h-4 w-4" /> 
+              Search
             </Button>
+          </div>
+          
+          {/* Quick Filter Tags */}
+          <div className="flex flex-wrap gap-2">
+            {['Under ₹30L', '₹30L-₹1Cr', 'Above ₹1Cr', '2+ BHK', '3+ BHK', 'Commercial'].map((tag) => (
+              <button
+                key={tag}
+                onClick={() => {
+                  if (tag.includes('₹')) {
+                    if (tag === 'Under ₹30L') {
+                      handleFilterChange("minPrice", 0);
+                      handleFilterChange("maxPrice", 3000000);
+                    } else if (tag === '₹30L-₹1Cr') {
+                      handleFilterChange("minPrice", 3000000);
+                      handleFilterChange("maxPrice", 10000000);
+                    } else if (tag === 'Above ₹1Cr') {
+                      handleFilterChange("minPrice", 10000000);
+                      handleFilterChange("maxPrice", 15000000);
+                    }
+                  } else if (tag.includes('BHK')) {
+                    const beds = parseInt(tag.charAt(0));
+                    handleFilterChange("minBeds", beds);
+                  } else if (tag === 'Commercial') {
+                    handleFilterChange("propertyType", "Commercial");
+                  }
+                  applyFilters();
+                }}
+                className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-700 rounded-full transition-colors border border-gray-200 hover:border-blue-300"
+              >
+                {tag}
+              </button>
+            ))}
           </div>
         </CardContent>
       </Card>
