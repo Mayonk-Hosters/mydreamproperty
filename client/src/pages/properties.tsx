@@ -136,19 +136,19 @@ export default function PropertiesPage() {
         
         {/* Property Type Tabs */}
         <div className="mb-6 sm:mb-8 flex justify-center">
-          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full max-w-md">
-            <TabsList className="bg-gradient-to-r from-slate-100 to-gray-100 p-2 rounded-2xl shadow-xl border-2 border-gray-200/50 backdrop-blur-sm grid grid-cols-2">
+          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full max-w-lg">
+            <TabsList className="bg-gradient-to-r from-slate-100 to-gray-100 p-3 rounded-2xl shadow-xl border-2 border-gray-200/50 backdrop-blur-sm grid grid-cols-2 gap-2">
               <TabsTrigger 
                 value="buy" 
-                className="px-6 py-3 text-base font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-blue-600 data-[state=inactive]:hover:bg-blue-50/50"
+                className="px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-blue-600 data-[state=inactive]:hover:bg-blue-50/50 whitespace-nowrap"
               >
-                🏠 Buy
+                🏠 For Sale
               </TabsTrigger>
               <TabsTrigger 
                 value="rent" 
-                className="px-6 py-3 text-base font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-emerald-600 data-[state=inactive]:hover:bg-emerald-50/50"
+                className="px-8 py-4 text-lg font-bold rounded-xl transition-all duration-500 ease-in-out transform hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-green-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-300/50 data-[state=inactive]:text-slate-700 data-[state=inactive]:hover:text-emerald-600 data-[state=inactive]:hover:bg-emerald-50/50 whitespace-nowrap"
               >
-                🏢 Rent
+                🏢 For Rent
               </TabsTrigger>
             </TabsList>
           </Tabs>
