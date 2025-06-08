@@ -82,25 +82,32 @@ export function PropertyTabs() {
         
         <Tabs defaultValue="buy" value={activeTab} onValueChange={handleTabChange} className="w-full">
           <div className="flex justify-center mb-12">
-            <div className="relative bg-gradient-to-r from-slate-50 via-white to-slate-50 p-2 rounded-3xl shadow-xl border-2 border-gray-200/50 max-w-lg">
-              <TabsList className="relative bg-transparent p-0 h-auto flex gap-2">
+            <div className="relative max-w-md">
+              <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-pink-500/20 to-blue-600/20 rounded-full blur-xl"></div>
+              <TabsList className="relative backdrop-blur-sm bg-white/80 border border-white/40 shadow-2xl rounded-full p-1.5 flex gap-1">
                 <TabsTrigger 
                   value="buy" 
-                  className="relative px-8 py-4 text-lg font-extrabold rounded-2xl border-2 transition-all duration-300 data-[state=active]:border-blue-500 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-2xl data-[state=active]:scale-105 data-[state=inactive]:border-gray-300 data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:border-blue-400 data-[state=inactive]:hover:text-blue-600 data-[state=inactive]:hover:scale-102 data-[state=inactive]:shadow-lg"
+                  className="relative px-8 py-3.5 text-base font-bold rounded-full transition-all duration-500 ease-out data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/30 data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-violet-600 data-[state=inactive]:hover:bg-violet-50 overflow-hidden"
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-current opacity-60"></span>
+                  <span className="relative z-10 flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                    </svg>
                     For Sale
                   </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-violet-400/0 via-violet-400/30 to-violet-400/0 transform translate-x-[-100%] data-[state=active]:translate-x-[100%] transition-transform duration-700"></div>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="rent" 
-                  className="relative px-8 py-4 text-lg font-extrabold rounded-2xl border-2 transition-all duration-300 data-[state=active]:border-green-500 data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-2xl data-[state=active]:scale-105 data-[state=inactive]:border-gray-300 data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:border-green-400 data-[state=inactive]:hover:text-green-600 data-[state=inactive]:hover:scale-102 data-[state=inactive]:shadow-lg"
+                  className="relative px-8 py-3.5 text-base font-bold rounded-full transition-all duration-500 ease-out data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600 data-[state=inactive]:hover:bg-emerald-50 overflow-hidden"
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-current opacity-60"></span>
+                  <span className="relative z-10 flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                     For Rent
                   </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-400/30 to-emerald-400/0 transform translate-x-[-100%] data-[state=active]:translate-x-[100%] transition-transform duration-700"></div>
                 </TabsTrigger>
               </TabsList>
             </div>
