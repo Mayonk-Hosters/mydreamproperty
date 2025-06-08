@@ -51,81 +51,49 @@ export default function PropertiesPage() {
     setLocation(`/properties?${params.toString()}`);
   };
 
-  // Parse URL query parameters
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get("type");
-    const propertyType = params.get("propertyType");
-    const locationParam = params.get("location");
-    const minPrice = params.get("minPrice");
-    const maxPrice = params.get("maxPrice");
-    const minBeds = params.get("minBeds");
-    const minBaths = params.get("minBaths");
-
-    const updatedFilters = { ...filters };
-    
-    // Set default to buy if no type specified
-    const propertyTypeValue = type && (type === "buy" || type === "rent") ? type : "buy";
-    updatedFilters.type = propertyTypeValue;
-    setActiveTab(propertyTypeValue as "buy" | "rent");
-    
-    if (propertyType) updatedFilters.propertyType = propertyType;
-    if (locationParam) updatedFilters.location = locationParam;
-    if (minPrice) updatedFilters.minPrice = parseInt(minPrice);
-    if (maxPrice) updatedFilters.maxPrice = parseInt(maxPrice);
-    if (minBeds) updatedFilters.minBeds = parseInt(minBeds);
-    if (minBaths) updatedFilters.minBaths = parseInt(minBaths);
-    
-    setFilters(updatedFilters);
-  }, [location]);
-
-  // Build API query string
-  const queryString = Object.entries(filters)
-    .filter(([_, value]) => {
-      if (typeof value === 'number') {
-        return value > 0;
-      }
-      return value !== "";
-    })
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join('&');
-
-  // Fetch properties based on filters
-  const { data: fetchedProperties, isLoading } = useQuery<Property[]>({
-    queryKey: [`/api/properties?${queryString}`],
+  // Fetch properties
+  const { data: properties, isLoading } = useQuery<Property[]>({
+    queryKey: ["/api/properties", filters],
+    enabled: true,
   });
 
-  // Sort properties based on sortBy state
-  const properties = fetchedProperties ? [...fetchedProperties].sort((a, b) => {
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && value !== 0) {
+        params.set(key, value.toString());
+      }
+    });
+    setLocation(`/properties?${params.toString()}`, { replace: true });
+  }, [filters, setLocation]);
+
+  // Sort properties
+  const sortedProperties = properties?.slice().sort((a, b) => {
     switch (sortBy) {
       case "newest":
         return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
       case "price-low":
-        return a.price - b.price;
+        return (a.price || 0) - (b.price || 0);
       case "price-high":
-        return b.price - a.price;
+        return (b.price || 0) - (a.price || 0);
       default:
         return 0;
     }
-  }) : [];
+  }) || [];
 
-  const handleSort = (sortType: "newest" | "price-low" | "price-high") => {
-    setSortBy(sortBy === sortType ? "" : sortType);
+  const handleSort = (type: "newest" | "price-low" | "price-high") => {
+    setSortBy(type);
   };
 
-
-
   const getTitle = () => {
-    // If browsing by property type, show that in the title
-    if (filters.propertyType) {
-      return `${filters.propertyType} Properties`;
-    }
-    
     switch (filters.type) {
-      case "rent": return "Properties for Rent";
-      case "sell": return "Properties for Sale";
-      case "buy": 
-      default: return "Properties for Sale";
+      case "buy":
+        return "Properties for Sale";
+      case "rent":
+        return "Properties for Rent";
+      default:
+        return "Properties";
     }
   };
   
@@ -219,77 +187,77 @@ export default function PropertiesPage() {
                 </div>
               ))}
             </div>
-            ) : properties && properties.length > 0 ? (
-              <>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 sm:gap-0">
-                  <p className="text-sm sm:text-base text-gray-600">{properties.length} properties found</p>
-                  <div className="flex flex-wrap sm:flex-nowrap gap-2">
-                    <Button 
-                      variant={sortBy === "newest" ? "default" : "outline"} 
-                      size="sm" 
-                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
-                      onClick={() => handleSort("newest")}
-                    >
-                      Newest First
-                    </Button>
-                    <Button 
-                      variant={sortBy === "price-low" ? "default" : "outline"} 
-                      size="sm" 
-                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
-                      onClick={() => handleSort("price-low")}
-                    >
-                      Price: Low to High
-                    </Button>
-                    <Button 
-                      variant={sortBy === "price-high" ? "default" : "outline"} 
-                      size="sm" 
-                      className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
-                      onClick={() => handleSort("price-high")}
-                    >
-                      Price: High to Low
-                    </Button>
-                  </div>
+          ) : properties && properties.length > 0 ? (
+            <>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 sm:gap-0">
+                <p className="text-sm sm:text-base text-gray-600">{properties.length} properties found</p>
+                <div className="flex flex-wrap sm:flex-nowrap gap-2">
+                  <Button 
+                    variant={sortBy === "newest" ? "default" : "outline"} 
+                    size="sm" 
+                    className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
+                    onClick={() => handleSort("newest")}
+                  >
+                    Newest First
+                  </Button>
+                  <Button 
+                    variant={sortBy === "price-low" ? "default" : "outline"} 
+                    size="sm" 
+                    className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
+                    onClick={() => handleSort("price-low")}
+                  >
+                    Price: Low to High
+                  </Button>
+                  <Button 
+                    variant={sortBy === "price-high" ? "default" : "outline"} 
+                    size="sm" 
+                    className="text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3 py-1"
+                    onClick={() => handleSort("price-high")}
+                  >
+                    Price: High to Low
+                  </Button>
                 </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                  {properties.map((property) => (
-                    <PropertyCard key={property.id} property={property} />
-                  ))}
-                </div>
-                
-                {properties.length > 12 && (
-                  <div className="mt-6 sm:mt-8 flex justify-center">
-                    <Button variant="outline" className="text-sm">Load More Properties</Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="bg-gray-50 rounded-lg p-6 sm:p-10 text-center">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold mb-2">No properties found</h3>
-                <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
-                  Try adjusting your search filters to find properties that match your criteria.
-                </p>
-                <Button 
-                  onClick={() => setFilters({
-                    type: "buy",
-                    propertyType: "",
-                    location: "",
-                    minPrice: 0,
-                    maxPrice: 5000000,
-                    minBeds: 0,
-                    minBaths: 0,
-                  })}
-                  className="text-sm h-9"
-                >
-                  Reset Filters
-                </Button>
               </div>
-            )}
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                {sortedProperties.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
+              </div>
+              
+              {properties.length > 12 && (
+                <div className="mt-6 sm:mt-8 flex justify-center">
+                  <Button variant="outline" className="text-sm">Load More Properties</Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-6 sm:p-10 text-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg sm:text-xl font-semibold mb-2">No properties found</h3>
+              <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
+                Try adjusting your search filters to find properties that match your criteria.
+              </p>
+              <Button 
+                onClick={() => setFilters({
+                  type: "buy",
+                  propertyType: "",
+                  location: "",
+                  minPrice: 0,
+                  maxPrice: 5000000,
+                  minBeds: 0,
+                  minBaths: 0,
+                })}
+                className="text-sm h-9"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
