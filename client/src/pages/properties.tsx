@@ -192,33 +192,33 @@ export default function PropertiesPage() {
         {/* Property Listings */}
         <div id="properties-results" className="w-full">
           {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                {Array(6).fill(0).map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">
-                    <Skeleton className="h-44 sm:h-48 w-full" />
-                    <div className="p-3 sm:p-4">
-                      <div className="flex justify-between mb-1 sm:mb-2">
-                        <Skeleton className="h-5 sm:h-6 w-20 sm:w-24" />
-                        <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              {Array(6).fill(0).map((_, i) => (
+                <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">
+                  <Skeleton className="h-44 sm:h-48 w-full" />
+                  <div className="p-3 sm:p-4">
+                    <div className="flex justify-between mb-1 sm:mb-2">
+                      <Skeleton className="h-5 sm:h-6 w-20 sm:w-24" />
+                      <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
+                    </div>
+                    <Skeleton className="h-5 sm:h-6 w-32 sm:w-40 mb-1" />
+                    <Skeleton className="h-3 sm:h-4 w-28 sm:w-32 mb-2" />
+                    <div className="flex justify-between mb-2 sm:mb-3">
+                      <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
+                      <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
+                      <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
+                    </div>
+                    <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Skeleton className="h-6 w-6 sm:h-8 sm:w-8 rounded-full" />
+                        <Skeleton className="h-3 sm:h-4 w-14 sm:w-20 ml-1.5 sm:ml-2" />
                       </div>
-                      <Skeleton className="h-5 sm:h-6 w-32 sm:w-40 mb-1" />
-                      <Skeleton className="h-3 sm:h-4 w-28 sm:w-32 mb-2" />
-                      <div className="flex justify-between mb-2 sm:mb-3">
-                        <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
-                        <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
-                        <Skeleton className="h-3 sm:h-4 w-12 sm:w-16" />
-                      </div>
-                      <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
-                        <div className="flex items-center">
-                          <Skeleton className="h-6 w-6 sm:h-8 sm:w-8 rounded-full" />
-                          <Skeleton className="h-3 sm:h-4 w-14 sm:w-20 ml-1.5 sm:ml-2" />
-                        </div>
-                        <Skeleton className="h-4 sm:h-6 w-10 sm:w-12" />
-                      </div>
+                      <Skeleton className="h-4 sm:h-6 w-10 sm:w-12" />
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
             ) : properties && properties.length > 0 ? (
               <>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 sm:gap-0">
@@ -290,7 +290,6 @@ export default function PropertiesPage() {
                 </Button>
               </div>
             )}
-          </div>
         </div>
       </div>
     </Layout>
