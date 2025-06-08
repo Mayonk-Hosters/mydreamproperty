@@ -56,7 +56,7 @@ export function Navbar() {
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   return (
-    <header className={`sticky top-0 bg-white shadow-sm z-50 transition-all duration-300 ${scrolled ? 'shadow-md' : 'shadow-sm'}`}>
+    <header className={`sticky top-0 bg-gradient-to-r from-slate-50 via-white to-slate-50 backdrop-blur-sm border-b border-gray-200/50 z-50 transition-all duration-300 ${scrolled ? 'shadow-lg shadow-gray-200/50' : 'shadow-sm'}`}>
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2 sm:space-x-4">
@@ -65,11 +65,21 @@ export function Navbar() {
               <span className="font-bold text-lg sm:text-xl text-primary truncate max-w-[150px] sm:max-w-none">{settings.siteName}</span>
             </Link>
             <nav className="hidden md:flex space-x-2 lg:space-x-3 ml-4 lg:ml-6">
-              <Link href="/properties?type=buy" className={`px-4 py-2 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'bg-blue-600 text-white border-blue-600 shadow-lg' : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500 hover:text-blue-600 hover:shadow-md'}`}>
-                Buy
+              <Link href="/properties?type=buy" className={`px-5 py-2.5 rounded-xl font-bold text-sm lg:text-base transition-all duration-300 transform hover:scale-105 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30 border-2 border-blue-500' : 'bg-gradient-to-r from-white to-gray-50 text-gray-700 border-2 border-gray-200 hover:border-blue-400 hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 shadow-sm hover:shadow-md'}`}>
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  Buy
+                </span>
               </Link>
-              <Link href="/properties?type=rent" className={`px-4 py-2 rounded-lg border-2 font-semibold text-sm lg:text-base transition-all duration-200 ${location.includes('type=rent') ? 'bg-green-600 text-white border-green-600 shadow-lg' : 'bg-white text-gray-700 border-gray-300 hover:border-green-500 hover:text-green-600 hover:shadow-md'}`}>
-                Rent
+              <Link href="/properties?type=rent" className={`px-5 py-2.5 rounded-xl font-bold text-sm lg:text-base transition-all duration-300 transform hover:scale-105 ${location.includes('type=rent') ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg shadow-emerald-500/30 border-2 border-emerald-500' : 'bg-gradient-to-r from-white to-gray-50 text-gray-700 border-2 border-gray-200 hover:border-emerald-400 hover:from-emerald-50 hover:to-green-100 hover:text-emerald-700 shadow-sm hover:shadow-md'}`}>
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  Rent
+                </span>
               </Link>
               {/* Sell link removed */}
               {/* Agents link removed and moved to footer */}
@@ -110,10 +120,10 @@ export function Navbar() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Customer Care Number */}
             {contactInfo?.phone1 && (
-              <div className="hidden lg:flex items-center space-x-2 text-white bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-blue-700 hover:to-blue-800 transform hover:scale-105">
-                <Phone className="h-4 w-4 animate-pulse" />
-                <span className="text-sm font-semibold tracking-wide">
-                  <a href={`tel:${contactInfo.phone1}`} className="hover:text-blue-100 transition-colors">
+              <div className="hidden lg:flex items-center space-x-2 text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-700 px-5 py-2.5 rounded-2xl shadow-xl shadow-purple-500/25 hover:shadow-2xl hover:shadow-purple-500/40 transition-all duration-300 hover:from-indigo-700 hover:via-purple-700 hover:to-blue-800 transform hover:scale-105 border border-purple-400/30">
+                <Phone className="h-4 w-4 animate-pulse drop-shadow-sm" />
+                <span className="text-sm font-bold tracking-wide drop-shadow-sm">
+                  <a href={`tel:${contactInfo.phone1}`} className="hover:text-purple-100 transition-colors">
                     {contactInfo.phone1}
                   </a>
                 </span>
