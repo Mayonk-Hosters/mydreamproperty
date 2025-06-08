@@ -150,16 +150,16 @@ export default function PropertiesPage() {
         {/* Property Type Tabs */}
         <div className="mb-6 sm:mb-8 flex justify-center">
           <Tabs defaultValue={activeTab} value={activeTab} onValueChange={handleTabChange} className="w-full max-w-md">
-            <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm grid grid-cols-2">
+            <TabsList className="bg-gray-100 border border-gray-300 rounded-xl p-1.5 shadow-md grid grid-cols-2 gap-1">
               <TabsTrigger 
                 value="buy" 
-                className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600"
+                className="px-6 py-3 text-base font-bold rounded-lg transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-indigo-600 data-[state=inactive]:hover:bg-white/70"
               >
                 For Sale
               </TabsTrigger>
               <TabsTrigger 
                 value="rent" 
-                className="px-6 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600"
+                className="px-6 py-3 text-base font-bold rounded-lg transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:text-orange-500 data-[state=inactive]:hover:bg-white/70"
               >
                 For Rent
               </TabsTrigger>
