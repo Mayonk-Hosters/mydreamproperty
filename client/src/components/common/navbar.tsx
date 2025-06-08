@@ -73,24 +73,12 @@ export function Navbar() {
               </div>
               <span className="font-extrabold text-lg sm:text-xl bg-gradient-to-r from-blue-700 via-purple-600 to-indigo-700 bg-clip-text text-transparent truncate max-w-[150px] sm:max-w-none group-hover:from-purple-700 group-hover:via-blue-600 group-hover:to-indigo-800 transition-all duration-300">{settings.siteName}</span>
             </Link>
-            <nav className="hidden md:flex space-x-3 lg:space-x-4 ml-6 lg:ml-8">
-              <Link href="/properties?type=buy" className={`relative px-6 py-3 rounded-2xl font-bold text-sm lg:text-base transition-all duration-500 transform hover:scale-110 hover:-translate-y-0.5 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white shadow-xl shadow-blue-500/40 border border-blue-400/50' : 'bg-gradient-to-br from-white via-blue-50/50 to-white text-gray-700 border border-blue-200/60 hover:border-blue-400 hover:from-blue-100 hover:via-blue-50 hover:to-blue-100 hover:text-blue-800 shadow-lg hover:shadow-xl hover:shadow-blue-500/25'} overflow-hidden group`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[150%] transition-all duration-700"></div>
-                <span className="relative z-10 flex items-center gap-2">
-                  <svg className="w-4 h-4 drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                  </svg>
-                  Buy Properties
-                </span>
+            <nav className="hidden md:flex space-x-4 lg:space-x-6 ml-4 lg:ml-6">
+              <Link href="/properties?type=buy" className={`font-medium text-sm lg:text-base ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Buy
               </Link>
-              <Link href="/properties?type=rent" className={`relative px-6 py-3 rounded-2xl font-bold text-sm lg:text-base transition-all duration-500 transform hover:scale-110 hover:-translate-y-0.5 ${location.includes('type=rent') ? 'bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-700 text-white shadow-xl shadow-emerald-500/40 border border-emerald-400/50' : 'bg-gradient-to-br from-white via-emerald-50/50 to-white text-gray-700 border border-emerald-200/60 hover:border-emerald-400 hover:from-emerald-100 hover:via-emerald-50 hover:to-emerald-100 hover:text-emerald-800 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25'} overflow-hidden group`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[150%] transition-all duration-700"></div>
-                <span className="relative z-10 flex items-center gap-2">
-                  <svg className="w-4 h-4 drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  Rent Properties
-                </span>
+              <Link href="/properties?type=rent" className={`font-medium text-sm lg:text-base ${location.includes('type=rent') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                Rent
               </Link>
               {/* Sell link removed */}
               {/* Agents link removed and moved to footer */}
