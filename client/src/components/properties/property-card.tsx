@@ -138,13 +138,43 @@ export function PropertyCard({ property }: PropertyCardProps) {
             >
               <Eye className="mr-2" size={15} /> Quick View
             </Button>
-            <Button 
-              variant="outline" 
-              className="bg-white text-primary hover:bg-primary hover:text-white transition-colors text-sm"
-              onClick={handleToggleShare}
-            >
-              <Share2 className="mr-2" size={15} /> Share
-            </Button>
+            <div className="relative">
+              <Button 
+                ref={shareButtonRef}
+                variant="outline" 
+                className="bg-white text-primary hover:bg-primary hover:text-white transition-colors text-sm"
+                onClick={handleToggleShare}
+              >
+                <Share2 className="mr-2" size={15} /> Share
+              </Button>
+              
+              {/* Share Dropdown */}
+              {isShareOpen && (
+                <div 
+                  ref={shareDropdownRef}
+                  className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 min-w-[200px]"
+                >
+                  <div className="text-sm font-medium text-gray-800 mb-3">Share this property</div>
+                  <div className="flex justify-center gap-2">
+                    <FacebookShareButton url={propertyUrl}>
+                      <FacebookIcon size={32} round />
+                    </FacebookShareButton>
+                    <TwitterShareButton url={propertyUrl} title={shareTitle}>
+                      <TwitterIcon size={32} round />
+                    </TwitterShareButton>
+                    <WhatsappShareButton url={propertyUrl} title={shareTitle}>
+                      <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
+                    <LinkedinShareButton url={propertyUrl} title={shareTitle} summary={shareDescription}>
+                      <LinkedinIcon size={32} round />
+                    </LinkedinShareButton>
+                    <EmailShareButton url={propertyUrl} subject={shareTitle} body={`${shareDescription}\n\n${propertyUrl}`}>
+                      <EmailIcon size={32} round />
+                    </EmailShareButton>
+                  </div>
+                </div>
+              )}
+            </div>
             <Button 
               variant="outline" 
               className="bg-white text-primary hover:bg-primary hover:text-white transition-colors text-sm"
@@ -204,7 +234,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
           </div>
           
           {/* MahaRERA Registered Badge - Only shown for registered properties */}
-          {(property.maharera_registered === true || property.maharera_registered === 1 || property.maharera_registered === "true" || property.maharera_registered === "1") && (
+          {(Boolean(property.maharera_registered)) && (
             <div className="mb-3 p-2 rounded-lg border border-green-200 bg-green-50">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -250,14 +280,56 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 {agent?.name || 'Loading...'}
               </span>
             </div>
-            <Link href={`/property/${property.id}`}>
-              <Button 
-                variant="link" 
-                className="text-primary text-xs sm:text-sm font-medium hover:underline p-0 h-auto"
-              >
-                View Details
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              {/* Mobile Share Button */}
+              <div className="relative md:hidden">
+                <Button 
+                  ref={shareButtonRef}
+                  variant="outline" 
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={handleToggleShare}
+                >
+                  <Share2 size={14} />
+                </Button>
+                
+                {/* Mobile Share Dropdown */}
+                {isShareOpen && (
+                  <div 
+                    ref={shareDropdownRef}
+                    className="absolute bottom-full mb-2 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 min-w-[200px]"
+                  >
+                    <div className="text-sm font-medium text-gray-800 mb-3">Share this property</div>
+                    <div className="flex justify-center gap-2">
+                      <FacebookShareButton url={propertyUrl}>
+                        <FacebookIcon size={28} round />
+                      </FacebookShareButton>
+                      <TwitterShareButton url={propertyUrl} title={shareTitle}>
+                        <TwitterIcon size={28} round />
+                      </TwitterShareButton>
+                      <WhatsappShareButton url={propertyUrl} title={shareTitle}>
+                        <WhatsappIcon size={28} round />
+                      </WhatsappShareButton>
+                      <LinkedinShareButton url={propertyUrl} title={shareTitle} summary={shareDescription}>
+                        <LinkedinIcon size={28} round />
+                      </LinkedinShareButton>
+                      <EmailShareButton url={propertyUrl} subject={shareTitle} body={`${shareDescription}\n\n${propertyUrl}`}>
+                        <EmailIcon size={28} round />
+                      </EmailShareButton>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <Link href={`/property/${property.id}`}>
+                <Button 
+                  variant="link" 
+                  className="text-primary text-xs sm:text-sm font-medium hover:underline p-0 h-auto"
+                >
+                  View Details
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
