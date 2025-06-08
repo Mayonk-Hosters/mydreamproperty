@@ -25,6 +25,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogClose
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
             <DialogTitle>
               <Skeleton className="w-3/4 h-8" />
             </DialogTitle>
+            <DialogDescription>Loading property details...</DialogDescription>
             <DialogClose onClick={onClose} />
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -87,6 +89,7 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Error Loading Property</DialogTitle>
+            <DialogDescription>Unable to retrieve property information at this time.</DialogDescription>
             <DialogClose onClick={onClose} />
           </DialogHeader>
           <p className="text-red-500">There was an error loading the property details.</p>
@@ -103,6 +106,9 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
           <DialogHeader className="flex-row items-center justify-between space-y-0">
             <div>
               <DialogTitle className="text-2xl font-bold">{property.title}</DialogTitle>
+              <DialogDescription className="sr-only">
+                Property details for {property.title} located at {property.address}, {property.location}
+              </DialogDescription>
               {property.propertyNumber && (
                 <div className="text-sm font-medium text-primary mt-1">
                   {property.propertyNumber}
