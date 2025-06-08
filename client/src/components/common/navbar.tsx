@@ -56,8 +56,14 @@ export function Navbar() {
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   return (
-    <header className={`sticky top-0 bg-gradient-to-r from-blue-50/80 via-white/95 to-purple-50/80 backdrop-blur-md border-b border-gradient-to-r border-blue-200/30 z-50 transition-all duration-500 ${scrolled ? 'shadow-2xl shadow-purple-500/10 bg-gradient-to-r from-blue-50/90 via-white/98 to-purple-50/90' : 'shadow-lg shadow-blue-500/5'}`}>
-      <div className="container mx-auto px-4 sm:px-6">
+    <header className={`sticky top-0 relative overflow-hidden z-50 transition-all duration-700 ${scrolled ? 'shadow-2xl shadow-purple-500/20' : 'shadow-xl shadow-indigo-500/10'}`}>
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 via-blue-500/5 to-purple-600/10 backdrop-blur-xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse opacity-20"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-violet-400/60 to-transparent"></div>
+      <div className="relative bg-gradient-to-r from-slate-50/90 via-white/95 to-indigo-50/90 backdrop-blur-lg border-b border-violet-200/30">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-300/5 via-transparent to-blue-300/5"></div>
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="relative">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Link href="/" className="flex items-center space-x-3 group">
@@ -147,6 +153,7 @@ export function Navbar() {
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -246,6 +253,7 @@ export function Navbar() {
             </div>
           </nav>
         </div>
+      </div>
       </div>
     </header>
   );
