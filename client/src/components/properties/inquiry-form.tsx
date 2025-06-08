@@ -105,6 +105,9 @@ export function InquiryForm({ property, isOpen, onClose }: InquiryFormProps) {
             <Building className="h-5 w-5" />
             Inquire About This Property
           </DialogTitle>
+          <DialogDescription>
+            Fill out the form below to express your interest in this property. We'll get back to you shortly.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="mb-4">
