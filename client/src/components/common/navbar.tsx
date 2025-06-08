@@ -56,29 +56,34 @@ export function Navbar() {
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   return (
-    <header className={`sticky top-0 bg-gradient-to-r from-slate-50 via-white to-slate-50 backdrop-blur-sm border-b border-gray-200/50 z-50 transition-all duration-300 ${scrolled ? 'shadow-lg shadow-gray-200/50' : 'shadow-sm'}`}>
+    <header className={`sticky top-0 bg-gradient-to-r from-blue-50/80 via-white/95 to-purple-50/80 backdrop-blur-md border-b border-gradient-to-r border-blue-200/30 z-50 transition-all duration-500 ${scrolled ? 'shadow-2xl shadow-purple-500/10 bg-gradient-to-r from-blue-50/90 via-white/98 to-purple-50/90' : 'shadow-lg shadow-blue-500/5'}`}>
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <Home className="text-primary text-xl sm:text-2xl" />
-              <span className="font-bold text-lg sm:text-xl text-primary truncate max-w-[150px] sm:max-w-none">{settings.siteName}</span>
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="relative p-2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-purple-500/40 transition-all duration-300 group-hover:scale-110">
+                <Home className="text-white text-lg sm:text-xl drop-shadow-sm" />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+              <span className="font-extrabold text-lg sm:text-xl bg-gradient-to-r from-blue-700 via-purple-600 to-indigo-700 bg-clip-text text-transparent truncate max-w-[150px] sm:max-w-none group-hover:from-purple-700 group-hover:via-blue-600 group-hover:to-indigo-800 transition-all duration-300">{settings.siteName}</span>
             </Link>
-            <nav className="hidden md:flex space-x-2 lg:space-x-3 ml-4 lg:ml-6">
-              <Link href="/properties?type=buy" className={`px-5 py-2.5 rounded-xl font-bold text-sm lg:text-base transition-all duration-300 transform hover:scale-105 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30 border-2 border-blue-500' : 'bg-gradient-to-r from-white to-gray-50 text-gray-700 border-2 border-gray-200 hover:border-blue-400 hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 shadow-sm hover:shadow-md'}`}>
-                <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <nav className="hidden md:flex space-x-3 lg:space-x-4 ml-6 lg:ml-8">
+              <Link href="/properties?type=buy" className={`relative px-6 py-3 rounded-2xl font-bold text-sm lg:text-base transition-all duration-500 transform hover:scale-110 hover:-translate-y-0.5 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white shadow-xl shadow-blue-500/40 border border-blue-400/50' : 'bg-gradient-to-br from-white via-blue-50/50 to-white text-gray-700 border border-blue-200/60 hover:border-blue-400 hover:from-blue-100 hover:via-blue-50 hover:to-blue-100 hover:text-blue-800 shadow-lg hover:shadow-xl hover:shadow-blue-500/25'} overflow-hidden group`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[150%] transition-all duration-700"></div>
+                <span className="relative z-10 flex items-center gap-2">
+                  <svg className="w-4 h-4 drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                   </svg>
-                  Buy
+                  Buy Properties
                 </span>
               </Link>
-              <Link href="/properties?type=rent" className={`px-5 py-2.5 rounded-xl font-bold text-sm lg:text-base transition-all duration-300 transform hover:scale-105 ${location.includes('type=rent') ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg shadow-emerald-500/30 border-2 border-emerald-500' : 'bg-gradient-to-r from-white to-gray-50 text-gray-700 border-2 border-gray-200 hover:border-emerald-400 hover:from-emerald-50 hover:to-green-100 hover:text-emerald-700 shadow-sm hover:shadow-md'}`}>
-                <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <Link href="/properties?type=rent" className={`relative px-6 py-3 rounded-2xl font-bold text-sm lg:text-base transition-all duration-500 transform hover:scale-110 hover:-translate-y-0.5 ${location.includes('type=rent') ? 'bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-700 text-white shadow-xl shadow-emerald-500/40 border border-emerald-400/50' : 'bg-gradient-to-br from-white via-emerald-50/50 to-white text-gray-700 border border-emerald-200/60 hover:border-emerald-400 hover:from-emerald-100 hover:via-emerald-50 hover:to-emerald-100 hover:text-emerald-800 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25'} overflow-hidden group`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[150%] transition-all duration-700"></div>
+                <span className="relative z-10 flex items-center gap-2">
+                  <svg className="w-4 h-4 drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
-                  Rent
+                  Rent Properties
                 </span>
               </Link>
               {/* Sell link removed */}
@@ -120,10 +125,11 @@ export function Navbar() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Customer Care Number */}
             {contactInfo?.phone1 && (
-              <div className="hidden lg:flex items-center space-x-2 text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-700 px-5 py-2.5 rounded-2xl shadow-xl shadow-purple-500/25 hover:shadow-2xl hover:shadow-purple-500/40 transition-all duration-300 hover:from-indigo-700 hover:via-purple-700 hover:to-blue-800 transform hover:scale-105 border border-purple-400/30">
-                <Phone className="h-4 w-4 animate-pulse drop-shadow-sm" />
-                <span className="text-sm font-bold tracking-wide drop-shadow-sm">
-                  <a href={`tel:${contactInfo.phone1}`} className="hover:text-purple-100 transition-colors">
+              <div className="hidden lg:flex items-center space-x-3 text-white bg-gradient-to-br from-rose-500 via-pink-600 to-purple-700 px-6 py-3 rounded-3xl shadow-2xl shadow-pink-500/30 hover:shadow-2xl hover:shadow-rose-500/50 transition-all duration-500 hover:from-rose-600 hover:via-pink-700 hover:to-purple-800 transform hover:scale-110 hover:-translate-y-1 border border-pink-400/40 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[150%] transition-all duration-700"></div>
+                <Phone className="h-5 w-5 animate-pulse drop-shadow-lg relative z-10" />
+                <span className="text-sm font-extrabold tracking-wide drop-shadow-lg relative z-10">
+                  <a href={`tel:${contactInfo.phone1}`} className="hover:text-pink-100 transition-colors">
                     {contactInfo.phone1}
                   </a>
                 </span>
