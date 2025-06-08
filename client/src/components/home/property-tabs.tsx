@@ -82,20 +82,28 @@ export function PropertyTabs() {
         
         <Tabs defaultValue="buy" value={activeTab} onValueChange={handleTabChange} className="w-full">
           <div className="flex justify-center mb-12">
-            <TabsList className="bg-white border border-gray-200 rounded-lg p-1 shadow-sm">
-              <TabsTrigger 
-                value="buy" 
-                className="px-8 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-blue-600"
-              >
-                For Sale
-              </TabsTrigger>
-              <TabsTrigger 
-                value="rent" 
-                className="px-8 py-3 text-base font-semibold rounded-md transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-emerald-600"
-              >
-                For Rent
-              </TabsTrigger>
-            </TabsList>
+            <div className="relative bg-gradient-to-r from-slate-50 via-white to-slate-50 p-2 rounded-3xl shadow-xl border-2 border-gray-200/50 max-w-lg">
+              <TabsList className="relative bg-transparent p-0 h-auto flex gap-2">
+                <TabsTrigger 
+                  value="buy" 
+                  className="relative px-8 py-4 text-lg font-extrabold rounded-2xl border-2 transition-all duration-300 data-[state=active]:border-blue-500 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-2xl data-[state=active]:scale-105 data-[state=inactive]:border-gray-300 data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:border-blue-400 data-[state=inactive]:hover:text-blue-600 data-[state=inactive]:hover:scale-102 data-[state=inactive]:shadow-lg"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-current opacity-60"></span>
+                    For Sale
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="rent" 
+                  className="relative px-8 py-4 text-lg font-extrabold rounded-2xl border-2 transition-all duration-300 data-[state=active]:border-green-500 data-[state=active]:bg-green-500 data-[state=active]:text-white data-[state=active]:shadow-2xl data-[state=active]:scale-105 data-[state=inactive]:border-gray-300 data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:border-green-400 data-[state=inactive]:hover:text-green-600 data-[state=inactive]:hover:scale-102 data-[state=inactive]:shadow-lg"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-current opacity-60"></span>
+                    For Rent
+                  </span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </div>
           
           <TabsContent value="buy" className="mt-0">
