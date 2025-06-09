@@ -27,7 +27,6 @@ export const users = pgTable("users", {
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-  inquiries: many(inquiries),
 }));
 
 export const insertUserSchema = createInsertSchema(users);
@@ -108,7 +107,7 @@ export const propertiesRelations = relations(properties, ({ one, many }) => ({
     fields: [properties.tehsilId],
     references: [tehsils.id],
   }),
-  inquiries: many(inquiries),
+
 }));
 
 export const insertPropertySchema = createInsertSchema(properties).omit({
@@ -122,35 +121,7 @@ export const insertPropertySchema = createInsertSchema(properties).omit({
   tehsilId: true
 });
 
-// Inquiries schema
-export const inquiries = pgTable("inquiries", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone"),
-  message: text("message").notNull(),
-  propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: 'cascade' }),
-  userId: text("user_id").references(() => users.id),
-  isRead: boolean("is_read").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
 
-export const inquiriesRelations = relations(inquiries, ({ one }) => ({
-  property: one(properties, {
-    fields: [inquiries.propertyId],
-    references: [properties.id],
-  }),
-  user: one(users, {
-    fields: [inquiries.userId],
-    references: [users.id],
-  }),
-}));
-
-export const insertInquirySchema = createInsertSchema(inquiries).omit({
-  id: true,
-  createdAt: true,
-  userId: true,
-});
 
 // Type definitions
 export type User = typeof users.$inferSelect;
@@ -163,8 +134,70 @@ export type InsertProperty = z.infer<typeof insertPropertySchema>;
 export type Agent = typeof agents.$inferSelect;
 export type InsertAgent = z.infer<typeof insertAgentSchema>;
 
-export type Inquiry = typeof inquiries.$inferSelect;
-export type InsertInquiry = z.infer<typeof insertInquirySchema>;
+// Property Inquiries - Specific property interest
+export const propertyInquiries = pgTable("property_inquiries", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  message: text("message"),
+  propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: 'cascade' }),
+  inquiryType: text("inquiry_type").notNull().default("general"), // general, visit, buy, rent
+  budget: real("budget"), // Buyer's budget
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Home Loan Inquiries - Loan assistance requests
+export const homeLoanInquiries = pgTable("home_loan_inquiries", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  occupation: text("occupation"),
+  monthlyIncome: real("monthly_income"),
+  loanAmount: real("loan_amount"),
+  propertyValue: real("property_value"),
+  propertyId: integer("property_id").references(() => properties.id, { onDelete: 'set null' }),
+  message: text("message"),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Relations for inquiries
+export const propertyInquiriesRelations = relations(propertyInquiries, ({ one }) => ({
+  property: one(properties, {
+    fields: [propertyInquiries.propertyId],
+    references: [properties.id],
+  }),
+}));
+
+export const homeLoanInquiriesRelations = relations(homeLoanInquiries, ({ one }) => ({
+  property: one(properties, {
+    fields: [homeLoanInquiries.propertyId],
+    references: [properties.id],
+  }),
+}));
+
+// Insert schemas for inquiries
+export const insertPropertyInquirySchema = createInsertSchema(propertyInquiries).omit({
+  id: true,
+  createdAt: true,
+  isRead: true,
+});
+
+export const insertHomeLoanInquirySchema = createInsertSchema(homeLoanInquiries).omit({
+  id: true,
+  createdAt: true,
+  isRead: true,
+});
+
+// Type definitions for inquiries
+export type PropertyInquiry = typeof propertyInquiries.$inferSelect;
+export type InsertPropertyInquiry = z.infer<typeof insertPropertyInquirySchema>;
+
+export type HomeLoanInquiry = typeof homeLoanInquiries.$inferSelect;
+export type InsertHomeLoanInquiry = z.infer<typeof insertHomeLoanInquirySchema>;
 
 // India Locations Tables
 export const states = pgTable("states", {
@@ -289,31 +322,7 @@ export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({
 export type ContactInfo = typeof contactInfo.$inferSelect;
 export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
 
-// Home Loan Inquiry schema
-export const homeLoanInquiries = pgTable("home_loan_inquiries", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  phone: text("phone").notNull(),
-  email: text("email").notNull(),
-  loanType: text("loan_type").notNull(),
-  loanAmount: integer("loan_amount").notNull(),
-  propertyLocation: text("property_location").notNull(),
-  monthlyIncome: decimal("monthly_income").notNull(),
-  employment: text("employment").notNull(),
-  isRead: boolean("is_read").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
 
-export const insertHomeLoanInquirySchema = createInsertSchema(homeLoanInquiries).omit({
-  id: true,
-  isRead: true,
-  createdAt: true,
-}).extend({
-  monthlyIncome: z.number().or(z.string()).transform((val) => String(val)),
-});
-
-export type HomeLoanInquiry = typeof homeLoanInquiries.$inferSelect;
-export type InsertHomeLoanInquiry = z.infer<typeof insertHomeLoanInquirySchema>;
 
 // Property types table
 export const propertyTypes = pgTable("property_types", {
