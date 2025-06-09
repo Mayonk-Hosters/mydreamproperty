@@ -24,7 +24,9 @@ export default function AdminLogin() {
         password
       });
 
-      if (response && response.isAdmin) {
+      const userData = await response.json();
+      
+      if (userData && userData.isAdmin) {
         toast({
           title: "Login successful",
           description: "Welcome to the admin panel"
