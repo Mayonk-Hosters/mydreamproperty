@@ -79,80 +79,59 @@ const upload = multer({
   }
 });
 
-// Utility function to check admin access consistently across all routes
+// Production-ready admin access checker for message functions
 function checkAdminAccess(req: any): boolean {
-  // Log session details for debugging
-  console.log('Authentication check:', {
+  console.log('Production auth check:', {
     hasSession: !!req.session,
     sessionKeys: req.session ? Object.keys(req.session) : [],
     isAdmin: (req.session as any)?.isAdmin,
     authenticatedAdmin: (req.session as any)?.authenticatedAdmin,
-    hasUser: !!req.user,
-    environment: process.env.NODE_ENV,
-    userType: (req.session as any)?.userType
+    userType: (req.session as any)?.userType,
+    environment: process.env.NODE_ENV
   });
 
-  // Session-based admin access (traditional login) - check first
-  if (req.session && (req.session as any).isAdmin) {
-    console.log('Access granted via session.isAdmin');
-    return true;
+  // Primary authentication methods for production deployment
+  const authChecks = [
+    // Method 1: Direct session admin flag
+    () => req.session?.isAdmin === true,
+    
+    // Method 2: Authenticated admin flag (production)
+    () => req.session?.authenticatedAdmin === true,
+    
+    // Method 3: Admin userType
+    () => req.session?.userType === 'admin',
+    
+    // Method 4: Passport session with admin
+    () => req.session?.passport?.user && req.session?.isAdmin,
+    
+    // Method 5: OAuth admin
+    () => req.isAuthenticated?.() && req.user?.isAdmin,
+    
+    // Method 6: Admin username in session
+    () => req.session?.user?.username === 'admin',
+    
+    // Method 7: Production admin username
+    () => req.session?.user?.username === 'ahmednagarproperty',
+    
+    // Method 8: Replit environment
+    () => process.env.REPLIT_SLUG && req.headers['x-replit-user-id'],
+    
+    // Method 9: Development mode (last resort)
+    () => process.env.NODE_ENV === 'development'
+  ];
+
+  for (let i = 0; i < authChecks.length; i++) {
+    try {
+      if (authChecks[i]()) {
+        console.log(`Admin access granted via method ${i + 1}`);
+        return true;
+      }
+    } catch (error) {
+      console.log(`Auth method ${i + 1} failed:`, error);
+    }
   }
 
-  // Check for authenticated admin flag (production deployment)
-  if (req.session && (req.session as any).authenticatedAdmin) {
-    console.log('Access granted via authenticatedAdmin flag');
-    return true;
-  }
-
-  // Development mode access (always grant access in development)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Access granted via development mode');
-    return true;
-  }
-  
-  // Check for admin userType in session
-  if (req.session && (req.session as any).userType === 'admin') {
-    console.log('Access granted via userType admin');
-    return true;
-  }
-  
-  // Check for authenticated session with admin user
-  if (req.session && (req.session as any).passport && (req.session as any).passport.user) {
-    console.log('Access granted via passport session');
-    return true;
-  }
-  
-  // OAuth-based admin access
-  if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
-    console.log('Access granted via OAuth admin');
-    return true;
-  }
-  
-  // Additional check for user object with isAdmin property
-  if (req.user && (req.user as any)?.isAdmin) {
-    console.log('Access granted via user.isAdmin');
-    return true;
-  }
-  
-  // Check for admin username in session (fallback for production)
-  if (req.session && (req.session as any).user && (req.session as any).user.username === 'admin') {
-    console.log('Access granted via admin username');
-    return true;
-  }
-  
-  // Production fallback - check if running on Replit and allow admin access
-  if (process.env.REPLIT_SLUG && req.headers['x-replit-user-id']) {
-    console.log('Access granted via Replit environment');
-    return true;
-  }
-  
-  // Production deployment fallback - check for any valid session
-  if (process.env.NODE_ENV === 'production' && req.session) {
-    console.log('Access granted via production session fallback');
-    return true;
-  }
-  
-  console.log('Access denied - no valid authentication found');
+  console.log('Admin access denied - no valid authentication found');
   return false;
 }
 
