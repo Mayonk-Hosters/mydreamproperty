@@ -4,6 +4,7 @@ import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { db } from "./db";
 import { pool } from "./db";
+import { eq, desc } from "drizzle-orm";
 import * as XLSX from 'xlsx';
 // AI recommendation imports removed
 import { 
@@ -723,7 +724,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Forbidden - Admin access required" });
       }
 
-      const inquiries = await db.select().from(propertyInquiries).orderBy(desc(propertyInquiries.createdAt));
+      const result = await pool.query('SELECT * FROM property_inquiries ORDER BY created_at DESC');
+      const inquiries = result.rows;
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching property inquiries:", error);
@@ -735,7 +737,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/inquiries", async (req, res) => {
     try {
       const inquiryData = insertPropertyInquirySchema.parse(req.body);
-      const [inquiry] = await db.insert(propertyInquiries).values(inquiryData).returning();
+      const result = await pool.query(
+        'INSERT INTO property_inquiries (name, email, phone, message, property_id, inquiry_type, budget) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [inquiryData.name, inquiryData.email, inquiryData.phone, inquiryData.message, inquiryData.propertyId, inquiryData.inquiryType, inquiryData.budget]
+      );
+      const inquiry = result.rows[0];
       res.status(201).json(inquiry);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -762,8 +768,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid inquiry ID" });
       }
       
-      const updated = await dbStorage.markPropertyInquiryAsRead(id);
-      if (updated) {
+      const result = await pool.query(
+        'UPDATE property_inquiries SET is_read = true WHERE id = $1 RETURNING *',
+        [id]
+      );
+      
+      if (result.rows.length > 0) {
         res.json({ success: true, message: "Property inquiry marked as read" });
       } else {
         res.status(404).json({ message: "Property inquiry not found" });
