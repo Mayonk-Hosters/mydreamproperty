@@ -73,7 +73,7 @@ export function HorizontalNav() {
 
   const messageNavItems = [
     {
-      name: "Inquiries",
+      name: "Property Enquiries",
       path: "/admin/inquiries",
       icon: <MessageCircle className="h-4 w-4" />,
       hasNotification: hasUnreadInquiries,
