@@ -200,7 +200,7 @@ export function PropertyTabs() {
                   rentProperties.slice(0, 8).map((property) => (
                     <PropertyCard key={property.id} property={property} />
                   ))
-                ) : featuredRentProperties.length === 0 && (
+                ) : (
                   <div className="col-span-full text-center py-8">
                     <p className="text-gray-500">No properties found for rent.</p>
                   </div>
