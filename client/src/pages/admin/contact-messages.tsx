@@ -4,12 +4,13 @@ import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare } from "lucide-react";
+import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare, Download } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MessagesLayout } from "@/components/admin/messages-layout";
 import { Helmet } from "react-helmet";
+import * as XLSX from 'xlsx';
 
 interface ContactMessage {
   id: number;
@@ -57,6 +58,44 @@ export default function ContactMessagesPage() {
       toast({ title: "Success", description: "Contact message deleted successfully" });
     },
   });
+
+  const handleExportToExcel = async () => {
+    try {
+      const response = await fetch("/api/export/contact-messages", {
+        method: "GET",
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to export data");
+      }
+      
+      const data = await response.json();
+      
+      // Create workbook and worksheet
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Contact Messages");
+      
+      // Generate filename with current date
+      const filename = `contact-messages-${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      // Save file
+      XLSX.writeFile(wb, filename);
+      
+      toast({ 
+        title: "Success", 
+        description: "Contact messages exported to Excel successfully" 
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to export contact messages", 
+        variant: "destructive" 
+      });
+    }
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -117,16 +156,26 @@ export default function ContactMessagesPage() {
               )}
             </div>
           </div>
-          {selectedIds.length > 0 && (
+          <div className="flex items-center gap-2">
             <Button 
-              variant="destructive" 
-              onClick={handleBulkDelete}
-              disabled={deleteMutation.isPending}
+              variant="outline" 
+              onClick={handleExportToExcel}
+              className="flex items-center gap-2"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Selected ({selectedIds.length})
+              <Download className="h-4 w-4" />
+              Export Excel
             </Button>
-          )}
+            {selectedIds.length > 0 && (
+              <Button 
+                variant="destructive" 
+                onClick={handleBulkDelete}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected ({selectedIds.length})
+              </Button>
+            )}
+          </div>
         </div>
 
       {messages.length === 0 ? (

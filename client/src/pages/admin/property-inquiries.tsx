@@ -158,16 +158,26 @@ export default function PropertyInquiriesPage() {
               )}
             </p>
           </div>
-          {selectedIds.length > 0 && (
+          <div className="flex items-center gap-2">
             <Button 
-              variant="destructive" 
-              onClick={handleBulkDelete}
-              disabled={deleteMutation.isPending}
+              variant="outline" 
+              onClick={handleExportToExcel}
+              className="flex items-center gap-2"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Selected ({selectedIds.length})
+              <Download className="h-4 w-4" />
+              Export Excel
             </Button>
-          )}
+            {selectedIds.length > 0 && (
+              <Button 
+                variant="destructive" 
+                onClick={handleBulkDelete}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected ({selectedIds.length})
+              </Button>
+            )}
+          </div>
         </div>
 
       {inquiries.length === 0 ? (
