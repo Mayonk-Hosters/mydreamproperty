@@ -148,7 +148,7 @@ export function PropertyTabs() {
                   buyProperties.slice(0, 8).map((property) => (
                     <PropertyCard key={property.id} property={property} />
                   ))
-                ) : featuredBuyProperties.length === 0 && (
+                ) : (
                   <div className="col-span-full text-center py-8">
                     <p className="text-gray-500">No properties found for sale.</p>
                   </div>
