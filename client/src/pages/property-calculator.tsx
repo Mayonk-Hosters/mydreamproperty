@@ -138,15 +138,15 @@ function AreaConverter() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-blue-50/50">
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-orange-50/30">
+        <CardHeader className="bg-gradient-to-r from-primary to-orange-600 text-white rounded-t-lg">
           <CardTitle className="flex items-center gap-3 text-2xl">
             <div className="p-2 bg-white/20 rounded-lg">
               <ArrowRightLeft className="h-6 w-6" />
             </div>
             Property Area Converter
           </CardTitle>
-          <CardDescription className="text-blue-100 text-lg">
+          <CardDescription className="text-orange-100 text-lg">
             Convert between different area units with precision and ease
           </CardDescription>
         </CardHeader>
@@ -165,7 +165,7 @@ function AreaConverter() {
                           type="number" 
                           step="0.01" 
                           {...field} 
-                          className="h-14 text-xl border-2 border-blue-200 focus:border-blue-500 rounded-lg"
+                          className="h-14 text-xl border-2 border-primary/30 focus:border-primary rounded-lg"
                           placeholder="Enter area value"
                         />
                       </FormControl>
@@ -186,7 +186,7 @@ function AreaConverter() {
                         <FormLabel className="text-lg font-semibold text-gray-700">From Unit</FormLabel>
                         <FormControl>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger className="h-12 border-2 border-green-200 focus:border-green-500 rounded-lg">
+                            <SelectTrigger className="h-12 border-2 border-primary/30 focus:border-primary rounded-lg">
                               <SelectValue placeholder="Select from unit" />
                             </SelectTrigger>
                             <SelectContent>
@@ -213,7 +213,7 @@ function AreaConverter() {
                         <FormLabel className="text-lg font-semibold text-gray-700">To Unit</FormLabel>
                         <FormControl>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger className="h-12 border-2 border-purple-200 focus:border-purple-500 rounded-lg">
+                            <SelectTrigger className="h-12 border-2 border-orange-200 focus:border-orange-500 rounded-lg">
                               <SelectValue placeholder="Select to unit" />
                             </SelectTrigger>
                             <SelectContent>
@@ -235,7 +235,7 @@ function AreaConverter() {
               <div className="flex gap-4 pt-4">
                 <Button 
                   type="submit" 
-                  className="flex-1 h-14 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg"
+                  className="flex-1 h-14 text-lg bg-gradient-to-r from-primary to-orange-600 hover:from-primary/90 hover:to-orange-700 shadow-lg"
                 >
                   Convert Area
                 </Button>
@@ -243,7 +243,7 @@ function AreaConverter() {
                   type="button" 
                   variant="outline" 
                   onClick={swapUnits}
-                  className="h-14 px-6 border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50"
+                  className="h-14 px-6 border-2 border-gray-300 hover:border-primary hover:bg-primary/10"
                 >
                   <ArrowRightLeft className="h-5 w-5" />
                 </Button>
@@ -252,11 +252,11 @@ function AreaConverter() {
           </Form>
 
           {result !== null && (
-            <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border-2 border-green-200">
+            <div className="mt-8 p-6 bg-gradient-to-r from-primary/10 to-orange-50 rounded-xl border-2 border-primary/30">
               <div className="text-center">
                 <h3 className="text-xl font-semibold mb-3 text-gray-800">Conversion Result</h3>
                 <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                  <p className="text-3xl font-bold bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent">
                     {result.toLocaleString()} {areaUnits.find(u => u.value === form.getValues("toUnit"))?.label}
                   </p>
                   <p className="text-gray-500 mt-2">
@@ -305,15 +305,15 @@ function EMICalculator() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-green-50/50">
-        <CardHeader className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-t-lg">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-primary/5">
+        <CardHeader className="bg-gradient-to-r from-orange-500 to-primary text-white rounded-t-lg">
           <CardTitle className="flex items-center gap-3 text-2xl">
             <div className="p-2 bg-white/20 rounded-lg">
               <Calculator className="h-6 w-6" />
             </div>
             EMI Calculator
           </CardTitle>
-          <CardDescription className="text-green-100 text-lg">
+          <CardDescription className="text-orange-100 text-lg">
             Calculate your monthly loan payments with detailed breakdown
           </CardDescription>
         </CardHeader>
@@ -328,7 +328,7 @@ function EMICalculator() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                          <IndianRupee className="h-5 w-5 text-green-600" />
+                          <IndianRupee className="h-5 w-5 text-primary" />
                           Loan Amount
                         </FormLabel>
                         <FormControl>
@@ -336,7 +336,7 @@ function EMICalculator() {
                             type="number" 
                             step="1000" 
                             {...field} 
-                            className="h-12 text-lg border-2 border-green-200 focus:border-green-500 rounded-lg"
+                            className="h-12 text-lg border-2 border-primary/30 focus:border-primary rounded-lg"
                             placeholder="Enter loan amount"
                           />
                         </FormControl>
@@ -450,7 +450,7 @@ export default function PropertyCalculatorPage() {
       </div>
       
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent mb-4">
           Property Calculators
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
