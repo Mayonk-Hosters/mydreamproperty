@@ -70,7 +70,7 @@ const formSchema = insertPropertySchema.extend({
   yearBuilt: z.number().int().min(1800).max(new Date().getFullYear()).optional(),
   parking: z.number().int().nonnegative("Parking spaces must be a non-negative integer").optional(),
   propertyNumber: z.string().optional(),
-  mapUrl: z.string().url("Please enter a valid URL").optional(),
+
   maharera_registered: z.boolean().optional().default(false),
   maharera_number: z.string().optional(),
   images: z.array(z.string()).optional(),
@@ -197,7 +197,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         propertyNumber: property.propertyNumber || "",
         yearBuilt: property.yearBuilt || new Date().getFullYear(),
         parking: property.parking || 0,
-        mapUrl: property.mapUrl || "",
+
         stateId: property.stateId ? property.stateId.toString() : "",
         districtId: property.districtId ? property.districtId.toString() : "",
         talukaId: property.talukaId ? property.talukaId.toString() : "",
@@ -228,7 +228,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       yearBuilt: new Date().getFullYear(),
       parking: 0,
       features: [],
-      mapUrl: "",
+
       propertyType: DEFAULT_PROPERTY_TYPES[0],
       type: "buy",
       status: PROPERTY_STATUS[0],
@@ -1081,27 +1081,6 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
             )}
           />
         </div>
-
-        {/* Map URL */}
-        <FormField
-          control={form.control}
-          name="mapUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Google Maps URL (optional)</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="https://maps.google.com/..." 
-                  {...field} 
-                />
-              </FormControl>
-              <FormDescription>
-                Paste the Google Maps link for this property location
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         {/* Submit Button */}
         <div className="flex justify-end space-x-4">
