@@ -271,8 +271,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
           <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
             <div className="flex items-center">
               <img 
-                src={`https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40`} 
-                alt="Agent" 
+                src={agent?.image || `https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40`} 
+                alt={agent?.name || "Agent"} 
                 className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
                 loading="lazy"
               />
