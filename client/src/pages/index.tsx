@@ -2,7 +2,6 @@ import { Layout } from "@/components/common/layout";
 import { PageTitle } from "@/components/common/page-title";
 import { HeroSection } from "@/components/home/hero-section";
 import { PropertyTabs } from "@/components/home/property-tabs";
-import { PropertyTypes } from "@/components/home/property-types";
 import { CallToAction } from "@/components/home/call-to-action";
 
 export default function HomePage() {
@@ -15,7 +14,6 @@ export default function HomePage() {
       
       <HeroSection />
       <PropertyTabs />
-      <PropertyTypes />
       <CallToAction />
     </Layout>
   );
