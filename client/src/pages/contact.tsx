@@ -213,26 +213,6 @@ export default function ContactPage() {
             </form>
           </Form>
         </div>
-        
-        {contactInfo?.mapUrl && (
-          <div className="mt-12 max-w-6xl mx-auto">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-6">Find Us on the Map</h2>
-              <div className="aspect-video rounded-md overflow-hidden">
-                <iframe
-                  src={contactInfo.mapUrl}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Google Maps"
-                ></iframe>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   );

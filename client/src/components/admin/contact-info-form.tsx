@@ -34,7 +34,6 @@ const contactInfoSchema = z.object({
     saturday: z.string(),
     sunday: z.string(),
   }),
-  mapUrl: z.string().url("Please enter a valid URL").optional(),
 });
 
 type ContactInfoFormValues = z.infer<typeof contactInfoSchema>;
@@ -338,26 +337,6 @@ export default function ContactInfoForm() {
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="mapUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Google Maps Embed URL (Optional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://www.google.com/maps/embed?pb=..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  <p className="text-sm text-muted-foreground">
-                    Get the embed URL from Google Maps by clicking "Share" and then "Embed a map"
-                  </p>
-                </FormItem>
-              )}
-            />
 
             <Button
               type="submit"
