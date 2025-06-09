@@ -2174,9 +2174,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact Messages API endpoints
   
   // Get all contact messages (admin only)
-  app.get("/api/contact-messages", requireAdmin, async (req, res) => {
+  app.get("/api/contact-messages", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const messages = await dbStorage.getAllContactMessages();
+      console.log('Contact messages from direct query:', messages.length);
       res.json(messages);
     } catch (error) {
       console.error("Error fetching contact messages:", error);
@@ -2185,8 +2191,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mark contact message as read (admin only)
-  app.put("/api/contact-messages/:id/read", requireAdmin, async (req, res) => {
+  app.put("/api/contact-messages/:id/read", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const messageId = parseInt(req.params.id);
       const success = await dbStorage.markContactMessageAsRead(messageId);
       
@@ -2239,8 +2250,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Home Loan Inquiries API endpoints
   
   // Get all home loan inquiries (admin only)
-  app.get("/api/home-loan-inquiries", requireAdmin, async (req, res) => {
+  app.get("/api/home-loan-inquiries", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const inquiries = await dbStorage.getAllHomeLoanInquiries();
       res.json(inquiries);
     } catch (error) {
@@ -2419,8 +2435,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Excel Export Endpoints (Admin only)
   
   // Export property inquiries to Excel
-  app.get("/api/export/property-inquiries", requireAdmin, async (req, res) => {
+  app.get("/api/export/property-inquiries", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const inquiries = await dbStorage.getAllPropertyInquiries();
       
       // Prepare data for Excel export
@@ -2448,8 +2469,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Export contact messages to Excel
-  app.get("/api/export/contact-messages", requireAdmin, async (req, res) => {
+  app.get("/api/export/contact-messages", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const messages = await dbStorage.getAllContactMessages();
       
       // Prepare data for Excel export
@@ -2475,8 +2501,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Export home loan inquiries to Excel
-  app.get("/api/export/home-loan-inquiries", requireAdmin, async (req, res) => {
+  app.get("/api/export/home-loan-inquiries", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const inquiries = await dbStorage.getAllHomeLoanInquiries();
       
       // Prepare data for Excel export
