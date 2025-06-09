@@ -2213,8 +2213,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete contact message (admin only)
-  app.delete("/api/contact-messages/:id", requireAdmin, async (req, res) => {
+  app.delete("/api/contact-messages/:id", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const messageId = parseInt(req.params.id);
       const success = await dbStorage.deleteContactMessage(messageId);
       
@@ -2266,8 +2271,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mark home loan inquiry as read (admin only)
-  app.put("/api/home-loan-inquiries/:id/read", requireAdmin, async (req, res) => {
+  app.put("/api/home-loan-inquiries/:id/read", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const inquiryId = parseInt(req.params.id);
       const success = await dbStorage.markHomeLoanInquiryAsRead(inquiryId);
       
@@ -2283,8 +2293,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete home loan inquiry (admin only)
-  app.delete("/api/home-loan-inquiries/:id", requireAdmin, async (req, res) => {
+  app.delete("/api/home-loan-inquiries/:id", async (req, res) => {
     try {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
       const inquiryId = parseInt(req.params.id);
       const success = await dbStorage.deleteHomeLoanInquiry(inquiryId);
       
