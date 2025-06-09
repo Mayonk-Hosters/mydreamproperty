@@ -96,30 +96,38 @@ export default function ContactMessagesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Contact Messages</h1>
-          <div className="text-gray-600 mt-2">
-            <span>Manage general contact form submissions from website visitors</span>
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="ml-2">
-                {unreadCount} unread
-              </Badge>
-            )}
+    <MessagesLayout
+      title="Messages Management"
+      description="Manage all customer communications including property inquiries, contact messages, and home loan requests"
+    >
+      <Helmet>
+        <title>Contact Messages | Admin | My Dream Property</title>
+      </Helmet>
+      
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Contact Messages</h2>
+            <p className="text-gray-600 text-sm mt-1">
+              Manage general contact form submissions from website visitors
+              {unreadCount > 0 && (
+                <Badge variant="destructive" className="ml-2">
+                  {unreadCount} unread
+                </Badge>
+              )}
+            </p>
           </div>
+          {selectedIds.length > 0 && (
+            <Button 
+              variant="destructive" 
+              onClick={handleBulkDelete}
+              disabled={deleteMutation.isPending}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Selected ({selectedIds.length})
+            </Button>
+          )}
         </div>
-        {selectedIds.length > 0 && (
-          <Button 
-            variant="destructive" 
-            onClick={handleBulkDelete}
-            disabled={deleteMutation.isPending}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete Selected ({selectedIds.length})
-          </Button>
-        )}
-      </div>
 
       {messages.length === 0 ? (
         <Card>
@@ -223,6 +231,7 @@ export default function ContactMessagesPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+      </div>
+    </MessagesLayout>
   );
 }

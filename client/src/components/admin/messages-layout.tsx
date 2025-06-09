@@ -18,7 +18,7 @@ export function MessagesLayout({ children, title, description }: MessagesLayoutP
 
   // Fetch unread counts for badges
   const { data: propertyInquiries = [] } = useQuery({
-    queryKey: ['/api/property-inquiries'],
+    queryKey: ['/api/inquiries'],
   });
 
   const { data: contactMessages = [] } = useQuery({
