@@ -2,6 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
+import { db } from "./db";
 import { pool } from "./db";
 import * as XLSX from 'xlsx';
 // AI recommendation imports removed
@@ -18,7 +19,9 @@ import {
   insertContactMessageSchema,
   insertHomeLoanInquirySchema,
   DEFAULT_PROPERTY_TYPES,
-  PROPERTY_STATUS
+  PROPERTY_STATUS,
+  propertyInquiries,
+  homeLoanInquiries
 } from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";
@@ -713,9 +716,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get all inquiries
   // Legacy inquiry route - redirects to property inquiries
-  app.get("/api/inquiries", requireAdmin, async (req, res) => {
+  app.get("/api/inquiries", async (req, res) => {
     try {
-      const inquiries = await dbStorage.getAllPropertyInquiries();
+      // Check admin access using production-ready authentication
+      if (!checkProductionAdminAccess(req as any)) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+      }
+
+      const inquiries = await db.select().from(propertyInquiries).orderBy(desc(propertyInquiries.createdAt));
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching property inquiries:", error);
@@ -727,7 +735,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/inquiries", async (req, res) => {
     try {
       const inquiryData = insertPropertyInquirySchema.parse(req.body);
-      const inquiry = await dbStorage.createPropertyInquiry(inquiryData);
+      const [inquiry] = await db.insert(propertyInquiries).values(inquiryData).returning();
       res.status(201).json(inquiry);
     } catch (error) {
       if (error instanceof ZodError) {
