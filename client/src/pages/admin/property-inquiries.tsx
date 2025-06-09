@@ -4,65 +4,63 @@ import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Eye, Mail, Phone, MessageSquare, IndianRupee, Briefcase } from "lucide-react";
+import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare, IndianRupee } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
-interface HomeLoanInquiry {
+interface PropertyInquiry {
   id: number;
   name: string;
   email: string;
-  phone: string;
-  occupation?: string;
-  monthlyIncome?: number;
-  loanAmount?: number;
-  propertyValue?: number;
-  propertyId?: number;
+  phone?: string;
   message?: string;
+  propertyId: number;
+  inquiryType: string;
+  budget?: number;
   isRead: boolean;
   createdAt: string;
 }
 
-export default function HomeLoanInquiriesPage() {
+export default function PropertyInquiriesPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { toast } = useToast();
 
   const { data: inquiries = [], isLoading, refetch } = useQuery({
-    queryKey: ['/api/home-loan-inquiries'],
+    queryKey: ['/api/property-inquiries'],
   });
 
   const markAsReadMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/home-loan-inquiries/${id}/read`, {
+      const response = await fetch(`/api/property-inquiries/${id}/read`, {
         method: 'PUT',
       });
       if (!response.ok) throw new Error('Failed to mark as read');
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/home-loan-inquiries'] });
-      toast({ title: "Success", description: "Home loan inquiry marked as read" });
+      queryClient.invalidateQueries({ queryKey: ['/api/property-inquiries'] });
+      toast({ title: "Success", description: "Property inquiry marked as read" });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/home-loan-inquiries/${id}`, {
+      const response = await fetch(`/api/property-inquiries/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete');
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/home-loan-inquiries'] });
-      toast({ title: "Success", description: "Home loan inquiry deleted successfully" });
+      queryClient.invalidateQueries({ queryKey: ['/api/property-inquiries'] });
+      toast({ title: "Success", description: "Property inquiry deleted successfully" });
     },
   });
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(inquiries.map((inquiry: HomeLoanInquiry) => inquiry.id));
+      setSelectedIds(inquiries.map((inquiry: PropertyInquiry) => inquiry.id));
     } else {
       setSelectedIds([]);
     }
@@ -80,13 +78,13 @@ export default function HomeLoanInquiriesPage() {
     try {
       await Promise.all(selectedIds.map(id => deleteMutation.mutateAsync(id)));
       setSelectedIds([]);
-      toast({ title: "Success", description: "Selected home loan inquiries deleted successfully" });
+      toast({ title: "Success", description: "Selected property inquiries deleted successfully" });
     } catch (error) {
-      toast({ title: "Error", description: "Failed to delete home loan inquiries", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to delete property inquiries", variant: "destructive" });
     }
   };
 
-  const unreadCount = inquiries.filter((inquiry: HomeLoanInquiry) => !inquiry.isRead).length;
+  const unreadCount = inquiries.filter((inquiry: PropertyInquiry) => !inquiry.isRead).length;
 
   if (isLoading) {
     return (
@@ -101,9 +99,9 @@ export default function HomeLoanInquiriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Home Loan Inquiries</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Property Enquiries</h1>
           <p className="text-gray-600 mt-2">
-            Manage home loan assistance requests from potential buyers
+            Manage property-specific inquiries from potential buyers
             {unreadCount > 0 && (
               <Badge variant="destructive" className="ml-2">
                 {unreadCount} unread
@@ -127,9 +125,9 @@ export default function HomeLoanInquiriesPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <MessageSquare className="h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No home loan inquiries yet</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No property inquiries yet</h3>
             <p className="text-gray-500 text-center">
-              Home loan inquiries will appear here when users request loan assistance.
+              Property inquiries will appear here when potential buyers express interest in specific properties.
             </p>
           </CardContent>
         </Card>
@@ -141,11 +139,11 @@ export default function HomeLoanInquiriesPage() {
                 checked={selectedIds.length === inquiries.length}
                 onCheckedChange={handleSelectAll}
               />
-              Home Loan Inquiries ({inquiries.length})
+              Property Inquiries ({inquiries.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {inquiries.map((inquiry: HomeLoanInquiry) => (
+            {inquiries.map((inquiry: PropertyInquiry) => (
               <div
                 key={inquiry.id}
                 className={`p-4 border rounded-lg transition-all ${
@@ -168,56 +166,38 @@ export default function HomeLoanInquiriesPage() {
                             New
                           </Badge>
                         )}
+                        <Badge variant="outline" className="capitalize">
+                          {inquiry.inquiryType}
+                        </Badge>
                       </div>
                       
-                      <div className="space-y-1 text-sm text-gray-600 mb-3">
+                      <div className="space-y-1 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Mail className="h-4 w-4" />
                           <span>{inquiry.email}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4" />
-                          <span>{inquiry.phone}</span>
-                        </div>
-                        {inquiry.occupation && (
+                        {inquiry.phone && (
                           <div className="flex items-center gap-2">
-                            <Briefcase className="h-4 w-4" />
-                            <span>{inquiry.occupation}</span>
+                            <Phone className="h-4 w-4" />
+                            <span>{inquiry.phone}</span>
                           </div>
                         )}
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3 text-sm">
-                        {inquiry.monthlyIncome && (
-                          <div className="flex items-center gap-2 text-gray-600">
+                        {inquiry.budget && (
+                          <div className="flex items-center gap-2">
                             <IndianRupee className="h-4 w-4" />
-                            <span>Monthly Income: ₹{inquiry.monthlyIncome.toLocaleString()}</span>
+                            <span>Budget: ₹{inquiry.budget.toLocaleString()}</span>
                           </div>
                         )}
-                        {inquiry.loanAmount && (
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <IndianRupee className="h-4 w-4" />
-                            <span>Loan Amount: ₹{inquiry.loanAmount.toLocaleString()}</span>
-                          </div>
-                        )}
-                        {inquiry.propertyValue && (
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <IndianRupee className="h-4 w-4" />
-                            <span>Property Value: ₹{inquiry.propertyValue.toLocaleString()}</span>
-                          </div>
-                        )}
-                        {inquiry.propertyId && (
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <MessageSquare className="h-4 w-4" />
-                            <span>Property ID: {inquiry.propertyId}</span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>Property ID: {inquiry.propertyId}</span>
+                        </div>
                       </div>
                       
                       {inquiry.message && (
-                        <div className="p-3 bg-gray-100 rounded text-sm">
-                          <strong>Additional Message:</strong>
-                          <p className="mt-1 whitespace-pre-wrap">{inquiry.message}</p>
+                        <div className="mt-3 p-3 bg-gray-100 rounded text-sm">
+                          <strong>Message:</strong>
+                          <p className="mt-1">{inquiry.message}</p>
                         </div>
                       )}
                       

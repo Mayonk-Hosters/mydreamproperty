@@ -1,570 +1,226 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, formatDistanceToNow } from "date-fns";
-import { Helmet } from "react-helmet";
-import { 
-  Eye, 
-  Trash2, 
-  Check, 
-  Mail, 
-  Phone, 
-  User,
-  Calendar,
-  Download,
-  Search,
-  Filter,
-  CheckCircle,
-  XCircle,
-  MoreHorizontal,
-  MessageSquare
-} from "lucide-react";
-
-import { AdminHeader } from "@/components/admin/admin-header";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Trash2, Eye, Mail, Phone, MessageSquare } from "lucide-react";
+import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { AdminLayout } from "@/components/admin/admin-layout";
-import { exportContactMessagesToExcel } from "@/lib/excel-export";
-import { apiRequest } from "@/lib/queryClient";
 
 interface ContactMessage {
   id: number;
   name: string;
   email: string;
-  phone: string | null;
+  phone?: string;
   subject: string;
   message: string;
-  createdAt: string;
   isRead: boolean;
+  createdAt: string;
 }
 
-export default function AdminContactMessagesPage() {
-  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<"all" | "read" | "unread">("all");
-  const [itemToDelete, setItemToDelete] = useState<{ id: number; type: string } | null>(null);
+export default function ContactMessagesPage() {
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const { data: contactMessages = [], isLoading, error } = useQuery<ContactMessage[]>({
+  const { data: messages = [], isLoading, refetch } = useQuery({
     queryKey: ['/api/contact-messages'],
-    queryFn: async () => {
-      try {
-        return await apiRequest('GET', '/api/contact-messages');
-      } catch (error: any) {
-        throw new Error(error.message || 'Failed to fetch contact messages');
-      }
-    },
   });
 
   const markAsReadMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest('PATCH', `/api/contact-messages/${id}/mark-read`);
+      const response = await fetch(`/api/contact-messages/${id}/read`, {
+        method: 'PUT',
+      });
+      if (!response.ok) throw new Error('Failed to mark as read');
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
-      toast({
-        title: "Success",
-        description: "Message marked as read",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to mark message as read",
-        variant: "destructive",
-      });
+      toast({ title: "Success", description: "Contact message marked as read" });
     },
   });
 
-  const deleteMessageMutation = useMutation({
+  const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest('DELETE', `/api/contact-messages/${id}`);
+      const response = await fetch(`/api/contact-messages/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete');
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contact-messages'] });
-      setSelectedMessage(null);
-      setIsDialogOpen(false);
-      setItemToDelete(null);
-      toast({
-        title: "Success",
-        description: "Contact message deleted successfully",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to delete contact message",
-        variant: "destructive",
-      });
+      toast({ title: "Success", description: "Contact message deleted successfully" });
     },
   });
 
-  const handleView = (message: ContactMessage) => {
-    setSelectedMessage(message);
-    setIsDialogOpen(true);
-    if (!message.isRead) {
-      markAsReadMutation.mutate(message.id);
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(messages.map((message: ContactMessage) => message.id));
+    } else {
+      setSelectedIds([]);
     }
   };
 
-  const handleDeleteConfirm = (id: number) => {
-    setItemToDelete({ id, type: 'contact-message' });
-  };
-
-  const confirmDelete = () => {
-    if (itemToDelete) {
-      deleteMessageMutation.mutate(itemToDelete.id);
+  const handleSelectMessage = (id: number, checked: boolean) => {
+    if (checked) {
+      setSelectedIds([...selectedIds, id]);
+    } else {
+      setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
     }
   };
 
-  const handleExportExcel = () => {
-    if (contactMessages && contactMessages.length > 0) {
-      exportContactMessagesToExcel(contactMessages);
-      toast({
-        title: "Success",
-        description: "Contact messages exported to Excel successfully",
-      });
+  const handleBulkDelete = async () => {
+    try {
+      await Promise.all(selectedIds.map(id => deleteMutation.mutateAsync(id)));
+      setSelectedIds([]);
+      toast({ title: "Success", description: "Selected contact messages deleted successfully" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete contact messages", variant: "destructive" });
     }
   };
 
-  // Filter and search functionality
-  const getFilteredMessages = () => {
-    let filtered = contactMessages;
-
-    // Apply read/unread filter
-    if (filterType === 'read') {
-      filtered = filtered.filter(message => message.isRead);
-    } else if (filterType === 'unread') {
-      filtered = filtered.filter(message => !message.isRead);
-    }
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(message =>
-        message.name.toLowerCase().includes(query) ||
-        message.email.toLowerCase().includes(query) ||
-        message.subject.toLowerCase().includes(query) ||
-        message.message.toLowerCase().includes(query) ||
-        (message.phone && message.phone.toLowerCase().includes(query))
-      );
-    }
-
-    return filtered;
-  };
-
-  const filteredMessages = getFilteredMessages();
+  const unreadCount = messages.filter((message: ContactMessage) => !message.isRead).length;
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <Helmet>
-          <title>Contact Messages | Admin | My Dream Property</title>
-        </Helmet>
-        <AdminHeader 
-          title="Contact Messages" 
-          description="Manage contact messages from website visitors" 
-        />
-        <div className="text-center py-8">Loading...</div>
-      </AdminLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <AdminLayout>
-        <Helmet>
-          <title>Contact Messages | Admin | My Dream Property</title>
-        </Helmet>
-        <AdminHeader 
-          title="Contact Messages" 
-          description="Manage contact messages from website visitors" 
-        />
-        <div className="text-center py-8 text-red-500">Error loading contact messages</div>
-      </AdminLayout>
+      <div className="space-y-4">
+        <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <Helmet>
-        <title>Contact Messages | Admin | My Dream Property</title>
-      </Helmet>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Contact Messages</h1>
+          <p className="text-gray-600 mt-2">
+            Manage general contact form submissions from website visitors
+            {unreadCount > 0 && (
+              <Badge variant="destructive" className="ml-2">
+                {unreadCount} unread
+              </Badge>
+            )}
+          </p>
+        </div>
+        {selectedIds.length > 0 && (
+          <Button 
+            variant="destructive" 
+            onClick={handleBulkDelete}
+            disabled={deleteMutation.isPending}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Selected ({selectedIds.length})
+          </Button>
+        )}
+      </div>
 
-      <AdminHeader 
-        title="Contact Messages" 
-        description="View and manage contact messages from website visitors"
-      />
-
-      <Card className="mb-8">
-        <CardHeader className="pb-3">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <CardTitle>Contact Messages</CardTitle>
-              <CardDescription>
-                Manage all contact messages from the website
-              </CardDescription>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <div className="flex">
-                <Input
-                  placeholder="Search messages..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full lg:w-64 rounded-l-md rounded-r-none"
-                />
-                <Button variant="outline" className="rounded-l-none">
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
-              <Select value={filterType} onValueChange={(value: "all" | "read" | "unread") => setFilterType(value)}>
-                <SelectTrigger className="w-[140px]">
-                  <div className="flex items-center">
-                    <Filter className="mr-2 h-4 w-4" />
-                    <span>Filter Status</span>
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Messages</SelectItem>
-                  <SelectItem value="read">Read</SelectItem>
-                  <SelectItem value="unread">Unread</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button 
-                onClick={handleExportExcel}
-                variant="outline"
-                className="flex items-center gap-2"
-                disabled={contactMessages.length === 0}
+      {messages.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <MessageSquare className="h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No contact messages yet</h3>
+            <p className="text-gray-500 text-center">
+              Contact messages from the website contact form will appear here.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Checkbox
+                checked={selectedIds.length === messages.length}
+                onCheckedChange={handleSelectAll}
+              />
+              Contact Messages ({messages.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {messages.map((message: ContactMessage) => (
+              <div
+                key={message.id}
+                className={`p-4 border rounded-lg transition-all ${
+                  message.isRead 
+                    ? 'border-gray-200 bg-gray-50' 
+                    : 'border-blue-200 bg-blue-50 shadow-sm'
+                }`}
               >
-                <Download className="h-4 w-4" />
-                Export to Excel
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {filteredMessages.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {searchQuery || filterType !== 'all' 
-                ? "No messages found matching your criteria" 
-                : "No contact messages found"
-              }
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Message Preview</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredMessages.map((message) => (
-                  <TableRow key={message.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <div className="font-medium">{message.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            ID: {message.id}
-                          </div>
-                        </div>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3 flex-1">
+                    <Checkbox
+                      checked={selectedIds.includes(message.id)}
+                      onCheckedChange={(checked) => handleSelectMessage(message.id, checked as boolean)}
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold text-gray-900">{message.name}</h3>
+                        {!message.isRead && (
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                            New
+                          </Badge>
+                        )}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm space-y-1">
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-3 w-3 text-muted-foreground" />
+                      
+                      <div className="space-y-1 text-sm text-gray-600 mb-3">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4" />
                           <span>{message.email}</span>
                         </div>
                         {message.phone && (
-                          <div className="flex items-center gap-1">
-                            <Phone className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-muted-foreground">{message.phone}</span>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-4 w-4" />
+                            <span>{message.phone}</span>
                           </div>
                         )}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium">{message.subject}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-muted-foreground max-w-xs truncate">
-                        {message.message}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={message.isRead ? "secondary" : "destructive"}>
-                        {message.isRead ? "Read" : "Unread"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <div>{format(new Date(message.createdAt), 'MMM dd, yyyy')}</div>
-                        <div className="text-muted-foreground">
-                          {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem 
-                            onClick={() => handleView(message)}
-                            className="flex items-center gap-2"
-                          >
-                            <Eye className="h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
-                          {!message.isRead && (
-                            <DropdownMenuItem 
-                              onClick={() => markAsReadMutation.mutate(message.id)}
-                              className="flex items-center gap-2"
-                            >
-                              <Check className="h-4 w-4" />
-                              Mark as Read
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={() => handleDeleteConfirm(message.id)}
-                            className="flex items-center gap-2 text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* Message Detail Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          {selectedMessage && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex justify-between items-center">
-                  <span>Contact Message #{selectedMessage.id}</span>
-                  <Badge variant={selectedMessage.isRead ? "outline" : "default"}>
-                    {selectedMessage.isRead ? "Read" : "New"}
-                  </Badge>
-                </DialogTitle>
-                <DialogDescription>
-                  Received {formatDistanceToNow(new Date(selectedMessage.createdAt), { addSuffix: true })} 
-                  on {format(new Date(selectedMessage.createdAt), 'MMMM dd, yyyy at h:mm a')}
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="grid gap-6">
-                {/* Customer Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Customer Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid gap-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm font-medium">Name</p>
-                          <p className="text-sm text-muted-foreground">{selectedMessage.name}</p>
-                        </div>
+                      <div className="mb-3">
+                        <h4 className="font-medium text-gray-900 mb-1">Subject:</h4>
+                        <p className="text-gray-700">{message.subject}</p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm font-medium">Email</p>
-                          <p className="text-sm text-muted-foreground">{selectedMessage.email}</p>
-                        </div>
+                      
+                      <div className="p-3 bg-gray-100 rounded text-sm">
+                        <strong>Message:</strong>
+                        <p className="mt-1 whitespace-pre-wrap">{message.message}</p>
                       </div>
-                      {selectedMessage.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">Phone</p>
-                            <p className="text-sm text-muted-foreground">{selectedMessage.phone}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Message Content */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
-                      Message Content
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid gap-4">
-                    <div>
-                      <p className="text-sm font-medium mb-2">Subject</p>
-                      <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                        {selectedMessage.subject}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium mb-2">Message</p>
-                      <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md whitespace-pre-wrap">
-                        {selectedMessage.message}
+                      
+                      <div className="mt-3 text-xs text-gray-500">
+                        Received on {format(new Date(message.createdAt), "PPP 'at' p")}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* Submission Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      Submission Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm font-medium">Submitted On</p>
-                          <p className="text-sm text-muted-foreground">
-                            {format(new Date(selectedMessage.createdAt), 'MMMM dd, yyyy at h:mm a')}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm font-medium">Status</p>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedMessage.isRead ? "Read" : "Unread"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    {!message.isRead && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => markAsReadMutation.mutate(message.id)}
+                        disabled={markAsReadMutation.isPending}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => deleteMutation.mutate(message.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
-
-              <div className="flex gap-2 pt-4">
-                {!selectedMessage.isRead && (
-                  <Button
-                    onClick={() => markAsReadMutation.mutate(selectedMessage.id)}
-                    disabled={markAsReadMutation.isPending}
-                    className="flex items-center gap-2"
-                  >
-                    <Check className="h-4 w-4" />
-                    Mark as Read
-                  </Button>
-                )}
-                <Button
-                  onClick={() => handleDeleteConfirm(selectedMessage.id)}
-                  disabled={deleteMessageMutation.isPending}
-                  variant="destructive"
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Contact Message</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this contact message? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </AdminLayout>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }

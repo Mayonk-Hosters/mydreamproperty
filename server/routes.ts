@@ -2263,20 +2263,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Contact Messages API endpoints
+  
+  // Get all contact messages (admin only)
+  app.get("/api/contact-messages", requireAdmin, async (req, res) => {
+    try {
+      const messages = await dbStorage.getAllContactMessages();
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching contact messages:", error);
+      res.status(500).json({ message: "Failed to fetch contact messages" });
+    }
+  });
+
+  // Mark contact message as read (admin only)
+  app.put("/api/contact-messages/:id/read", requireAdmin, async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.id);
+      const success = await dbStorage.markContactMessageAsRead(messageId);
+      
+      if (success) {
+        res.json({ message: "Contact message marked as read" });
+      } else {
+        res.status(404).json({ message: "Contact message not found" });
+      }
+    } catch (error) {
+      console.error("Error marking contact message as read:", error);
+      res.status(500).json({ message: "Failed to mark contact message as read" });
+    }
+  });
+
+  // Delete contact message (admin only)
+  app.delete("/api/contact-messages/:id", requireAdmin, async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.id);
+      const success = await dbStorage.deleteContactMessage(messageId);
+      
+      if (success) {
+        res.json({ message: "Contact message deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Contact message not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting contact message:", error);
+      res.status(500).json({ message: "Failed to delete contact message" });
+    }
+  });
+
+  // Create contact message (public)
+  app.post("/api/contact-messages", async (req, res) => {
+    try {
+      const messageData = insertContactMessageSchema.parse(req.body);
+      const newMessage = await dbStorage.createContactMessage(messageData);
+      res.status(201).json(newMessage);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid contact message data", 
+          errors: fromZodError(error).details 
+        });
+      }
+      console.error("Error creating contact message:", error);
+      res.status(500).json({ message: "Failed to create contact message" });
+    }
+  });
+
+  // Home Loan Inquiries API endpoints
+  
+  // Get all home loan inquiries (admin only)
+  app.get("/api/home-loan-inquiries", requireAdmin, async (req, res) => {
+    try {
+      const inquiries = await dbStorage.getAllHomeLoanInquiries();
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching home loan inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch home loan inquiries" });
+    }
+  });
+
+  // Mark home loan inquiry as read (admin only)
+  app.put("/api/home-loan-inquiries/:id/read", requireAdmin, async (req, res) => {
+    try {
+      const inquiryId = parseInt(req.params.id);
+      const success = await dbStorage.markHomeLoanInquiryAsRead(inquiryId);
+      
+      if (success) {
+        res.json({ message: "Home loan inquiry marked as read" });
+      } else {
+        res.status(404).json({ message: "Home loan inquiry not found" });
+      }
+    } catch (error) {
+      console.error("Error marking home loan inquiry as read:", error);
+      res.status(500).json({ message: "Failed to mark home loan inquiry as read" });
+    }
+  });
+
+  // Delete home loan inquiry (admin only)
+  app.delete("/api/home-loan-inquiries/:id", requireAdmin, async (req, res) => {
+    try {
+      const inquiryId = parseInt(req.params.id);
+      const success = await dbStorage.deleteHomeLoanInquiry(inquiryId);
+      
+      if (success) {
+        res.json({ message: "Home loan inquiry deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Home loan inquiry not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting home loan inquiry:", error);
+      res.status(500).json({ message: "Failed to delete home loan inquiry" });
+    }
+  });
+
+  // Create home loan inquiry (public)
+  app.post("/api/home-loan-inquiries", async (req, res) => {
+    try {
+      const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
+      const newInquiry = await dbStorage.createHomeLoanInquiry(inquiryData);
+      res.status(201).json(newInquiry);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid home loan inquiry data", 
+          errors: fromZodError(error).details 
+        });
+      }
+      console.error("Error creating home loan inquiry:", error);
+      res.status(500).json({ message: "Failed to create home loan inquiry" });
+    }
+  });
+
   // Homepage Images API endpoints (admin only)
   
   // Get all homepage images
   app.get("/api/homepage-images", async (req, res) => {
     try {
-      const { imageType } = req.query;
-      
-      let images;
-      if (imageType) {
-        images = await dbStorage.getHomepageImagesByType(imageType as string);
-      } else {
-        images = await dbStorage.getAllHomepageImages();
-      }
-      
+      const images = await dbStorage.getAllHomepageImages();
       res.json(images);
     } catch (error) {
       console.error("Error fetching homepage images:", error);
