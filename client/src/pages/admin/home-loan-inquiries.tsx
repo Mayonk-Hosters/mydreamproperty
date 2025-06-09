@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MessagesLayout } from "@/components/admin/messages-layout";
 import { Helmet } from "react-helmet";
+import * as XLSX from 'xlsx';
 
 interface HomeLoanInquiry {
   id: number;
@@ -61,6 +62,44 @@ export default function HomeLoanInquiriesPage() {
       toast({ title: "Success", description: "Home loan inquiry deleted successfully" });
     },
   });
+
+  const handleExportToExcel = async () => {
+    try {
+      const response = await fetch("/api/export/home-loan-inquiries", {
+        method: "GET",
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to export data");
+      }
+      
+      const data = await response.json();
+      
+      // Create workbook and worksheet
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Home Loan Inquiries");
+      
+      // Generate filename with current date
+      const filename = `home-loan-inquiries-${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      // Save file
+      XLSX.writeFile(wb, filename);
+      
+      toast({ 
+        title: "Success", 
+        description: "Home loan inquiries exported to Excel successfully" 
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to export home loan inquiries", 
+        variant: "destructive" 
+      });
+    }
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -121,16 +160,26 @@ export default function HomeLoanInquiriesPage() {
               )}
             </p>
           </div>
-          {selectedIds.length > 0 && (
+          <div className="flex items-center gap-2">
             <Button 
-              variant="destructive" 
-              onClick={handleBulkDelete}
-              disabled={deleteMutation.isPending}
+              variant="outline" 
+              onClick={handleExportToExcel}
+              className="flex items-center gap-2"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Selected ({selectedIds.length})
+              <Download className="h-4 w-4" />
+              Export Excel
             </Button>
-          )}
+            {selectedIds.length > 0 && (
+              <Button 
+                variant="destructive" 
+                onClick={handleBulkDelete}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected ({selectedIds.length})
+              </Button>
+            )}
+          </div>
         </div>
 
       {inquiries.length === 0 ? (
