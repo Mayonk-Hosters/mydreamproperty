@@ -714,7 +714,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all inquiries
-  app.get("/api/inquiries", requireAdmin, async (_req, res) => {
+  app.get("/api/inquiries", async (req, res) => {
+    // Use the same authentication pattern as other admin endpoints
+    if (!checkAdminAccess(req)) {
+      return res.status(403).json({ 
+        message: "Admin access required", 
+        error: "ADMIN_ACCESS_DENIED" 
+      });
+    }
     try {
       const inquiries = await dbStorage.getAllInquiries();
       res.json(inquiries);
@@ -1788,7 +1795,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Contact Messages API Routes
-  app.get("/api/contact-messages", requireAdmin, async (req, res) => {
+  app.get("/api/contact-messages", async (req, res) => {
+    // Use the same authentication pattern as other admin endpoints
+    if (!checkAdminAccess(req)) {
+      return res.status(403).json({ 
+        message: "Admin access required", 
+        error: "ADMIN_ACCESS_DENIED" 
+      });
+    }
     try {
       try {
         // First try using the storage method
@@ -2148,35 +2162,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get all home loan inquiries (admin only)
   app.get("/api/home-loan-inquiries", async (req, res) => {
-    try {
-      // Debug: Check session state
-      console.log("Home loan inquiries request - Session state:", {
-        isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
-        sessionIsAdmin: (req.session as any)?.isAdmin,
-        sessionUserType: (req.session as any)?.userType,
-        user: req.user
+    // Use the same authentication pattern as other admin endpoints
+    if (!checkAdminAccess(req)) {
+      return res.status(403).json({ 
+        message: "Admin access required", 
+        error: "ADMIN_ACCESS_DENIED" 
       });
-
-      // Check session-based admin access first (for traditional login)
-      if (req.session && (req.session as any).isAdmin) {
-        const inquiries = await dbStorage.getAllHomeLoanInquiries();
-        return res.json(inquiries);
-      }
-      
-      // Check authenticated user admin status (for OAuth login)
-      if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
-        const inquiries = await dbStorage.getAllHomeLoanInquiries();
-        return res.json(inquiries);
-      }
-      
-      // Development mode - temporarily allow access to see the data
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Development mode - granting access to home loan inquiries");
-        const inquiries = await dbStorage.getAllHomeLoanInquiries();
-        return res.json(inquiries);
-      }
-      
-      return res.status(403).json({ message: "Access denied" });
+    }
+    
+    try {
+      const inquiries = await dbStorage.getAllHomeLoanInquiries();
+      res.json(inquiries);
     } catch (error) {
       console.error("Error fetching home loan inquiries:", error);
       res.status(500).json({ message: "Failed to fetch home loan inquiries" });
