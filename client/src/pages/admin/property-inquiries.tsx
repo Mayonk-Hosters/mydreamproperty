@@ -29,33 +29,33 @@ export default function PropertyInquiriesPage() {
   const { toast } = useToast();
 
   const { data: inquiries = [], isLoading, refetch } = useQuery({
-    queryKey: ['/api/property-inquiries'],
+    queryKey: ['/api/inquiries'],
   });
 
   const markAsReadMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/property-inquiries/${id}/read`, {
+      const response = await fetch(`/api/inquiries/${id}/read`, {
         method: 'PUT',
       });
       if (!response.ok) throw new Error('Failed to mark as read');
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/property-inquiries'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
       toast({ title: "Success", description: "Property inquiry marked as read" });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/property-inquiries/${id}`, {
+      const response = await fetch(`/api/inquiries/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete');
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/property-inquiries'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });
       toast({ title: "Success", description: "Property inquiry deleted successfully" });
     },
   });

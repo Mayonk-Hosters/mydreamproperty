@@ -108,14 +108,14 @@ export default function ContactMessagesPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">Contact Messages</h2>
-            <p className="text-gray-600 text-sm mt-1">
-              Manage general contact form submissions from website visitors
+            <div className="text-gray-600 text-sm mt-1 flex items-center gap-2">
+              <span>Manage general contact form submissions from website visitors</span>
               {unreadCount > 0 && (
-                <Badge variant="destructive" className="ml-2">
+                <Badge variant="destructive">
                   {unreadCount} unread
                 </Badge>
               )}
-            </p>
+            </div>
           </div>
           {selectedIds.length > 0 && (
             <Button 
