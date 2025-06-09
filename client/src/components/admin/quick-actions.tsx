@@ -29,18 +29,11 @@ export function QuickActions() {
       color: "bg-green-500 hover:bg-green-600"
     },
     {
-      title: "View Inquiries",
-      description: "Check pending inquiries",
+      title: "Messages Center",
+      description: "All customer messages",
       icon: <MessageCircle className="h-5 w-5" />,
-      href: "/admin/inquiries",
+      href: "/admin/messages",
       color: "bg-purple-500 hover:bg-purple-600"
-    },
-    {
-      title: "Home Loans",
-      description: "Manage loan requests",
-      icon: <Home className="h-5 w-5" />,
-      href: "/admin/home-loan-inquiries", 
-      color: "bg-orange-500 hover:bg-orange-600"
     },
     {
       title: "All Properties",

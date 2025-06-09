@@ -52,6 +52,7 @@ import AdminPropertyInquiriesPage from "@/pages/admin/property-inquiries";
 import AdminHomeLoanInquiriesPage from "@/pages/admin/home-loan-inquiries";
 import AdminHomepageImagesPage from "@/pages/admin/homepage-images";
 import MessageDashboardPage from "@/pages/admin/message-dashboard";
+import MessagesPage from "@/pages/admin/messages";
 
 function Router() {
   return (
@@ -122,6 +123,9 @@ function Router() {
       </Route>
       <Route path="/admin/property-types">
         <ProtectedAdminRoute component={AdminPropertyTypesPage} />
+      </Route>
+      <Route path="/admin/messages">
+        <ProtectedAdminRoute component={MessagesPage} />
       </Route>
       <Route path="/admin/contact-messages">
         <ProtectedAdminRoute component={AdminContactMessagesPage} />

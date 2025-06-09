@@ -71,27 +71,13 @@ export function HorizontalNav() {
     }
   ];
 
-  const messageNavItems = [
-    {
-      name: "Property Enquiries",
-      path: "/admin/inquiries",
-      icon: <MessageCircle className="h-4 w-4" />,
-      hasNotification: hasUnreadInquiries,
-      notificationCount: unreadInquiriesCount
-    },
-    {
-      name: "Contact Messages",
-      path: "/admin/contact-messages",
-      icon: <PhoneCall className="h-4 w-4" />,
-      hasNotification: hasUnreadMessages,
-      notificationCount: unreadMessagesCount
-    },
-    {
-      name: "Home Loan Inquiries",
-      path: "/admin/home-loan-inquiries",
-      icon: <Home className="h-4 w-4" />
-    }
-  ];
+  const messagesItem = {
+    name: "Messages Center",
+    path: "/admin/messages",
+    icon: <MessageCircle className="h-4 w-4" />,
+    hasNotification: hasUnread,
+    notificationCount: totalUnreadCount
+  };
 
   const managementItems = [
     {
