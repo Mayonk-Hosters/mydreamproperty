@@ -158,49 +158,8 @@ export function HorizontalNav() {
               <NavItem key={item.path} item={item} />
             ))}
 
-            {/* Messages Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className={cn(
-                    "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group relative overflow-hidden",
-                    messageNavItems.some(item => isActiveLink(item.path))
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105" 
-                      : "text-slate-300 hover:text-white hover:bg-slate-700/50 hover:shadow-md hover:scale-105"
-                  )}
-                >
-                  <div className="relative z-10">
-                    <MessageCircle className="h-4 w-4" />
-                    {hasUnread && (
-                      <NotificationIndicator count={totalUnreadCount} />
-                    )}
-                  </div>
-                  <span className="relative z-10 font-medium">Messages</span>
-                  <ChevronDown className="h-3 w-3 relative z-10 transition-transform group-hover:rotate-180" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-slate-700 shadow-xl">
-                <DropdownMenuLabel className="text-slate-200 font-semibold">Message Management</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-slate-700" />
-                {messageNavItems.map((item) => (
-                  <DropdownMenuItem key={item.path} asChild>
-                    <Link href={item.path}>
-                      <div className="flex items-center space-x-3 w-full p-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded transition-all duration-200">
-                        <div className="relative">
-                          {item.icon}
-                          {item.hasNotification && (
-                            <NotificationIndicator count={item.notificationCount} />
-                          )}
-                        </div>
-                        <span className="font-medium">{item.name}</span>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Messages Center */}
+            <NavItem item={messagesItem} />
 
             {/* Management Dropdown */}
             <DropdownMenu>
@@ -209,7 +168,7 @@ export function HorizontalNav() {
                   variant="ghost" 
                   className={cn(
                     "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group relative overflow-hidden",
-                    managementItems.some(item => isActiveLink(item.path))
+                    managementItems.some((item: any) => isActiveLink(item.path))
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105" 
                       : "text-slate-300 hover:text-white hover:bg-slate-700/50 hover:shadow-md hover:scale-105"
                   )}
@@ -223,7 +182,7 @@ export function HorizontalNav() {
               <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-slate-700 shadow-xl">
                 <DropdownMenuLabel className="text-slate-200 font-semibold">System Management</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-slate-700" />
-                {managementItems.map((item) => (
+                {managementItems.map((item: any) => (
                   <DropdownMenuItem key={item.path} asChild>
                     <Link href={item.path}>
                       <div className="flex items-center space-x-3 w-full p-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded transition-all duration-200">
@@ -284,10 +243,8 @@ export function HorizontalNav() {
               {mainNavItems.map((item) => (
                 <NavItem key={item.path} item={item} className="justify-center text-center" />
               ))}
-              {messageNavItems.map((item) => (
-                <NavItem key={item.path} item={item} className="justify-center text-center" />
-              ))}
-              {managementItems.map((item) => (
+              <NavItem key={messagesItem.path} item={messagesItem} className="justify-center text-center" />
+              {managementItems.map((item: any) => (
                 <NavItem key={item.path} item={item} className="justify-center text-center" />
               ))}
               <NavItem item={{
