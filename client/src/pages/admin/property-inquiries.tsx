@@ -4,12 +4,13 @@ import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare, IndianRupee } from "lucide-react";
+import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare, IndianRupee, Download } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MessagesLayout } from "@/components/admin/messages-layout";
 import { Helmet } from "react-helmet";
+import * as XLSX from 'xlsx';
 
 interface PropertyInquiry {
   id: number;
@@ -59,6 +60,44 @@ export default function PropertyInquiriesPage() {
       toast({ title: "Success", description: "Property inquiry deleted successfully" });
     },
   });
+
+  const handleExportToExcel = async () => {
+    try {
+      const response = await fetch("/api/export/property-inquiries", {
+        method: "GET",
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to export data");
+      }
+      
+      const data = await response.json();
+      
+      // Create workbook and worksheet
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Property Inquiries");
+      
+      // Generate filename with current date
+      const filename = `property-inquiries-${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      // Save file
+      XLSX.writeFile(wb, filename);
+      
+      toast({ 
+        title: "Success", 
+        description: "Property inquiries exported to Excel successfully" 
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to export property inquiries", 
+        variant: "destructive" 
+      });
+    }
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {

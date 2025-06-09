@@ -2416,6 +2416,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Excel Export Endpoints (Admin only)
+  
+  // Export property inquiries to Excel
+  app.get("/api/export/property-inquiries", requireAdmin, async (req, res) => {
+    try {
+      const inquiries = await dbStorage.getAllPropertyInquiries();
+      
+      // Prepare data for Excel export
+      const excelData = inquiries.map(inquiry => ({
+        'ID': inquiry.id,
+        'Name': inquiry.name,
+        'Email': inquiry.email,
+        'Phone': inquiry.phone || '',
+        'Property ID': inquiry.propertyId,
+        'Inquiry Type': inquiry.inquiryType,
+        'Budget': inquiry.budget || '',
+        'Message': inquiry.message || '',
+        'Status': inquiry.isRead ? 'Read' : 'Unread',
+        'Created Date': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleDateString() : '',
+        'Created Time': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleTimeString() : ''
+      }));
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="property-inquiries-${new Date().toISOString().split('T')[0]}.json"`);
+      res.json(excelData);
+    } catch (error) {
+      console.error("Error exporting property inquiries:", error);
+      res.status(500).json({ message: "Failed to export property inquiries" });
+    }
+  });
+
+  // Export contact messages to Excel
+  app.get("/api/export/contact-messages", requireAdmin, async (req, res) => {
+    try {
+      const messages = await dbStorage.getAllContactMessages();
+      
+      // Prepare data for Excel export
+      const excelData = messages.map(message => ({
+        'ID': message.id,
+        'Name': message.name,
+        'Email': message.email,
+        'Phone': message.phone || '',
+        'Subject': message.subject,
+        'Message': message.message,
+        'Status': message.isRead ? 'Read' : 'Unread',
+        'Created Date': message.createdAt ? new Date(message.createdAt).toLocaleDateString() : '',
+        'Created Time': message.createdAt ? new Date(message.createdAt).toLocaleTimeString() : ''
+      }));
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="contact-messages-${new Date().toISOString().split('T')[0]}.json"`);
+      res.json(excelData);
+    } catch (error) {
+      console.error("Error exporting contact messages:", error);
+      res.status(500).json({ message: "Failed to export contact messages" });
+    }
+  });
+
+  // Export home loan inquiries to Excel
+  app.get("/api/export/home-loan-inquiries", requireAdmin, async (req, res) => {
+    try {
+      const inquiries = await dbStorage.getAllHomeLoanInquiries();
+      
+      // Prepare data for Excel export
+      const excelData = inquiries.map(inquiry => ({
+        'ID': inquiry.id,
+        'Name': inquiry.name,
+        'Email': inquiry.email,
+        'Phone': inquiry.phone,
+        'Occupation': inquiry.occupation || '',
+        'Monthly Income': inquiry.monthlyIncome || '',
+        'Loan Amount': inquiry.loanAmount || '',
+        'Property Value': inquiry.propertyValue || '',
+        'Property ID': inquiry.propertyId || '',
+        'Message': inquiry.message || '',
+        'Status': inquiry.isRead ? 'Read' : 'Unread',
+        'Created Date': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleDateString() : '',
+        'Created Time': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleTimeString() : ''
+      }));
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="home-loan-inquiries-${new Date().toISOString().split('T')[0]}.json"`);
+      res.json(excelData);
+    } catch (error) {
+      console.error("Error exporting home loan inquiries:", error);
+      res.status(500).json({ message: "Failed to export home loan inquiries" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
