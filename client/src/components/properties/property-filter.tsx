@@ -207,24 +207,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               </SelectContent>
             </Select>
             
-            <Select 
-              value={filters.propertyType}
-              onValueChange={(value) => handleFilterChange("propertyType", value)}
-            >
-              <SelectTrigger className="h-11 border-2 focus:border-green-400 bg-white">
-                <SelectValue placeholder="Property Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Any Type</SelectItem>
-                {propertyTypesLoading ? (
-                  <SelectItem value="loading" disabled>Loading...</SelectItem>
-                ) : (
-                  propertyTypes.map((type) => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+
             
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -262,7 +245,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
           
           {/* Quick Filter Tags */}
           <div className="flex flex-wrap gap-2">
-            {['Under ₹30L', '₹30L-₹1Cr', 'Above ₹1Cr', '2+ BHK', '3+ BHK', 'Commercial'].map((tag) => (
+            {['Under ₹30L', '₹30L-₹1Cr', 'Above ₹1Cr', '2+ BHK', '3+ BHK'].map((tag) => (
               <button
                 key={tag}
                 onClick={() => {
@@ -280,8 +263,6 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                   } else if (tag.includes('BHK')) {
                     const beds = parseInt(tag.charAt(0));
                     handleFilterChange("minBeds", beds);
-                  } else if (tag === 'Commercial') {
-                    handleFilterChange("propertyType", "Commercial");
                   }
                   applyFilters();
                 }}
