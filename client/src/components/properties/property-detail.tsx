@@ -439,7 +439,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                       <div className="flex flex-wrap gap-2">
                         {(Array.isArray(property.features) ? property.features : 
                            (typeof property.features === 'string' ? 
-                             JSON.parse(property.features) : [])).map((feature, index) => (
+                             JSON.parse(property.features) : [])).map((feature: any, index: number) => (
                           <div key={index} className="flex items-center bg-white border border-gray-200 px-3 py-2 rounded-md text-xs sm:text-sm">
                             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
                             <span>{feature}</span>
@@ -456,33 +456,44 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </TabsContent>
               <TabsContent value="location">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                  <div className="text-center mb-4">
-                    <MapPin className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">Property Location</h3>
-                    <p className="text-gray-500 text-sm sm:text-base mb-3 sm:mb-4">
+                  <div className="mb-4">
+                    <div className="flex items-center justify-center mb-4">
+                      <MapPin className="h-6 w-6 text-primary mr-2" />
+                      <h3 className="text-base sm:text-lg font-semibold">Property Location</h3>
+                    </div>
+                    <p className="text-gray-600 text-sm sm:text-base mb-4 text-center">
                       {property.address}, {property.location}
                     </p>
-                    {/* Support both mapUrl and map_url field names for backward compatibility */}
-                    {(property.mapUrl || property.map_url) ? (
+                    
+                    {/* Embedded Google Maps */}
+                    <div className="relative w-full h-64 sm:h-80 mb-4 rounded-lg overflow-hidden border">
+                      <iframe
+                        src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&q=${encodeURIComponent(`${property.address}, ${property.location}`)}`}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen={true}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title={`Map showing location of ${property.title}`}
+                      ></iframe>
+                    </div>
+                    
+                    <div className="text-center">
                       <Button 
                         variant="outline" 
                         size="sm" 
                         className="text-sm"
-                        onClick={() => window.open(property.mapUrl || property.map_url, '_blank')}
+                        onClick={() => {
+                          const searchQuery = encodeURIComponent(`${property.address}, ${property.location}`);
+                          const googleMapsUrl = `https://www.google.com/maps/search/${searchQuery}`;
+                          window.open(googleMapsUrl, '_blank');
+                        }}
                       >
                         <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                        View on Google Maps
+                        Open in Google Maps
                       </Button>
-                    ) : (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-sm opacity-50"
-                        disabled
-                      >
-                        Map Not Available
-                      </Button>
-                    )}
+                    </div>
                   </div>
                   
                   {/* Display location hierarchy information if available */}
