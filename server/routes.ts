@@ -2154,8 +2154,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // File upload endpoint for images
   app.post("/api/upload-image", upload.single('image'), async (req, res) => {
     try {
-      // Check admin access
-      if (!checkAdminAccess(req) && process.env.NODE_ENV !== 'development') {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -2369,14 +2369,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create new homepage image (admin only)
   app.post("/api/homepage-images", async (req, res) => {
     try {
-      // Check admin access
-      if (req.session && (req.session as any).isAdmin) {
-        // Session-based admin access (traditional login)
-      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
-        // OAuth-based admin access
-      } else if (process.env.NODE_ENV === 'development') {
-        // Development mode access
-      } else {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -2392,14 +2386,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update homepage image (admin only)
   app.patch("/api/homepage-images/:id", async (req, res) => {
     try {
-      // Check admin access
-      if (req.session && (req.session as any).isAdmin) {
-        // Session-based admin access (traditional login)
-      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
-        // OAuth-based admin access
-      } else if (process.env.NODE_ENV === 'development') {
-        // Development mode access
-      } else {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -2420,14 +2408,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete homepage image (admin only)
   app.delete("/api/homepage-images/:id", async (req, res) => {
     try {
-      // Check admin access
-      if (req.session && (req.session as any).isAdmin) {
-        // Session-based admin access (traditional login)
-      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
-        // OAuth-based admin access
-      } else if (process.env.NODE_ENV === 'development') {
-        // Development mode access
-      } else {
+      // Production auth check for admin access
+      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
         return res.status(403).json({ message: "Admin access required" });
       }
 
