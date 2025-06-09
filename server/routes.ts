@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { pool } from "./db";
+import * as XLSX from 'xlsx';
 // AI recommendation imports removed
 import { 
   insertPropertySchema, 
@@ -2478,7 +2479,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Disposition', `attachment; filename="property-inquiries-${new Date().toISOString().split('T')[0]}.xlsx"`);
       
       // Create Excel workbook
-      const XLSX = require('xlsx');
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(excelData);
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Property Inquiries');
@@ -2518,7 +2518,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Disposition', `attachment; filename="contact-messages-${new Date().toISOString().split('T')[0]}.xlsx"`);
       
       // Create Excel workbook
-      const XLSX = require('xlsx');
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(excelData);
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Contact Messages');
@@ -2562,7 +2561,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Disposition', `attachment; filename="home-loan-inquiries-${new Date().toISOString().split('T')[0]}.xlsx"`);
       
       // Create Excel workbook
-      const XLSX = require('xlsx');
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(excelData);
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Home Loan Inquiries');
