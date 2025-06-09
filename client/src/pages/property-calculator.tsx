@@ -359,7 +359,7 @@ function EMICalculator() {
                             type="number" 
                             step="0.1" 
                             {...field} 
-                            className="h-12 text-lg border-2 border-blue-200 focus:border-blue-500 rounded-lg"
+                            className="h-12 text-lg border-2 border-orange-200 focus:border-orange-500 rounded-lg"
                             placeholder="Enter interest rate"
                           />
                         </FormControl>
@@ -382,7 +382,7 @@ function EMICalculator() {
                             type="number" 
                             step="1" 
                             {...field} 
-                            className="h-12 text-lg border-2 border-purple-200 focus:border-purple-500 rounded-lg"
+                            className="h-12 text-lg border-2 border-primary/30 focus:border-primary rounded-lg"
                             placeholder="Enter loan term"
                           />
                         </FormControl>
@@ -397,7 +397,7 @@ function EMICalculator() {
               <div className="pt-4">
                 <Button 
                   type="submit" 
-                  className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 shadow-lg"
+                  className="w-full h-14 text-lg bg-gradient-to-r from-orange-500 to-primary hover:from-orange-600 hover:to-primary/90 shadow-lg"
                 >
                   Calculate EMI
                 </Button>
@@ -407,9 +407,9 @@ function EMICalculator() {
 
           {result && (
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border-2 border-blue-200">
-                <h3 className="text-lg font-semibold mb-2 text-blue-800">Monthly EMI</h3>
-                <p className="text-3xl font-bold text-blue-600">
+              <div className="bg-gradient-to-br from-primary/10 to-primary/20 p-6 rounded-xl border-2 border-primary/30">
+                <h3 className="text-lg font-semibold mb-2 text-primary">Monthly EMI</h3>
+                <p className="text-3xl font-bold text-primary">
                   ₹{result.emi.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
@@ -421,9 +421,9 @@ function EMICalculator() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200">
-                <h3 className="text-lg font-semibold mb-2 text-green-800">Total Payment</h3>
-                <p className="text-3xl font-bold text-green-600">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl border-2 border-gray-200">
+                <h3 className="text-lg font-semibold mb-2 text-gray-800">Total Payment</h3>
+                <p className="text-3xl font-bold text-gray-700">
                   ₹{result.totalPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
