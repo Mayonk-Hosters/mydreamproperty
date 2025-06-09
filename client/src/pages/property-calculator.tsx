@@ -384,7 +384,7 @@ function EMICalculator() {
                             type="number" 
                             step="1" 
                             {...field} 
-                            className="h-12 text-lg border-2 border-primary/30 focus:border-primary rounded-lg"
+                            className="h-12 text-lg border-2 border-cyan-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 rounded-lg transition-all duration-300"
                             placeholder="Enter loan term"
                           />
                         </FormControl>
@@ -399,7 +399,7 @@ function EMICalculator() {
               <div className="pt-4">
                 <Button 
                   type="submit" 
-                  className="w-full h-14 text-lg bg-gradient-to-r from-orange-500 to-primary hover:from-orange-600 hover:to-primary/90 shadow-lg"
+                  className="w-full h-14 text-lg bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 shadow-lg transform hover:scale-105 transition-all duration-300"
                 >
                   Calculate EMI
                 </Button>
@@ -409,23 +409,23 @@ function EMICalculator() {
 
           {result && (
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-primary/10 to-primary/20 p-6 rounded-xl border-2 border-primary/30">
-                <h3 className="text-lg font-semibold mb-2 text-primary">Monthly EMI</h3>
-                <p className="text-3xl font-bold text-primary">
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 rounded-xl border-2 border-emerald-200 shadow-lg transform hover:scale-105 transition-all duration-300">
+                <h3 className="text-lg font-semibold mb-2 text-emerald-800">Monthly EMI</h3>
+                <p className="text-3xl font-bold text-emerald-600">
                   ₹{result.emi.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl border-2 border-orange-200">
-                <h3 className="text-lg font-semibold mb-2 text-orange-800">Total Interest</h3>
-                <p className="text-3xl font-bold text-orange-600">
+              <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-6 rounded-xl border-2 border-teal-200 shadow-lg transform hover:scale-105 transition-all duration-300">
+                <h3 className="text-lg font-semibold mb-2 text-teal-800">Total Interest</h3>
+                <p className="text-3xl font-bold text-teal-600">
                   ₹{result.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl border-2 border-gray-200">
-                <h3 className="text-lg font-semibold mb-2 text-gray-800">Total Payment</h3>
-                <p className="text-3xl font-bold text-gray-700">
+              <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 p-6 rounded-xl border-2 border-cyan-200 shadow-lg transform hover:scale-105 transition-all duration-300">
+                <h3 className="text-lg font-semibold mb-2 text-cyan-800">Total Payment</h3>
+                <p className="text-3xl font-bold text-cyan-600">
                   ₹{result.totalPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
@@ -461,11 +461,11 @@ export default function PropertyCalculatorPage() {
       </div>
 
       <Tabs defaultValue="area" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-8 h-14">
-          <TabsTrigger value="area" className="text-lg font-semibold">
+        <TabsList className="grid w-full grid-cols-2 mb-8 h-16 bg-gradient-to-r from-gray-100 to-gray-200 p-2 rounded-xl shadow-lg">
+          <TabsTrigger value="area" className="text-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:via-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 rounded-lg">
             Area Converter
           </TabsTrigger>
-          <TabsTrigger value="emi" className="text-lg font-semibold">
+          <TabsTrigger value="emi" className="text-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:via-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white transition-all duration-300 rounded-lg">
             EMI Calculator
           </TabsTrigger>
         </TabsList>
