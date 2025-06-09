@@ -68,22 +68,10 @@ export function HorizontalNav() {
       name: "Agents",
       path: "/admin/agents",
       icon: <UserCheck className="h-4 w-4" />
-    },
-    {
-      name: "Clients",
-      path: "/admin/clients",
-      icon: <Users className="h-4 w-4" />
     }
   ];
 
   const messageNavItems = [
-    {
-      name: "Client Management",
-      path: "/admin/client-management",
-      icon: <Users className="h-4 w-4" />,
-      hasNotification: hasUnread,
-      notificationCount: totalUnreadCount
-    },
     {
       name: "Inquiries",
       path: "/admin/inquiries",

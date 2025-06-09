@@ -45,14 +45,12 @@ import AdminAgentEditPage from "@/pages/admin/agents/edit";
 import AdminContactPage from "@/pages/admin/contact";
 import AdminAnalyticsPage from "@/pages/admin/analytics";
 import AdminInquiriesPage from "@/pages/admin/inquiries";
-import AdminClientsPage from "@/pages/admin/clients";
 import AdminProfilePage from "@/pages/admin/profile";
 import AdminPropertyTypesPage from "@/pages/admin/property-types";
 import AdminContactMessagesPage from "@/pages/admin/contact-messages";
 import AdminHomeLoanInquiriesPage from "@/pages/admin/home-loan-inquiries";
 import AdminHomepageImagesPage from "@/pages/admin/homepage-images";
 import MessageDashboardPage from "@/pages/admin/message-dashboard";
-import ClientManagementPage from "@/pages/admin/client-management";
 
 function Router() {
   return (
@@ -118,9 +116,6 @@ function Router() {
       <Route path="/admin/inquiries">
         <ProtectedAdminRoute component={AdminInquiriesPage} />
       </Route>
-      <Route path="/admin/clients">
-        <ProtectedAdminRoute component={AdminClientsPage} />
-      </Route>
       <Route path="/admin/profile">
         <ProtectedAdminRoute component={AdminProfilePage} />
       </Route>
@@ -138,9 +133,6 @@ function Router() {
       </Route>
       <Route path="/admin/message-dashboard">
         <ProtectedAdminRoute component={MessageDashboardPage} />
-      </Route>
-      <Route path="/admin/client-management">
-        <ProtectedAdminRoute component={ClientManagementPage} />
       </Route>
       
       {/* Fallback to 404 */}
