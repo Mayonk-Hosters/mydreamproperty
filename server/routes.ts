@@ -707,47 +707,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all inquiries
-  app.get("/api/inquiries", async (req, res) => {
-    // Use the same authentication pattern as other admin endpoints
-    if (!checkAdminAccess(req)) {
-      return res.status(403).json({ 
-        message: "Admin access required", 
-        error: "ADMIN_ACCESS_DENIED" 
-      });
-    }
+  // Legacy inquiry route - redirects to property inquiries
+  app.get("/api/inquiries", requireAdmin, async (req, res) => {
     try {
-      const inquiries = await dbStorage.getAllInquiries();
+      const inquiries = await dbStorage.getAllPropertyInquiries();
       res.json(inquiries);
     } catch (error) {
-      console.error("Error fetching inquiries:", error);
-      res.status(500).json({ message: "Failed to fetch inquiries" });
+      console.error("Error fetching property inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch property inquiries" });
     }
   });
   
-  // Delete an inquiry
-  app.delete("/api/inquiries/:id", async (req, res) => {
+  // Legacy delete inquiry route - redirects to property inquiries
+  app.delete("/api/inquiries/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid inquiry ID" });
       }
       
-      // Check if the inquiry exists
-      const inquiry = await dbStorage.getInquiry(id);
-      if (!inquiry) {
-        return res.status(404).json({ message: "Inquiry not found" });
-      }
-      
-      // Delete the inquiry
-      const deleted = await dbStorage.deleteInquiry(id);
+      const deleted = await dbStorage.deletePropertyInquiry(id);
       if (deleted) {
-        res.json({ success: true, message: "Inquiry deleted successfully" });
+        res.json({ success: true, message: "Property inquiry deleted successfully" });
       } else {
-        res.status(500).json({ message: "Failed to delete inquiry" });
+        res.status(404).json({ message: "Property inquiry not found" });
       }
     } catch (error) {
-      console.error("Error deleting inquiry:", error);
-      res.status(500).json({ message: "Failed to delete inquiry" });
+      console.error("Error deleting property inquiry:", error);
+      res.status(500).json({ message: "Failed to delete property inquiry" });
     }
   });
   
@@ -783,7 +770,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         inquiryIds = [id];
       } else if (!ids) {
         // If no ids provided, mark ALL unread inquiries as read
-        const inquiries = await dbStorage.getAllInquiries();
+        const inquiries = await dbStorage.getAllPropertyInquiries();
         inquiryIds = inquiries
           .filter(inq => !inq.isRead)
           .map(inq => inq.id);
@@ -795,7 +782,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Mark each inquiry as read
       const results = await Promise.all(inquiryIds.map(async (id: number) => {
-        return await (dbStorage as any).markInquiryAsRead(id);
+        return await dbStorage.markPropertyInquiryAsRead(id);
       }));
       
       const successCount = results.filter((success: any) => success).length;
