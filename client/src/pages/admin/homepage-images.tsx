@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import { useAdmin } from "@/hooks/use-admin";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Plus, Edit, Trash2, Image as ImageIcon, Eye, EyeOff, Upload } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, Image as ImageIcon, Eye, EyeOff, Upload, ArrowLeft } from "lucide-react";
 import { HomepageImage } from "@shared/schema";
 import { FileUpload } from "@/components/ui/file-upload";
 
@@ -172,9 +173,17 @@ export default function AdminHomepageImagesPage() {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Homepage Images</h1>
-            <p className="text-gray-600 mt-2">Manage homepage display images and banners</p>
+          <div className="flex items-center space-x-4">
+            <Link href="/admin">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Admin
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Homepage Images</h1>
+              <p className="text-gray-600 mt-2">Manage homepage display images and banners</p>
+            </div>
           </div>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
