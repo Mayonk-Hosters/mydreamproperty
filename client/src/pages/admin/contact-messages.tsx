@@ -99,7 +99,7 @@ export default function ContactMessagesPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(messages.map((message: ContactMessage) => message.id));
+      setSelectedIds(messages.map((message) => message.id));
     } else {
       setSelectedIds([]);
     }
@@ -123,7 +123,7 @@ export default function ContactMessagesPage() {
     }
   };
 
-  const unreadCount = messages.filter((message: ContactMessage) => !message.isRead).length;
+  const unreadCount = messages.filter((message) => !message.isRead).length;
 
   if (isLoading) {
     return (
@@ -193,14 +193,14 @@ export default function ContactMessagesPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Checkbox
-                checked={selectedIds.length === messages.length}
+                checked={messages.length > 0 && selectedIds.length === messages.length}
                 onCheckedChange={handleSelectAll}
               />
               Contact Messages ({messages.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {messages.map((message: ContactMessage) => (
+            {messages.map((message) => (
               <div
                 key={message.id}
                 className={`p-4 border rounded-lg transition-all ${

@@ -103,7 +103,7 @@ export default function HomeLoanInquiriesPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(inquiries.map((inquiry: HomeLoanInquiry) => inquiry.id));
+      setSelectedIds(inquiries.map((inquiry) => inquiry.id));
     } else {
       setSelectedIds([]);
     }
@@ -127,7 +127,7 @@ export default function HomeLoanInquiriesPage() {
     }
   };
 
-  const unreadCount = inquiries.filter((inquiry: HomeLoanInquiry) => !inquiry.isRead).length;
+  const unreadCount = inquiries.filter((inquiry) => !inquiry.isRead).length;
 
   if (isLoading) {
     return (
@@ -197,14 +197,14 @@ export default function HomeLoanInquiriesPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Checkbox
-                checked={selectedIds.length === inquiries.length}
+                checked={inquiries.length > 0 && selectedIds.length === inquiries.length}
                 onCheckedChange={handleSelectAll}
               />
               Home Loan Inquiries ({inquiries.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {inquiries.map((inquiry: HomeLoanInquiry) => (
+            {inquiries.map((inquiry) => (
               <div
                 key={inquiry.id}
                 className={`p-4 border rounded-lg transition-all ${
