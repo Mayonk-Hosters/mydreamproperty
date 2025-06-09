@@ -1059,7 +1059,24 @@ export class DatabaseStorage implements IStorage {
       }
       
       if (filters.propertyType) {
-        conditions.push(eq(properties.propertyType, filters.propertyType));
+        // Handle "Commercial" as a category that includes all commercial-related property types
+        if (filters.propertyType === "Commercial") {
+          const commercialTypes = [
+            "Commercial",
+            "Commercial Office", 
+            "Commercial Complex",
+            "Shop",
+            "Office", 
+            "Warehouse",
+            "Commercial Space",
+            "Commercial Building"
+          ];
+          conditions.push(or(
+            ...commercialTypes.map(type => eq(properties.propertyType, type))
+          ));
+        } else {
+          conditions.push(eq(properties.propertyType, filters.propertyType));
+        }
       }
       
       if (filters.location) {
