@@ -717,6 +717,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch property inquiries" });
     }
   });
+
+  // Create new inquiry (POST endpoint)
+  app.post("/api/inquiries", async (req, res) => {
+    try {
+      const inquiryData = insertPropertyInquirySchema.parse(req.body);
+      const inquiry = await dbStorage.createPropertyInquiry(inquiryData);
+      res.status(201).json(inquiry);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error creating inquiry:", error);
+      res.status(500).json({ message: "Failed to create inquiry" });
+    }
+  });
   
   // Legacy delete inquiry route - redirects to property inquiries
   app.delete("/api/inquiries/:id", requireAdmin, async (req, res) => {
