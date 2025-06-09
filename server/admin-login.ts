@@ -62,10 +62,10 @@ export function setupAdminLogin(app: Express) {
           (req.session as any).user = adminUser;
           
           // Also set passport session for compatibility
-          if (!req.session.passport) {
-            req.session.passport = {};
+          if (!(req.session as any).passport) {
+            (req.session as any).passport = {};
           }
-          req.session.passport.user = adminUser.id;
+          (req.session as any).passport.user = adminUser.id;
           
           req.session.save((err) => {
             if (err) {
@@ -103,15 +103,15 @@ export function setupAdminLogin(app: Express) {
         }
         
         // Login successful - set session properties
-        req.session.isAdmin = !!user.isAdmin;
-        req.session.userType = user.isAdmin ? "admin" : "user";
-        req.session.user = user;
+        (req.session as any).isAdmin = !!user.isAdmin;
+        (req.session as any).userType = user.isAdmin ? "admin" : "user";
+        (req.session as any).user = user;
         
         // Set passport session for compatibility
-        if (!req.session.passport) {
-          req.session.passport = {};
+        if (!(req.session as any).passport) {
+          (req.session as any).passport = {};
         }
-        req.session.passport.user = user.id;
+        (req.session as any).passport.user = user.id;
         
         // Save the session and respond
         req.session.save((err) => {
@@ -121,10 +121,10 @@ export function setupAdminLogin(app: Express) {
           }
           
           console.log("Database user login session established:", {
-            isAdmin: req.session.isAdmin,
-            userType: req.session.userType,
+            isAdmin: (req.session as any).isAdmin,
+            userType: (req.session as any).userType,
             sessionID: req.sessionID,
-            passportUser: req.session.passport?.user
+            passportUser: (req.session as any).passport?.user
           });
           
           // Return user data (excluding password)
@@ -146,9 +146,9 @@ export function setupAdminLogin(app: Express) {
     console.log("Auth user check - Session state:", {
       sessionID: req.sessionID,
       sessionExists: !!req.session,
-      sessionIsAdmin: req.session?.isAdmin,
-      sessionUserType: req.session?.userType,
-      sessionUser: req.session?.user,
+      sessionIsAdmin: (req.session as any)?.isAdmin,
+      sessionUserType: (req.session as any)?.userType,
+      sessionUser: (req.session as any)?.user,
       cookies: req.headers.cookie,
       isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
       user: req.user

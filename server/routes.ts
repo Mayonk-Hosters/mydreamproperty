@@ -84,10 +84,10 @@ function checkAdminAccess(req: any): boolean {
   console.log('Authentication check:', {
     hasSession: !!req.session,
     sessionKeys: req.session ? Object.keys(req.session) : [],
-    isAdmin: req.session?.isAdmin,
+    isAdmin: (req.session as any)?.isAdmin,
     hasUser: !!req.user,
     environment: process.env.NODE_ENV,
-    userType: req.session?.userType
+    userType: (req.session as any)?.userType
   });
 
   // Development mode access (always grant access in development)
@@ -103,13 +103,13 @@ function checkAdminAccess(req: any): boolean {
   }
   
   // Check for admin userType in session
-  if (req.session && req.session.userType === 'admin') {
+  if (req.session && (req.session as any).userType === 'admin') {
     console.log('Access granted via userType admin');
     return true;
   }
   
   // Check for authenticated session with admin user
-  if (req.session && req.session.passport && req.session.passport.user) {
+  if (req.session && (req.session as any).passport && (req.session as any).passport.user) {
     console.log('Access granted via passport session');
     return true;
   }
@@ -127,7 +127,7 @@ function checkAdminAccess(req: any): boolean {
   }
   
   // Check for admin username in session (fallback for production)
-  if (req.session && req.session.user && req.session.user.username === 'admin') {
+  if (req.session && (req.session as any).user && (req.session as any).user.username === 'admin') {
     console.log('Access granted via admin username');
     return true;
   }
