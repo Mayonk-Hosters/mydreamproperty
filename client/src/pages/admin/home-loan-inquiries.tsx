@@ -4,7 +4,7 @@ import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Eye, Mail, Phone, MessageSquare, IndianRupee, Briefcase } from "lucide-react";
+import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare, IndianRupee, Briefcase } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";

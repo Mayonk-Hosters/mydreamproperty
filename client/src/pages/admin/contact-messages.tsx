@@ -4,7 +4,7 @@ import { queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Eye, Mail, Phone, MessageSquare } from "lucide-react";
+import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -98,14 +98,14 @@ export default function ContactMessagesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Contact Messages</h1>
-          <div className="flex items-center gap-2 text-gray-600 mt-2">
-            <span>Manage general contact form submissions from website visitors</span>
+          <p className="text-gray-600 mt-2">
+            Manage general contact form submissions from website visitors
             {unreadCount > 0 && (
-              <Badge variant="destructive">
+              <Badge variant="destructive" className="ml-2">
                 {unreadCount} unread
               </Badge>
             )}
-          </div>
+          </p>
         </div>
         {selectedIds.length > 0 && (
           <Button 
