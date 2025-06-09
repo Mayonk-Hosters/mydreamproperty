@@ -2,6 +2,8 @@ import {
   users, type User, type InsertUser, type UpsertUser,
   properties, type Property, type InsertProperty,
   agents, type Agent, type InsertAgent,
+  propertyInquiries, type PropertyInquiry, type InsertPropertyInquiry,
+  homeLoanInquiries, type HomeLoanInquiry, type InsertHomeLoanInquiry,
   states, type State, type InsertState,
   districts, type District, type InsertDistrict,
   talukas, type Taluka, type InsertTaluka,
@@ -50,17 +52,11 @@ export interface IStorage {
   // Property methods
   getAllProperties(filters?: PropertyFilters): Promise<Property[]>;
   getProperty(id: number): Promise<Property | undefined>;
+  getPropertiesByAgent(agentId: number): Promise<Property[]>;
   createProperty(property: InsertProperty): Promise<Property>;
-  updateProperty(id: number, property: InsertProperty): Promise<Property | undefined>;
+  updateProperty(id: number, property: Partial<InsertProperty>): Promise<Property>;
   deleteProperty(id: number): Promise<boolean>;
-  countPropertiesByType(propertyType: string): Promise<number>;
-  
-  // Property Types methods
-  getAllPropertyTypes(): Promise<PropertyType[]>;
-  getPropertyType(id: number): Promise<PropertyType | undefined>;
-  createPropertyType(propertyType: InsertPropertyType): Promise<PropertyType>;
-  updatePropertyType(id: number, propertyType: Partial<InsertPropertyType>): Promise<PropertyType>;
-  deletePropertyType(id: number): Promise<boolean>;
+  getFeaturedProperties(): Promise<Property[]>;
   
   // Agent methods
   getAllAgents(): Promise<Agent[]>;
@@ -69,12 +65,12 @@ export interface IStorage {
   updateAgent(id: number, agent: InsertAgent): Promise<Agent>;
   deleteAgent(id: number): Promise<boolean>;
   
-  // Inquiry methods
-  getAllInquiries(): Promise<Inquiry[]>;
-  getInquiry(id: number): Promise<Inquiry | undefined>;
-  createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
-  markInquiryAsRead(id: number): Promise<boolean>;
-  deleteInquiry(id: number): Promise<boolean>;
+  // Property Inquiry methods
+  getAllPropertyInquiries(): Promise<PropertyInquiry[]>;
+  getPropertyInquiry(id: number): Promise<PropertyInquiry | undefined>;
+  createPropertyInquiry(inquiry: InsertPropertyInquiry): Promise<PropertyInquiry>;
+  markPropertyInquiryAsRead(id: number): Promise<boolean>;
+  deletePropertyInquiry(id: number): Promise<boolean>;
   
   // Contact Information methods
   getContactInfo(): Promise<ContactInfo | undefined>;
@@ -127,1505 +123,739 @@ export interface IStorage {
 
   // Homepage Images methods
   getAllHomepageImages(): Promise<HomepageImage[]>;
-  getHomepageImagesByType(imageType: string): Promise<HomepageImage[]>;
   getHomepageImage(id: number): Promise<HomepageImage | undefined>;
   createHomepageImage(image: InsertHomepageImage): Promise<HomepageImage>;
   updateHomepageImage(id: number, image: Partial<InsertHomepageImage>): Promise<HomepageImage>;
   deleteHomepageImage(id: number): Promise<boolean>;
 
+  // Property Types methods
+  getAllPropertyTypes(): Promise<PropertyType[]>;
+  getPropertyType(id: number): Promise<PropertyType | undefined>;
+  createPropertyType(propertyType: InsertPropertyType): Promise<PropertyType>;
+  updatePropertyType(id: number, propertyType: Partial<InsertPropertyType>): Promise<PropertyType>;
+  deletePropertyType(id: number): Promise<boolean>;
+
   // Session store
   sessionStore: session.Store;
 }
 
+// MemoryStore implementation
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private properties: Map<number, Property>;
-  private agents: Map<number, Agent>;
-  private inquiries: Map<number, Inquiry>;
-  private states: Map<number, State>;
-  private districts: Map<number, District>;
-  private talukas: Map<number, Taluka>;
-  private tehsils: Map<number, Tehsil>;
-  private contactInfo: ContactInfo | undefined;
-  private propertyTypes: Map<number, PropertyType>;
-  private contactMessages: Map<number, ContactMessage>;
-  private homeLoanInquiries: Map<number, HomeLoanInquiry>;
-
-  
-  private userIdCounter: number;
-  private propertyIdCounter: number;
-  private agentIdCounter: number;
-  private inquiryIdCounter: number;
-  private stateIdCounter: number;
-  private districtIdCounter: number;
-  private talukaIdCounter: number;
-  private tehsilIdCounter: number;
-  private propertyTypeIdCounter: number;
-  private contactMessageIdCounter: number;
-  private homeLoanInquiryIdCounter: number;
-  
+  private users: User[] = [];
+  private properties: Property[] = [];
+  private agents: Agent[] = [];
+  private propertyInquiries: PropertyInquiry[] = [];
+  private homeLoanInquiries: HomeLoanInquiry[] = [];
+  private states: State[] = [];
+  private districts: District[] = [];
+  private talukas: Taluka[] = [];
+  private tehsils: Tehsil[] = [];
+  private contactMessages: ContactMessage[] = [];
+  private contactInfoData: ContactInfo | undefined;
+  private propertyTypes: PropertyType[] = [];
+  private homepageImages: HomepageImage[] = [];
+  private nextId = 1;
+  private nextUserId = 1;
   public sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
-    this.properties = new Map();
-    this.agents = new Map();
-    this.inquiries = new Map();
-    this.states = new Map();
-    this.districts = new Map();
-    this.talukas = new Map();
-    this.tehsils = new Map();
-    this.propertyTypes = new Map();
-    this.contactMessages = new Map();
-    this.homeLoanInquiries = new Map();
-    
-    this.userIdCounter = 1;
-    this.propertyIdCounter = 1;
-    this.agentIdCounter = 1;
-    this.inquiryIdCounter = 1;
-    this.stateIdCounter = 1;
-    this.districtIdCounter = 1;
-    this.talukaIdCounter = 1;
-    this.tehsilIdCounter = 1;
-    this.propertyTypeIdCounter = 1;
-    this.contactMessageIdCounter = 1;
-    this.homeLoanInquiryIdCounter = 1;
-    
-    // Initialize a basic session store
-    this.sessionStore = new session.MemoryStore({
+    const MemoryStore = memorystore(session);
+    this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
     });
-    
-    // Initialize with sample data
+
+    // Initialize default admin user
+    this.upsertUser({
+      id: "admin",
+      username: "admin",
+      password: "admin123",
+      isAdmin: true,
+    });
+
+    // Initialize sample data
     this.initSampleData();
   }
 
-  // Initialize sample data
   private initSampleData() {
-    // Create admin user
-    this.createUser({
-      username: "admin",
-      password: "admin123",
-      isAdmin: true
-    });
-    
-    // Initialize property types with defaults
-    for (const typeName of DEFAULT_PROPERTY_TYPES) {
-      this.createPropertyType({
-        name: typeName,
-        active: true
-      });
-    }
-    
-    // Create sample agents
-    const agentTitles = [
-      "Luxury Property Specialist",
-      "Urban Property Expert",
-      "Commercial Specialist",
-      "First-time Buyer Expert"
+    // Add default contact info
+    this.contactInfoData = {
+      id: 1,
+      siteName: "My Dream Property",
+      address: "123 Real Estate Avenue, Property City, PC 12345",
+      phone1: "+1 (555) 123-4567",
+      phone2: "+1 (555) 987-6543",
+      email1: "info@mydreamproperty.com",
+      email2: "support@mydreamproperty.com",
+      businessHours: {
+        monday: "9:00 AM - 6:00 PM",
+        tuesday: "9:00 AM - 6:00 PM",
+        wednesday: "9:00 AM - 6:00 PM",
+        thursday: "9:00 AM - 6:00 PM",
+        friday: "9:00 AM - 6:00 PM",
+        saturday: "10:00 AM - 4:00 PM",
+        sunday: "Closed"
+      },
+      mapUrl: "https://maps.google.com/embed?pb=!1m18!1m12!1m3!1d3771.2874594567!2d72.8776!3d19.0760!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c9b9c1e1e1e1%3A0x1e1e1e1e1e1e1e1e!2sTest%20Location!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin",
+      updatedAt: new Date()
+    };
+
+    // Add sample properties
+    const sampleProperties: Omit<Property, 'id' | 'createdAt'>[] = [
+      {
+        propertyNumber: "MDP-001",
+        title: "Luxurious 3BHK Apartment",
+        description: "Beautiful spacious apartment with modern amenities",
+        price: 1250000,
+        location: "Mumbai Central",
+        address: "123 Main Street, Mumbai Central, Mumbai",
+        beds: 3,
+        baths: 2,
+        area: 1200,
+        areaUnit: "sqft",
+        yearBuilt: 2020,
+        parking: 2,
+        propertyType: "Apartment",
+        type: "buy",
+        status: "active",
+        featured: true,
+        features: ["Swimming Pool", "Gym", "Parking", "Security"],
+        images: [getPropertyImage(1), getPropertyImage(2)],
+        mapUrl: "https://maps.google.com/embed?pb=!1m18!1m12!1m3!1d3771.287!2d72.8776!3d19.0760!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1",
+        maharera_registered: true,
+        maharera_number: "P51700000001",
+        agentId: 1,
+        stateId: 1,
+        districtId: 1,
+        talukaId: 1,
+        tehsilId: 1
+      }
     ];
-    
-    for (let i = 0; i < 4; i++) {
-      this.createAgent({
-        name: [
-          "Jessica Williams",
-          "Michael Chen",
-          "Robert Taylor",
-          "Sarah Johnson"
-        ][i],
-        title: agentTitles[i],
-        image: getAgentImage(i),
-        deals: 75 + Math.floor(Math.random() * 50),
-        rating: 4.5 + (Math.random() * 0.5)
-      });
-    }
-    
-    // Create sample properties
-    const propertyTitles = [
-      "Modern Luxury Villa",
-      "Downtown Apartment",
-      "Suburban Family Home",
-      "Luxury Penthouse",
-      "Beachfront Villa",
-      "Minimalist Modern Home"
+
+    this.properties = sampleProperties.map((prop, index) => ({
+      ...prop,
+      id: index + 1,
+      createdAt: new Date()
+    }));
+
+    // Add sample agents
+    const sampleAgents: Omit<Agent, 'id' | 'createdAt'>[] = [
+      {
+        name: "John Smith",
+        title: "Senior Property Consultant",
+        image: getAgentImage(1),
+        contactNumber: "+1-555-0123",
+        email: "john.smith@mydreamproperty.com",
+        deals: 45,
+        rating: 4.8
+      }
     ];
-    
-    const locations = ["Beverly Hills, CA", "San Francisco, CA", "Austin, TX", "New York, NY", "Malibu, CA", "Seattle, WA"];
-    const addresses = [
-      "123 Luxury Lane, Beverly Hills, CA 90210",
-      "456 Downtown Ave, San Francisco, CA 94105",
-      "789 Suburban Dr, Austin, TX 78701",
-      "101 Penthouse Blvd, New York, NY 10001",
-      "202 Beachfront Way, Malibu, CA 90265",
-      "303 Modern St, Seattle, WA 98101"
+
+    this.agents = sampleAgents.map((agent, index) => ({
+      ...agent,
+      id: index + 1,
+      createdAt: new Date()
+    }));
+
+    // Initialize property inquiries
+    this.propertyInquiries = [];
+
+    // Initialize home loan inquiries  
+    this.homeLoanInquiries = [];
+
+    // Add sample states
+    this.states = [
+      { id: 1, name: "Maharashtra", code: "MH", createdAt: new Date() }
     ];
-    
-    const prices = [2850000, 775000, 925000, 1950000, 3500000, 1375000];
-    const beds = [5, 2, 4, 3, 6, 3];
-    const baths = [6, 2, 3, 3.5, 7, 2.5];
-    const areas = [6500, 1200, 2800, 3200, 7500, 2400];
-    
-    for (let i = 0; i < 6; i++) {
-      const propertyType = i % 2 === 0 ? "House" : (i % 3 === 0 ? "Apartment" : (i % 4 === 0 ? "Commercial" : "Villa"));
-      const status = i % 5 === 0 ? "sold" : (i % 3 === 0 ? "pending" : "active");
-      const date = new Date();
-      date.setDate(date.getDate() - (i * 2)); // Create dates ranging from today to 10 days ago
-      
-      // Determine property transaction type (buy, rent, sell)
-      const types = ["buy", "rent", "sell"];
-      let type = types[i % 3];
-      
-      // Adjust type based on property characteristics
-      if (propertyType === "Apartment") {
-        type = "rent"; // Apartments are typically for rent
-      } else if (prices[i] > 2000000) {
-        type = Math.random() > 0.3 ? "buy" : "sell"; // Higher value properties are for sale
-      }
-      
-      this.createProperty({
-        title: propertyTitles[i],
-        description: `This beautiful ${propertyType.toLowerCase()} features ${beds[i]} bedrooms, ${baths[i]} bathrooms, and ${areas[i]} square feet of living space. Located in ${locations[i]}, it offers modern amenities and a great location.`,
-        price: prices[i],
-        location: locations[i],
-        address: addresses[i],
-        beds: beds[i],
-        baths: baths[i],
-        area: areas[i],
-        propertyType: propertyType,
-        type: type, // Add property transaction type
-        status: status,
-        featured: i < 2, // First two properties are featured
-        images: [
-          getPropertyImage(i),
-          getPropertyImage((i + 1) % 6),
-          getInteriorImage(i % 4),
-          getInteriorImage((i + 1) % 4)
-        ],
-        agentId: (i % 4) + 1,
-        createdAt: date.toISOString()
-      });
-    }
-    
-    // Create sample inquiries
-    const inquiryNames = ["Emily Robertson", "David Wilson", "Thomas Anderson"];
-    const inquiryEmails = ["emily.r@example.com", "david.w@example.com", "thomas.a@example.com"];
-    const inquiryMessages = [
-      "I'd like to schedule a viewing this weekend if possible. Is the property still available?",
-      "What are the HOA fees for this property? Also, is parking included?",
-      "I'm an investor looking for properties in this area. Is the seller open to negotiations?"
+
+    // Add sample districts
+    this.districts = [
+      { id: 1, name: "Mumbai", stateId: 1, createdAt: new Date() }
     ];
-    
-    for (let i = 0; i < 3; i++) {
-      const date = new Date();
-      date.setHours(date.getHours() - (i * 5)); // Create dates from a few hours ago to a day ago
-      
-      this.createInquiry({
-        name: inquiryNames[i],
-        email: inquiryEmails[i],
-        message: inquiryMessages[i],
-        propertyId: i + 1,
-        createdAt: date.toISOString()
-      });
-    }
-  }
 
-  // User methods
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
-  }
+    // Add sample talukas
+    this.talukas = [
+      { id: 1, name: "Mumbai City", districtId: 1, createdAt: new Date() }
+    ];
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username
-    );
-  }
-  
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.email === email
-    );
-  }
-  
-  async getAgentByUsername(username: string): Promise<Agent | undefined> {
-    // For now, we'll use the agent's name field as username
-    const agent = Array.from(this.agents.values()).find(
-      (agent) => agent.name === username
-    );
-    
-    // If agent is found, add a role property to it
-    if (agent) {
-      (agent as any).role = "agent";
-    }
-    
-    return agent;
-  }
-  
-  async getClientByUsername(username: string): Promise<User | undefined> {
-    // For now, clients are just users that are not admins
-    const user = Array.from(this.users.values()).find(
-      (user) => user.username === username && !user.isAdmin
-    );
-    
-    if (user) {
-      (user as any).role = "client";
-    }
-    
-    return user;
-  }
+    // Add sample tehsils
+    this.tehsils = [
+      { id: 1, name: "Mumbai Central", talukaId: 1, area: "Central Mumbai", createdAt: new Date() }
+    ];
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { 
-      ...insertUser, 
-      id,
-      createdAt: new Date().toISOString()
-    };
-    this.users.set(id, user);
-    return user;
-  }
-  
-  async getAllUsers(): Promise<User[]> {
-    return Array.from(this.users.values());
-  }
-  
-  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User> {
-    const existingUser = this.users.get(id);
-    
-    if (!existingUser) {
-      throw new Error("User not found");
-    }
-    
-    const updatedUser = {
-      ...existingUser,
-      ...userData
-    };
-    
-    this.users.set(id, updatedUser);
-    return updatedUser;
-  }
-  
-  async deleteUser(id: number): Promise<boolean> {
-    return this.users.delete(id);
-  }
+    // Add sample contact messages
+    this.contactMessages = [];
 
-  // Property methods
-  async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
-    let properties = Array.from(this.properties.values());
-    
-    if (filters) {
-      if (filters.type) {
-        if (filters.type === "rent") {
-          // Rental properties: typically apartments or properties with lower prices
-          properties = properties.filter(p => p.type === "rent");
-        } else if (filters.type === "buy") {
-          // Properties for sale: houses or higher-value properties
-          properties = properties.filter(p => p.type === "buy");
-        } else if (filters.type === "sell") {
-          // Properties for selling: properties listed by owners wanting to sell
-          properties = properties.filter(p => p.type === "sell");
-        }
+    // Add sample property types
+    this.propertyTypes = DEFAULT_PROPERTY_TYPES.map((name, index) => ({
+      id: index + 1,
+      name,
+      active: true,
+      createdAt: new Date()
+    }));
+
+    // Add sample homepage images
+    this.homepageImages = [
+      {
+        id: 1,
+        imageType: "hero",
+        imageUrl: getPropertyImage(1),
+        title: "Find Your Dream Property",
+        description: "Discover the best properties in prime locations",
+        isActive: true,
+        sortOrder: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
-      
-      if (filters.propertyType) {
-        properties = properties.filter(p => p.propertyType === filters.propertyType);
-      }
-      
-      if (filters.location) {
-        const locationLower = filters.location.toLowerCase();
-        properties = properties.filter(p => 
-          p.location.toLowerCase().includes(locationLower) || 
-          p.address.toLowerCase().includes(locationLower)
-        );
-      }
-      
-      if (filters.minPrice !== undefined) {
-        properties = properties.filter(p => p.price >= filters.minPrice!);
-      }
-      
-      if (filters.maxPrice !== undefined) {
-        properties = properties.filter(p => p.price <= filters.maxPrice!);
-      }
-      
-      if (filters.minBeds !== undefined) {
-        properties = properties.filter(p => p.beds >= filters.minBeds!);
-      }
-      
-      if (filters.minBaths !== undefined) {
-        properties = properties.filter(p => p.baths >= filters.minBaths!);
-      }
-      
-      if (filters.featured !== undefined) {
-        properties = properties.filter(p => p.featured === filters.featured);
-      }
-      
-      if (filters.agentId !== undefined) {
-        properties = properties.filter(p => p.agentId === filters.agentId);
-      }
-    }
-    
-    // Sort by newest first (by default)
-    return properties.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    ];
+
+    this.nextId = Math.max(
+      this.properties.length,
+      this.agents.length,
+      this.states.length,
+      this.districts.length,
+      this.talukas.length,
+      this.tehsils.length,
+      this.propertyTypes.length,
+      this.homepageImages.length
+    ) + 1;
   }
 
-  async getProperty(id: number): Promise<Property | undefined> {
-    return this.properties.get(id);
-  }
-
-  async createProperty(insertProperty: InsertProperty): Promise<Property> {
-    const id = this.propertyIdCounter++;
-    const property: Property = { ...insertProperty, id };
-    this.properties.set(id, property);
-    return property;
-  }
-
-  async updateProperty(id: number, updateProperty: InsertProperty): Promise<Property | undefined> {
-    const existingProperty = this.properties.get(id);
-    
-    if (!existingProperty) {
-      return undefined;
-    }
-    
-    const updatedProperty: Property = { ...updateProperty, id };
-    this.properties.set(id, updatedProperty);
-    return updatedProperty;
-  }
-
-  async deleteProperty(id: number): Promise<boolean> {
-    return this.properties.delete(id);
-  }
-
-  async countPropertiesByType(propertyType: string): Promise<number> {
-    return Array.from(this.properties.values()).filter(
-      p => p.propertyType === propertyType
-    ).length;
-  }
-
-  // Agent methods
-  async getAllAgents(): Promise<Agent[]> {
-    return Array.from(this.agents.values());
-  }
-
-  async getAgent(id: number): Promise<Agent | undefined> {
-    return this.agents.get(id);
-  }
-
-  async createAgent(insertAgent: InsertAgent): Promise<Agent> {
-    const id = this.agentIdCounter++;
-    const agent: Agent = { ...insertAgent, id };
-    this.agents.set(id, agent);
-    return agent;
-  }
-  
-  async updateAgent(id: number, updateAgent: InsertAgent): Promise<Agent> {
-    const existingAgent = await this.getAgent(id);
-    if (!existingAgent) {
-      throw new Error(`Agent with ID ${id} not found`);
-    }
-    
-    const updatedAgent: Agent = { ...updateAgent, id };
-    this.agents.set(id, updatedAgent);
-    return updatedAgent;
-  }
-  
-  async deleteAgent(id: number): Promise<boolean> {
-    const exists = this.agents.has(id);
-    if (!exists) {
-      return false;
-    }
-    
-    this.agents.delete(id);
-    return true;
-  }
-
-  // Inquiry methods
-  async getAllInquiries(): Promise<Inquiry[]> {
-    // Sort by newest first
-    return Array.from(this.inquiries.values()).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  }
-
-  async getInquiry(id: number): Promise<Inquiry | undefined> {
-    return this.inquiries.get(id);
-  }
-
-  async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
-    const id = this.inquiryIdCounter++;
-    const inquiry: Inquiry = { ...insertInquiry, id, isRead: false };
-    this.inquiries.set(id, inquiry);
-    return inquiry;
-  }
-  
-  async markInquiryAsRead(id: number): Promise<boolean> {
-    const inquiry = this.inquiries.get(id);
-    if (!inquiry) {
-      return false;
-    }
-    
-    inquiry.isRead = true;
-    this.inquiries.set(id, inquiry);
-    return true;
-  }
-  
-  async deleteInquiry(id: number): Promise<boolean> {
-    return this.inquiries.delete(id);
-  }
-  
-  // India Location methods
-  // States
-  async getAllStates(): Promise<State[]> {
-    return Array.from(this.states.values());
-  }
-  
-  async getState(id: number): Promise<State | undefined> {
-    return this.states.get(id);
-  }
-  
-  async createState(state: InsertState): Promise<State> {
-    const id = this.stateIdCounter++;
-    const newState: State = { ...state, id };
-    this.states.set(id, newState);
-    return newState;
-  }
-  
-  async updateState(id: number, stateData: Partial<InsertState>): Promise<State> {
-    const existingState = this.states.get(id);
-    
-    if (!existingState) {
-      throw new Error("State not found");
-    }
-    
-    const updatedState: State = { ...existingState, ...stateData };
-    this.states.set(id, updatedState);
-    return updatedState;
-  }
-  
-  async deleteState(id: number): Promise<boolean> {
-    return this.states.delete(id);
-  }
-  
-  // Districts
-  async getAllDistricts(stateId?: number): Promise<District[]> {
-    if (stateId !== undefined) {
-      return Array.from(this.districts.values()).filter(
-        district => district.stateId === stateId
-      );
-    }
-    return Array.from(this.districts.values());
-  }
-  
-  async getDistrict(id: number): Promise<District | undefined> {
-    return this.districts.get(id);
-  }
-  
-  async createDistrict(district: InsertDistrict): Promise<District> {
-    const id = this.districtIdCounter++;
-    const newDistrict: District = { ...district, id };
-    this.districts.set(id, newDistrict);
-    return newDistrict;
-  }
-  
-  async updateDistrict(id: number, districtData: Partial<InsertDistrict>): Promise<District> {
-    const existingDistrict = this.districts.get(id);
-    
-    if (!existingDistrict) {
-      throw new Error("District not found");
-    }
-    
-    const updatedDistrict: District = { ...existingDistrict, ...districtData };
-    this.districts.set(id, updatedDistrict);
-    return updatedDistrict;
-  }
-  
-  async deleteDistrict(id: number): Promise<boolean> {
-    return this.districts.delete(id);
-  }
-  
-  // Talukas
-  async getAllTalukas(districtId?: number): Promise<Taluka[]> {
-    if (districtId !== undefined) {
-      return Array.from(this.talukas.values()).filter(
-        taluka => taluka.districtId === districtId
-      );
-    }
-    return Array.from(this.talukas.values());
-  }
-  
-  async getTaluka(id: number): Promise<Taluka | undefined> {
-    return this.talukas.get(id);
-  }
-  
-  async createTaluka(taluka: InsertTaluka): Promise<Taluka> {
-    const id = this.talukaIdCounter++;
-    const newTaluka: Taluka = { ...taluka, id };
-    this.talukas.set(id, newTaluka);
-    return newTaluka;
-  }
-  
-  async updateTaluka(id: number, talukaData: Partial<InsertTaluka>): Promise<Taluka> {
-    const existingTaluka = this.talukas.get(id);
-    
-    if (!existingTaluka) {
-      throw new Error("Taluka not found");
-    }
-    
-    const updatedTaluka: Taluka = { ...existingTaluka, ...talukaData };
-    this.talukas.set(id, updatedTaluka);
-    return updatedTaluka;
-  }
-  
-  async deleteTaluka(id: number): Promise<boolean> {
-    return this.talukas.delete(id);
-  }
-  
-  // Tehsils
-  async getAllTehsils(talukaId?: number): Promise<Tehsil[]> {
-    if (talukaId !== undefined) {
-      return Array.from(this.tehsils.values()).filter(
-        tehsil => tehsil.talukaId === talukaId
-      );
-    }
-    return Array.from(this.tehsils.values());
-  }
-  
-  async getTehsil(id: number): Promise<Tehsil | undefined> {
-    return this.tehsils.get(id);
-  }
-  
-  async createTehsil(tehsil: InsertTehsil): Promise<Tehsil> {
-    const id = this.tehsilIdCounter++;
-    const newTehsil: Tehsil = { ...tehsil, id };
-    this.tehsils.set(id, newTehsil);
-    return newTehsil;
-  }
-  
-  async updateTehsil(id: number, tehsilData: Partial<InsertTehsil>): Promise<Tehsil> {
-    const existingTehsil = this.tehsils.get(id);
-    
-    if (!existingTehsil) {
-      throw new Error("Tehsil not found");
-    }
-    
-    const updatedTehsil: Tehsil = { ...existingTehsil, ...tehsilData };
-    this.tehsils.set(id, updatedTehsil);
-    return updatedTehsil;
-  }
-  
-  async deleteTehsil(id: number): Promise<boolean> {
-    return this.tehsils.delete(id);
-  }
-
-  // Contact Information methods
-  async getContactInfo(): Promise<ContactInfo | undefined> {
-    return this.contactInfo;
-  }
-
-  async updateContactInfo(contactData: InsertContactInfo): Promise<ContactInfo> {
-    const now = new Date();
-    const updatedContactInfo: ContactInfo = {
-      id: 1, // Always use a single record with ID 1
-      ...contactData,
-      updatedAt: now
-    };
-    
-    this.contactInfo = updatedContactInfo;
-    return updatedContactInfo;
-  }
-  
-  // Contact Messages methods
-  async getAllContactMessages(): Promise<ContactMessage[]> {
-    return Array.from(this.contactMessages.values());
-  }
-  
-  async getContactMessage(id: number): Promise<ContactMessage | undefined> {
-    return this.contactMessages.get(id);
-  }
-  
-  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    const id = this.contactMessageIdCounter++;
-    const now = new Date();
-    const newMessage: ContactMessage = {
-      ...message,
-      id,
-      isRead: false,
-      createdAt: now
-    };
-    
-    this.contactMessages.set(id, newMessage);
-    return newMessage;
-  }
-  
-  async markContactMessageAsRead(id: number): Promise<boolean> {
-    const message = this.contactMessages.get(id);
-    if (!message) return false;
-    
-    message.isRead = true;
-    this.contactMessages.set(id, message);
-    return true;
-  }
-  
-  async markContactMessagesAsRead(ids: number[]): Promise<boolean> {
-    if (ids.length === 0) return false;
-    
-    let modifiedCount = 0;
-    for (const id of ids) {
-      const message = this.contactMessages.get(id);
-      if (message && !message.isRead) {
-        message.isRead = true;
-        this.contactMessages.set(id, message);
-        modifiedCount++;
-      }
-    }
-    
-    return modifiedCount > 0;
-  }
-  
-  async deleteContactMessage(id: number): Promise<boolean> {
-    return this.contactMessages.delete(id);
-  }
-  
-  // Property Types methods
-  async getAllPropertyTypes(): Promise<PropertyType[]> {
-    return Array.from(this.propertyTypes.values());
-  }
-  
-  async getPropertyType(id: number): Promise<PropertyType | undefined> {
-    return this.propertyTypes.get(id);
-  }
-  
-  async createPropertyType(propertyType: InsertPropertyType): Promise<PropertyType> {
-    const id = this.propertyTypeIdCounter++;
-    const now = new Date();
-    const newPropertyType: PropertyType = { 
-      ...propertyType, 
-      id,
-      createdAt: now
-    };
-    this.propertyTypes.set(id, newPropertyType);
-    return newPropertyType;
-  }
-  
-  async updatePropertyType(id: number, propertyTypeData: Partial<InsertPropertyType>): Promise<PropertyType> {
-    const existingPropertyType = this.propertyTypes.get(id);
-    
-    if (!existingPropertyType) {
-      throw new Error("Property type not found");
-    }
-    
-    const updatedPropertyType: PropertyType = { ...existingPropertyType, ...propertyTypeData };
-    this.propertyTypes.set(id, updatedPropertyType);
-    return updatedPropertyType;
-  }
-  
-  async deletePropertyType(id: number): Promise<boolean> {
-    return this.propertyTypes.delete(id);
-  }
-
-  // Home Loan Inquiry methods
-  async getAllHomeLoanInquiries(): Promise<HomeLoanInquiry[]> {
-    return Array.from(this.homeLoanInquiries.values()).sort((a, b) => 
-      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-    );
-  }
-  
-  async getHomeLoanInquiry(id: number): Promise<HomeLoanInquiry | undefined> {
-    return this.homeLoanInquiries.get(id);
-  }
-  
-  async createHomeLoanInquiry(inquiry: InsertHomeLoanInquiry): Promise<HomeLoanInquiry> {
-    const id = this.homeLoanInquiryIdCounter++;
-    const now = new Date();
-    const newInquiry: HomeLoanInquiry = {
-      ...inquiry,
-      id,
-      isRead: false,
-      createdAt: now
-    };
-    
-    this.homeLoanInquiries.set(id, newInquiry);
-    return newInquiry;
-  }
-  
-  async updateHomeLoanInquiry(id: number, inquiryData: Partial<InsertHomeLoanInquiry>): Promise<HomeLoanInquiry> {
-    const existingInquiry = this.homeLoanInquiries.get(id);
-    
-    if (!existingInquiry) {
-      throw new Error("Home loan inquiry not found");
-    }
-    
-    const updatedInquiry: HomeLoanInquiry = { ...existingInquiry, ...inquiryData };
-    this.homeLoanInquiries.set(id, updatedInquiry);
-    return updatedInquiry;
-  }
-  
-  async markHomeLoanInquiryAsRead(id: number): Promise<boolean> {
-    const inquiry = this.homeLoanInquiries.get(id);
-    if (!inquiry) return false;
-    
-    inquiry.isRead = true;
-    this.homeLoanInquiries.set(id, inquiry);
-    return true;
-  }
-  
-  async deleteHomeLoanInquiry(id: number): Promise<boolean> {
-    return this.homeLoanInquiries.delete(id);
-  }
-}
-
-// Database implementation
-import { db, pool } from "./db";
-import { eq, like, gte, lte, and, desc, asc, sql, or } from "drizzle-orm";
-
-export class DatabaseStorage implements IStorage {
-  public sessionStore: session.Store;
-  
-  constructor() {
-    // Setup PostgreSQL session store
-    const PostgresStore = connectPg(session);
-    this.sessionStore = new PostgresStore({
-      pool,
-      createTableIfMissing: true,
-    });
-  }
-  
   // User methods
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    return this.users.find(u => u.id === id);
   }
 
   async upsertUser(userData: typeof users.$inferInsert): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
-  }
-  
-  async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users).orderBy(desc(users.id));
-  }
-  
-  async updateUser(id: string, userData: Partial<typeof users.$inferInsert>): Promise<User> {
-    const [updatedUser] = await db
-      .update(users)
-      .set({
-        ...userData,
-        updatedAt: new Date()
-      })
-      .where(eq(users.id, id))
-      .returning();
-      
-    if (!updatedUser) {
-      throw new Error("User not found");
+    const existingIndex = this.users.findIndex(u => u.id === userData.id);
+    const user: User = {
+      ...userData,
+      createdAt: new Date()
+    };
+
+    if (existingIndex >= 0) {
+      this.users[existingIndex] = { ...this.users[existingIndex], ...user };
+      return this.users[existingIndex];
+    } else {
+      this.users.push(user);
+      return user;
     }
-    
-    return updatedUser;
-  }
-  
-  async deleteUser(id: string): Promise<boolean> {
-    const result = await db.delete(users).where(eq(users.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
   }
 
-  // Authentication methods
+  async getAllUsers(): Promise<User[]> {
+    return this.users;
+  }
+
+  async updateUser(id: string, userData: Partial<typeof users.$inferInsert>): Promise<User> {
+    const index = this.users.findIndex(u => u.id === id);
+    if (index === -1) throw new Error("User not found");
+    
+    this.users[index] = { ...this.users[index], ...userData };
+    return this.users[index];
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    const index = this.users.findIndex(u => u.id === id);
+    if (index === -1) return false;
+    
+    this.users.splice(index, 1);
+    return true;
+  }
+
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user;
+    return this.users.find(u => u.username === username);
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
+    return this.users.find(u => u.email === email);
   }
 
   async getAgentByUsername(username: string): Promise<Agent | undefined> {
-    // For now, we'll use the agent's name field as username
-    const [agent] = await db.select().from(agents).where(eq(agents.name, username));
-    
-    // If agent is found, add a role property to it
-    if (agent) {
-      (agent as any).role = "agent";
-    }
-    
-    return agent;
+    return this.agents.find(a => a.name === username);
   }
 
   async getClientByUsername(username: string): Promise<User | undefined> {
-    // For now, clients are just users that are not admins
-    const [user] = await db.select().from(users)
-      .where(and(eq(users.username, username), eq(users.isAdmin, false)));
-    
-    if (user) {
-      (user as any).role = "client";
-    }
-    
-    return user;
+    return this.users.find(u => u.username === username && !u.isAdmin);
   }
 
-  async createUser(userData: {
-    username: string;
-    password: string;
-    email?: string;
-    isAdmin?: boolean;
-  }): Promise<User> {
-    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    const [user] = await db
-      .insert(users)
-      .values({
-        id: userId,
-        username: userData.username,
-        password: userData.password,
-        email: userData.email,
-        isAdmin: userData.isAdmin || false,
-        createdAt: new Date(),
-      })
-      .returning();
-    
-    return user;
-  }
-  
   // Property methods
   async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
-    // Enhanced query with location joins for comprehensive search
-    let query = db.select({
-      id: properties.id,
-      propertyNumber: properties.propertyNumber,
-      title: properties.title,
-      description: properties.description,
-      price: properties.price,
-      location: properties.location,
-      address: properties.address,
-      beds: properties.beds,
-      baths: properties.baths,
-      area: properties.area,
-      areaUnit: properties.areaUnit,
-      yearBuilt: properties.yearBuilt,
-      parking: properties.parking,
-      propertyType: properties.propertyType,
-      type: properties.type,
-      status: properties.status,
-      featured: properties.featured,
-      features: properties.features,
-      images: properties.images,
-      mapUrl: properties.mapUrl,
-      maharera_registered: properties.maharera_registered,
-      maharera_number: properties.maharera_number,
-      agentId: properties.agentId,
-      stateId: properties.stateId,
-      districtId: properties.districtId,
-      talukaId: properties.talukaId,
-      tehsilId: properties.tehsilId,
-      stateName: states.name,
-      districtName: districts.name,
-      talukaName: talukas.name,
-      tehsilName: tehsils.name,
-      tehsilArea: tehsils.area,
-      createdAt: properties.createdAt,
-    }).from(properties)
-    .leftJoin(states, eq(properties.stateId, states.id))
-    .leftJoin(districts, eq(properties.districtId, districts.id))
-    .leftJoin(talukas, eq(properties.talukaId, talukas.id))
-    .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id));
-    
-    // By default, only show active properties
-    const conditions = [eq(properties.status, 'active')];
-    
+    let filteredProperties = this.properties;
+
     if (filters) {
-      if (filters.type && filters.type !== "") {
-        if (filters.type === "rent") {
-          conditions.push(eq(properties.type, "rent"));
-        } else if (filters.type === "buy") {
-          // Include both 'buy' and 'sell' type properties under "Buy" filter
-          conditions.push(or(
-            eq(properties.type, "buy"),
-            eq(properties.type, "sell")
-          ));
-        } else if (filters.type === "sell") {
-          conditions.push(eq(properties.type, "sell"));
-        }
+      if (filters.type) {
+        filteredProperties = filteredProperties.filter(p => p.type === filters.type);
       }
-      
       if (filters.propertyType) {
-        // Handle "Commercial" as a category that includes all commercial-related property types
-        if (filters.propertyType === "Commercial") {
-          const commercialTypes = [
-            "Commercial",
-            "Commercial Office", 
-            "Commercial Complex",
-            "Shop",
-            "Office", 
-            "Warehouse",
-            "Commercial Space",
-            "Commercial Building"
-          ];
-          conditions.push(or(
-            ...commercialTypes.map(type => eq(properties.propertyType, type))
-          ));
-        } else {
-          conditions.push(eq(properties.propertyType, filters.propertyType));
-        }
+        filteredProperties = filteredProperties.filter(p => p.propertyType === filters.propertyType);
       }
-      
       if (filters.location) {
-        // Enhanced location search supporting area, tehsil, district, taluka, and state
-        const locationTerms = filters.location.toLowerCase().split(/\s+/).filter(term => term.length > 1);
-        
-        if (locationTerms.length > 0) {
-          const locationConditions = locationTerms.map(term => 
-            or(
-              // Property fields
-              like(sql`lower(${properties.location})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${properties.address})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${properties.title})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${properties.description})`, `%${term.toLowerCase()}%`),
-              // Location hierarchy fields
-              like(sql`lower(${states.name})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${districts.name})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${talukas.name})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${tehsils.name})`, `%${term.toLowerCase()}%`),
-              like(sql`lower(${tehsils.area})`, `%${term.toLowerCase()}%`)
-            )
-          );
-          
-          // Any term can match any field
-          conditions.push(or(...locationConditions));
-        }
+        filteredProperties = filteredProperties.filter(p => 
+          p.location.toLowerCase().includes(filters.location!.toLowerCase()) ||
+          p.address.toLowerCase().includes(filters.location!.toLowerCase())
+        );
       }
-      
-      if (filters.minPrice !== undefined && filters.minPrice > 0) {
-        conditions.push(gte(properties.price, filters.minPrice));
+      if (filters.minPrice) {
+        filteredProperties = filteredProperties.filter(p => p.price >= filters.minPrice!);
       }
-      
-      if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
-        conditions.push(lte(properties.price, filters.maxPrice));
+      if (filters.maxPrice) {
+        filteredProperties = filteredProperties.filter(p => p.price <= filters.maxPrice!);
       }
-      
-      if (filters.minBeds !== undefined) {
-        conditions.push(gte(properties.beds, filters.minBeds));
+      if (filters.minBeds) {
+        filteredProperties = filteredProperties.filter(p => p.beds >= filters.minBeds!);
       }
-      
-      if (filters.minBaths !== undefined) {
-        conditions.push(gte(properties.baths, filters.minBaths));
+      if (filters.minBaths) {
+        filteredProperties = filteredProperties.filter(p => p.baths >= filters.minBaths!);
       }
-      
       if (filters.featured !== undefined) {
-        conditions.push(eq(properties.featured, filters.featured));
+        filteredProperties = filteredProperties.filter(p => p.featured === filters.featured);
+      }
+      if (filters.agentId) {
+        filteredProperties = filteredProperties.filter(p => p.agentId === filters.agentId);
       }
     }
-    
-    // Apply all conditions
-    query = query.where(and(...conditions));
-    
-    // Sort by newest first
-    return await query.orderBy(desc(properties.createdAt));
+
+    return filteredProperties.sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
-    const [property] = await db.select({
-      id: properties.id,
-      propertyNumber: properties.propertyNumber,
-      title: properties.title,
-      description: properties.description,
-      price: properties.price,
-      location: properties.location,
-      address: properties.address,
-      beds: properties.beds,
-      baths: properties.baths,
-      area: properties.area,
-      areaUnit: properties.areaUnit,
-      yearBuilt: properties.yearBuilt,
-      parking: properties.parking,
-      propertyType: properties.propertyType,
-      type: properties.type,
-      status: properties.status,
-      featured: properties.featured,
-      features: properties.features,
-      images: properties.images,
-      mapUrl: properties.mapUrl,
-      maharera_registered: properties.maharera_registered,
-      maharera_number: properties.maharera_number,
-      agentId: properties.agentId,
-      stateId: properties.stateId,
-      districtId: properties.districtId,
-      talukaId: properties.talukaId,
-      tehsilId: properties.tehsilId,
-      createdAt: properties.createdAt,
-      // Include location hierarchy names
-      stateName: states.name,
-      districtName: districts.name,
-      talukaName: talukas.name,
-      tehsilName: tehsils.name,
-      tehsilArea: tehsils.area,
-    }).from(properties)
-    .leftJoin(states, eq(properties.stateId, states.id))
-    .leftJoin(districts, eq(properties.districtId, districts.id))
-    .leftJoin(talukas, eq(properties.talukaId, talukas.id))
-    .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id))
-    .where(eq(properties.id, id));
-    
+    return this.properties.find(p => p.id === id);
+  }
+
+  async getPropertiesByAgent(agentId: number): Promise<Property[]> {
+    return this.properties.filter(p => p.agentId === agentId);
+  }
+
+  async createProperty(propertyData: InsertProperty): Promise<Property> {
+    const property: Property = {
+      id: this.nextId++,
+      ...propertyData,
+      createdAt: new Date()
+    };
+    this.properties.push(property);
     return property;
   }
 
-  async createProperty(property: InsertProperty): Promise<Property> {
-    const [newProperty] = await db.insert(properties).values(property).returning();
-    return newProperty;
-  }
-
-  async updateProperty(id: number, property: InsertProperty): Promise<Property | undefined> {
-    const [updatedProperty] = await db
-      .update(properties)
-      .set(property)
-      .where(eq(properties.id, id))
-      .returning();
-    return updatedProperty;
+  async updateProperty(id: number, propertyData: Partial<InsertProperty>): Promise<Property> {
+    const index = this.properties.findIndex(p => p.id === id);
+    if (index === -1) throw new Error("Property not found");
+    
+    this.properties[index] = { ...this.properties[index], ...propertyData };
+    return this.properties[index];
   }
 
   async deleteProperty(id: number): Promise<boolean> {
-    const result = await db.delete(properties).where(eq(properties.id, id));
-    return result.rowCount > 0;
+    const index = this.properties.findIndex(p => p.id === id);
+    if (index === -1) return false;
+    
+    this.properties.splice(index, 1);
+    return true;
   }
 
-  async countPropertiesByType(propertyType: string): Promise<number> {
-    const [result] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(properties)
-      .where(and(
-        eq(properties.propertyType, propertyType),
-        or(
-          eq(properties.status, 'active'),
-          sql`${properties.status} IS NULL`
-        )
-      ));
-    
-    return result?.count || 0;
+  async getFeaturedProperties(): Promise<Property[]> {
+    return this.properties.filter(p => p.featured);
   }
-  
+
   // Agent methods
   async getAllAgents(): Promise<Agent[]> {
-    return await db.select().from(agents);
+    return this.agents;
   }
 
   async getAgent(id: number): Promise<Agent | undefined> {
-    const [agent] = await db.select().from(agents).where(eq(agents.id, id));
+    return this.agents.find(a => a.id === id);
+  }
+
+  async createAgent(agentData: InsertAgent): Promise<Agent> {
+    const agent: Agent = {
+      id: this.nextId++,
+      ...agentData,
+      createdAt: new Date()
+    };
+    this.agents.push(agent);
     return agent;
   }
 
-  async createAgent(agent: InsertAgent): Promise<Agent> {
-    const [newAgent] = await db.insert(agents).values(agent).returning();
-    return newAgent;
-  }
-  
   async updateAgent(id: number, agentData: InsertAgent): Promise<Agent> {
-    const [updatedAgent] = await db
-      .update(agents)
-      .set(agentData)
-      .where(eq(agents.id, id))
-      .returning();
+    const index = this.agents.findIndex(a => a.id === id);
+    if (index === -1) throw new Error("Agent not found");
     
-    if (!updatedAgent) {
-      throw new Error(`Agent with ID ${id} not found`);
-    }
-    
-    return updatedAgent;
-  }
-  
-  async deleteAgent(id: number): Promise<boolean> {
-    const result = await db.delete(agents).where(eq(agents.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
-  }
-  
-  // Inquiry methods
-  async getAllInquiries(): Promise<Inquiry[]> {
-    return await db.select().from(inquiries).orderBy(desc(inquiries.createdAt));
+    this.agents[index] = { ...this.agents[index], ...agentData };
+    return this.agents[index];
   }
 
-  async getInquiry(id: number): Promise<Inquiry | undefined> {
-    const [inquiry] = await db.select().from(inquiries).where(eq(inquiries.id, id));
+  async deleteAgent(id: number): Promise<boolean> {
+    const index = this.agents.findIndex(a => a.id === id);
+    if (index === -1) return false;
+    
+    this.agents.splice(index, 1);
+    return true;
+  }
+
+  // Property Inquiry methods
+  async getAllPropertyInquiries(): Promise<PropertyInquiry[]> {
+    return this.propertyInquiries.sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
+  }
+
+  async getPropertyInquiry(id: number): Promise<PropertyInquiry | undefined> {
+    return this.propertyInquiries.find(i => i.id === id);
+  }
+
+  async createPropertyInquiry(inquiryData: InsertPropertyInquiry): Promise<PropertyInquiry> {
+    const inquiry: PropertyInquiry = {
+      id: this.nextId++,
+      ...inquiryData,
+      isRead: false,
+      createdAt: new Date()
+    };
+    this.propertyInquiries.push(inquiry);
     return inquiry;
   }
-  
-  async deleteInquiry(id: number): Promise<boolean> {
-    const result = await db.delete(inquiries).where(eq(inquiries.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
+
+  async markPropertyInquiryAsRead(id: number): Promise<boolean> {
+    const inquiry = this.propertyInquiries.find(i => i.id === id);
+    if (!inquiry) return false;
+    
+    inquiry.isRead = true;
+    return true;
   }
 
-  async createInquiry(inquiry: InsertInquiry): Promise<Inquiry> {
-    const [newInquiry] = await db.insert(inquiries).values(inquiry).returning();
-    return newInquiry;
+  async deletePropertyInquiry(id: number): Promise<boolean> {
+    const index = this.propertyInquiries.findIndex(i => i.id === id);
+    if (index === -1) return false;
+    
+    this.propertyInquiries.splice(index, 1);
+    return true;
   }
-  
-  // India location methods
-  // States
+
+  // States methods
   async getAllStates(): Promise<State[]> {
-    return await db.select().from(states).orderBy(asc(states.name));
+    return this.states;
   }
-  
+
   async getState(id: number): Promise<State | undefined> {
-    const [state] = await db.select().from(states).where(eq(states.id, id));
+    return this.states.find(s => s.id === id);
+  }
+
+  async createState(stateData: InsertState): Promise<State> {
+    const state: State = {
+      id: this.nextId++,
+      ...stateData,
+      createdAt: new Date()
+    };
+    this.states.push(state);
     return state;
   }
-  
-  async createState(state: InsertState): Promise<State> {
-    const [newState] = await db.insert(states).values(state).returning();
-    return newState;
-  }
-  
+
   async updateState(id: number, stateData: Partial<InsertState>): Promise<State> {
-    const [updatedState] = await db
-      .update(states)
-      .set(stateData)
-      .where(eq(states.id, id))
-      .returning();
-      
-    if (!updatedState) {
-      throw new Error("State not found");
-    }
+    const index = this.states.findIndex(s => s.id === id);
+    if (index === -1) throw new Error("State not found");
     
-    return updatedState;
-  }
-  
-  async deleteState(id: number): Promise<boolean> {
-    const result = await db.delete(states).where(eq(states.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
-  }
-  
-  // Districts
-  async getAllDistricts(stateId?: number): Promise<District[]> {
-    if (stateId) {
-      return await db
-        .select()
-        .from(districts)
-        .where(eq(districts.stateId, stateId))
-        .orderBy(asc(districts.name));
-    }
-    return await db.select().from(districts).orderBy(asc(districts.name));
-  }
-  
-  async getDistrict(id: number): Promise<District | undefined> {
-    const [district] = await db.select().from(districts).where(eq(districts.id, id));
-    return district;
-  }
-  
-  async createDistrict(district: InsertDistrict): Promise<District> {
-    const [newDistrict] = await db.insert(districts).values(district).returning();
-    return newDistrict;
-  }
-  
-  async updateDistrict(id: number, districtData: Partial<InsertDistrict>): Promise<District> {
-    const [updatedDistrict] = await db
-      .update(districts)
-      .set(districtData)
-      .where(eq(districts.id, id))
-      .returning();
-      
-    if (!updatedDistrict) {
-      throw new Error("District not found");
-    }
-    
-    return updatedDistrict;
-  }
-  
-  async deleteDistrict(id: number): Promise<boolean> {
-    const result = await db.delete(districts).where(eq(districts.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
-  }
-  
-  // Talukas
-  async getAllTalukas(districtId?: number): Promise<Taluka[]> {
-    if (districtId) {
-      return await db
-        .select()
-        .from(talukas)
-        .where(eq(talukas.districtId, districtId))
-        .orderBy(asc(talukas.name));
-    }
-    return await db.select().from(talukas).orderBy(asc(talukas.name));
-  }
-  
-  async getTaluka(id: number): Promise<Taluka | undefined> {
-    const [taluka] = await db.select().from(talukas).where(eq(talukas.id, id));
-    return taluka;
-  }
-  
-  async createTaluka(taluka: InsertTaluka): Promise<Taluka> {
-    const [newTaluka] = await db.insert(talukas).values(taluka).returning();
-    return newTaluka;
-  }
-  
-  async updateTaluka(id: number, talukaData: Partial<InsertTaluka>): Promise<Taluka> {
-    const [updatedTaluka] = await db
-      .update(talukas)
-      .set(talukaData)
-      .where(eq(talukas.id, id))
-      .returning();
-      
-    if (!updatedTaluka) {
-      throw new Error("Taluka not found");
-    }
-    
-    return updatedTaluka;
-  }
-  
-  async deleteTaluka(id: number): Promise<boolean> {
-    const result = await db.delete(talukas).where(eq(talukas.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
-  }
-  
-  // Tehsils
-  async getAllTehsils(talukaId?: number): Promise<Tehsil[]> {
-    if (talukaId) {
-      return await db
-        .select()
-        .from(tehsils)
-        .where(eq(tehsils.talukaId, talukaId))
-        .orderBy(asc(tehsils.name));
-    }
-    return await db.select().from(tehsils).orderBy(asc(tehsils.name));
-  }
-  
-  async getTehsil(id: number): Promise<Tehsil | undefined> {
-    const [tehsil] = await db.select().from(tehsils).where(eq(tehsils.id, id));
-    return tehsil;
-  }
-  
-  async createTehsil(tehsil: InsertTehsil): Promise<Tehsil> {
-    const [newTehsil] = await db.insert(tehsils).values(tehsil).returning();
-    return newTehsil;
-  }
-  
-  async updateTehsil(id: number, tehsilData: Partial<InsertTehsil>): Promise<Tehsil> {
-    const [updatedTehsil] = await db
-      .update(tehsils)
-      .set(tehsilData)
-      .where(eq(tehsils.id, id))
-      .returning();
-      
-    if (!updatedTehsil) {
-      throw new Error("Tehsil not found");
-    }
-    
-    return updatedTehsil;
-  }
-  
-  async deleteTehsil(id: number): Promise<boolean> {
-    const result = await db.delete(tehsils).where(eq(tehsils.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
+    this.states[index] = { ...this.states[index], ...stateData };
+    return this.states[index];
   }
 
-  // Contact Information methods
-  async getContactInfo(): Promise<ContactInfo | undefined> {
-    try {
-      const [contact] = await db.select().from(contactInfo);
-      return contact;
-    } catch (error) {
-      console.error("Error getting contact information:", error);
-      return undefined;
+  async deleteState(id: number): Promise<boolean> {
+    const index = this.states.findIndex(s => s.id === id);
+    if (index === -1) return false;
+    
+    this.states.splice(index, 1);
+    return true;
+  }
+
+  // Districts methods
+  async getAllDistricts(stateId?: number): Promise<District[]> {
+    if (stateId) {
+      return this.districts.filter(d => d.stateId === stateId);
     }
+    return this.districts;
+  }
+
+  async getDistrict(id: number): Promise<District | undefined> {
+    return this.districts.find(d => d.id === id);
+  }
+
+  async createDistrict(districtData: InsertDistrict): Promise<District> {
+    const district: District = {
+      id: this.nextId++,
+      ...districtData,
+      createdAt: new Date()
+    };
+    this.districts.push(district);
+    return district;
+  }
+
+  async updateDistrict(id: number, districtData: Partial<InsertDistrict>): Promise<District> {
+    const index = this.districts.findIndex(d => d.id === id);
+    if (index === -1) throw new Error("District not found");
+    
+    this.districts[index] = { ...this.districts[index], ...districtData };
+    return this.districts[index];
+  }
+
+  async deleteDistrict(id: number): Promise<boolean> {
+    const index = this.districts.findIndex(d => d.id === id);
+    if (index === -1) return false;
+    
+    this.districts.splice(index, 1);
+    return true;
+  }
+
+  // Talukas methods
+  async getAllTalukas(districtId?: number): Promise<Taluka[]> {
+    if (districtId) {
+      return this.talukas.filter(t => t.districtId === districtId);
+    }
+    return this.talukas;
+  }
+
+  async getTaluka(id: number): Promise<Taluka | undefined> {
+    return this.talukas.find(t => t.id === id);
+  }
+
+  async createTaluka(talukaData: InsertTaluka): Promise<Taluka> {
+    const taluka: Taluka = {
+      id: this.nextId++,
+      ...talukaData,
+      createdAt: new Date()
+    };
+    this.talukas.push(taluka);
+    return taluka;
+  }
+
+  async updateTaluka(id: number, talukaData: Partial<InsertTaluka>): Promise<Taluka> {
+    const index = this.talukas.findIndex(t => t.id === id);
+    if (index === -1) throw new Error("Taluka not found");
+    
+    this.talukas[index] = { ...this.talukas[index], ...talukaData };
+    return this.talukas[index];
+  }
+
+  async deleteTaluka(id: number): Promise<boolean> {
+    const index = this.talukas.findIndex(t => t.id === id);
+    if (index === -1) return false;
+    
+    this.talukas.splice(index, 1);
+    return true;
+  }
+
+  // Tehsils methods
+  async getAllTehsils(talukaId?: number): Promise<Tehsil[]> {
+    if (talukaId) {
+      return this.tehsils.filter(t => t.talukaId === talukaId);
+    }
+    return this.tehsils;
+  }
+
+  async getTehsil(id: number): Promise<Tehsil | undefined> {
+    return this.tehsils.find(t => t.id === id);
+  }
+
+  async createTehsil(tehsilData: InsertTehsil): Promise<Tehsil> {
+    const tehsil: Tehsil = {
+      id: this.nextId++,
+      ...tehsilData,
+      createdAt: new Date()
+    };
+    this.tehsils.push(tehsil);
+    return tehsil;
+  }
+
+  async updateTehsil(id: number, tehsilData: Partial<InsertTehsil>): Promise<Tehsil> {
+    const index = this.tehsils.findIndex(t => t.id === id);
+    if (index === -1) throw new Error("Tehsil not found");
+    
+    this.tehsils[index] = { ...this.tehsils[index], ...tehsilData };
+    return this.tehsils[index];
+  }
+
+  async deleteTehsil(id: number): Promise<boolean> {
+    const index = this.tehsils.findIndex(t => t.id === id);
+    if (index === -1) return false;
+    
+    this.tehsils.splice(index, 1);
+    return true;
+  }
+
+  // Contact info methods
+  async getContactInfo(): Promise<ContactInfo | undefined> {
+    return this.contactInfoData;
   }
 
   async updateContactInfo(contactData: InsertContactInfo): Promise<ContactInfo> {
-    try {
-      // Check if contact info exists
-      const existingContact = await this.getContactInfo();
-      
-      if (existingContact) {
-        // Update existing record
-        const [updated] = await db
-          .update(contactInfo)
-          .set({
-            ...contactData,
-            updatedAt: new Date()
-          })
-          .where(eq(contactInfo.id, existingContact.id))
-          .returning();
-        
-        return updated;
-      } else {
-        // Create new record
-        const [newContact] = await db
-          .insert(contactInfo)
-          .values({
-            ...contactData,
-            updatedAt: new Date()
-          })
-          .returning();
-        
-        return newContact;
-      }
-    } catch (error) {
-      console.error("Error updating contact information:", error);
-      throw error;
-    }
-  }
-  
-  // Property Types methods
-  async getAllPropertyTypes(): Promise<PropertyType[]> {
-    return await db.select().from(propertyTypes).orderBy(propertyTypes.name);
-  }
-  
-  async getPropertyType(id: number): Promise<PropertyType | undefined> {
-    const [propertyType] = await db.select().from(propertyTypes).where(eq(propertyTypes.id, id));
-    return propertyType;
-  }
-  
-  async createPropertyType(propertyType: InsertPropertyType): Promise<PropertyType> {
-    const [newPropertyType] = await db.insert(propertyTypes).values(propertyType).returning();
-    return newPropertyType;
-  }
-  
-  async updatePropertyType(id: number, propertyTypeData: Partial<InsertPropertyType>): Promise<PropertyType> {
-    const [updatedPropertyType] = await db
-      .update(propertyTypes)
-      .set(propertyTypeData)
-      .where(eq(propertyTypes.id, id))
-      .returning();
-      
-    if (!updatedPropertyType) {
-      throw new Error("Property type not found");
-    }
-    
-    return updatedPropertyType;
-  }
-  
-  async deletePropertyType(id: number): Promise<boolean> {
-    const result = await db.delete(propertyTypes).where(eq(propertyTypes.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
+    this.contactInfoData = {
+      id: 1,
+      ...contactData,
+      updatedAt: new Date()
+    };
+    return this.contactInfoData;
   }
 
-  // Contact Messages methods
+  // Contact messages methods
   async getAllContactMessages(): Promise<ContactMessage[]> {
-    return await db.select().from(contactMessages).orderBy(desc(contactMessages.createdAt));
+    return this.contactMessages.sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
   }
-  
+
   async getContactMessage(id: number): Promise<ContactMessage | undefined> {
-    const [message] = await db.select().from(contactMessages).where(eq(contactMessages.id, id));
+    return this.contactMessages.find(m => m.id === id);
+  }
+
+  async createContactMessage(messageData: InsertContactMessage): Promise<ContactMessage> {
+    const message: ContactMessage = {
+      id: this.nextId++,
+      ...messageData,
+      isRead: false,
+      createdAt: new Date()
+    };
+    this.contactMessages.push(message);
     return message;
   }
-  
-  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    const [newMessage] = await db.insert(contactMessages).values(message).returning();
-    return newMessage;
-  }
-  
+
   async markContactMessageAsRead(id: number): Promise<boolean> {
-    const result = await db
-      .update(contactMessages)
-      .set({ isRead: true })
-      .where(eq(contactMessages.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
-  }
-  
-  async markContactMessagesAsRead(ids: number[]): Promise<boolean> {
-    if (ids.length === 0) return false;
+    const message = this.contactMessages.find(m => m.id === id);
+    if (!message) return false;
     
-    const result = await db
-      .update(contactMessages)
-      .set({ isRead: true })
-      .where(sql`id = ANY(${ids})`)
-      .returning();
-      
-    return result.length > 0;
-  }
-  
-  async deleteContactMessage(id: number): Promise<boolean> {
-    const result = await db.delete(contactMessages).where(eq(contactMessages.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
+    message.isRead = true;
+    return true;
   }
 
-  // Home Loan Inquiries methods
-  async getAllHomeLoanInquiries(): Promise<HomeLoanInquiry[]> {
-    return await db.select().from(homeLoanInquiries).orderBy(desc(homeLoanInquiries.createdAt));
+  async markContactMessagesAsRead(ids: number[]): Promise<boolean> {
+    let updated = false;
+    for (const id of ids) {
+      const message = this.contactMessages.find(m => m.id === id);
+      if (message && !message.isRead) {
+        message.isRead = true;
+        updated = true;
+      }
+    }
+    return updated;
   }
-  
+
+  async deleteContactMessage(id: number): Promise<boolean> {
+    const index = this.contactMessages.findIndex(m => m.id === id);
+    if (index === -1) return false;
+    
+    this.contactMessages.splice(index, 1);
+    return true;
+  }
+
+  // Property types methods
+  async getAllPropertyTypes(): Promise<PropertyType[]> {
+    return this.propertyTypes.filter(pt => pt.active);
+  }
+
+  async getPropertyType(id: number): Promise<PropertyType | undefined> {
+    return this.propertyTypes.find(pt => pt.id === id);
+  }
+
+  async createPropertyType(propertyTypeData: InsertPropertyType): Promise<PropertyType> {
+    const propertyType: PropertyType = {
+      id: this.nextId++,
+      ...propertyTypeData,
+      createdAt: new Date()
+    };
+    this.propertyTypes.push(propertyType);
+    return propertyType;
+  }
+
+  async updatePropertyType(id: number, propertyTypeData: Partial<InsertPropertyType>): Promise<PropertyType> {
+    const index = this.propertyTypes.findIndex(pt => pt.id === id);
+    if (index === -1) throw new Error("Property type not found");
+    
+    this.propertyTypes[index] = { ...this.propertyTypes[index], ...propertyTypeData };
+    return this.propertyTypes[index];
+  }
+
+  async deletePropertyType(id: number): Promise<boolean> {
+    const index = this.propertyTypes.findIndex(pt => pt.id === id);
+    if (index === -1) return false;
+    
+    this.propertyTypes.splice(index, 1);
+    return true;
+  }
+
+  // Home loan inquiries methods
+  async getAllHomeLoanInquiries(): Promise<HomeLoanInquiry[]> {
+    return this.homeLoanInquiries.sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
+  }
+
   async getHomeLoanInquiry(id: number): Promise<HomeLoanInquiry | undefined> {
-    const [inquiry] = await db.select().from(homeLoanInquiries).where(eq(homeLoanInquiries.id, id));
+    return this.homeLoanInquiries.find(i => i.id === id);
+  }
+
+  async createHomeLoanInquiry(inquiryData: InsertHomeLoanInquiry): Promise<HomeLoanInquiry> {
+    const inquiry: HomeLoanInquiry = {
+      id: this.nextId++,
+      ...inquiryData,
+      isRead: false,
+      createdAt: new Date()
+    };
+    this.homeLoanInquiries.push(inquiry);
     return inquiry;
   }
-  
-  async createHomeLoanInquiry(inquiry: InsertHomeLoanInquiry): Promise<HomeLoanInquiry> {
-    const [newInquiry] = await db.insert(homeLoanInquiries).values(inquiry).returning();
-    return newInquiry;
-  }
-  
+
   async updateHomeLoanInquiry(id: number, inquiryData: Partial<InsertHomeLoanInquiry>): Promise<HomeLoanInquiry> {
-    const [updatedInquiry] = await db
-      .update(homeLoanInquiries)
-      .set(inquiryData)
-      .where(eq(homeLoanInquiries.id, id))
-      .returning();
-      
-    if (!updatedInquiry) {
-      throw new Error("Home loan inquiry not found");
-    }
+    const index = this.homeLoanInquiries.findIndex(i => i.id === id);
+    if (index === -1) throw new Error("Home loan inquiry not found");
     
-    return updatedInquiry;
+    this.homeLoanInquiries[index] = { ...this.homeLoanInquiries[index], ...inquiryData };
+    return this.homeLoanInquiries[index];
   }
-  
+
   async deleteHomeLoanInquiry(id: number): Promise<boolean> {
-    const result = await db.delete(homeLoanInquiries).where(eq(homeLoanInquiries.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
+    const index = this.homeLoanInquiries.findIndex(i => i.id === id);
+    if (index === -1) return false;
+    
+    this.homeLoanInquiries.splice(index, 1);
+    return true;
   }
-  
+
   async markHomeLoanInquiryAsRead(id: number): Promise<boolean> {
-    const result = await db
-      .update(homeLoanInquiries)
-      .set({ isRead: true })
-      .where(eq(homeLoanInquiries.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
+    const inquiry = this.homeLoanInquiries.find(i => i.id === id);
+    if (!inquiry) return false;
+    
+    inquiry.isRead = true;
+    return true;
   }
 
-  // Homepage Images methods
+  // Homepage images methods
   async getAllHomepageImages(): Promise<HomepageImage[]> {
-    return await db.select().from(homepageImages).orderBy(asc(homepageImages.sortOrder), desc(homepageImages.createdAt));
-  }
-
-  async getHomepageImagesByType(imageType: string): Promise<HomepageImage[]> {
-    return await db.select().from(homepageImages)
-      .where(eq(homepageImages.imageType, imageType))
-      .orderBy(asc(homepageImages.sortOrder), desc(homepageImages.createdAt));
+    return this.homepageImages.filter(img => img.isActive);
   }
 
   async getHomepageImage(id: number): Promise<HomepageImage | undefined> {
-    const [image] = await db.select().from(homepageImages).where(eq(homepageImages.id, id));
+    return this.homepageImages.find(img => img.id === id);
+  }
+
+  async createHomepageImage(imageData: InsertHomepageImage): Promise<HomepageImage> {
+    const image: HomepageImage = {
+      id: this.nextId++,
+      ...imageData,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.homepageImages.push(image);
     return image;
   }
 
-  async createHomepageImage(image: InsertHomepageImage): Promise<HomepageImage> {
-    const [newImage] = await db.insert(homepageImages).values(image).returning();
-    return newImage;
-  }
-
   async updateHomepageImage(id: number, imageData: Partial<InsertHomepageImage>): Promise<HomepageImage> {
-    const [updatedImage] = await db
-      .update(homepageImages)
-      .set({ ...imageData, updatedAt: sql`NOW()` })
-      .where(eq(homepageImages.id, id))
-      .returning();
-      
-    if (!updatedImage) {
-      throw new Error("Homepage image not found");
-    }
+    const index = this.homepageImages.findIndex(img => img.id === id);
+    if (index === -1) throw new Error("Homepage image not found");
     
-    return updatedImage;
+    this.homepageImages[index] = { 
+      ...this.homepageImages[index], 
+      ...imageData, 
+      updatedAt: new Date() 
+    };
+    return this.homepageImages[index];
   }
 
   async deleteHomepageImage(id: number): Promise<boolean> {
-    const result = await db.delete(homepageImages).where(eq(homepageImages.id, id));
-    return result.rowCount !== null && result.rowCount > 0;
+    const index = this.homepageImages.findIndex(img => img.id === id);
+    if (index === -1) return false;
+    
+    this.homepageImages.splice(index, 1);
+    return true;
   }
 }
 
-// Database storage implementation
-// Use database storage for persistence
-export const storage = new DatabaseStorage();
+// Export storage instance
+export const storage = new MemStorage();

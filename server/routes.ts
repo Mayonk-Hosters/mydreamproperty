@@ -6,7 +6,7 @@ import { pool } from "./db";
 import { 
   insertPropertySchema, 
   insertAgentSchema, 
-  insertInquirySchema,
+  insertPropertyInquirySchema,
   insertStateSchema,
   insertDistrictSchema,
   insertTalukaSchema,
