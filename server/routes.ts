@@ -2087,8 +2087,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
       const result = await pool.query(
-        'INSERT INTO home_loan_inquiries (name, email, phone, occupation, monthly_income, loan_amount, property_value, property_id, message) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-        [inquiryData.name, inquiryData.email, inquiryData.phone, inquiryData.occupation, inquiryData.monthlyIncome, inquiryData.loanAmount, inquiryData.propertyValue, inquiryData.propertyId, inquiryData.message]
+        'INSERT INTO home_loan_inquiries (name, email, phone, loan_type, loan_amount, property_location, monthly_income, employment, message) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+        [inquiryData.name, inquiryData.email, inquiryData.phone, inquiryData.loanType, inquiryData.loanAmount, inquiryData.propertyLocation, inquiryData.monthlyIncome, inquiryData.employment, inquiryData.message]
       );
       const newInquiry = result.rows[0];
       
@@ -2587,11 +2587,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'Name': inquiry.name,
         'Email': inquiry.email,
         'Phone': inquiry.phone,
-        'Occupation': inquiry.occupation || '',
+        'Loan Type': inquiry.loanType || '',
         'Monthly Income': inquiry.monthlyIncome || '',
         'Loan Amount': inquiry.loanAmount || '',
-        'Property Value': inquiry.propertyValue || '',
-        'Property ID': inquiry.propertyId || '',
+        'Property Location': inquiry.propertyLocation || '',
+        'Employment': inquiry.employment || '',
         'Message': inquiry.message || '',
         'Status': inquiry.isRead ? 'Read' : 'Unread',
         'Created Date': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleDateString() : '',

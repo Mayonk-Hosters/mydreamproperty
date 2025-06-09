@@ -133,11 +133,11 @@ export const homeLoanInquiries = pgTable("home_loan_inquiries", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
-  occupation: text("occupation"),
-  monthlyIncome: real("monthly_income"),
+  loanType: text("loan_type"),
   loanAmount: real("loan_amount"),
-  propertyValue: real("property_value"),
-  propertyId: integer("property_id").references(() => properties.id, { onDelete: 'set null' }),
+  propertyLocation: text("property_location"),
+  monthlyIncome: real("monthly_income"),
+  employment: text("employment"),
   message: text("message"),
   isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
@@ -224,12 +224,7 @@ export const propertyInquiriesRelations = relations(propertyInquiries, ({ one })
   }),
 }));
 
-export const homeLoanInquiriesRelations = relations(homeLoanInquiries, ({ one }) => ({
-  property: one(properties, {
-    fields: [homeLoanInquiries.propertyId],
-    references: [properties.id],
-  }),
-}));
+export const homeLoanInquiriesRelations = relations(homeLoanInquiries, ({ one }) => ({}));
 
 export const statesRelations = relations(states, ({ many }) => ({
   districts: many(districts),
