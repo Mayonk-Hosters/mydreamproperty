@@ -2086,7 +2086,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/home-loan-inquiries", async (req, res) => {
     try {
       const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
-      const newInquiry = await dbStorage.createHomeLoanInquiry(inquiryData);
+      const result = await pool.query(
+        'INSERT INTO home_loan_inquiries (name, email, phone, occupation, monthly_income, loan_amount, property_value, property_id, message) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+        [inquiryData.name, inquiryData.email, inquiryData.phone, inquiryData.occupation, inquiryData.monthlyIncome, inquiryData.loanAmount, inquiryData.propertyValue, inquiryData.propertyId, inquiryData.message]
+      );
+      const newInquiry = result.rows[0];
       
       res.status(201).json(newInquiry);
     } catch (error) {
@@ -2305,12 +2309,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all home loan inquiries (admin only)
   app.get("/api/home-loan-inquiries", async (req, res) => {
     try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
+      // Check admin access using production-ready authentication
+      if (!checkProductionAdminAccess(req as any)) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
       }
       
-      const inquiries = await dbStorage.getAllHomeLoanInquiries();
+      const result = await pool.query('SELECT * FROM home_loan_inquiries ORDER BY created_at DESC');
+      const inquiries = result.rows;
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching home loan inquiries:", error);
@@ -2321,16 +2326,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mark home loan inquiry as read (admin only)
   app.put("/api/home-loan-inquiries/:id/read", async (req, res) => {
     try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
+      // Check admin access using production-ready authentication
+      if (!checkProductionAdminAccess(req as any)) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
       }
       
-      const inquiryId = parseInt(req.params.id);
-      const success = await dbStorage.markHomeLoanInquiryAsRead(inquiryId);
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
       
-      if (success) {
-        res.json({ message: "Home loan inquiry marked as read" });
+      const result = await pool.query(
+        'UPDATE home_loan_inquiries SET is_read = true WHERE id = $1 RETURNING *',
+        [id]
+      );
+      
+      if (result.rows.length > 0) {
+        res.json({ success: true, message: "Home loan inquiry marked as read" });
       } else {
         res.status(404).json({ message: "Home loan inquiry not found" });
       }
