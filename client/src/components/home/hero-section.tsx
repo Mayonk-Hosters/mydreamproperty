@@ -119,13 +119,13 @@ export function HeroSection() {
                         <SelectItem value="" disabled>Loading...</SelectItem>
                       ) : propertyTypes && propertyTypes.length > 0 ? (
                         propertyTypes.map((type) => (
-                          <SelectItem key={type.id} value={type.name}>
+                          <SelectItem key={`db-${type.id}`} value={type.name}>
                             {type.name}
                           </SelectItem>
                         ))
                       ) : (
-                        DEFAULT_PROPERTY_TYPES.map((type) => (
-                          <SelectItem key={type} value={type}>
+                        DEFAULT_PROPERTY_TYPES.map((type, index) => (
+                          <SelectItem key={`default-${index}`} value={type}>
                             {type}
                           </SelectItem>
                         ))
