@@ -41,46 +41,31 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
     propertyType: "",
     location: "",
     minPrice: 0,
-    maxPrice: 15000000, // Set a reasonable default max
+    maxPrice: 15000000,
     minBeds: 0,
     minBaths: 0,
   });
 
-  // Parse URL parameters on component mount
+  // Initialize clean filters on component mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const updatedFilters = { ...filters };
+    // Clear any existing URL parameters
+    const url = new URL(window.location.href);
+    url.search = '';
+    window.history.replaceState({}, '', url.toString());
     
-    if (params.has("type")) {
-      updatedFilters.type = params.get("type")!;
-    }
+    // Reset filters to clean state
+    const cleanFilters = {
+      type: "buy",
+      propertyType: "",
+      location: "",
+      minPrice: 0,
+      maxPrice: 15000000,
+      minBeds: 0,
+      minBaths: 0,
+    };
     
-    if (params.has("propertyType")) {
-      updatedFilters.propertyType = params.get("propertyType")!;
-    }
-    
-    if (params.has("location")) {
-      updatedFilters.location = params.get("location")!;
-    }
-    
-    if (params.has("minPrice")) {
-      updatedFilters.minPrice = parseInt(params.get("minPrice")!);
-    }
-    
-    if (params.has("maxPrice")) {
-      updatedFilters.maxPrice = parseInt(params.get("maxPrice")!);
-    }
-    
-    if (params.has("minBeds")) {
-      updatedFilters.minBeds = parseInt(params.get("minBeds")!);
-    }
-    
-    if (params.has("minBaths")) {
-      updatedFilters.minBaths = parseInt(params.get("minBaths")!);
-    }
-    
-    setFilters(updatedFilters);
-  }, [location]);
+    setFilters(cleanFilters);
+  }, []);
 
   const handleFilterChange = (key: string, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -155,7 +140,8 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
   };
 
   const resetFilters = () => {
-    setFilters({
+    // Clear all filters completely
+    const cleanFilters = {
       type: "buy",
       propertyType: "",
       location: "",
@@ -163,12 +149,23 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
       maxPrice: 15000000,
       minBeds: 0,
       minBaths: 0,
-    });
+    };
+    
+    setFilters(cleanFilters);
+    
+    // Clear URL parameters
+    const url = new URL(window.location.href);
+    url.search = '';
+    window.history.replaceState({}, '', url.toString());
     setLocation("/properties");
     
+    // Clear any cached query data
     if (onFilterChange) {
-      onFilterChange({});
+      onFilterChange(cleanFilters);
     }
+    
+    // Force page refresh to ensure clean state
+    window.location.reload();
   };
 
   return (
