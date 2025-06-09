@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { pool } from "./db";
@@ -160,6 +161,9 @@ const requireAdmin = (req: any, res: any, next: any) => {
 import { eq, like, or, sql, gte, lte, asc } from 'drizzle-orm';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve static files from uploads directory
+  app.use('/uploads', express.static(path.join(process.cwd(), 'static', 'uploads')));
+  
   // Configure cookie parser
   app.use(cookieParser());
   
