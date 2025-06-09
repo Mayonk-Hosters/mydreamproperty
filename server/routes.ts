@@ -2474,9 +2474,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'Created Time': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleTimeString() : ''
       }));
 
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="property-inquiries-${new Date().toISOString().split('T')[0]}.json"`);
-      res.json(excelData);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="property-inquiries-${new Date().toISOString().split('T')[0]}.xlsx"`);
+      
+      // Create Excel workbook
+      const XLSX = require('xlsx');
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Property Inquiries');
+      
+      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      res.send(excelBuffer);
     } catch (error) {
       console.error("Error exporting property inquiries:", error);
       res.status(500).json({ message: "Failed to export property inquiries" });
@@ -2506,9 +2514,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'Created Time': message.createdAt ? new Date(message.createdAt).toLocaleTimeString() : ''
       }));
 
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="contact-messages-${new Date().toISOString().split('T')[0]}.json"`);
-      res.json(excelData);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="contact-messages-${new Date().toISOString().split('T')[0]}.xlsx"`);
+      
+      // Create Excel workbook
+      const XLSX = require('xlsx');
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Contact Messages');
+      
+      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      res.send(excelBuffer);
     } catch (error) {
       console.error("Error exporting contact messages:", error);
       res.status(500).json({ message: "Failed to export contact messages" });
@@ -2542,9 +2558,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'Created Time': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleTimeString() : ''
       }));
 
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="home-loan-inquiries-${new Date().toISOString().split('T')[0]}.json"`);
-      res.json(excelData);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="home-loan-inquiries-${new Date().toISOString().split('T')[0]}.xlsx"`);
+      
+      // Create Excel workbook
+      const XLSX = require('xlsx');
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Home Loan Inquiries');
+      
+      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      res.send(excelBuffer);
     } catch (error) {
       console.error("Error exporting home loan inquiries:", error);
       res.status(500).json({ message: "Failed to export home loan inquiries" });
