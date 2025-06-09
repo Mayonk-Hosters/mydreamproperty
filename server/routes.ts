@@ -742,8 +742,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Mark inquiry as read
-  app.put("/api/inquiries/:id/read", requireAdmin, async (req, res) => {
+  app.put("/api/inquiries/:id/read", async (req, res) => {
     try {
+      // Check admin access using production-ready authentication
+      if (!checkProductionAdminAccess(req as any)) {
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+      }
+
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid inquiry ID" });
