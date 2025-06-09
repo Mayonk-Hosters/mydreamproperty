@@ -27,7 +27,7 @@ export default function ContactMessagesPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { toast } = useToast();
 
-  const { data: messages = [], isLoading, refetch } = useQuery({
+  const { data: messages = [], isLoading, refetch } = useQuery<ContactMessage[]>({
     queryKey: ['/api/contact-messages'],
   });
 

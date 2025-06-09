@@ -29,7 +29,7 @@ export default function PropertyInquiriesPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { toast } = useToast();
 
-  const { data: inquiries = [], isLoading, refetch } = useQuery({
+  const { data: inquiries = [], isLoading, refetch } = useQuery<PropertyInquiry[]>({
     queryKey: ['/api/inquiries'],
   });
 
@@ -101,7 +101,7 @@ export default function PropertyInquiriesPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(inquiries.map((inquiry: PropertyInquiry) => inquiry.id));
+      setSelectedIds(inquiries.map((inquiry) => inquiry.id));
     } else {
       setSelectedIds([]);
     }
@@ -125,7 +125,7 @@ export default function PropertyInquiriesPage() {
     }
   };
 
-  const unreadCount = inquiries.filter((inquiry: PropertyInquiry) => !inquiry.isRead).length;
+  const unreadCount = inquiries.filter((inquiry) => !inquiry.isRead).length;
 
   if (isLoading) {
     return (
@@ -195,14 +195,14 @@ export default function PropertyInquiriesPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Checkbox
-                checked={selectedIds.length === inquiries.length}
+                checked={inquiries.length > 0 && selectedIds.length === inquiries.length}
                 onCheckedChange={handleSelectAll}
               />
               Property Inquiries ({inquiries.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {inquiries.map((inquiry: PropertyInquiry) => (
+            {inquiries.map((inquiry) => (
               <div
                 key={inquiry.id}
                 className={`p-4 border rounded-lg transition-all ${

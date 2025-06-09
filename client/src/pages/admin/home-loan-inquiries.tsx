@@ -31,7 +31,7 @@ export default function HomeLoanInquiriesPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { toast } = useToast();
 
-  const { data: inquiries = [], isLoading, refetch } = useQuery({
+  const { data: inquiries = [], isLoading, refetch } = useQuery<HomeLoanInquiry[]>({
     queryKey: ['/api/home-loan-inquiries'],
   });
 
