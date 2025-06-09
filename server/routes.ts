@@ -741,6 +741,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Mark inquiry as read
+  app.put("/api/inquiries/:id/read", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+      
+      const updated = await dbStorage.markPropertyInquiryAsRead(id);
+      if (updated) {
+        res.json({ success: true, message: "Property inquiry marked as read" });
+      } else {
+        res.status(404).json({ message: "Property inquiry not found" });
+      }
+    } catch (error) {
+      console.error("Error marking property inquiry as read:", error);
+      res.status(500).json({ message: "Failed to mark property inquiry as read" });
+    }
+  });
+
   // Legacy delete inquiry route - redirects to property inquiries
   app.delete("/api/inquiries/:id", requireAdmin, async (req, res) => {
     try {
