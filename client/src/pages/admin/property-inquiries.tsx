@@ -8,6 +8,8 @@ import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare, IndianRupee } from "lu
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { MessagesLayout } from "@/components/admin/messages-layout";
+import { Helmet } from "react-helmet";
 
 interface PropertyInquiry {
   id: number;
@@ -96,30 +98,38 @@ export default function PropertyInquiriesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Property Enquiries</h1>
-          <p className="text-gray-600 mt-2">
-            Manage property-specific inquiries from potential buyers
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="ml-2">
-                {unreadCount} unread
-              </Badge>
-            )}
-          </p>
+    <MessagesLayout
+      title="Messages Management"
+      description="Manage all customer communications including property inquiries, contact messages, and home loan requests"
+    >
+      <Helmet>
+        <title>Property Inquiries | Admin | My Dream Property</title>
+      </Helmet>
+      
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Property Inquiries</h2>
+            <p className="text-gray-600 text-sm mt-1">
+              Manage property-specific inquiries from potential buyers
+              {unreadCount > 0 && (
+                <Badge variant="destructive" className="ml-2">
+                  {unreadCount} unread
+                </Badge>
+              )}
+            </p>
+          </div>
+          {selectedIds.length > 0 && (
+            <Button 
+              variant="destructive" 
+              onClick={handleBulkDelete}
+              disabled={deleteMutation.isPending}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Selected ({selectedIds.length})
+            </Button>
+          )}
         </div>
-        {selectedIds.length > 0 && (
-          <Button 
-            variant="destructive" 
-            onClick={handleBulkDelete}
-            disabled={deleteMutation.isPending}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete Selected ({selectedIds.length})
-          </Button>
-        )}
-      </div>
 
       {inquiries.length === 0 ? (
         <Card>
@@ -233,6 +243,7 @@ export default function PropertyInquiriesPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+      </div>
+    </MessagesLayout>
   );
 }

@@ -8,6 +8,8 @@ import { Trash2, Eye, EyeOff, Mail, Phone, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { MessagesLayout } from "@/components/admin/messages-layout";
+import { Helmet } from "react-helmet";
 
 interface ContactMessage {
   id: number;
