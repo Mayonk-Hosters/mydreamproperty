@@ -60,6 +60,7 @@ export function setupAdminLogin(app: Express) {
           (req.session as any).isAdmin = true;
           (req.session as any).userType = "admin";
           (req.session as any).user = adminUser;
+          (req.session as any).authenticatedAdmin = true; // Additional flag for production
           
           // Also set passport session for compatibility
           if (!(req.session as any).passport) {
@@ -75,6 +76,7 @@ export function setupAdminLogin(app: Express) {
             console.log("Admin session saved successfully:", {
               isAdmin: (req.session as any).isAdmin,
               userType: (req.session as any).userType,
+              authenticatedAdmin: (req.session as any).authenticatedAdmin,
               sessionID: req.sessionID,
               environment: process.env.NODE_ENV
             });
