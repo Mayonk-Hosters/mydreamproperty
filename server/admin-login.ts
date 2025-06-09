@@ -172,19 +172,34 @@ export function setupAdminLogin(app: Express) {
 
   // Check if user is admin
   app.get("/api/auth/check-admin", (req: Request, res: Response) => {
-    // In development mode for testing
+    console.log("Check admin endpoint - Session state:", {
+      hasSession: !!req.session,
+      sessionIsAdmin: (req.session as any)?.isAdmin,
+      sessionUserType: (req.session as any)?.userType,
+      isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+      user: req.user
+    });
+
+    // Check session-based admin access first (traditional login)
+    if (req.session && (req.session as any).isAdmin) {
+      console.log("Admin access granted via session");
+      return res.json({ isAdmin: true });
+    }
+    
+    // Check OAuth-based admin access
+    if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.isAdmin) {
+      console.log("Admin access granted via OAuth");
+      return res.json({ isAdmin: true });
+    }
+    
+    // Development mode fallback
     if (process.env.NODE_ENV === 'development' && req.isAuthenticated()) {
       if (req.user && (req.user as any).username === 'Smileplz004') {
         return res.json({ isAdmin: true });
       }
     }
     
-    // Check if authenticated user is an admin
-    if (req.isAuthenticated() && (req.user as any)?.isAdmin) {
-      return res.json({ isAdmin: true });
-    }
-    
-    // Not admin
+    console.log("Admin access denied");
     res.json({ isAdmin: false });
   });
 }

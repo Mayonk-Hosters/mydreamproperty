@@ -151,9 +151,9 @@ const requireAdmin = (req: any, res: any, next: any) => {
   // Log authentication failure for debugging
   console.log('Admin access denied:', {
     hasSession: !!req.session,
-    isAdmin: req.session?.isAdmin,
+    isAdmin: (req.session as any)?.isAdmin,
     hasUser: !!req.user,
-    userIsAdmin: req.user?.isAdmin,
+    userIsAdmin: (req.user as any)?.isAdmin,
     environment: process.env.NODE_ENV
   });
   
@@ -2152,8 +2152,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Debug: Check session state
       console.log("Home loan inquiries request - Session state:", {
         isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
-        sessionIsAdmin: req.session?.isAdmin,
-        sessionUserType: req.session?.userType,
+        sessionIsAdmin: (req.session as any)?.isAdmin,
+        sessionUserType: (req.session as any)?.userType,
         user: req.user
       });
 
