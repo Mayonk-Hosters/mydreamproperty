@@ -691,7 +691,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all inquiries
   app.get("/api/inquiries", async (_req, res) => {
     try {
-      const inquiries = await dbStorage.getAllInquiries();
+      const inquiries = await dbStorage.getAllPropertyInquiries();
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching inquiries:", error);
@@ -708,13 +708,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if the inquiry exists
-      const inquiry = await dbStorage.getInquiry(id);
+      const inquiry = await dbStorage.getPropertyInquiry(id);
       if (!inquiry) {
         return res.status(404).json({ message: "Inquiry not found" });
       }
       
       // Delete the inquiry
-      const deleted = await dbStorage.deleteInquiry(id);
+      const deleted = await dbStorage.deletePropertyInquiry(id);
       if (deleted) {
         res.json({ success: true, message: "Inquiry deleted successfully" });
       } else {
@@ -758,7 +758,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         inquiryIds = [id];
       } else if (!ids) {
         // If no ids provided, mark ALL unread inquiries as read
-        const inquiries = await dbStorage.getAllInquiries();
+        const inquiries = await dbStorage.getAllPropertyInquiries();
         inquiryIds = inquiries
           .filter(inq => !inq.isRead)
           .map(inq => inq.id);
@@ -770,7 +770,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Mark each inquiry as read
       const results = await Promise.all(inquiryIds.map(async (id: number) => {
-        return await dbStorage.markInquiryAsRead(id);
+        return await dbStorage.markPropertyInquiryAsRead(id);
       }));
       
       const successCount = results.filter(success => success).length;
@@ -789,12 +789,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new inquiry
   app.post("/api/inquiries", async (req, res) => {
     try {
-      const inquiryData = insertInquirySchema.parse({
+      const inquiryData = insertPropertyInquirySchema.parse({
         ...req.body,
         createdAt: new Date().toISOString()
       });
       
-      const newInquiry = await dbStorage.createInquiry(inquiryData);
+      const newInquiry = await dbStorage.createPropertyInquiry(inquiryData);
       
       // If property ID is provided, fetch property title for the email
       let propertyTitle;
