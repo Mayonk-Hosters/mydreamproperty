@@ -271,8 +271,11 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               <button
                 key={`type-${type}`}
                 onClick={() => {
-                  setFilters(prev => ({ ...prev, propertyType: prev.propertyType === type ? "" : type }));
-                  setTimeout(applyFilters, 100);
+                  const newFilters = { ...filters, propertyType: filters.propertyType === type ? "" : type };
+                  setFilters(newFilters);
+                  if (onFilterChange) {
+                    onFilterChange(newFilters);
+                  }
                 }}
                 className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
                   filters.propertyType === type
@@ -300,14 +303,13 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 key={priceRange.label}
                 onClick={() => {
                   const isActive = filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice;
-                  if (isActive) {
-                    handleFilterChange("minPrice", 0);
-                    handleFilterChange("maxPrice", 15000000);
-                  } else {
-                    handleFilterChange("minPrice", priceRange.minPrice);
-                    handleFilterChange("maxPrice", priceRange.maxPrice);
+                  const newFilters = isActive 
+                    ? { ...filters, minPrice: 0, maxPrice: 15000000 }
+                    : { ...filters, minPrice: priceRange.minPrice, maxPrice: priceRange.maxPrice };
+                  setFilters(newFilters);
+                  if (onFilterChange) {
+                    onFilterChange(newFilters);
                   }
-                  setTimeout(applyFilters, 100);
                 }}
                 className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
                   filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice
@@ -330,12 +332,13 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 key={bhkOption.label}
                 onClick={() => {
                   const isActive = filters.minBeds === bhkOption.beds;
-                  if (isActive) {
-                    handleFilterChange("minBeds", 0);
-                  } else {
-                    handleFilterChange("minBeds", bhkOption.beds);
+                  const newFilters = isActive 
+                    ? { ...filters, minBeds: 0 }
+                    : { ...filters, minBeds: bhkOption.beds };
+                  setFilters(newFilters);
+                  if (onFilterChange) {
+                    onFilterChange(newFilters);
                   }
-                  setTimeout(applyFilters, 100);
                 }}
                 className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
                   filters.minBeds === bhkOption.beds
