@@ -52,6 +52,7 @@ import MessagesPage from "@/pages/admin/messages";
 import AdminPropertyInquiriesPage from "@/pages/admin/property-inquiries";
 import AdminHomeLoanInquiriesPage from "@/pages/admin/home-loan-inquiries";
 import AdminHomepageImagesPage from "@/pages/admin/homepage-images";
+import AdminInquiriesCenterPage from "@/pages/admin/inquiries-center";
 
 function Router() {
   return (

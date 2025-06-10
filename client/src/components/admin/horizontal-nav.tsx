@@ -68,6 +68,13 @@ export function HorizontalNav() {
       name: "Agents",
       path: "/admin/agents",
       icon: <UserCheck className="h-4 w-4" />
+    },
+    {
+      name: "Inquiries",
+      path: "/admin/inquiries-center",
+      icon: <MessageCircle className="h-4 w-4" />,
+      hasNotification: hasUnread,
+      notificationCount: totalUnreadCount
     }
   ];
 
