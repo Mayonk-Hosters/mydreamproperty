@@ -137,7 +137,9 @@ function Router() {
       <Route path="/admin/homepage-images">
         <ProtectedAdminRoute component={AdminHomepageImagesPage} />
       </Route>
-
+      <Route path="/admin/inquiries-center">
+        <ProtectedAdminRoute component={AdminInquiriesCenterPage} />
+      </Route>
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />

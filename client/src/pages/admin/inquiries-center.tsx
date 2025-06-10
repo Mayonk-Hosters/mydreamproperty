@@ -237,7 +237,7 @@ export default function InquiriesCenterPage() {
                   type: 'loan',
                   icon: <Home className="h-4 w-4" />,
                   title: `Home Loan Request from ${loan.name}`,
-                  subtitle: `${loan.loanType} - ₹${Number(loan.loanAmount || 0).toLocaleString()}`,
+                  subtitle: `${loan.loanType} - ₹${(loan.loanAmount || 0).toLocaleString()}`,
                   link: '/admin/home-loan-inquiries'
                 }} 
               />

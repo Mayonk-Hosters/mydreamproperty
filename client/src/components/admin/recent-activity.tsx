@@ -51,59 +51,7 @@ export function RecentActivity() {
       });
   }
 
-  // Recent inquiries (last 5)
-  if (inquiries) {
-    inquiries
-      .slice(0, 5)
-      .forEach(inquiry => {
-        (activities as any[]).push({
-          type: 'inquiry',
-          id: inquiry.id,
-          title: `Inquiry from ${inquiry.name}`,
-          description: inquiry.message.substring(0, 50) + '...',
-          location: inquiry.email,
-          timestamp: inquiry.createdAt,
-          status: inquiry.isRead ? 'read' : 'unread',
-          icon: <MessageCircle className="h-4 w-4" />
-        });
-      });
-  }
-
-  // Recent contact messages (last 3)
-  if (contactMessages) {
-    contactMessages
-      .slice(0, 3)
-      .forEach(message => {
-        (activities as any[]).push({
-          type: 'message',
-          id: message.id,
-          title: `Message from ${message.name}`,
-          description: message.message.substring(0, 50) + '...',
-          location: message.email,
-          timestamp: message.createdAt,
-          status: message.isRead ? 'read' : 'unread',
-          icon: <MessageCircle className="h-4 w-4" />
-        });
-      });
-  }
-
-  // Recent home loan inquiries (last 3)
-  if (homeLoanInquiries) {
-    homeLoanInquiries
-      .slice(0, 3)
-      .forEach(loan => {
-        (activities as any[]).push({
-          type: 'home-loan',
-          id: loan.id,
-          title: `Loan Request from ${loan.name}`,
-          description: `${loan.loanType} • ${formatCurrency(parseInt(loan.monthlyIncome))} income`,
-          location: loan.propertyLocation,
-          timestamp: loan.createdAt,
-          status: loan.isRead ? 'read' : 'unread',
-          icon: <Home className="h-4 w-4" />
-        });
-      });
-  }
+  // Messages moved to Inquiries Center tab
 
   // Sort by timestamp (most recent first)
   const sortedActivities = activities
