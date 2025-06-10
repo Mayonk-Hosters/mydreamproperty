@@ -71,13 +71,7 @@ export function HorizontalNav() {
     }
   ];
 
-  const messagesItem = {
-    name: "Messages Center",
-    path: "/admin/messages",
-    icon: <MessageCircle className="h-4 w-4" />,
-    hasNotification: hasUnread,
-    notificationCount: totalUnreadCount
-  };
+  // Messages Center removed
 
   const managementItems = [
     {
@@ -158,8 +152,7 @@ export function HorizontalNav() {
               <NavItem key={item.path} item={item} />
             ))}
 
-            {/* Messages Center */}
-            <NavItem item={messagesItem} />
+            {/* Messages Center removed */}
 
             {/* Management Dropdown */}
             <DropdownMenu>
@@ -243,7 +236,7 @@ export function HorizontalNav() {
               {mainNavItems.map((item) => (
                 <NavItem key={item.path} item={item} className="justify-center text-center" />
               ))}
-              <NavItem key={messagesItem.path} item={messagesItem} className="justify-center text-center" />
+
               {managementItems.map((item: any) => (
                 <NavItem key={item.path} item={item} className="justify-center text-center" />
               ))}

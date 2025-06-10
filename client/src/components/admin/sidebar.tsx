@@ -54,13 +54,7 @@ export function Sidebar() {
           path: "/admin/clients",
           icon: <Users className="h-5 w-5" />
         },
-        {
-          name: "Client Management",
-          path: "/admin/client-management",
-          icon: <Users className="h-5 w-5" />,
-          hasNotification: hasUnreadMessages || hasUnreadInquiries,
-          notificationCount: totalUnreadCount
-        },
+
 
       ]
     },
@@ -142,9 +136,6 @@ export function Sidebar() {
                   )}>
                     <div className="relative">
                       {item.icon}
-                      {item.hasNotification && (
-                        <NotificationIndicator count={item.notificationCount} />
-                      )}
                     </div>
                     <span>{item.name}</span>
                   </div>

@@ -52,7 +52,6 @@ import MessagesPage from "@/pages/admin/messages";
 import AdminPropertyInquiriesPage from "@/pages/admin/property-inquiries";
 import AdminHomeLoanInquiriesPage from "@/pages/admin/home-loan-inquiries";
 import AdminHomepageImagesPage from "@/pages/admin/homepage-images";
-import MessageDashboardPage from "@/pages/admin/message-dashboard";
 
 function Router() {
   return (
@@ -137,9 +136,7 @@ function Router() {
       <Route path="/admin/homepage-images">
         <ProtectedAdminRoute component={AdminHomepageImagesPage} />
       </Route>
-      <Route path="/admin/message-dashboard">
-        <ProtectedAdminRoute component={MessageDashboardPage} />
-      </Route>
+
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
