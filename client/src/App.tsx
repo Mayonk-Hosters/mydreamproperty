@@ -48,12 +48,11 @@ import AdminInquiriesPage from "@/pages/admin/inquiries";
 import AdminProfilePage from "@/pages/admin/profile";
 import AdminPropertyTypesPage from "@/pages/admin/property-types";
 import AdminContactMessagesPage from "@/pages/admin/contact-messages";
-import UnifiedMessagesPage from "@/pages/admin/unified-messages-fixed";
+import MessagesPage from "@/pages/admin/messages";
 import AdminPropertyInquiriesPage from "@/pages/admin/property-inquiries";
 import AdminHomeLoanInquiriesPage from "@/pages/admin/home-loan-inquiries";
 import AdminHomepageImagesPage from "@/pages/admin/homepage-images";
 import MessageDashboardPage from "@/pages/admin/message-dashboard";
-import MessagesPage from "@/pages/admin/messages";
 
 function Router() {
   return (
@@ -126,7 +125,7 @@ function Router() {
         <ProtectedAdminRoute component={AdminPropertyTypesPage} />
       </Route>
       <Route path="/admin/unified-messages">
-        <ProtectedAdminRoute component={UnifiedMessagesPage} />
+        <ProtectedAdminRoute component={MessagesPage} />
       </Route>
       <Route path="/admin/contact-messages">
         <ProtectedAdminRoute component={AdminContactMessagesPage} />
