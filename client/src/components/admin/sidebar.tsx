@@ -59,15 +59,15 @@ export function Sidebar() {
           name: "Client Management",
           path: "/admin/client-management",
           icon: <Users className="h-5 w-5" />,
-          hasNotification: hasUnread,
+          hasNotification: hasUnreadMessages || hasUnreadInquiries,
           notificationCount: totalUnreadCount
         },
         {
           name: "Messages",
           path: "/admin/unified-messages",
           icon: <MessageCircle className="h-5 w-5" />,
-          hasNotification: hasUnread,
-          notificationCount: totalUnreadCount
+          hasNotification: hasUnreadMessages || hasUnreadInquiries,
+          notificationCount: unreadMessagesCount + unreadInquiriesCount
         }
       ]
     },
