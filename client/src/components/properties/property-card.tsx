@@ -268,7 +268,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
             </div>
           )}
           
-          <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
+          {/* Agent Information */}
+          <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center mb-3">
             <div className="flex items-center">
               <img 
                 src={agent?.image || `https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40`} 
@@ -330,6 +331,26 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 </Button>
               </Link>
             </div>
+          </div>
+
+          {/* Mobile-Friendly Action Buttons */}
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className="flex-1 text-sm"
+              onClick={handleInquiry}
+            >
+              <MessageSquare className="mr-2" size={16} /> 
+              Interested in this property?
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="hidden md:block"
+              onClick={handleQuickView}
+            >
+              <Eye className="mr-2" size={16} /> Quick View
+            </Button>
           </div>
         </div>
       </div>
