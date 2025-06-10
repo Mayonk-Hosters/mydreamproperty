@@ -59,10 +59,14 @@ export default function InquiriesCenterPage() {
       type: 'loan',
       icon: <Home className="h-4 w-4" />,
       title: `Home Loan Request from ${loan.name}`,
-      subtitle: `${loan.loanType} - ₹${parseInt(loan.loanAmount).toLocaleString()}`,
+      subtitle: `${loan.loanType} - ₹${Number(loan.loanAmount || 0).toLocaleString()}`,
       link: '/admin/home-loan-inquiries'
     }))
-  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  ].sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateB - dateA;
+  });
 
   const getStatusBadge = (item: any) => (
     <Badge variant={item.isRead ? "secondary" : "destructive"}>
@@ -233,7 +237,7 @@ export default function InquiriesCenterPage() {
                   type: 'loan',
                   icon: <Home className="h-4 w-4" />,
                   title: `Home Loan Request from ${loan.name}`,
-                  subtitle: `${loan.loanType} - ₹${parseInt(loan.loanAmount).toLocaleString()}`,
+                  subtitle: `${loan.loanType} - ₹${Number(loan.loanAmount || 0).toLocaleString()}`,
                   link: '/admin/home-loan-inquiries'
                 }} 
               />
