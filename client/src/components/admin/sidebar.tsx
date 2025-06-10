@@ -63,28 +63,9 @@ export function Sidebar() {
           notificationCount: totalUnreadCount
         },
         {
-          name: "Inquiries",
-          path: "/admin/inquiries",
+          name: "Messages",
+          path: "/admin/unified-messages",
           icon: <MessageCircle className="h-5 w-5" />,
-          hasNotification: hasUnreadInquiries,
-          notificationCount: unreadInquiriesCount
-        },
-        {
-          name: "Contact Messages",
-          path: "/admin/contact-messages",
-          icon: <PhoneCall className="h-5 w-5" />,
-          hasNotification: hasUnreadMessages,
-          notificationCount: unreadMessagesCount
-        },
-        {
-          name: "Home Loan Inquiries",
-          path: "/admin/home-loan-inquiries",
-          icon: <Home className="h-5 w-5" />
-        },
-        {
-          name: "Message Dashboard",
-          path: "/admin/message-dashboard",
-          icon: <PieChart className="h-5 w-5" />,
           hasNotification: hasUnread,
           notificationCount: totalUnreadCount
         }
