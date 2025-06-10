@@ -343,10 +343,9 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             </div>
             
             <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-6 sm:mb-8">
-              <TabsList className="grid grid-cols-4 w-full">
+              <TabsList className="grid grid-cols-3 w-full">
                 <TabsTrigger value="details" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Details</TabsTrigger>
                 <TabsTrigger value="features" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Features</TabsTrigger>
-                <TabsTrigger value="location" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Location</TabsTrigger>
                 <TabsTrigger value="agent" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Agent</TabsTrigger>
               </TabsList>
               <TabsContent value="details">
@@ -454,83 +453,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                   )}
                 </div>
               </TabsContent>
-              <TabsContent value="location">
-                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                  <div className="mb-4">
-                    <div className="flex items-center justify-center mb-4">
-                      <MapPin className="h-6 w-6 text-primary mr-2" />
-                      <h3 className="text-base sm:text-lg font-semibold">Property Location</h3>
-                    </div>
-                    <p className="text-gray-600 text-sm sm:text-base mb-4 text-center">
-                      {property.address}, {property.location}
-                    </p>
-                    
-                    {/* Embedded Google Maps */}
-                    <div className="relative w-full h-64 sm:h-80 mb-4 rounded-lg overflow-hidden border">
-                      <iframe
-                        src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw&q=${encodeURIComponent(`${property.address}, ${property.location}`)}`}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen={true}
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title={`Map showing location of ${property.title}`}
-                      ></iframe>
-                    </div>
-                    
-                    <div className="text-center">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-sm"
-                        onClick={() => {
-                          const searchQuery = encodeURIComponent(`${property.address}, ${property.location}`);
-                          const googleMapsUrl = `https://www.google.com/maps/search/${searchQuery}`;
-                          window.open(googleMapsUrl, '_blank');
-                        }}
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                        Open in Google Maps
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Display location hierarchy information if available */}
-                  {(property.stateId || property.districtId || property.talukaId || property.tehsilId) && (
-                    <div className="mt-4 border-t pt-4">
-                      <h3 className="font-medium text-sm sm:text-base mb-2">Location Details</h3>
-                      <ul className="space-y-1.5 sm:space-y-2">
-                        {property.stateId && (
-                          <li className="flex items-center text-xs sm:text-sm">
-                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                            <span>State Available</span>
-                          </li>
-                        )}
-                        {property.districtId && (
-                          <li className="flex items-center text-xs sm:text-sm">
-                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                            <span>District Available</span>
-                          </li>
-                        )}
-                        {property.talukaId && (
-                          <li className="flex items-center text-xs sm:text-sm">
-                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                            <span>Taluka Available</span>
-                          </li>
-                        )}
-                        {property.tehsilId && (
-                          <li className="flex items-center text-xs sm:text-sm">
-                            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" /> 
-                            <span>Tehsil Available</span>
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-              
+
               {/* Agent Tab */}
               <TabsContent value="agent">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
