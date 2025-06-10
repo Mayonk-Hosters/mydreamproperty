@@ -48,7 +48,7 @@ import AdminInquiriesPage from "@/pages/admin/inquiries";
 import AdminProfilePage from "@/pages/admin/profile";
 import AdminPropertyTypesPage from "@/pages/admin/property-types";
 import AdminContactMessagesPage from "@/pages/admin/contact-messages";
-import UnifiedMessagesPage from "@/pages/admin/unified-messages";
+import UnifiedMessagesPage from "@/pages/admin/unified-messages-fixed";
 import AdminPropertyInquiriesPage from "@/pages/admin/property-inquiries";
 import AdminHomeLoanInquiriesPage from "@/pages/admin/home-loan-inquiries";
 import AdminHomepageImagesPage from "@/pages/admin/homepage-images";
