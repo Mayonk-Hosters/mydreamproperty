@@ -2025,7 +2025,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Try to mark specific messages as read
       try {
         // Try storage method first
-        const success = await dbStorage.markContactMessagesAsRead(messageIds);
+        // Mark each message as read individually since bulk method doesn't exist
+        let successCount = 0;
+        for (const id of messageIds) {
+          const result = await dbStorage.markContactMessageAsRead(id);
+          if (result) successCount++;
+        }
+        const success = successCount === messageIds.length;
         if (success) {
           return res.json({ success: true, message: `Marked ${messageIds.length} messages as read` });
         }
