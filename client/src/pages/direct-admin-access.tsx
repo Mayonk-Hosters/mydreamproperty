@@ -31,25 +31,55 @@ export default function DirectAdminAccess() {
   });
 
   // Handle form submission
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     
-    // Check against the hardcoded credentials
-    if (values.username === "Smileplz004" && values.password === "9923000500@rahul") {
-      toast({
-        title: "Login successful",
-        description: "Redirecting to admin panel...",
+    try {
+      const response = await fetch('/api/traditional-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
       });
-      
-      // Set a small delay for the success message to be visible
-      setTimeout(() => {
-        setLocation("/admin");
-      }, 1500);
-    } else {
+
+      if (response.ok) {
+        const userData = await response.json();
+        
+        if (userData.isAdmin) {
+          toast({
+            title: "Login successful",
+            description: "Redirecting to admin panel...",
+          });
+          
+          // Set localStorage for compatibility
+          localStorage.setItem("admin_username", userData.username);
+          localStorage.setItem("isAdmin", "true");
+          
+          setTimeout(() => {
+            setLocation("/admin");
+          }, 1500);
+        } else {
+          setIsLoading(false);
+          toast({
+            title: "Access denied",
+            description: "Admin privileges required",
+            variant: "destructive",
+          });
+        }
+      } else {
+        setIsLoading(false);
+        toast({
+          title: "Login failed",
+          description: "Invalid username or password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       setIsLoading(false);
       toast({
-        title: "Login failed",
-        description: "Invalid username or password",
+        title: "Login error",
+        description: "Unable to connect to server",
         variant: "destructive",
       });
     }
