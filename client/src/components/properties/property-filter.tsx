@@ -274,10 +274,10 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                   setFilters(prev => ({ ...prev, propertyType: prev.propertyType === type ? "" : type }));
                   setTimeout(applyFilters, 100);
                 }}
-                className={`px-3 py-1 text-xs rounded-full border transition-all ${
+                className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
                   filters.propertyType === type
-                    ? 'bg-green-500 text-white border-green-500 shadow-md'
-                    : 'bg-white text-gray-600 border-gray-300 hover:border-green-400 hover:bg-green-50'
+                    ? 'bg-green-500 text-white border-green-500 shadow-md transform scale-105'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-green-400 hover:bg-green-50 hover:shadow-md'
                 }`}
               >
                 {type === 'Apartment' && '🏢'} 
@@ -290,31 +290,60 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
               </button>
             ))}
             
-            {/* Price and BHK Quick Filters */}
-            {['Under ₹30L', '₹30L-₹1Cr', 'Above ₹1Cr', '2+ BHK', '3+ BHK'].map((tag) => (
+            {/* Price Quick Filters */}
+            {[
+              { label: 'Under ₹30L', icon: '💰', minPrice: 0, maxPrice: 3000000 },
+              { label: '₹30L-₹1Cr', icon: '💵', minPrice: 3000000, maxPrice: 10000000 },
+              { label: 'Above ₹1Cr', icon: '💎', minPrice: 10000000, maxPrice: 15000000 }
+            ].map((priceRange) => (
               <button
-                key={tag}
+                key={priceRange.label}
                 onClick={() => {
-                  if (tag.includes('₹')) {
-                    if (tag === 'Under ₹30L') {
-                      handleFilterChange("minPrice", 0);
-                      handleFilterChange("maxPrice", 3000000);
-                    } else if (tag === '₹30L-₹1Cr') {
-                      handleFilterChange("minPrice", 3000000);
-                      handleFilterChange("maxPrice", 10000000);
-                    } else if (tag === 'Above ₹1Cr') {
-                      handleFilterChange("minPrice", 10000000);
-                      handleFilterChange("maxPrice", 15000000);
-                    }
-                  } else if (tag.includes('BHK')) {
-                    const beds = parseInt(tag.charAt(0));
-                    handleFilterChange("minBeds", beds);
+                  const isActive = filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice;
+                  if (isActive) {
+                    handleFilterChange("minPrice", 0);
+                    handleFilterChange("maxPrice", 15000000);
+                  } else {
+                    handleFilterChange("minPrice", priceRange.minPrice);
+                    handleFilterChange("maxPrice", priceRange.maxPrice);
                   }
-                  applyFilters();
+                  setTimeout(applyFilters, 100);
                 }}
-                className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-700 rounded-full transition-colors border border-gray-200 hover:border-blue-300"
+                className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
+                  filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice
+                    ? 'bg-blue-500 text-white border-blue-500 shadow-md transform scale-105'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md'
+                }`}
               >
-                {tag}
+                {priceRange.icon} {priceRange.label}
+              </button>
+            ))}
+
+            {/* BHK Quick Filters */}
+            {[
+              { label: '1 BHK', icon: '🏠', beds: 1 },
+              { label: '2+ BHK', icon: '🏡', beds: 2 },
+              { label: '3+ BHK', icon: '🏘️', beds: 3 },
+              { label: '4+ BHK', icon: '🏰', beds: 4 }
+            ].map((bhkOption) => (
+              <button
+                key={bhkOption.label}
+                onClick={() => {
+                  const isActive = filters.minBeds === bhkOption.beds;
+                  if (isActive) {
+                    handleFilterChange("minBeds", 0);
+                  } else {
+                    handleFilterChange("minBeds", bhkOption.beds);
+                  }
+                  setTimeout(applyFilters, 100);
+                }}
+                className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
+                  filters.minBeds === bhkOption.beds
+                    ? 'bg-purple-500 text-white border-purple-500 shadow-md transform scale-105'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400 hover:bg-purple-50 hover:shadow-md'
+                }`}
+              >
+                {bhkOption.icon} {bhkOption.label}
               </button>
             ))}
           </div>
