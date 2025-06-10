@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Helmet } from "react-helmet";
@@ -51,25 +51,58 @@ export default function PropertiesPage() {
     setLocation(`/properties?${params.toString()}`);
   };
 
-  // Fetch properties with filters
-  const { data: properties, isLoading } = useQuery<Property[]>({
-    queryKey: ["/api/properties", filters],
+  // Fetch all properties once and filter client-side for superfast performance
+  const { data: allProperties, isLoading } = useQuery<Property[]>({
+    queryKey: ["/api/properties"],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value && value !== 0 && value !== "") {
-          params.set(key, value.toString());
-        }
-      });
-      
-      const response = await fetch(`/api/properties?${params.toString()}`);
+      const response = await fetch('/api/properties');
       if (!response.ok) {
         throw new Error('Failed to fetch properties');
       }
       return response.json();
     },
-    enabled: true,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
+
+  // Client-side filtering for instant results
+  const properties = useMemo(() => {
+    if (!allProperties) return [];
+    
+    return allProperties.filter(property => {
+      // Type filter
+      if (filters.type && property.type !== filters.type) return false;
+      
+      // Property type filter
+      if (filters.propertyType && property.propertyType !== filters.propertyType) return false;
+      
+      // Location filter
+      if (filters.location) {
+        const searchTerm = filters.location.toLowerCase();
+        const matchesLocation = 
+          property.location?.toLowerCase().includes(searchTerm) ||
+          property.address?.toLowerCase().includes(searchTerm) ||
+          property.title?.toLowerCase().includes(searchTerm) ||
+          property.stateName?.toLowerCase().includes(searchTerm) ||
+          property.districtName?.toLowerCase().includes(searchTerm) ||
+          property.talukaName?.toLowerCase().includes(searchTerm) ||
+          property.tehsilName?.toLowerCase().includes(searchTerm);
+        if (!matchesLocation) return false;
+      }
+      
+      // Price filters
+      if (filters.minPrice && property.price < filters.minPrice) return false;
+      if (filters.maxPrice && filters.maxPrice > 0 && property.price > filters.maxPrice) return false;
+      
+      // Beds filter
+      if (filters.minBeds && property.beds < filters.minBeds) return false;
+      
+      // Baths filter
+      if (filters.minBaths && property.baths < filters.minBaths) return false;
+      
+      return true;
+    });
+  }, [allProperties, filters]);
 
   // Update URL when filters change
   useEffect(() => {
