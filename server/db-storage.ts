@@ -112,12 +112,98 @@ export class DbStorage implements IStorage {
 
   // Property methods (implementing minimal required for messages to work)
   async getAllProperties(): Promise<Property[]> {
-    return await db.select().from(properties).orderBy(desc(properties.createdAt));
+    const result = await db
+      .select({
+        id: properties.id,
+        propertyNumber: properties.propertyNumber,
+        title: properties.title,
+        description: properties.description,
+        price: properties.price,
+        location: properties.location,
+        address: properties.address,
+        beds: properties.beds,
+        baths: properties.baths,
+        area: properties.area,
+        areaUnit: properties.areaUnit,
+        yearBuilt: properties.yearBuilt,
+        parking: properties.parking,
+        propertyType: properties.propertyType,
+        type: properties.type,
+        status: properties.status,
+        featured: properties.featured,
+        features: properties.features,
+        images: properties.images,
+        mapUrl: properties.mapUrl,
+        maharera_registered: properties.maharera_registered,
+        maharera_number: properties.maharera_number,
+        agentId: properties.agentId,
+        stateId: properties.stateId,
+        districtId: properties.districtId,
+        talukaId: properties.talukaId,
+        tehsilId: properties.tehsilId,
+        createdAt: properties.createdAt,
+        // Include location names
+        stateName: states.name,
+        districtName: districts.name,
+        talukaName: talukas.name,
+        tehsilName: tehsils.name,
+      })
+      .from(properties)
+      .leftJoin(states, eq(properties.stateId, states.id))
+      .leftJoin(districts, eq(properties.districtId, districts.id))
+      .leftJoin(talukas, eq(properties.talukaId, talukas.id))
+      .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id))
+      .orderBy(desc(properties.createdAt));
+    
+    return result as any[];
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
-    const result = await db.select().from(properties).where(eq(properties.id, id)).limit(1);
-    return result[0];
+    const result = await db
+      .select({
+        id: properties.id,
+        propertyNumber: properties.propertyNumber,
+        title: properties.title,
+        description: properties.description,
+        price: properties.price,
+        location: properties.location,
+        address: properties.address,
+        beds: properties.beds,
+        baths: properties.baths,
+        area: properties.area,
+        areaUnit: properties.areaUnit,
+        yearBuilt: properties.yearBuilt,
+        parking: properties.parking,
+        propertyType: properties.propertyType,
+        type: properties.type,
+        status: properties.status,
+        featured: properties.featured,
+        features: properties.features,
+        images: properties.images,
+        mapUrl: properties.mapUrl,
+        maharera_registered: properties.maharera_registered,
+        maharera_number: properties.maharera_number,
+        agentId: properties.agentId,
+        stateId: properties.stateId,
+        districtId: properties.districtId,
+        talukaId: properties.talukaId,
+        tehsilId: properties.tehsilId,
+        createdAt: properties.createdAt,
+        // Include location names
+        stateName: states.name,
+        districtName: districts.name,
+        talukaName: talukas.name,
+        tehsilName: tehsils.name,
+      })
+      .from(properties)
+      .leftJoin(states, eq(properties.stateId, states.id))
+      .leftJoin(districts, eq(properties.districtId, districts.id))
+      .leftJoin(talukas, eq(properties.talukaId, talukas.id))
+      .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id))
+      .where(eq(properties.id, id))
+      .limit(1);
+    
+    return result[0] as any;
   }
 
   async createProperty(propertyData: InsertProperty): Promise<Property> {
