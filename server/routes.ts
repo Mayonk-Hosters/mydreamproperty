@@ -1,9 +1,7 @@
 import type { Express } from "express";
-import express from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { db } from "./db";
-import { pool } from "./db";
 import { eq, desc } from "drizzle-orm";
 import * as XLSX from 'xlsx';
 // AI recommendation imports removed
@@ -22,7 +20,8 @@ import {
   DEFAULT_PROPERTY_TYPES,
   PROPERTY_STATUS,
   propertyInquiries,
-  homeLoanInquiries
+  homeLoanInquiries,
+  contactMessages
 } from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";
@@ -39,7 +38,6 @@ const isAdmin = isLocalDev ? isLocalAdmin : isReplitAdmin;
 import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
 import { sendInquiryNotification } from "./email-service";
-import { checkProductionAdminAccess } from "./production-auth-fix";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
@@ -85,59 +83,38 @@ const upload = multer({
   }
 });
 
-// Production-ready admin access checker for message functions
+// Utility function to check admin access consistently across all routes
 function checkAdminAccess(req: any): boolean {
-  console.log('Production auth check:', {
-    hasSession: !!req.session,
-    sessionKeys: req.session ? Object.keys(req.session) : [],
-    isAdmin: (req.session as any)?.isAdmin,
-    authenticatedAdmin: (req.session as any)?.authenticatedAdmin,
-    userType: (req.session as any)?.userType,
-    environment: process.env.NODE_ENV
-  });
-
-  // Primary authentication methods for production deployment
-  const authChecks = [
-    // Method 1: Direct session admin flag
-    () => req.session?.isAdmin === true,
-    
-    // Method 2: Authenticated admin flag (production)
-    () => req.session?.authenticatedAdmin === true,
-    
-    // Method 3: Admin userType
-    () => req.session?.userType === 'admin',
-    
-    // Method 4: Passport session with admin
-    () => req.session?.passport?.user && req.session?.isAdmin,
-    
-    // Method 5: OAuth admin
-    () => req.isAuthenticated?.() && req.user?.isAdmin,
-    
-    // Method 6: Admin username in session
-    () => req.session?.user?.username === 'admin',
-    
-    // Method 7: Production admin username
-    () => req.session?.user?.username === 'ahmednagarproperty',
-    
-    // Method 8: Replit environment
-    () => process.env.REPLIT_SLUG && req.headers['x-replit-user-id'],
-    
-    // Method 9: Development mode (last resort)
-    () => process.env.NODE_ENV === 'development'
-  ];
-
-  for (let i = 0; i < authChecks.length; i++) {
-    try {
-      if (authChecks[i]()) {
-        console.log(`Admin access granted via method ${i + 1}`);
-        return true;
-      }
-    } catch (error) {
-      console.log(`Auth method ${i + 1} failed:`, error);
-    }
+  // Session-based admin access (traditional login)
+  if (req.session && req.session.isAdmin) {
+    return true;
   }
-
-  console.log('Admin access denied - no valid authentication found');
+  
+  // OAuth-based admin access
+  if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+    return true;
+  }
+  
+  // Additional check for user object with isAdmin property
+  if (req.user && (req.user as any)?.isAdmin) {
+    return true;
+  }
+  
+  // Check for admin username in session (fallback for production)
+  if (req.session && req.session.user && req.session.user.username === 'ahmednagarproperty') {
+    return true;
+  }
+  
+  // Production environment fallback - check if logged in with admin credentials
+  if (process.env.NODE_ENV === 'production' && req.session && req.session.passport && req.session.passport.user) {
+    return true;
+  }
+  
+  // Development mode access
+  if (process.env.NODE_ENV === 'development') {
+    return true;
+  }
+  
   return false;
 }
 
@@ -150,9 +127,9 @@ const requireAdmin = (req: any, res: any, next: any) => {
   // Log authentication failure for debugging
   console.log('Admin access denied:', {
     hasSession: !!req.session,
-    isAdmin: (req.session as any)?.isAdmin,
+    isAdmin: req.session?.isAdmin,
     hasUser: !!req.user,
-    userIsAdmin: (req.user as any)?.isAdmin,
+    userIsAdmin: req.user?.isAdmin,
     environment: process.env.NODE_ENV
   });
   
@@ -165,9 +142,6 @@ const requireAdmin = (req: any, res: any, next: any) => {
 import { eq, like, or, sql, gte, lte, asc } from 'drizzle-orm';
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Serve static files from uploads directory
-  app.use('/uploads', express.static(path.join(process.cwd(), 'static', 'uploads')));
-  
   // Configure cookie parser
   app.use(cookieParser());
   
@@ -412,19 +386,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Add optional location fields if provided
       if (requestData.stateId) {
-        (propertyData as any).stateId = Number(requestData.stateId);
+        propertyData.stateId = Number(requestData.stateId);
       }
       
       if (requestData.districtId) {
-        (propertyData as any).districtId = Number(requestData.districtId);
+        propertyData.districtId = Number(requestData.districtId);
       }
       
       if (requestData.talukaId) {
-        (propertyData as any).talukaId = Number(requestData.talukaId);
+        propertyData.talukaId = Number(requestData.talukaId);
       }
       
       if (requestData.tehsilId) {
-        (propertyData as any).tehsilId = Number(requestData.tehsilId);
+        propertyData.tehsilId = Number(requestData.tehsilId);
       }
       
       // Generate property number if not provided or set to AUTO-GENERATE
@@ -463,27 +437,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Keep track of last used number in memory to prevent duplicates within the same session
           // This ensures we don't reuse the same number for multiple properties created in quick succession
-          if (!(global as any).lastUsedPropertyNumber) {
-            (global as any).lastUsedPropertyNumber = highestNumber;
+          if (!global.lastUsedPropertyNumber) {
+            global.lastUsedPropertyNumber = highestNumber;
           }
           
           // Use either the highest number from database or the last used number, whichever is higher
-          const nextNumber = Math.max(highestNumber, (global as any).lastUsedPropertyNumber) + 1;
-          (global as any).lastUsedPropertyNumber = nextNumber;
+          const nextNumber = Math.max(highestNumber, global.lastUsedPropertyNumber) + 1;
+          global.lastUsedPropertyNumber = nextNumber;
           
           // Format with leading zeros (4 digits)
           const paddedNumber = nextNumber.toString().padStart(4, '0');
-          (propertyData as any).propertyNumber = `MDP-${paddedNumber}`;
-          console.log(`Generated property number: ${(propertyData as any).propertyNumber} (highest was ${highestNumber}, last used: ${(global as any).lastUsedPropertyNumber - 1})`);
+          propertyData.propertyNumber = `MDP-${paddedNumber}`;
+          console.log(`Generated property number: ${propertyData.propertyNumber} (highest was ${highestNumber}, last used: ${global.lastUsedPropertyNumber - 1})`);
         } catch (error) {
           console.error('Error generating property number:', error);
           // Fallback to a timestamp-based number if query fails
           const timestamp = new Date().getTime().toString().slice(-6);
-          (propertyData as any).propertyNumber = `MDP-${timestamp}`;
-          console.log(`Fallback property number generated: ${(propertyData as any).propertyNumber}`);
+          propertyData.propertyNumber = `MDP-${timestamp}`;
+          console.log(`Fallback property number generated: ${propertyData.propertyNumber}`);
         }
       } else {
-        (propertyData as any).propertyNumber = requestData.propertyNumber;
+        propertyData.propertyNumber = requestData.propertyNumber;
       }
       
       // Create the property using the sanitized data
@@ -583,8 +557,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Toggle the featured status with explicit boolean
       const updatedProperty = await dbStorage.updateProperty(id, {
         ...property,
-        features: property.features as any,
-        images: property.images as any,
         featured: !currentFeatured
       });
       
@@ -716,33 +688,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all inquiries
-  // Legacy inquiry route - redirects to property inquiries
-  app.get("/api/inquiries", async (req, res) => {
+  app.get("/api/inquiries", async (_req, res) => {
     try {
-      // Check admin access using production-ready authentication
-      if (!checkProductionAdminAccess(req as any)) {
-        return res.status(403).json({ message: "Forbidden - Admin access required" });
-      }
-
-      const result = await pool.query('SELECT * FROM property_inquiries ORDER BY created_at DESC');
-      const inquiries = result.rows;
+      const inquiries = await dbStorage.getAllInquiries();
       res.json(inquiries);
     } catch (error) {
-      console.error("Error fetching property inquiries:", error);
-      res.status(500).json({ message: "Failed to fetch property inquiries" });
+      console.error("Error fetching inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries" });
+    }
+  });
+  
+  // Delete an inquiry
+  app.delete("/api/inquiries/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid inquiry ID" });
+      }
+      
+      // Check if the inquiry exists
+      const inquiry = await dbStorage.getInquiry(id);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Inquiry not found" });
+      }
+      
+      // Delete the inquiry
+      const deleted = await dbStorage.deleteInquiry(id);
+      if (deleted) {
+        res.json({ success: true, message: "Inquiry deleted successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to delete inquiry" });
+      }
+    } catch (error) {
+      console.error("Error deleting inquiry:", error);
+      res.status(500).json({ message: "Failed to delete inquiry" });
+    }
+  });
+  
+  // Mark multiple inquiries as read
+  app.patch("/api/inquiries/mark-read", async (req, res) => {
+    try {
+      // In development mode, skip authentication check
+      // Check admin access using multiple auth methods
+      let hasAdminAccess = false;
+      
+      if (req.session && req.session.isAdmin) {
+        hasAdminAccess = true;
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        hasAdminAccess = true;
+      } else if (process.env.NODE_ENV === "development") {
+        hasAdminAccess = true;
+      }
+      
+      if (!hasAdminAccess) {
+        // Check for admin authentication in production
+        if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      }
+      
+      // Handle both single IDs and arrays for flexibility
+      const { ids, id } = req.body;
+      let inquiryIds: number[] = [];
+      
+      if (Array.isArray(ids) && ids.length > 0) {
+        inquiryIds = ids;
+      } else if (id !== undefined) {
+        inquiryIds = [id];
+      } else if (!ids) {
+        // If no ids provided, mark ALL unread inquiries as read
+        const inquiries = await dbStorage.getAllInquiries();
+        inquiryIds = inquiries
+          .filter(inq => !inq.isRead)
+          .map(inq => inq.id);
+      }
+      
+      if (inquiryIds.length === 0) {
+        return res.status(200).json({ success: true, message: "No inquiries to mark as read" });
+      }
+      
+      // Mark each inquiry as read
+      const results = await Promise.all(inquiryIds.map(async (id: number) => {
+        return await dbStorage.markInquiryAsRead(id);
+      }));
+      
+      const successCount = results.filter(success => success).length;
+      
+      console.log(`Marked ${successCount} of ${inquiryIds.length} inquiries as read`);
+      res.status(200).json({ 
+        success: true, 
+        message: `Marked ${successCount} of ${inquiryIds.length} inquiries as read` 
+      });
+    } catch (error) {
+      console.error("Error marking inquiries as read:", error);
+      res.status(500).json({ message: "Failed to mark inquiries as read" });
     }
   });
 
-  // Create new inquiry (POST endpoint)
+  // Create a new inquiry
   app.post("/api/inquiries", async (req, res) => {
     try {
-      const inquiryData = insertPropertyInquirySchema.parse(req.body);
-      const result = await pool.query(
-        'INSERT INTO property_inquiries (name, email, phone, message, property_id, inquiry_type, budget) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [inquiryData.name, inquiryData.email, inquiryData.phone, inquiryData.message, inquiryData.propertyId, inquiryData.inquiryType, inquiryData.budget]
-      );
-      const inquiry = result.rows[0];
-      res.status(201).json(inquiry);
+      const inquiryData = insertInquirySchema.parse({
+        ...req.body,
+        createdAt: new Date().toISOString()
+      });
+      
+      const newInquiry = await dbStorage.createInquiry(inquiryData);
+      
+      // If property ID is provided, fetch property title for the email
+      let propertyTitle;
+      if (inquiryData.propertyId) {
+        const property = await dbStorage.getProperty(inquiryData.propertyId);
+        if (property) {
+          propertyTitle = property.title;
+        }
+      }
+      
+      // Send email notification to admin
+      try {
+        await sendInquiryNotification(newInquiry, propertyTitle);
+        console.log(`Email notification sent for inquiry ID: ${newInquiry.id}`);
+      } catch (emailError) {
+        // Log the error but don't fail the API response
+        console.error("Failed to send email notification:", emailError);
+      }
+      
+      res.status(201).json(newInquiry);
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({ 
@@ -754,59 +825,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create inquiry" });
     }
   });
-  
-  // Mark inquiry as read
-  app.put("/api/inquiries/:id/read", async (req, res) => {
-    try {
-      // Check admin access using production-ready authentication
-      if (!checkProductionAdminAccess(req as any)) {
-        return res.status(403).json({ message: "Forbidden - Admin access required" });
-      }
-
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid inquiry ID" });
-      }
-      
-      const result = await pool.query(
-        'UPDATE property_inquiries SET is_read = true WHERE id = $1 RETURNING *',
-        [id]
-      );
-      
-      if (result.rows.length > 0) {
-        res.json({ success: true, message: "Property inquiry marked as read" });
-      } else {
-        res.status(404).json({ message: "Property inquiry not found" });
-      }
-    } catch (error) {
-      console.error("Error marking property inquiry as read:", error);
-      res.status(500).json({ message: "Failed to mark property inquiry as read" });
-    }
-  });
-
-  // Legacy delete inquiry route - redirects to property inquiries
-  app.delete("/api/inquiries/:id", requireAdmin, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid inquiry ID" });
-      }
-      
-      const deleted = await dbStorage.deletePropertyInquiry(id);
-      if (deleted) {
-        res.json({ success: true, message: "Property inquiry deleted successfully" });
-      } else {
-        res.status(404).json({ message: "Property inquiry not found" });
-      }
-    } catch (error) {
-      console.error("Error deleting property inquiry:", error);
-      res.status(500).json({ message: "Failed to delete property inquiry" });
-    }
-  });
-  
-  // Legacy route removed - use separate three-tier inquiry system
-
-  // Legacy route removed - use separate three-tier inquiry system
 
   // Admin routes already defined in auth.ts
 
@@ -1336,7 +1354,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && (req.session as any).isAdmin) {
+      if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1373,7 +1391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && (req.session as any).isAdmin) {
+      if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1411,7 +1429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && (req.session as any).isAdmin) {
+      if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1474,7 +1492,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && (req.session as any).isAdmin) {
+      if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1744,14 +1762,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Contact Messages API Routes
-  app.get("/api/contact-messages", async (req, res) => {
-    // Use the same authentication pattern as other admin endpoints
-    if (!checkAdminAccess(req)) {
-      return res.status(403).json({ 
-        message: "Admin access required", 
-        error: "ADMIN_ACCESS_DENIED" 
-      });
-    }
+  app.get("/api/contact-messages", requireAdmin, async (req, res) => {
     try {
       try {
         // First try using the storage method
@@ -1835,7 +1846,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && (req.session as any).isAdmin) {
+      if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1874,7 +1885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           RETURNING id
         `, [id]);
         
-        if (result.rowCount === 0 || result.rowCount === null) {
+        if (result.rowCount === 0) {
           return res.status(404).json({ message: "Message not found" });
         }
         
@@ -1895,7 +1906,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && (req.session as any).isAdmin) {
+      if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -1933,7 +1944,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           RETURNING id
         `, [id]);
         
-        if (result.rowCount === 0 || result.rowCount === null) {
+        if (result.rowCount === 0) {
           return res.status(404).json({ message: "Message not found" });
         }
         
@@ -1955,7 +1966,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check admin access using multiple auth methods
       let hasAdminAccess = false;
       
-      if (req.session && (req.session as any).isAdmin) {
+      if (req.session && req.session.isAdmin) {
         hasAdminAccess = true;
       } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
         hasAdminAccess = true;
@@ -2026,7 +2037,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           RETURNING id
         `, [messageIds]);
         
-        if (result.rowCount === 0 || result.rowCount === null) {
+        if (result.rowCount === 0) {
           return res.status(404).json({ message: "No messages found with the provided IDs" });
         }
         
@@ -2086,11 +2097,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/home-loan-inquiries", async (req, res) => {
     try {
       const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
-      const result = await pool.query(
-        'INSERT INTO home_loan_inquiries (name, email, phone, loan_type, loan_amount, property_location, monthly_income, employment, message) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-        [inquiryData.name, inquiryData.email, inquiryData.phone, inquiryData.loanType, inquiryData.loanAmount, inquiryData.propertyLocation, inquiryData.monthlyIncome, inquiryData.employment, inquiryData.message]
-      );
-      const newInquiry = result.rows[0];
+      const newInquiry = await dbStorage.createHomeLoanInquiry(inquiryData);
       
       res.status(201).json(newInquiry);
     } catch (error) {
@@ -2115,17 +2122,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get all home loan inquiries (admin only)
   app.get("/api/home-loan-inquiries", async (req, res) => {
-    // Use the same authentication pattern as other admin endpoints
-    if (!checkAdminAccess(req)) {
-      return res.status(403).json({ 
-        message: "Admin access required", 
-        error: "ADMIN_ACCESS_DENIED" 
-      });
-    }
-    
     try {
-      const inquiries = await dbStorage.getAllHomeLoanInquiries();
-      res.json(inquiries);
+      // Debug: Check session state
+      console.log("Home loan inquiries request - Session state:", {
+        isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+        sessionIsAdmin: req.session?.isAdmin,
+        sessionUserType: req.session?.userType,
+        user: req.user
+      });
+
+      // Check session-based admin access first (for traditional login)
+      if (req.session && req.session.isAdmin) {
+        const inquiries = await dbStorage.getAllHomeLoanInquiries();
+        return res.json(inquiries);
+      }
+      
+      // Check authenticated user admin status (for OAuth login)
+      if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        const inquiries = await dbStorage.getAllHomeLoanInquiries();
+        return res.json(inquiries);
+      }
+      
+      // Development mode - temporarily allow access to see the data
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Development mode - granting access to home loan inquiries");
+        const inquiries = await dbStorage.getAllHomeLoanInquiries();
+        return res.json(inquiries);
+      }
+      
+      return res.status(403).json({ message: "Access denied" });
     } catch (error) {
       console.error("Error fetching home loan inquiries:", error);
       res.status(500).json({ message: "Failed to fetch home loan inquiries" });
@@ -2205,8 +2230,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // File upload endpoint for images
   app.post("/api/upload-image", upload.single('image'), async (req, res) => {
     try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+      // Check admin access
+      if (!checkAdminAccess(req) && process.env.NODE_ENV !== 'development') {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -2223,181 +2248,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Contact Messages API endpoints
-  
-  // Get all contact messages (admin only)
-  app.get("/api/contact-messages", async (req, res) => {
-    try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const messages = await dbStorage.getAllContactMessages();
-      console.log('Contact messages from direct query:', messages.length);
-      res.json(messages);
-    } catch (error) {
-      console.error("Error fetching contact messages:", error);
-      res.status(500).json({ message: "Failed to fetch contact messages" });
-    }
-  });
-
-  // Mark contact message as read (admin only)
-  app.put("/api/contact-messages/:id/read", async (req, res) => {
-    try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const messageId = parseInt(req.params.id);
-      const success = await dbStorage.markContactMessageAsRead(messageId);
-      
-      if (success) {
-        res.json({ message: "Contact message marked as read" });
-      } else {
-        res.status(404).json({ message: "Contact message not found" });
-      }
-    } catch (error) {
-      console.error("Error marking contact message as read:", error);
-      res.status(500).json({ message: "Failed to mark contact message as read" });
-    }
-  });
-
-  // Delete contact message (admin only)
-  app.delete("/api/contact-messages/:id", async (req, res) => {
-    try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const messageId = parseInt(req.params.id);
-      const success = await dbStorage.deleteContactMessage(messageId);
-      
-      if (success) {
-        res.json({ message: "Contact message deleted successfully" });
-      } else {
-        res.status(404).json({ message: "Contact message not found" });
-      }
-    } catch (error) {
-      console.error("Error deleting contact message:", error);
-      res.status(500).json({ message: "Failed to delete contact message" });
-    }
-  });
-
-  // Create contact message (public)
-  app.post("/api/contact-messages", async (req, res) => {
-    try {
-      const messageData = insertContactMessageSchema.parse(req.body);
-      const newMessage = await dbStorage.createContactMessage(messageData);
-      res.status(201).json(newMessage);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ 
-          message: "Invalid contact message data", 
-          errors: fromZodError(error).details 
-        });
-      }
-      console.error("Error creating contact message:", error);
-      res.status(500).json({ message: "Failed to create contact message" });
-    }
-  });
-
-  // Home Loan Inquiries API endpoints
-  
-  // Get all home loan inquiries (admin only)
-  app.get("/api/home-loan-inquiries", async (req, res) => {
-    try {
-      // Check admin access using production-ready authentication
-      if (!checkProductionAdminAccess(req as any)) {
-        return res.status(403).json({ message: "Forbidden - Admin access required" });
-      }
-      
-      const result = await pool.query('SELECT * FROM home_loan_inquiries ORDER BY created_at DESC');
-      const inquiries = result.rows;
-      res.json(inquiries);
-    } catch (error) {
-      console.error("Error fetching home loan inquiries:", error);
-      res.status(500).json({ message: "Failed to fetch home loan inquiries" });
-    }
-  });
-
-  // Mark home loan inquiry as read (admin only)
-  app.put("/api/home-loan-inquiries/:id/read", async (req, res) => {
-    try {
-      // Check admin access using production-ready authentication
-      if (!checkProductionAdminAccess(req as any)) {
-        return res.status(403).json({ message: "Forbidden - Admin access required" });
-      }
-      
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid inquiry ID" });
-      }
-      
-      const result = await pool.query(
-        'UPDATE home_loan_inquiries SET is_read = true WHERE id = $1 RETURNING *',
-        [id]
-      );
-      
-      if (result.rows.length > 0) {
-        res.json({ success: true, message: "Home loan inquiry marked as read" });
-      } else {
-        res.status(404).json({ message: "Home loan inquiry not found" });
-      }
-    } catch (error) {
-      console.error("Error marking home loan inquiry as read:", error);
-      res.status(500).json({ message: "Failed to mark home loan inquiry as read" });
-    }
-  });
-
-  // Delete home loan inquiry (admin only)
-  app.delete("/api/home-loan-inquiries/:id", async (req, res) => {
-    try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const inquiryId = parseInt(req.params.id);
-      const success = await dbStorage.deleteHomeLoanInquiry(inquiryId);
-      
-      if (success) {
-        res.json({ message: "Home loan inquiry deleted successfully" });
-      } else {
-        res.status(404).json({ message: "Home loan inquiry not found" });
-      }
-    } catch (error) {
-      console.error("Error deleting home loan inquiry:", error);
-      res.status(500).json({ message: "Failed to delete home loan inquiry" });
-    }
-  });
-
-  // Create home loan inquiry (public)
-  app.post("/api/home-loan-inquiries", async (req, res) => {
-    try {
-      const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
-      const newInquiry = await dbStorage.createHomeLoanInquiry(inquiryData);
-      res.status(201).json(newInquiry);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ 
-          message: "Invalid home loan inquiry data", 
-          errors: fromZodError(error).details 
-        });
-      }
-      console.error("Error creating home loan inquiry:", error);
-      res.status(500).json({ message: "Failed to create home loan inquiry" });
-    }
-  });
-
   // Homepage Images API endpoints (admin only)
   
   // Get all homepage images
   app.get("/api/homepage-images", async (req, res) => {
     try {
-      const images = await dbStorage.getAllHomepageImages();
+      const { imageType } = req.query;
+      
+      let images;
+      if (imageType) {
+        images = await dbStorage.getHomepageImagesByType(imageType as string);
+      } else {
+        images = await dbStorage.getAllHomepageImages();
+      }
+      
       res.json(images);
     } catch (error) {
       console.error("Error fetching homepage images:", error);
@@ -2428,8 +2292,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create new homepage image (admin only)
   app.post("/api/homepage-images", async (req, res) => {
     try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+      // Check admin access
+      if (req.session && req.session.isAdmin) {
+        // Session-based admin access (traditional login)
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        // OAuth-based admin access
+      } else if (process.env.NODE_ENV === 'development') {
+        // Development mode access
+      } else {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -2445,8 +2315,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update homepage image (admin only)
   app.patch("/api/homepage-images/:id", async (req, res) => {
     try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+      // Check admin access
+      if (req.session && req.session.isAdmin) {
+        // Session-based admin access (traditional login)
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        // OAuth-based admin access
+      } else if (process.env.NODE_ENV === 'development') {
+        // Development mode access
+      } else {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -2467,8 +2343,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete homepage image (admin only)
   app.delete("/api/homepage-images/:id", async (req, res) => {
     try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
+      // Check admin access
+      if (req.session && req.session.isAdmin) {
+        // Session-based admin access (traditional login)
+      } else if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+        // OAuth-based admin access
+      } else if (process.env.NODE_ENV === 'development') {
+        // Development mode access
+      } else {
         return res.status(403).json({ message: "Admin access required" });
       }
 
@@ -2486,131 +2368,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting homepage image:", error);
       res.status(500).json({ message: "Failed to delete homepage image" });
-    }
-  });
-
-  // Excel Export Endpoints (Admin only)
-  
-  // Export property inquiries to Excel
-  app.get("/api/export/property-inquiries", async (req, res) => {
-    try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const inquiries = await dbStorage.getAllPropertyInquiries();
-      
-      // Prepare data for Excel export
-      const excelData = inquiries.map(inquiry => ({
-        'ID': inquiry.id,
-        'Name': inquiry.name,
-        'Email': inquiry.email,
-        'Phone': inquiry.phone || '',
-        'Property ID': inquiry.propertyId,
-        'Inquiry Type': inquiry.inquiryType,
-        'Budget': inquiry.budget || '',
-        'Message': inquiry.message || '',
-        'Status': inquiry.isRead ? 'Read' : 'Unread',
-        'Created Date': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleDateString() : '',
-        'Created Time': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleTimeString() : ''
-      }));
-
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename="property-inquiries-${new Date().toISOString().split('T')[0]}.xlsx"`);
-      
-      // Create Excel workbook
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Property Inquiries');
-      
-      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      res.send(excelBuffer);
-    } catch (error) {
-      console.error("Error exporting property inquiries:", error);
-      res.status(500).json({ message: "Failed to export property inquiries" });
-    }
-  });
-
-  // Export contact messages to Excel
-  app.get("/api/export/contact-messages", async (req, res) => {
-    try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const messages = await dbStorage.getAllContactMessages();
-      
-      // Prepare data for Excel export
-      const excelData = messages.map(message => ({
-        'ID': message.id,
-        'Name': message.name,
-        'Email': message.email,
-        'Phone': message.phone || '',
-        'Subject': message.subject,
-        'Message': message.message,
-        'Status': message.isRead ? 'Read' : 'Unread',
-        'Created Date': message.createdAt ? new Date(message.createdAt).toLocaleDateString() : '',
-        'Created Time': message.createdAt ? new Date(message.createdAt).toLocaleTimeString() : ''
-      }));
-
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename="contact-messages-${new Date().toISOString().split('T')[0]}.xlsx"`);
-      
-      // Create Excel workbook
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Contact Messages');
-      
-      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      res.send(excelBuffer);
-    } catch (error) {
-      console.error("Error exporting contact messages:", error);
-      res.status(500).json({ message: "Failed to export contact messages" });
-    }
-  });
-
-  // Export home loan inquiries to Excel
-  app.get("/api/export/home-loan-inquiries", async (req, res) => {
-    try {
-      // Production auth check for admin access
-      if (!checkProductionAdminAccess(req as any) && process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const inquiries = await dbStorage.getAllHomeLoanInquiries();
-      
-      // Prepare data for Excel export
-      const excelData = inquiries.map(inquiry => ({
-        'ID': inquiry.id,
-        'Name': inquiry.name,
-        'Email': inquiry.email,
-        'Phone': inquiry.phone,
-        'Loan Type': inquiry.loanType || '',
-        'Monthly Income': inquiry.monthlyIncome || '',
-        'Loan Amount': inquiry.loanAmount || '',
-        'Property Location': inquiry.propertyLocation || '',
-        'Employment': inquiry.employment || '',
-        'Message': inquiry.message || '',
-        'Status': inquiry.isRead ? 'Read' : 'Unread',
-        'Created Date': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleDateString() : '',
-        'Created Time': inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleTimeString() : ''
-      }));
-
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename="home-loan-inquiries-${new Date().toISOString().split('T')[0]}.xlsx"`);
-      
-      // Create Excel workbook
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Home Loan Inquiries');
-      
-      const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      res.send(excelBuffer);
-    } catch (error) {
-      console.error("Error exporting home loan inquiries:", error);
-      res.status(500).json({ message: "Failed to export home loan inquiries" });
     }
   });
 
