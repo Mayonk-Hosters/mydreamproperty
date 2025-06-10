@@ -264,91 +264,115 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
             </Button>
           </div>
           
-          {/* Quick Filter Tags */}
-          <div className="flex flex-wrap gap-2">
-            {/* Property Type Quick Filters */}
-            {availablePropertyTypes && availablePropertyTypes.map((type) => (
-              <button
-                key={`type-${type}`}
-                onClick={() => {
-                  const newFilters = { ...filters, propertyType: filters.propertyType === type ? "" : type };
-                  setFilters(newFilters);
-                  if (onFilterChange) {
-                    onFilterChange(newFilters);
-                  }
-                }}
-                className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
-                  filters.propertyType === type
-                    ? 'bg-green-500 text-white border-green-500 shadow-md transform scale-105'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-green-400 hover:bg-green-50 hover:shadow-md'
-                }`}
-              >
-                {type === 'Apartment' && '🏢'} 
-                {type === 'House' && '🏠'} 
-                {type === 'Bunglow' && '🏘️'} 
-                {type === 'Villa' && '🏡'} 
-                {type === 'Commercial' && '🏢'} 
-                {!['Apartment', 'House', 'Bunglow', 'Villa', 'Commercial'].includes(type) && '🏗️'} 
-                {' '}{type}
-              </button>
-            ))}
-            
-            {/* Price Quick Filters */}
-            {[
-              { label: 'Under ₹30L', icon: '💰', minPrice: 0, maxPrice: 3000000 },
-              { label: '₹30L-₹1Cr', icon: '💵', minPrice: 3000000, maxPrice: 10000000 },
-              { label: 'Above ₹1Cr', icon: '💎', minPrice: 10000000, maxPrice: 15000000 }
-            ].map((priceRange) => (
-              <button
-                key={priceRange.label}
-                onClick={() => {
-                  const isActive = filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice;
-                  const newFilters = isActive 
-                    ? { ...filters, minPrice: 0, maxPrice: 15000000 }
-                    : { ...filters, minPrice: priceRange.minPrice, maxPrice: priceRange.maxPrice };
-                  setFilters(newFilters);
-                  if (onFilterChange) {
-                    onFilterChange(newFilters);
-                  }
-                }}
-                className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
-                  filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice
-                    ? 'bg-blue-500 text-white border-blue-500 shadow-md transform scale-105'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md'
-                }`}
-              >
-                {priceRange.icon} {priceRange.label}
-              </button>
-            ))}
+          {/* Layered Filter System */}
+          <div className="space-y-4">
+            {/* Layer 1: Property Type Filters */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-bold">1</span>
+                Property Type
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {availablePropertyTypes && availablePropertyTypes.map((type) => (
+                  <button
+                    key={`type-${type}`}
+                    onClick={() => {
+                      const newFilters = { ...filters, propertyType: filters.propertyType === type ? "" : type };
+                      setFilters(newFilters);
+                      if (onFilterChange) {
+                        onFilterChange(newFilters);
+                      }
+                    }}
+                    className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
+                      filters.propertyType === type
+                        ? 'bg-green-500 text-white border-green-500 shadow-md transform scale-105'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-green-400 hover:bg-green-50 hover:shadow-md'
+                    }`}
+                  >
+                    {type === 'Apartment' && '🏢'} 
+                    {type === 'House' && '🏠'} 
+                    {type === 'Bunglow' && '🏘️'} 
+                    {type === 'Villa' && '🏡'} 
+                    {type === 'Commercial' && '🏢'} 
+                    {!['Apartment', 'House', 'Bunglow', 'Villa', 'Commercial'].includes(type) && '🏗️'} 
+                    {' '}{type}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-            {/* BHK Quick Filters */}
-            {[
-              { label: '1 BHK', icon: '🏠', beds: 1 },
-              { label: '2+ BHK', icon: '🏡', beds: 2 },
-              { label: '3+ BHK', icon: '🏘️', beds: 3 },
-              { label: '4+ BHK', icon: '🏰', beds: 4 }
-            ].map((bhkOption) => (
-              <button
-                key={bhkOption.label}
-                onClick={() => {
-                  const isActive = filters.minBeds === bhkOption.beds;
-                  const newFilters = isActive 
-                    ? { ...filters, minBeds: 0 }
-                    : { ...filters, minBeds: bhkOption.beds };
-                  setFilters(newFilters);
-                  if (onFilterChange) {
-                    onFilterChange(newFilters);
-                  }
-                }}
-                className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
-                  filters.minBeds === bhkOption.beds
-                    ? 'bg-purple-500 text-white border-purple-500 shadow-md transform scale-105'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400 hover:bg-purple-50 hover:shadow-md'
-                }`}
-              >
-                {bhkOption.icon} {bhkOption.label}
-              </button>
-            ))}
+            {/* Layer 2: BHK Range Filters */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full font-bold">2</span>
+                BHK Range
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: '1 BHK', icon: '🏠', beds: 1 },
+                  { label: '2+ BHK', icon: '🏡', beds: 2 },
+                  { label: '3+ BHK', icon: '🏘️', beds: 3 },
+                  { label: '4+ BHK', icon: '🏰', beds: 4 }
+                ].map((bhkOption) => (
+                  <button
+                    key={bhkOption.label}
+                    onClick={() => {
+                      const isActive = filters.minBeds === bhkOption.beds;
+                      const newFilters = isActive 
+                        ? { ...filters, minBeds: 0 }
+                        : { ...filters, minBeds: bhkOption.beds };
+                      setFilters(newFilters);
+                      if (onFilterChange) {
+                        onFilterChange(newFilters);
+                      }
+                    }}
+                    className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
+                      filters.minBeds === bhkOption.beds
+                        ? 'bg-purple-500 text-white border-purple-500 shadow-md transform scale-105'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400 hover:bg-purple-50 hover:shadow-md'
+                    }`}
+                  >
+                    {bhkOption.icon} {bhkOption.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Layer 3: Price Range Filters */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-bold">3</span>
+                Price Range
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'Under ₹30L', icon: '💰', minPrice: 0, maxPrice: 3000000 },
+                  { label: '₹30L-₹1Cr', icon: '💵', minPrice: 3000000, maxPrice: 10000000 },
+                  { label: 'Above ₹1Cr', icon: '💎', minPrice: 10000000, maxPrice: 15000000 }
+                ].map((priceRange) => (
+                  <button
+                    key={priceRange.label}
+                    onClick={() => {
+                      const isActive = filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice;
+                      const newFilters = isActive 
+                        ? { ...filters, minPrice: 0, maxPrice: 15000000 }
+                        : { ...filters, minPrice: priceRange.minPrice, maxPrice: priceRange.maxPrice };
+                      setFilters(newFilters);
+                      if (onFilterChange) {
+                        onFilterChange(newFilters);
+                      }
+                    }}
+                    className={`px-4 py-2 text-sm rounded-full border-2 transition-all font-medium shadow-sm ${
+                      filters.minPrice === priceRange.minPrice && filters.maxPrice === priceRange.maxPrice
+                        ? 'bg-blue-500 text-white border-blue-500 shadow-md transform scale-105'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md'
+                    }`}
+                  >
+                    {priceRange.icon} {priceRange.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
