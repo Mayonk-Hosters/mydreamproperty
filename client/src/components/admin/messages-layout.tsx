@@ -72,43 +72,8 @@ export function MessagesLayout({ children, title, description }: MessagesLayoutP
           description={description}
         />
 
-        {/* Messages Tab Navigation */}
+        {/* Content Area - No More Tab Navigation */}
         <div className="bg-white rounded-lg border shadow-sm">
-          <div className="p-4 border-b">
-            <Tabs value={getCurrentTab()} onValueChange={handleTabChange} className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="property-inquiries" className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4" />
-                  Property Inquiries
-                  {unreadPropertyInquiries > 0 && (
-                    <Badge variant="destructive" className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                      {unreadPropertyInquiries}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="contact-messages" className="flex items-center gap-2">
-                  <PhoneCall className="h-4 w-4" />
-                  Contact Messages
-                  {unreadContactMessages > 0 && (
-                    <Badge variant="destructive" className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                      {unreadContactMessages}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="home-loan-inquiries" className="flex items-center gap-2">
-                  <Home className="h-4 w-4" />
-                  Home Loan Inquiries
-                  {unreadHomeLoanInquiries > 0 && (
-                    <Badge variant="destructive" className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                      {unreadHomeLoanInquiries}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-
-          {/* Content Area */}
           <div className="p-6">
             {children}
           </div>
