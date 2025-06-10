@@ -86,36 +86,53 @@ const upload = multer({
 
 // Utility function to check admin access consistently across all routes
 function checkAdminAccess(req: any): boolean {
+  console.log('Checking admin access:', {
+    hasSession: !!req.session,
+    sessionIsAdmin: req.session?.isAdmin,
+    sessionUserType: req.session?.userType,
+    sessionKeys: req.session ? Object.keys(req.session) : [],
+    hasUser: !!req.user,
+    userIsAdmin: req.user?.isAdmin,
+    environment: process.env.NODE_ENV
+  });
+  
   // Session-based admin access (traditional login)
-  if (req.session && req.session.isAdmin) {
+  if (req.session && (req.session as any).isAdmin) {
+    console.log('Admin access granted via session.isAdmin');
+    return true;
+  }
+  
+  // Check session userType for admin
+  if (req.session && (req.session as any).userType === 'admin') {
+    console.log('Admin access granted via session.userType');
+    return true;
+  }
+  
+  // Check session authenticatedAdmin flag
+  if (req.session && (req.session as any).authenticatedAdmin) {
+    console.log('Admin access granted via session.authenticatedAdmin');
     return true;
   }
   
   // OAuth-based admin access
   if (req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.dbUser?.isAdmin) {
+    console.log('Admin access granted via OAuth dbUser.isAdmin');
     return true;
   }
   
   // Additional check for user object with isAdmin property
   if (req.user && (req.user as any)?.isAdmin) {
+    console.log('Admin access granted via user.isAdmin');
     return true;
   }
   
-  // Check for admin username in session (fallback for production)
-  if (req.session && req.session.user && req.session.user.username === 'ahmednagarproperty') {
+  // Development mode access - allow all authenticated users
+  if (process.env.NODE_ENV === 'development' && req.session && Object.keys(req.session).length > 1) {
+    console.log('Admin access granted via development mode with session');
     return true;
   }
   
-  // Production environment fallback - check if logged in with admin credentials
-  if (process.env.NODE_ENV === 'production' && req.session && req.session.passport && req.session.passport.user) {
-    return true;
-  }
-  
-  // Development mode access
-  if (process.env.NODE_ENV === 'development') {
-    return true;
-  }
-  
+  console.log('Admin access denied');
   return false;
 }
 
@@ -1601,18 +1618,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete a user
   app.delete("/api/users/:id", async (req, res) => {
     try {
-      // Check if user is authenticated and is an admin
-      if (!req.isAuthenticated() || !(req.user as any)?.isAdmin) {
+      // Check admin access using the same pattern as other admin endpoints
+      const hasAdminAccess = checkAdminAccess(req);
+      
+      if (!hasAdminAccess) {
         return res.status(403).json({ message: "Forbidden" });
       }
       
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
+      const id = req.params.id;
+      if (!id) {
         return res.status(400).json({ message: "Invalid user ID" });
       }
 
-      // Don't allow deleting the current user
-      if (id === (req.user as any).id) {
+      // Don't allow deleting the current user (if authenticated via OAuth)
+      if (req.user && id === (req.user as any).id) {
         return res.status(400).json({ message: "Cannot delete your own account" });
       }
 
