@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { pool } from "./db";
+
 import * as XLSX from 'xlsx';
 // AI recommendation imports removed
 import { 
@@ -1764,41 +1765,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact Messages API Routes
   app.get("/api/contact-messages", requireAdmin, async (req, res) => {
     try {
-      try {
-        // First try using the storage method
-        const messages = await dbStorage.getAllContactMessages();
-        if (messages && messages.length > 0) {
-          res.json(messages);
-        } else {
-          // Fallback to direct SQL query if storage method returns empty
-          const result = await pool.query(`
-            SELECT id, name, email, phone, subject, message, is_read as "isRead", created_at as "createdAt"
-            FROM contact_messages
-            ORDER BY created_at DESC
-          `);
-          
-          console.log("Contact messages from direct query:", result.rows.length);
-          res.json(result.rows);
-        }
-      } catch (queryError) {
-        console.error("Error in contact messages query:", queryError);
-        // Final fallback to ensure we return something
-        const result = await pool.query(`
-          SELECT * FROM contact_messages ORDER BY created_at DESC
-        `);
-        const formattedMessages = result.rows.map(row => ({
-          id: row.id,
-          name: row.name,
-          email: row.email,
-          phone: row.phone || null,
-          subject: row.subject,
-          message: row.message,
-          isRead: row.is_read,
-          createdAt: row.created_at
-        }));
-        
-        res.json(formattedMessages);
-      }
+      const messages = await dbStorage.getAllContactMessages();
+      res.json(messages);
     } catch (error) {
       console.error("Error fetching contact messages:", error);
       res.status(500).json({ message: "Failed to fetch contact messages" });
@@ -2048,20 +2016,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (sqlError) {
         console.error("Error marking messages as read using SQL:", sqlError);
         
-        // Last resort: try marking messages one by one
+        // Last resort: try marking messages one by one using ORM
         try {
           let successCount = 0;
           
           for (const id of messageIds) {
             try {
-              const result = await pool.query(`
-                UPDATE contact_messages
-                SET is_read = true
-                WHERE id = $1
-                RETURNING id
-              `, [id]);
+              const result = await db.update(contactMessages)
+                .set({ isRead: true })
+                .where(eq(contactMessages.id, id))
+                .returning({ id: contactMessages.id });
               
-              if (result.rowCount > 0) {
+              if (result.length > 0) {
                 successCount++;
               }
             } catch (e) {
