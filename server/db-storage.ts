@@ -461,11 +461,36 @@ export class DbStorage implements IStorage {
 
   // Stub implementations for other required methods
   async getFilteredProperties(): Promise<Property[]> { return []; }
-  async getAllAgents(): Promise<Agent[]> { return []; }
-  async getAgent(): Promise<Agent | undefined> { return undefined; }
-  async createAgent(): Promise<Agent> { throw new Error("Not implemented"); }
-  async updateAgent(): Promise<Agent> { throw new Error("Not implemented"); }
-  async deleteAgent(): Promise<boolean> { return false; }
+  
+  // Agent management methods
+  async getAllAgents(): Promise<Agent[]> {
+    const result = await db.select().from(agents).orderBy(agents.name);
+    return result;
+  }
+  
+  async getAgent(id: number): Promise<Agent | undefined> {
+    const [agent] = await db.select().from(agents).where(eq(agents.id, id));
+    return agent;
+  }
+  
+  async createAgent(agentData: InsertAgent): Promise<Agent> {
+    const [created] = await db.insert(agents).values(agentData).returning();
+    return created;
+  }
+  
+  async updateAgent(id: number, agentData: Partial<InsertAgent>): Promise<Agent> {
+    const [updated] = await db
+      .update(agents)
+      .set(agentData)
+      .where(eq(agents.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async deleteAgent(id: number): Promise<boolean> {
+    const result = await db.delete(agents).where(eq(agents.id, id));
+    return (result.rowCount || 0) > 0;
+  }
   // Homepage Images management
   async getAllHomepageImages(): Promise<HomepageImage[]> {
     const result = await db.select().from(homepageImages).orderBy(homepageImages.sortOrder, homepageImages.createdAt);
