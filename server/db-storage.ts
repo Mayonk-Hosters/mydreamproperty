@@ -361,6 +361,13 @@ export class DbStorage implements IStorage {
     return result;
   }
 
+  async getHomepageImagesByType(imageType: string): Promise<HomepageImage[]> {
+    const result = await db.select().from(homepageImages)
+      .where(eq(homepageImages.imageType, imageType))
+      .orderBy(homepageImages.sortOrder, homepageImages.createdAt);
+    return result;
+  }
+
   async getHomepageImage(id: number): Promise<HomepageImage | undefined> {
     const [image] = await db.select().from(homepageImages).where(eq(homepageImages.id, id));
     return image;
