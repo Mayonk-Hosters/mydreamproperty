@@ -61,13 +61,7 @@ export function Sidebar() {
           hasNotification: hasUnreadMessages || hasUnreadInquiries,
           notificationCount: totalUnreadCount
         },
-        {
-          name: "Messages",
-          path: "/admin/unified-messages",
-          icon: <MessageCircle className="h-5 w-5" />,
-          hasNotification: hasUnreadMessages || hasUnreadInquiries,
-          notificationCount: unreadMessagesCount + unreadInquiriesCount
-        }
+
       ]
     },
     {

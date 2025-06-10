@@ -124,9 +124,7 @@ function Router() {
       <Route path="/admin/property-types">
         <ProtectedAdminRoute component={AdminPropertyTypesPage} />
       </Route>
-      <Route path="/admin/unified-messages">
-        <ProtectedAdminRoute component={MessagesPage} />
-      </Route>
+
       <Route path="/admin/contact-messages">
         <ProtectedAdminRoute component={AdminContactMessagesPage} />
       </Route>
