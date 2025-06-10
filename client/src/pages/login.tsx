@@ -87,7 +87,12 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mt-2 mb-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <h4 className="text-sm font-medium text-blue-800 mb-1">Admin Credentials</h4>
+            <p className="text-xs text-blue-700">Username: <strong>admin</strong></p>
+            <p className="text-xs text-blue-700">Password: <strong>admin123</strong></p>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
             Access the administration panel to manage properties, users, and site settings
           </p>
           
@@ -100,7 +105,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="Smileplz004" {...field} />
+                      <Input placeholder="admin" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
