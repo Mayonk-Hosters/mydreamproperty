@@ -29,13 +29,6 @@ export function QuickActions() {
       color: "bg-green-500 hover:bg-green-600"
     },
     {
-      title: "Messages Center",
-      description: "All customer messages",
-      icon: <MessageCircle className="h-5 w-5" />,
-      href: "/admin/messages",
-      color: "bg-purple-500 hover:bg-purple-600"
-    },
-    {
       title: "All Properties",
       description: "Manage listings",
       icon: <Eye className="h-5 w-5" />,
