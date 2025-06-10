@@ -51,9 +51,23 @@ export default function PropertiesPage() {
     setLocation(`/properties?${params.toString()}`);
   };
 
-  // Fetch properties
+  // Fetch properties with filters
   const { data: properties, isLoading } = useQuery<Property[]>({
     queryKey: ["/api/properties", filters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== 0 && value !== "") {
+          params.set(key, value.toString());
+        }
+      });
+      
+      const response = await fetch(`/api/properties?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch properties');
+      }
+      return response.json();
+    },
     enabled: true,
   });
 

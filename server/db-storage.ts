@@ -20,6 +20,19 @@ import { getPropertyImage, getAgentImage, getInteriorImage } from "../client/src
 import { pool, db } from "./db";
 import type { IStorage } from "./storage";
 
+// Property filters interface
+interface PropertyFilters {
+  type?: string;
+  propertyType?: string;
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minBeds?: number;
+  minBaths?: number;
+  featured?: boolean;
+  agentId?: number;
+}
+
 // Database storage implementation
 export class DbStorage implements IStorage {
   constructor() {}
@@ -111,8 +124,8 @@ export class DbStorage implements IStorage {
   }
 
   // Property methods (implementing minimal required for messages to work)
-  async getAllProperties(): Promise<Property[]> {
-    const result = await db
+  async getAllProperties(filters?: PropertyFilters): Promise<Property[]> {
+    let query = db
       .select({
         id: properties.id,
         propertyNumber: properties.propertyNumber,
@@ -152,9 +165,71 @@ export class DbStorage implements IStorage {
       .leftJoin(states, eq(properties.stateId, states.id))
       .leftJoin(districts, eq(properties.districtId, districts.id))
       .leftJoin(talukas, eq(properties.talukaId, talukas.id))
-      .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id))
-      .orderBy(desc(properties.createdAt));
+      .leftJoin(tehsils, eq(properties.tehsilId, tehsils.id));
+
+    // Build where conditions
+    const conditions = [eq(properties.status, 'active')];
     
+    if (filters) {
+      if (filters.type && filters.type !== "") {
+        if (filters.type === "rent") {
+          conditions.push(eq(properties.type, "rent"));
+        } else if (filters.type === "buy") {
+          // Include both 'buy' and 'sell' type properties under "Buy" filter
+          conditions.push(or(
+            eq(properties.type, "buy"),
+            eq(properties.type, "sell")
+          ));
+        } else if (filters.type === "sell") {
+          conditions.push(eq(properties.type, "sell"));
+        }
+      }
+      
+      if (filters.propertyType && filters.propertyType !== "") {
+        conditions.push(eq(properties.propertyType, filters.propertyType));
+      }
+      
+      if (filters.location && filters.location !== "") {
+        const locationLower = filters.location.toLowerCase();
+        conditions.push(or(
+          like(sql`lower(${properties.location})`, `%${locationLower}%`),
+          like(sql`lower(${properties.address})`, `%${locationLower}%`),
+          like(sql`lower(${states.name})`, `%${locationLower}%`),
+          like(sql`lower(${districts.name})`, `%${locationLower}%`),
+          like(sql`lower(${talukas.name})`, `%${locationLower}%`),
+          like(sql`lower(${tehsils.name})`, `%${locationLower}%`)
+        ));
+      }
+      
+      if (filters.minPrice && filters.minPrice > 0) {
+        conditions.push(gte(properties.price, filters.minPrice));
+      }
+      
+      if (filters.maxPrice && filters.maxPrice > 0) {
+        conditions.push(lte(properties.price, filters.maxPrice));
+      }
+      
+      if (filters.minBeds && filters.minBeds > 0) {
+        conditions.push(gte(properties.beds, filters.minBeds));
+      }
+      
+      if (filters.minBaths && filters.minBaths > 0) {
+        conditions.push(gte(properties.baths, filters.minBaths));
+      }
+      
+      if (filters.featured !== undefined) {
+        conditions.push(eq(properties.featured, filters.featured));
+      }
+      
+      if (filters.agentId && filters.agentId > 0) {
+        conditions.push(eq(properties.agentId, filters.agentId));
+      }
+    }
+    
+    // Apply conditions and order
+    query = query.where(and(...conditions)).orderBy(desc(properties.createdAt));
+    
+    const result = await query;
     return result as any[];
   }
 
