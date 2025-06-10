@@ -136,7 +136,7 @@ function UnifiedMessagesPage() {
     mutationFn: async ({ id, type }: { id: number; type: string }) => {
       const endpoint = type === 'contact' ? 'contact-messages' : 
                      type === 'property' ? 'inquiries' : 'home-loan-inquiries';
-      return apiRequest(`/api/${endpoint}/${id}/mark-read`, "PATCH");
+      return apiRequest("PATCH", `/api/${endpoint}/${id}/mark-read`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/contact-messages"] });
@@ -151,7 +151,7 @@ function UnifiedMessagesPage() {
     mutationFn: async ({ id, type }: { id: number; type: string }) => {
       const endpoint = type === 'contact' ? 'contact-messages' : 
                      type === 'property' ? 'inquiries' : 'home-loan-inquiries';
-      return apiRequest(`/api/${endpoint}/${id}`, "DELETE");
+      return apiRequest("DELETE", `/api/${endpoint}/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/contact-messages"] });
