@@ -33,7 +33,7 @@ export default function LoginPage() {
     
     // Regular user login check
     if (user) {
-      const isAdmin = user.isAdmin || false;
+      const isAdmin = (user as any)?.isAdmin || false;
       if (isAdmin) {
         setLocation("/admin");
       } else {

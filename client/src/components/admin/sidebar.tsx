@@ -27,8 +27,7 @@ export function Sidebar() {
     unreadInquiriesCount, 
     totalUnreadCount,
     hasUnreadMessages,
-    hasUnreadInquiries,
-    hasUnread
+    hasUnreadInquiries
   } = useNotificationIndicators();
   
   const sidebarItems = [

@@ -53,7 +53,7 @@ interface UnifiedMessage {
   employment?: string;
 }
 
-export default function UnifiedMessagesPage() {
+function UnifiedMessagesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -590,3 +590,5 @@ export default function UnifiedMessagesPage() {
     </AdminLayout>
   );
 }
+
+export default UnifiedMessagesPage;
