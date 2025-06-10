@@ -608,6 +608,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get available property types from database
+  app.get("/api/available-property-types", async (_req, res) => {
+    try {
+      const result = await pool.query(`
+        SELECT DISTINCT property_type 
+        FROM properties 
+        WHERE status = 'active' AND property_type IS NOT NULL
+        ORDER BY property_type
+      `);
+      
+      const propertyTypes = result.rows.map(row => row.property_type);
+      res.json(propertyTypes);
+    } catch (error) {
+      console.error("Error fetching available property types:", error);
+      res.status(500).json({ message: "Failed to fetch available property types" });
+    }
+  });
+
   // Get all agents
   app.get("/api/agents", async (_req, res) => {
     try {

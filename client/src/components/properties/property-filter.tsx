@@ -27,14 +27,11 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   
-  // Fetch property types from API
-  const { data: propertyTypesData, isLoading: propertyTypesLoading } = useQuery<PropertyType[]>({
-    queryKey: ['/api/property-types'],
+  // Fetch available property types from database
+  const { data: availablePropertyTypes, isLoading: propertyTypesLoading } = useQuery<string[]>({
+    queryKey: ['/api/available-property-types'],
     enabled: true,
   });
-  
-  // Get active property types or fall back to default types
-  const propertyTypes = propertyTypesData?.filter(pt => pt.active).map(pt => pt.name) || DEFAULT_PROPERTY_TYPES;
   
   const [filters, setFilters] = useState({
     type: "buy",
@@ -190,7 +187,7 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
           </div>
           
           {/* Compact Single Row Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
             <Select 
               value={filters.type}
               onValueChange={(value) => handleFilterChange("type", value)}
@@ -203,8 +200,35 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
                 <SelectItem value="rent">🏡 Rent</SelectItem>
               </SelectContent>
             </Select>
-            
 
+            <Select 
+              value={filters.propertyType}
+              onValueChange={(value) => handleFilterChange("propertyType", value)}
+            >
+              <SelectTrigger className="h-11 border-2 focus:border-green-400 bg-white">
+                <SelectValue placeholder="Property Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Types</SelectItem>
+                {propertyTypesLoading ? (
+                  <SelectItem value="" disabled>Loading...</SelectItem>
+                ) : availablePropertyTypes && availablePropertyTypes.length > 0 ? (
+                  availablePropertyTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type === 'Apartment' && '🏢'} 
+                      {type === 'House' && '🏠'} 
+                      {type === 'Bunglow' && '🏘️'} 
+                      {type === 'Villa' && '🏡'} 
+                      {type === 'Commercial' && '🏢'} 
+                      {!['Apartment', 'House', 'Bunglow', 'Villa', 'Commercial'].includes(type) && '🏗️'} 
+                      {' '}{type}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="" disabled>No types available</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
             
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -242,6 +266,31 @@ export function PropertyFilter({ onFilterChange }: PropertyFilterProps) {
           
           {/* Quick Filter Tags */}
           <div className="flex flex-wrap gap-2">
+            {/* Property Type Quick Filters */}
+            {availablePropertyTypes && availablePropertyTypes.map((type) => (
+              <button
+                key={`type-${type}`}
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, propertyType: prev.propertyType === type ? "" : type }));
+                  setTimeout(applyFilters, 100);
+                }}
+                className={`px-3 py-1 text-xs rounded-full border transition-all ${
+                  filters.propertyType === type
+                    ? 'bg-green-500 text-white border-green-500 shadow-md'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-green-400 hover:bg-green-50'
+                }`}
+              >
+                {type === 'Apartment' && '🏢'} 
+                {type === 'House' && '🏠'} 
+                {type === 'Bunglow' && '🏘️'} 
+                {type === 'Villa' && '🏡'} 
+                {type === 'Commercial' && '🏢'} 
+                {!['Apartment', 'House', 'Bunglow', 'Villa', 'Commercial'].includes(type) && '🏗️'} 
+                {' '}{type}
+              </button>
+            ))}
+            
+            {/* Price and BHK Quick Filters */}
             {['Under ₹30L', '₹30L-₹1Cr', 'Above ₹1Cr', '2+ BHK', '3+ BHK'].map((tag) => (
               <button
                 key={tag}
