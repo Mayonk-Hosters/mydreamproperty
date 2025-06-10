@@ -235,7 +235,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
       featured: false,
       maharera_registered: false,
       images: [],
-      agentId: 1,
+      agentId: 2,
       stateId: "",
       districtId: "",
       talukaId: "",

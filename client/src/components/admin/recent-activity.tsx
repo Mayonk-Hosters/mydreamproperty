@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Property, Inquiry, ContactMessage, HomeLoanInquiry } from "@shared/schema";
+import { Property, PropertyInquiry, ContactMessage, HomeLoanInquiry } from "@shared/schema";
 import { formatCurrency } from "@/lib/utils";
 
 export function RecentActivity() {
@@ -18,7 +18,7 @@ export function RecentActivity() {
     queryKey: ['/api/properties'],
   });
 
-  const { data: inquiries } = useQuery<Inquiry[]>({
+  const { data: inquiries } = useQuery<PropertyInquiry[]>({
     queryKey: ['/api/inquiries'],
   });
 
