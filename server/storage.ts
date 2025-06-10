@@ -38,6 +38,13 @@ interface PropertyFilters {
 export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
+  createUser(userData: {
+    username: string;
+    password: string;
+    email?: string;
+    fullName?: string;
+    isAdmin?: boolean;
+  }): Promise<User>;
   upsertUser(user: typeof users.$inferInsert): Promise<User>;
   getAllUsers(): Promise<User[]>;
   updateUser(id: string, userData: Partial<typeof users.$inferInsert>): Promise<User>;
@@ -323,6 +330,30 @@ export class MemStorage implements IStorage {
   // User methods
   async getUser(id: string): Promise<User | undefined> {
     return this.users.find(u => u.id === id);
+  }
+
+  async createUser(userData: {
+    username: string;
+    password: string;
+    email?: string;
+    fullName?: string;
+    isAdmin?: boolean;
+  }): Promise<User> {
+    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const user: User = {
+      id: userId,
+      username: userData.username,
+      password: userData.password,
+      email: userData.email || null,
+      fullName: userData.fullName || null,
+      profileImage: null,
+      isAdmin: userData.isAdmin || false,
+      createdAt: new Date(),
+    };
+    
+    this.users.push(user);
+    return user;
   }
 
   async upsertUser(userData: typeof users.$inferInsert): Promise<User> {

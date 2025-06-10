@@ -30,6 +30,31 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
+  async createUser(userData: {
+    username: string;
+    password: string;
+    email?: string;
+    fullName?: string;
+    isAdmin?: boolean;
+  }): Promise<User> {
+    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: userId,
+        username: userData.username,
+        password: userData.password,
+        email: userData.email,
+        fullName: userData.fullName,
+        isAdmin: userData.isAdmin || false,
+        createdAt: new Date(),
+      })
+      .returning();
+    
+    return user;
+  }
+
   async upsertUser(userData: UpsertUser): Promise<User> {
     if (userData.id) {
       const existing = await this.getUser(userData.id.toString());
