@@ -355,18 +355,90 @@ export class DbStorage implements IStorage {
   async createAgent(): Promise<Agent> { throw new Error("Not implemented"); }
   async updateAgent(): Promise<Agent> { throw new Error("Not implemented"); }
   async deleteAgent(): Promise<boolean> { return false; }
-  async getContactInfo(): Promise<ContactInfo | undefined> { return undefined; }
-  async updateContactInfo(): Promise<ContactInfo> { throw new Error("Not implemented"); }
-  async getAllPropertyTypes(): Promise<PropertyType[]> { return []; }
-  async getPropertyType(): Promise<PropertyType | undefined> { return undefined; }
-  async createPropertyType(): Promise<PropertyType> { throw new Error("Not implemented"); }
-  async updatePropertyType(): Promise<PropertyType> { throw new Error("Not implemented"); }
-  async deletePropertyType(): Promise<boolean> { return false; }
-  async getAllHomepageImages(): Promise<HomepageImage[]> { return []; }
-  async getHomepageImage(): Promise<HomepageImage | undefined> { return undefined; }
-  async createHomepageImage(): Promise<HomepageImage> { throw new Error("Not implemented"); }
-  async updateHomepageImage(): Promise<HomepageImage> { throw new Error("Not implemented"); }
-  async deleteHomepageImage(): Promise<boolean> { return false; }
+  // Homepage Images management
+  async getAllHomepageImages(): Promise<HomepageImage[]> {
+    const result = await db.select().from(homepageImages).orderBy(homepageImages.sortOrder, homepageImages.createdAt);
+    return result;
+  }
+
+  async getHomepageImage(id: number): Promise<HomepageImage | undefined> {
+    const [image] = await db.select().from(homepageImages).where(eq(homepageImages.id, id));
+    return image;
+  }
+
+  async createHomepageImage(imageData: InsertHomepageImage): Promise<HomepageImage> {
+    const [created] = await db.insert(homepageImages).values(imageData).returning();
+    return created;
+  }
+
+  async updateHomepageImage(id: number, imageData: Partial<InsertHomepageImage>): Promise<HomepageImage> {
+    const [updated] = await db
+      .update(homepageImages)
+      .set(imageData)
+      .where(eq(homepageImages.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteHomepageImage(id: number): Promise<boolean> {
+    const result = await db.delete(homepageImages).where(eq(homepageImages.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Contact Info management
+  async getContactInfo(): Promise<ContactInfo | undefined> {
+    const [info] = await db.select().from(contactInfo).limit(1);
+    return info;
+  }
+
+  async updateContactInfo(infoData: Partial<InsertContactInfo>): Promise<ContactInfo> {
+    // First check if contact info exists
+    const existing = await this.getContactInfo();
+    
+    if (existing) {
+      // Update existing record
+      const [updated] = await db
+        .update(contactInfo)
+        .set(infoData)
+        .where(eq(contactInfo.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      // Create new record
+      const [created] = await db.insert(contactInfo).values(infoData as InsertContactInfo).returning();
+      return created;
+    }
+  }
+
+  // Property Types management
+  async getAllPropertyTypes(): Promise<PropertyType[]> {
+    const result = await db.select().from(propertyTypes).orderBy(propertyTypes.name);
+    return result;
+  }
+
+  async getPropertyType(id: number): Promise<PropertyType | undefined> {
+    const [type] = await db.select().from(propertyTypes).where(eq(propertyTypes.id, id));
+    return type;
+  }
+
+  async createPropertyType(typeData: InsertPropertyType): Promise<PropertyType> {
+    const [created] = await db.insert(propertyTypes).values(typeData).returning();
+    return created;
+  }
+
+  async updatePropertyType(id: number, typeData: Partial<InsertPropertyType>): Promise<PropertyType> {
+    const [updated] = await db
+      .update(propertyTypes)
+      .set(typeData)
+      .where(eq(propertyTypes.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deletePropertyType(id: number): Promise<boolean> {
+    const result = await db.delete(propertyTypes).where(eq(propertyTypes.id, id));
+    return result.rowCount > 0;
+  }
 }
 
 // Export the database storage instance
