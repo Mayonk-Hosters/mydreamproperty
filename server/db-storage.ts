@@ -222,6 +222,132 @@ export class DbStorage implements IStorage {
     return result.rowCount > 0;
   }
 
+  // States management
+  async getAllStates(): Promise<State[]> {
+    const result = await db.select().from(states).orderBy(states.name);
+    return result;
+  }
+
+  async getState(id: number): Promise<State | undefined> {
+    const [state] = await db.select().from(states).where(eq(states.id, id));
+    return state;
+  }
+
+  async createState(stateData: InsertState): Promise<State> {
+    const [created] = await db.insert(states).values(stateData).returning();
+    return created;
+  }
+
+  async updateState(id: number, stateData: Partial<InsertState>): Promise<State> {
+    const [updated] = await db
+      .update(states)
+      .set(stateData)
+      .where(eq(states.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteState(id: number): Promise<boolean> {
+    const result = await db.delete(states).where(eq(states.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Districts management
+  async getAllDistricts(stateId?: number): Promise<District[]> {
+    if (stateId) {
+      return await db.select().from(districts).where(eq(districts.stateId, stateId)).orderBy(districts.name);
+    }
+    return await db.select().from(districts).orderBy(districts.name);
+  }
+
+  async getDistrict(id: number): Promise<District | undefined> {
+    const [district] = await db.select().from(districts).where(eq(districts.id, id));
+    return district;
+  }
+
+  async createDistrict(districtData: InsertDistrict): Promise<District> {
+    const [created] = await db.insert(districts).values(districtData).returning();
+    return created;
+  }
+
+  async updateDistrict(id: number, districtData: Partial<InsertDistrict>): Promise<District> {
+    const [updated] = await db
+      .update(districts)
+      .set(districtData)
+      .where(eq(districts.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteDistrict(id: number): Promise<boolean> {
+    const result = await db.delete(districts).where(eq(districts.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Talukas management
+  async getAllTalukas(districtId?: number): Promise<Taluka[]> {
+    if (districtId) {
+      return await db.select().from(talukas).where(eq(talukas.districtId, districtId)).orderBy(talukas.name);
+    }
+    return await db.select().from(talukas).orderBy(talukas.name);
+  }
+
+  async getTaluka(id: number): Promise<Taluka | undefined> {
+    const [taluka] = await db.select().from(talukas).where(eq(talukas.id, id));
+    return taluka;
+  }
+
+  async createTaluka(talukaData: InsertTaluka): Promise<Taluka> {
+    const [created] = await db.insert(talukas).values(talukaData).returning();
+    return created;
+  }
+
+  async updateTaluka(id: number, talukaData: Partial<InsertTaluka>): Promise<Taluka> {
+    const [updated] = await db
+      .update(talukas)
+      .set(talukaData)
+      .where(eq(talukas.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteTaluka(id: number): Promise<boolean> {
+    const result = await db.delete(talukas).where(eq(talukas.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Tehsils management
+  async getAllTehsils(talukaId?: number): Promise<Tehsil[]> {
+    if (talukaId) {
+      return await db.select().from(tehsils).where(eq(tehsils.talukaId, talukaId)).orderBy(tehsils.name);
+    }
+    return await db.select().from(tehsils).orderBy(tehsils.name);
+  }
+
+  async getTehsil(id: number): Promise<Tehsil | undefined> {
+    const [tehsil] = await db.select().from(tehsils).where(eq(tehsils.id, id));
+    return tehsil;
+  }
+
+  async createTehsil(tehsilData: InsertTehsil): Promise<Tehsil> {
+    const [created] = await db.insert(tehsils).values(tehsilData).returning();
+    return created;
+  }
+
+  async updateTehsil(id: number, tehsilData: Partial<InsertTehsil>): Promise<Tehsil> {
+    const [updated] = await db
+      .update(tehsils)
+      .set(tehsilData)
+      .where(eq(tehsils.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteTehsil(id: number): Promise<boolean> {
+    const result = await db.delete(tehsils).where(eq(tehsils.id, id));
+    return result.rowCount > 0;
+  }
+
   // Stub implementations for other required methods
   async getFilteredProperties(): Promise<Property[]> { return []; }
   async getAllAgents(): Promise<Agent[]> { return []; }
@@ -229,26 +355,6 @@ export class DbStorage implements IStorage {
   async createAgent(): Promise<Agent> { throw new Error("Not implemented"); }
   async updateAgent(): Promise<Agent> { throw new Error("Not implemented"); }
   async deleteAgent(): Promise<boolean> { return false; }
-  async getAllStates(): Promise<State[]> { return []; }
-  async getState(): Promise<State | undefined> { return undefined; }
-  async createState(): Promise<State> { throw new Error("Not implemented"); }
-  async updateState(): Promise<State> { throw new Error("Not implemented"); }
-  async deleteState(): Promise<boolean> { return false; }
-  async getAllDistricts(): Promise<District[]> { return []; }
-  async getDistrict(): Promise<District | undefined> { return undefined; }
-  async createDistrict(): Promise<District> { throw new Error("Not implemented"); }
-  async updateDistrict(): Promise<District> { throw new Error("Not implemented"); }
-  async deleteDistrict(): Promise<boolean> { return false; }
-  async getAllTalukas(): Promise<Taluka[]> { return []; }
-  async getTaluka(): Promise<Taluka | undefined> { return undefined; }
-  async createTaluka(): Promise<Taluka> { throw new Error("Not implemented"); }
-  async updateTaluka(): Promise<Taluka> { throw new Error("Not implemented"); }
-  async deleteTaluka(): Promise<boolean> { return false; }
-  async getAllTehsils(): Promise<Tehsil[]> { return []; }
-  async getTehsil(): Promise<Tehsil | undefined> { return undefined; }
-  async createTehsil(): Promise<Tehsil> { throw new Error("Not implemented"); }
-  async updateTehsil(): Promise<Tehsil> { throw new Error("Not implemented"); }
-  async deleteTehsil(): Promise<boolean> { return false; }
   async getContactInfo(): Promise<ContactInfo | undefined> { return undefined; }
   async updateContactInfo(): Promise<ContactInfo> { throw new Error("Not implemented"); }
   async getAllPropertyTypes(): Promise<PropertyType[]> { return []; }
