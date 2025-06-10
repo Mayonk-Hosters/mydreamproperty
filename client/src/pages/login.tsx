@@ -54,24 +54,50 @@ export default function LoginPage() {
   const { toast } = useToast();
   
   async function onSubmit(data: LoginFormData) {
-    // Check for the specific admin credentials
-    if (data.username === "Smileplz004" && data.password === "9923000500@rahul") {
-      // Store the username in localStorage for direct admin access
-      localStorage.setItem("admin_username", "Smileplz004");
-      
-      // Skip the API call and redirect directly
-      toast({
-        title: "Login successful",
-        description: "Welcome to the admin dashboard",
+    try {
+      const response = await fetch('/api/traditional-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
       });
-      
-      // Redirect to admin dashboard
-      setLocation("/admin");
-    } else {
-      // Show an error toast for invalid credentials
+
+      if (response.ok) {
+        const userData = await response.json();
+        
+        if (userData.isAdmin) {
+          // Store admin credentials for compatibility
+          localStorage.setItem("admin_username", userData.username);
+          localStorage.setItem("isAdmin", "true");
+          
+          toast({
+            title: "Login successful",
+            description: "Welcome to the admin dashboard",
+          });
+          
+          // Redirect to admin dashboard
+          setLocation("/admin");
+        } else {
+          toast({
+            title: "Access denied",
+            description: "Admin privileges required",
+            variant: "destructive",
+          });
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        toast({
+          title: "Login failed",
+          description: errorData.message || "Invalid username or password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
-        title: "Login failed",
-        description: "Invalid username or password",
+        title: "Login error",
+        description: "Unable to connect to server",
         variant: "destructive",
       });
     }
