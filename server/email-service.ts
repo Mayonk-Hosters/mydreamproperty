@@ -14,19 +14,26 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER || 'business@constroindia.com',
     pass: process.env.EMAIL_PASSWORD || 'dummy' // Will be set via environment
   },
-  // Fallback configuration for basic SMTP
+  // Enhanced configuration for better compatibility
   tls: {
     rejectUnauthorized: false
-  }
+  },
+  // Add debugging for better error diagnostics
+  debug: process.env.NODE_ENV === 'development',
+  logger: process.env.NODE_ENV === 'development'
 });
 
 // Test transporter configuration
 transporter.verify((error, success) => {
   if (error) {
-    console.log('Email service not configured properly:', error.message);
+    console.log('Email service authentication failed:', error.message);
+    console.log('Possible solutions:');
+    console.log('1. Ensure 2-factor authentication is enabled for the Gmail account');
+    console.log('2. Use an App Password instead of the regular Gmail password');
+    console.log('3. Enable "Less secure app access" in Gmail settings (not recommended)');
     console.log('Email notifications will be logged to console instead');
   } else {
-    console.log('Email service ready for sending notifications');
+    console.log('✅ Email service successfully configured and ready to send notifications');
   }
 });
 
