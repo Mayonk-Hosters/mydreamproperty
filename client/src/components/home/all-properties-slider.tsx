@@ -20,11 +20,10 @@ export function AllPropertiesSlider() {
     },
   });
 
-  // Update items per view based on screen size
+  // Update items per view based on screen size - Always show 3 on desktop, responsive on mobile
   useEffect(() => {
     const updateItemsPerView = () => {
-      if (window.innerWidth >= 1200) setItemsPerView(4);
-      else if (window.innerWidth >= 768) setItemsPerView(3);
+      if (window.innerWidth >= 768) setItemsPerView(3);
       else if (window.innerWidth >= 640) setItemsPerView(2);
       else setItemsPerView(1);
     };
@@ -135,20 +134,15 @@ export function AllPropertiesSlider() {
             </>
           )}
 
-          {/* Properties Grid */}
+          {/* Properties Grid - Fixed 3-column layout */}
           <div className="overflow-hidden">
             <div 
-              className="flex transition-transform duration-300 ease-in-out gap-6"
-              style={{
-                transform: `translateX(-${(currentIndex * (100 / itemsPerView))}%)`,
-                width: `${(properties.length / itemsPerView) * 100}%`
-              }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-300"
             >
-              {properties.map((property) => (
+              {properties.slice(currentIndex, currentIndex + itemsPerView).map((property) => (
                 <div 
                   key={property.id} 
                   className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group"
-                  style={{ width: `${100 / properties.length}%`, minWidth: `${100 / itemsPerView}%` }}
                 >
                   {/* Property Image */}
                   <div className="relative h-48 overflow-hidden">
@@ -227,6 +221,23 @@ export function AllPropertiesSlider() {
             </div>
           </div>
         </div>
+
+        {/* Pagination Dots */}
+        {properties.length > itemsPerView && (
+          <div className="flex justify-center mt-8 space-x-2">
+            {Array.from({ length: Math.ceil(properties.length / itemsPerView) }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index * itemsPerView)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  Math.floor(currentIndex / itemsPerView) === index
+                    ? 'bg-blue-600 scale-125'
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Interested in Properties Call-to-Action */}
         <div className="mt-12 text-center">
