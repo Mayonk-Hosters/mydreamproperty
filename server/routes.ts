@@ -1391,6 +1391,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Tehsils with property counts for quick tags
+  app.get("/api/tehsils-with-properties", async (req, res) => {
+    try {
+      const result = await pool.query(`
+        SELECT DISTINCT t.id, t.name, COUNT(p.id) as property_count 
+        FROM tehsils t 
+        LEFT JOIN properties p ON p.tehsil_id = t.id 
+        GROUP BY t.id, t.name 
+        HAVING COUNT(p.id) > 0 
+        ORDER BY property_count DESC 
+        LIMIT 10
+      `);
+      
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching tehsils with properties:", error);
+      res.status(500).json({ message: "Failed to fetch tehsils with properties" });
+    }
+  });
+
   // Contact Information API routes
   app.get("/api/contact-info", async (_req, res) => {
     try {

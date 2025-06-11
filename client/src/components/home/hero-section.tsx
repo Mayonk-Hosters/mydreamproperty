@@ -37,6 +37,16 @@ export function HeroSection() {
     select: (data) => data?.filter(img => img.imageType === 'hero' && img.isActive) || [],
   });
 
+  // Fetch tahsils with properties for quick tags
+  const { data: tahsilsWithProperties } = useQuery({
+    queryKey: ['/api/tehsils-with-properties'],
+    queryFn: async () => {
+      const response = await fetch('/api/tehsils-with-properties');
+      if (!response.ok) throw new Error('Failed to fetch tahsils');
+      return response.json();
+    },
+  });
+
   const handleSearch = (e?: React.FormEvent) => {
     // Prevent form submission if called from form submit event
     if (e) e.preventDefault();
@@ -164,27 +174,30 @@ export function HeroSection() {
                 </div>
               </form>
               
-              {/* Quick Tags */}
+              {/* Quick Tags - Tahsils with Properties */}
               <div className="mt-4 pt-3 border-t border-gray-200">
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {['House Ahmednagar', 'Rent Apartment', 'Commercial', 'Agricultural'].map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => {
-                        const [propertyType, location] = tag.includes('Ahmednagar') ? tag.split(' ') : [tag, ''];
-                        setSearchParams({
-                          ...searchParams,
-                          propertyType: propertyType.includes('Rent') ? '' : propertyType,
-                          location: location || '',
-                          type: tag.includes('Rent') ? 'rent' : 'buy'
-                        });
-                        handleSearch();
-                      }}
-                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-700 rounded-full transition-colors"
-                    >
-                      {tag}
-                    </button>
-                  ))}
+                  {tahsilsWithProperties && tahsilsWithProperties.length > 0 ? (
+                    tahsilsWithProperties.slice(0, 6).map((tahsil: any) => (
+                      <button
+                        key={tahsil.id}
+                        onClick={() => {
+                          setSearchParams({
+                            ...searchParams,
+                            location: tahsil.name,
+                            propertyType: '',
+                            type: 'buy'
+                          });
+                          handleSearch();
+                        }}
+                        className="px-3 py-1 text-xs bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 hover:text-blue-800 rounded-full transition-all duration-200 border border-blue-200 hover:border-blue-300 shadow-sm"
+                      >
+                        {tahsil.name} ({tahsil.property_count})
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-xs text-gray-500">Loading locations...</div>
+                  )}
                 </div>
               </div>
             </div>
