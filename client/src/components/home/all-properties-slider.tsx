@@ -230,7 +230,7 @@ export function AllPropertiesSlider() {
 
         {/* Interested in Properties Call-to-Action */}
         <div className="mt-12 text-center">
-          <div className="relative bg-gradient-to-br from-purple-600 via-pink-600 to-red-500 rounded-3xl p-8 overflow-hidden shadow-2xl">
+          <div className="relative bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-3xl p-8 overflow-hidden shadow-2xl">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white to-transparent transform -skew-y-6"></div>
@@ -243,7 +243,7 @@ export function AllPropertiesSlider() {
               <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Interested in this property?
               </h3>
-              <p className="text-xl text-pink-100 mb-6 max-w-2xl mx-auto">
+              <p className="text-xl text-emerald-100 mb-6 max-w-2xl mx-auto">
                 Find your dream home from our extensive collection of premium properties
               </p>
               
@@ -252,7 +252,7 @@ export function AllPropertiesSlider() {
                 <Link href="/properties?type=buy">
                   <Button 
                     size="lg"
-                    className="bg-white text-purple-600 hover:bg-gray-100 hover:text-purple-700 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                    className="bg-white text-emerald-600 hover:bg-gray-100 hover:text-emerald-700 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                   >
                     Browse Buy Properties
                   </Button>
@@ -262,7 +262,7 @@ export function AllPropertiesSlider() {
                   <Button 
                     size="lg"
                     variant="outline"
-                    className="border-2 border-white text-white hover:bg-white hover:text-purple-600 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                    className="border-2 border-white text-white hover:bg-white hover:text-emerald-600 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                   >
                     Browse Rent Properties
                   </Button>
@@ -273,15 +273,15 @@ export function AllPropertiesSlider() {
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                 <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
                   <div className="text-2xl font-bold text-white">{properties.length}+</div>
-                  <div className="text-pink-100">Total Properties</div>
+                  <div className="text-emerald-100">Total Properties</div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
                   <div className="text-2xl font-bold text-white">{properties.filter(p => p.type === 'buy').length}+</div>
-                  <div className="text-pink-100">For Sale</div>
+                  <div className="text-emerald-100">For Buy</div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
                   <div className="text-2xl font-bold text-white">{properties.filter(p => p.type === 'rent').length}+</div>
-                  <div className="text-pink-100">For Rent</div>
+                  <div className="text-emerald-100">For Rent</div>
                 </div>
               </div>
             </div>
