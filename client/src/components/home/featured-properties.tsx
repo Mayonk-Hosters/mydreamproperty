@@ -142,22 +142,32 @@ export function FeaturedProperties() {
                   </span>
                 </div>
                 
-                {/* Horizontal Scrollable Container with 15% next card preview */}
-                <div className="overflow-x-auto overflow-y-hidden scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  <div className="flex space-x-4 pl-2 pr-16" style={{ width: 'max-content' }}>
-                    {typeProperties.map((property, index) => (
-                      <div 
-                        key={property.id} 
-                        className="flex-shrink-0 cursor-pointer transform transition-transform duration-200 hover:scale-105 scroll-snap-start"
-                        style={{ 
-                          width: index === typeProperties.length - 1 ? '288px' : 'calc(85vw - 32px)',
-                          maxWidth: '288px'
-                        }}
-                        onClick={() => window.location.href = `/property/${property.id}`}
-                      >
-                        <PropertyCard property={property} />
-                      </div>
-                    ))}
+                {/* Mobile Horizontal Slider */}
+                <div className="relative">
+                  <div 
+                    className="overflow-x-auto scrollbar-hide"
+                    style={{
+                      scrollSnapType: 'x mandatory',
+                      WebkitOverflowScrolling: 'touch',
+                      scrollBehavior: 'smooth'
+                    }}
+                  >
+                    <div className="flex gap-3" style={{ paddingLeft: '16px', paddingRight: '80px' }}>
+                      {typeProperties.map((property) => (
+                        <div
+                          key={property.id}
+                          className="flex-none"
+                          style={{
+                            width: 'calc(100vw - 120px)',
+                            maxWidth: '300px',
+                            scrollSnapAlign: 'start'
+                          }}
+                          onClick={() => window.location.href = `/property/${property.id}`}
+                        >
+                          <PropertyCard property={property} />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
