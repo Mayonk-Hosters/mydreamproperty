@@ -57,6 +57,7 @@ export function Navbar() {
   const toggleMobileMenu = () => {
     const newState = !mobileMenuOpen;
     setMobileMenuOpen(newState);
+    console.log('Mobile menu toggled:', newState);
     
     // Prevent body scroll when menu is open on mobile
     if (newState) {
@@ -162,19 +163,25 @@ export function Navbar() {
             )}
             <LoginButton />
             <div className="md:hidden">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <button 
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   toggleMobileMenu();
                 }}
-                aria-label="Toggle menu"
-                className="focus:outline-none p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                }}
+                aria-label="Toggle mobile menu"
+                className="mobile-menu-button flex items-center justify-center w-12 h-12 bg-white border-2 border-gray-300 rounded-lg shadow-lg hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
               >
-                {mobileMenuOpen ? <X className="h-6 w-6 text-gray-700" /> : <Menu className="h-6 w-6 text-gray-700" />}
-              </Button>
+                {mobileMenuOpen ? (
+                  <X className="h-7 w-7 text-gray-800" strokeWidth={2.5} />
+                ) : (
+                  <Menu className="h-7 w-7 text-gray-800" strokeWidth={2.5} />
+                )}
+              </button>
             </div>
           </div>
           </div>
@@ -207,95 +214,82 @@ export function Navbar() {
         
         <nav className="px-4 py-4 space-y-3 bg-white max-h-[70vh] overflow-y-auto">
           {/* BUY Properties */}
-          <a 
+          <Link 
             href="/properties?type=buy"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200"
-            onClick={(e) => {
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200 touch-manipulation"
+            onClick={() => {
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
           >
             <Home className="h-6 w-6 mr-4 text-blue-600" />
             <span className="text-blue-800">BUY Properties</span>
-          </a>
+          </Link>
 
           {/* RENT Properties */}
-          <a 
+          <Link 
             href="/properties?type=rent"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200"
-            onClick={(e) => {
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200 touch-manipulation"
+            onClick={() => {
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
           >
             <MapPin className="h-6 w-6 mr-4 text-green-600" />
             <span className="text-green-800">RENT Properties</span>
-          </a>
+          </Link>
 
           {/* HOME LOAN */}
-          <a 
+          <Link 
             href="/home-loan"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200"
-            onClick={(e) => {
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation"
+            onClick={() => {
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
           >
             <Calculator className="h-6 w-6 mr-4 text-purple-600" />
             <span className="text-purple-800">HOME LOAN</span>
-          </a>
+          </Link>
 
-          {/* PROPERTY SERVICES */}
-          <a 
-            href="/#services"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200"
-            onClick={(e) => {
+          {/* PROPERTY (All Properties) */}
+          <Link 
+            href="/properties"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation"
+            onClick={() => {
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
           >
             <BarChart className="h-6 w-6 mr-4 text-orange-600" />
-            <span className="text-orange-800">PROPERTY SERVICES</span>
-          </a>
+            <span className="text-orange-800">PROPERTY</span>
+          </Link>
 
-          {/* SERVICES Link */}
-          <a 
+          {/* SERVICES */}
+          <Link 
             href="/#services"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200"
-            onClick={(e) => {
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200 touch-manipulation"
+            onClick={() => {
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
           >
             <BarChart className="h-6 w-6 mr-4 text-cyan-600" />
             <span className="text-cyan-800">SERVICES</span>
-          </a>
-
-          {/* Property Calculator */}
-          <a 
-            href="/property-calculator"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl border-2 border-indigo-200 hover:from-indigo-100 hover:to-indigo-200 hover:border-indigo-300 active:scale-95 transition-all duration-200"
-            onClick={(e) => {
-              setMobileMenuOpen(false);
-              document.body.style.overflow = 'unset';
-            }}
-          >
-            <ArrowRightLeft className="h-6 w-6 mr-4 text-indigo-600" />
-            <span className="text-indigo-800">Property Calculator</span>
-          </a>
+          </Link>
 
           {/* CONTACT */}
-          <a 
+          <Link 
             href="/contact"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200"
-            onClick={(e) => {
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200 touch-manipulation"
+            onClick={() => {
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
           >
             <Phone className="h-6 w-6 mr-4 text-red-600" />
             <span className="text-red-800">CONTACT</span>
-          </a>
+          </Link>
 
           {/* Customer Care Number */}
           {contactInfo?.phone1 && (
