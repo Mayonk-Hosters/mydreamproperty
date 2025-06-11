@@ -26,6 +26,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+import { type CarouselApi } from "@/components/ui/carousel";
 import { Property } from "@shared/schema";
 import { formatCurrency } from "@/lib/utils";
 import { getInteriorImage } from "@/lib/utils";
@@ -44,6 +45,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const [selectedTab, setSelectedTab] = useState("details");
   const [isInquiryFormOpen, setIsInquiryFormOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [contactFormData, setContactFormData] = useState({
@@ -160,7 +162,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
       <div className="grid grid-cols-1 gap-6 lg:gap-8">
         <div>
           {/* Property Images Carousel */}
-          <Carousel className="mb-4 sm:mb-6">
+          <Carousel className="mb-4 sm:mb-6" setApi={setCarouselApi}>
             <CarouselContent>
               {propertyImages.map((image, index) => (
                 <CarouselItem key={index}>
@@ -185,6 +187,11 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               <div 
                 key={index} 
                 className="aspect-square overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
+                onClick={() => {
+                  if (carouselApi) {
+                    carouselApi.scrollTo(index);
+                  }
+                }}
               >
                 <img 
                   src={image} 
