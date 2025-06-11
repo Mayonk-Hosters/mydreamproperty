@@ -94,7 +94,7 @@ export function HeroSection() {
             
             {/* Subtitle */}
             <p className="text-white text-lg md:text-2xl lg:text-3xl xl:text-4xl mb-8 opacity-90 px-2 font-medium">
-              Find your perfect home today
+              Find your dream property today
             </p>
             
             {/* Compact Search Form */}

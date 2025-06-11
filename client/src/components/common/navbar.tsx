@@ -129,7 +129,7 @@ export function Navbar() {
                 <span className="font-bold text-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:via-purple-700 group-hover:to-pink-700 transition-all duration-300">
                   My Dream Property
                 </span>
-                <span className="text-xs text-gray-500 font-medium hidden sm:block">Find Your Perfect Home</span>
+                <span className="text-xs text-gray-500 font-medium hidden sm:block">Find Your Dream Property Today</span>
               </div>
             </Link>
           </div>
