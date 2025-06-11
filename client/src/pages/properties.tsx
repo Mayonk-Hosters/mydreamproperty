@@ -314,65 +314,30 @@ export default function PropertiesPage() {
                 </div>
               </div>
               
-              {/* Mobile View - Vertical Property Types with Horizontal Sliders */}
+              {/* Mobile View - Property Types with Horizontal Sliders */}
               <div className="block sm:hidden">
-                {Object.keys(propertiesByType).length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No property types found</p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {Object.entries(propertiesByType).map(([propertyType, typeProperties], index) => (
-                      <div key={propertyType} className="w-full">
-                        {/* Property Type Section Header */}
-                        <div className="mb-4">
-                          <h2 className="text-2xl font-bold text-gray-900 mb-2">{propertyType}</h2>
-                          <div className="flex items-center justify-between">
-                            <p className="text-gray-600">
-                              {typeProperties.length} {typeProperties.length === 1 ? 'property' : 'properties'} available
-                            </p>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                              onClick={() => {
-                                setFilters(prev => ({ ...prev, propertyType: propertyType }));
-                              }}
-                            >
-                              View All
-                            </Button>
+                {Object.entries(propertiesByType).map(([propertyType, typeProperties]) => (
+                  <div key={propertyType} className="mb-8">
+                    {/* Property Type Title */}
+                    <div className="flex items-center justify-between mb-4 px-2">
+                      <h3 className="text-lg font-bold text-gray-800">{propertyType}</h3>
+                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                        {typeProperties.length}
+                      </span>
+                    </div>
+                    
+                    {/* Horizontal Scrollable Container */}
+                    <div className="overflow-x-auto">
+                      <div className="flex space-x-4 px-2" style={{ width: 'max-content' }}>
+                        {typeProperties.map((property) => (
+                          <div key={property.id} className="w-72 flex-shrink-0">
+                            <PropertyCard property={property} />
                           </div>
-                        </div>
-                        
-                        {/* Horizontal Slider for this property type */}
-                        <div className="w-full">
-                          <div 
-                            className="flex gap-4 overflow-x-auto overflow-y-hidden pb-4 mobile-scroll-container"
-                            style={{
-                              scrollSnapType: 'x mandatory',
-                              scrollBehavior: 'smooth'
-                            }}
-                          >
-                            {typeProperties.map((property, propertyIndex) => (
-                              <div 
-                                key={`${propertyType}-${property.id}-${propertyIndex}`} 
-                                className="flex-shrink-0 w-80 min-w-80"
-                                style={{ scrollSnapAlign: 'start' }}
-                              >
-                                <PropertyCard property={property} />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        {/* Separator between property types */}
-                        {index < Object.keys(propertiesByType).length - 1 && (
-                          <div className="w-full h-px bg-gray-200 mt-6"></div>
-                        )}
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
               
               {/* Desktop View - Grid Layout */}
