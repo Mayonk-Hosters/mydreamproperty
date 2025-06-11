@@ -184,12 +184,6 @@ export function Navbar() {
                 Home Loan
               </Link>
               <Link 
-                href="/properties" 
-                className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location === '/properties' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
-              >
-                Properties
-              </Link>
-              <Link 
                 href="/contact" 
                 className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location === '/contact' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
               >
@@ -351,22 +345,6 @@ export function Navbar() {
             >
               <Calculator className="h-6 w-6 mr-4 text-violet-600 group-hover:text-violet-700 transition-colors" />
               <span className="text-violet-800 font-medium group-hover:text-violet-900 transition-colors">HOME LOAN</span>
-            </div>
-
-            {/* PROPERTIES */}
-            <div 
-              className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-semibold text-lg bg-gradient-to-r from-orange-50 to-amber-100 hover:from-orange-100 hover:to-amber-200 rounded-xl border border-orange-200 hover:border-orange-300 shadow-lg transition-all duration-300 touch-manipulation cursor-pointer group"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('PROPERTIES clicked');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.location.href = '/properties';
-              }}
-            >
-              <BarChart className="h-6 w-6 mr-4 text-orange-600 group-hover:text-orange-700 transition-colors" />
-              <span className="text-orange-800 font-medium group-hover:text-orange-900 transition-colors">PROPERTIES</span>
             </div>
 
             {/* CONTACT */}
