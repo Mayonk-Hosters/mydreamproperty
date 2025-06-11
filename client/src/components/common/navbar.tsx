@@ -234,88 +234,88 @@ export function Navbar() {
         
         <nav className="px-4 py-4 space-y-3 bg-white max-h-[70vh] overflow-y-auto">
           {/* BUY Properties */}
-          <button 
-            type="button"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
-            onClick={() => handleMobileNavigation('/properties?type=buy', 'BUY')}
-            onTouchStart={() => handleMobileNavigation('/properties?type=buy', 'BUY')}
+          <a 
+            href="/properties?type=buy"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            onClick={() => {
+              console.log('BUY clicked - direct link');
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
           >
             <Home className="h-6 w-6 mr-4 text-blue-600" />
             <span className="text-blue-800">BUY Properties</span>
-          </button>
+          </a>
 
           {/* RENT Properties */}
-          <button 
-            type="button"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
-            onClick={() => handleMobileNavigation('/properties?type=rent', 'RENT')}
-            onTouchStart={() => handleMobileNavigation('/properties?type=rent', 'RENT')}
+          <a 
+            href="/properties?type=rent"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            onClick={() => {
+              console.log('RENT clicked - direct link');
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
           >
             <MapPin className="h-6 w-6 mr-4 text-green-600" />
             <span className="text-green-800">RENT Properties</span>
-          </button>
+          </a>
 
           {/* HOME LOAN */}
-          <button 
-            type="button"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              console.log('HOME LOAN clicked - mobile navigation');
+          <a 
+            href="/home-loan"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            onClick={() => {
+              console.log('HOME LOAN clicked - direct link');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
-              window.location.href = '/home-loan';
-            }}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              console.log('HOME LOAN touched - mobile navigation');
-              setMobileMenuOpen(false);
-              document.body.style.overflow = 'unset';
-              setTimeout(() => {
-                window.location.href = '/home-loan';
-              }, 50);
-            }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              console.log('HOME LOAN touch end - mobile navigation');
             }}
           >
             <Calculator className="h-6 w-6 mr-4 text-purple-600" />
             <span className="text-purple-800">HOME LOAN</span>
-          </button>
+          </a>
 
           {/* PROPERTY (All Properties) */}
-          <button 
-            type="button"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
-            onClick={() => handleMobileNavigation('/properties', 'PROPERTY')}
-            onTouchStart={() => handleMobileNavigation('/properties', 'PROPERTY')}
+          <a 
+            href="/properties"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            onClick={() => {
+              console.log('PROPERTY clicked - direct link');
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
           >
             <BarChart className="h-6 w-6 mr-4 text-orange-600" />
             <span className="text-orange-800">PROPERTY</span>
-          </button>
+          </a>
 
           {/* SERVICES */}
-          <button 
-            type="button"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
-            onClick={() => handleMobileNavigation('/#services', 'SERVICES')}
-            onTouchStart={() => handleMobileNavigation('/#services', 'SERVICES')}
+          <a 
+            href="/#services"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            onClick={() => {
+              console.log('SERVICES clicked - direct link');
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
           >
             <BarChart className="h-6 w-6 mr-4 text-cyan-600" />
             <span className="text-cyan-800">SERVICES</span>
-          </button>
+          </a>
 
           {/* CONTACT */}
-          <button 
-            type="button"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
-            onClick={() => handleMobileNavigation('/contact', 'CONTACT')}
-            onTouchStart={() => handleMobileNavigation('/contact', 'CONTACT')}
+          <a 
+            href="/contact"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            onClick={() => {
+              console.log('CONTACT clicked - direct link');
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
           >
             <Phone className="h-6 w-6 mr-4 text-red-600" />
             <span className="text-red-800">CONTACT</span>
-          </button>
+          </a>
 
           {/* Customer Care Number */}
           {contactInfo?.phone1 && (
