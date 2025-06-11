@@ -108,7 +108,7 @@ export default function MDPPropertiesPage() {
                 <PropertyCard key={property.id} property={property} />
               ))
             ) : (
-              <div className="col-span-full text-center py-10">No properties for sale found.</div>
+              <div className="col-span-full text-center py-10">No properties to buy found.</div>
             )}
           </div>
         </TabsContent>

@@ -119,7 +119,7 @@ export function PropertyTabs() {
               <div className="mb-12 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
                 <h3 className="text-2xl font-bold mb-6 text-blue-800 flex items-center">
                   <span className="inline-block w-3 h-8 bg-gradient-to-b from-blue-600 to-blue-700 rounded-sm mr-3"></span> 
-                  ⭐ Featured Properties For Sale
+                  ⭐ Featured Properties to Buy
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {featuredBuyProperties.map((property) => (
@@ -134,7 +134,7 @@ export function PropertyTabs() {
               {featuredBuyProperties.length > 0 && (
                 <h3 className="text-2xl font-bold mb-6 text-slate-700 flex items-center">
                   <span className="inline-block w-3 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-sm mr-3"></span>
-                  🏠 More Properties For Sale
+                  🏠 More Properties to Buy
                 </h3>
               )}
               
@@ -150,7 +150,7 @@ export function PropertyTabs() {
                   ))
                 ) : (
                   <div className="col-span-full text-center py-8">
-                    <p className="text-gray-500">No properties found for sale.</p>
+                    <p className="text-gray-500">No properties found to buy.</p>
                   </div>
                 )}
               </div>
@@ -159,7 +159,7 @@ export function PropertyTabs() {
             <div className="mt-10 flex justify-center">
               <Link href="/properties?type=buy">
                 <Button className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-lg shadow-blue-300/30 hover:shadow-xl hover:shadow-blue-400/40 transform hover:scale-105 transition-all duration-300">
-                  View All Properties For Sale
+                  View All Properties to Buy
                   <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
