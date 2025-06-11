@@ -85,7 +85,7 @@ export function HeroSection() {
             {/* Hero Title - Large for Desktop, Optimized for Mobile */}
             <h1 className="text-white font-bold mb-8">
               <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-bold tracking-wide">
-                WELCOME TO
+                Welcome To
               </div>
               <div className="text-2xl md:text-6xl lg:text-7xl xl:text-8xl font-black block tracking-wider">
                 My Dream Property
