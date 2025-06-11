@@ -114,17 +114,17 @@ export function Navbar() {
           <div className="relative">
         <div className="flex items-center justify-between h-16">
           {/* Left Section - Logo */}
-          <div className="flex items-center flex-shrink-0">
+          <div className="flex items-center flex-shrink-0 min-w-0">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="p-2 bg-blue-600 rounded-lg shadow-sm group-hover:bg-blue-700 transition-colors duration-200">
                 <Home className="text-white h-6 w-6" />
               </div>
-              <span className="font-bold text-xl text-gray-800 group-hover:text-blue-600 transition-colors duration-200">{settings.siteName}</span>
+              <span className="font-bold text-xl text-gray-800 group-hover:text-blue-600 transition-colors duration-200 truncate">{settings.siteName}</span>
             </Link>
           </div>
 
           {/* Center Section - Navigation */}
-          <nav className="hidden md:flex items-center justify-center flex-1">
+          <nav className="hidden md:flex items-center justify-center flex-1 px-4">
             <div className="flex items-center space-x-1">
               <Link 
                 href="/properties?type=buy" 
@@ -163,12 +163,15 @@ export function Navbar() {
           <div className="flex items-center gap-3 flex-shrink-0">
             {/* Customer Care Number */}
             {contactInfo?.phone1 && (
-              <div className="hidden lg:flex items-center gap-2 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-sm min-w-0">
+              <a 
+                href={`tel:${contactInfo.phone1}`}
+                className="hidden lg:flex items-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-sm"
+              >
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <a href={`tel:${contactInfo.phone1}`} className="text-sm font-medium whitespace-nowrap leading-none">
+                <span className="text-sm font-medium whitespace-nowrap">
                   {contactInfo.phone1}
-                </a>
-              </div>
+                </span>
+              </a>
             )}
             <LoginButton />
             <div className="md:hidden">
