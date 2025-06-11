@@ -117,7 +117,8 @@ export function Navbar() {
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="relative">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2 sm:space-x-4 min-h-[64px]">
+          {/* Left Section - Logo */}
+          <div className="flex items-center flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative p-2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-purple-500/40 transition-all duration-300 group-hover:scale-110">
                 <Home className="text-white text-lg sm:text-xl drop-shadow-sm" />
@@ -125,27 +126,31 @@ export function Navbar() {
               </div>
               <span className="font-extrabold text-lg sm:text-xl bg-gradient-to-r from-blue-700 via-purple-600 to-indigo-700 bg-clip-text text-transparent truncate max-w-[150px] sm:max-w-none group-hover:from-purple-700 group-hover:via-blue-600 group-hover:to-indigo-800 transition-all duration-300">{settings.siteName}</span>
             </Link>
-            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 ml-6 lg:ml-8">
+          </div>
+
+          {/* Center Section - Navigation */}
+          <nav className="hidden md:flex items-center justify-center flex-1">
+            <div className="flex items-center space-x-8">
               <Link 
                 href="/properties?type=buy" 
-                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
+                className={`font-semibold text-base h-16 flex items-center px-3 transition-colors duration-200 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
               >
                 Buy
               </Link>
               <Link 
                 href="/properties?type=rent" 
-                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location.includes('type=rent') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
+                className={`font-semibold text-base h-16 flex items-center px-3 transition-colors duration-200 ${location.includes('type=rent') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
               >
                 Rent
               </Link>
               <Link 
                 href="/home-loan" 
-                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location === '/home-loan' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
+                className={`font-semibold text-base h-16 flex items-center px-3 transition-colors duration-200 ${location === '/home-loan' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
               >
                 Home Loan
               </Link>
               <DropdownMenu>
-                <DropdownMenuTrigger className={`font-semibold text-sm lg:text-base flex items-center py-2 px-1 transition-colors duration-200 ${location === '/#services' || location === '/property-calculator' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}>
+                <DropdownMenuTrigger className={`font-semibold text-base h-16 flex items-center px-3 transition-colors duration-200 ${location === '/#services' || location === '/property-calculator' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}>
                   Property Services <ChevronDown className="h-4 w-4 ml-1" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -164,13 +169,15 @@ export function Navbar() {
               </DropdownMenu>
               <Link 
                 href="/contact" 
-                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location === '/contact' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
+                className={`font-semibold text-base h-16 flex items-center px-3 transition-colors duration-200 ${location === '/contact' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
               >
                 Contact
               </Link>
-            </nav>
-          </div>
-          <div className="flex items-center space-x-2 sm:space-x-4 min-h-[64px]">
+            </div>
+          </nav>
+
+          {/* Right Section - Actions */}
+          <div className="flex items-center space-x-3 flex-shrink-0">
             {/* Customer Care Number */}
             {contactInfo?.phone1 && (
               <div className="hidden lg:flex items-center space-x-3 text-white bg-gradient-to-br from-rose-500 via-pink-600 to-purple-700 px-4 py-2 rounded-2xl shadow-lg shadow-pink-500/20 hover:shadow-xl hover:shadow-rose-500/30 transition-all duration-300 hover:from-rose-600 hover:via-pink-700 hover:to-purple-800 border border-pink-400/30 relative overflow-hidden group">
