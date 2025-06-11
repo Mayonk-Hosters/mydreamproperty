@@ -138,6 +138,22 @@ export default function PropertiesPage() {
     }
   }) || [];
 
+  // Group properties by type for mobile slider view
+  const propertiesByType = useMemo(() => {
+    if (!sortedProperties.length) return {};
+    
+    const grouped = sortedProperties.reduce((acc, property) => {
+      const type = property.propertyType;
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(property);
+      return acc;
+    }, {} as Record<string, Property[]>);
+    
+    return grouped;
+  }, [sortedProperties]);
+
   const handleSort = (type: "newest" | "price-low" | "price-high") => {
     setSortBy(type);
   };
@@ -261,7 +277,7 @@ export default function PropertiesPage() {
             <>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 sm:gap-0">
                 <p className="text-sm sm:text-base text-gray-600">{properties.length} properties found</p>
-                <div className="flex flex-wrap sm:flex-nowrap gap-2">
+                <div className="hidden sm:flex flex-wrap sm:flex-nowrap gap-2">
                   <Button 
                     variant={sortBy === "newest" ? "default" : "outline"} 
                     size="sm" 
@@ -289,7 +305,30 @@ export default function PropertiesPage() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              {/* Mobile View - Horizontal Sliders by Category */}
+              <div className="block sm:hidden">
+                {Object.entries(propertiesByType).map(([propertyType, typeProperties]) => (
+                  <div key={propertyType} className="mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-bold text-gray-800">{propertyType}s</h2>
+                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                        {typeProperties.length} {typeProperties.length === 1 ? 'property' : 'properties'}
+                      </span>
+                    </div>
+                    
+                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                      {typeProperties.map((property) => (
+                        <div key={property.id} className="flex-shrink-0 w-72">
+                          <PropertyCard property={property} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Desktop View - Grid Layout */}
+              <div className="hidden sm:grid sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 {sortedProperties.map((property) => (
                   <PropertyCard key={property.id} property={property} />
                 ))}
