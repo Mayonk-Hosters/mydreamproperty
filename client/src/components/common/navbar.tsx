@@ -214,82 +214,88 @@ export function Navbar() {
         
         <nav className="px-4 py-4 space-y-3 bg-white max-h-[70vh] overflow-y-auto">
           {/* BUY Properties */}
-          <Link 
-            href="/properties?type=buy"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200 touch-manipulation"
+          <div 
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
             onClick={() => {
+              console.log('BUY clicked');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              window.location.href = '/properties?type=buy';
             }}
           >
             <Home className="h-6 w-6 mr-4 text-blue-600" />
             <span className="text-blue-800">BUY Properties</span>
-          </Link>
+          </div>
 
           {/* RENT Properties */}
-          <Link 
-            href="/properties?type=rent"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200 touch-manipulation"
+          <div 
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
             onClick={() => {
+              console.log('RENT clicked');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              window.location.href = '/properties?type=rent';
             }}
           >
             <MapPin className="h-6 w-6 mr-4 text-green-600" />
             <span className="text-green-800">RENT Properties</span>
-          </Link>
+          </div>
 
           {/* HOME LOAN */}
-          <Link 
-            href="/home-loan"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation"
+          <div 
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
             onClick={() => {
+              console.log('HOME LOAN clicked');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              window.location.href = '/home-loan';
             }}
           >
             <Calculator className="h-6 w-6 mr-4 text-purple-600" />
             <span className="text-purple-800">HOME LOAN</span>
-          </Link>
+          </div>
 
           {/* PROPERTY (All Properties) */}
-          <Link 
-            href="/properties"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation"
+          <div 
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
             onClick={() => {
+              console.log('PROPERTY clicked');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              window.location.href = '/properties';
             }}
           >
             <BarChart className="h-6 w-6 mr-4 text-orange-600" />
             <span className="text-orange-800">PROPERTY</span>
-          </Link>
+          </div>
 
           {/* SERVICES */}
-          <Link 
-            href="/#services"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200 touch-manipulation"
+          <div 
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
             onClick={() => {
+              console.log('SERVICES clicked');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              window.location.href = '/#services';
             }}
           >
             <BarChart className="h-6 w-6 mr-4 text-cyan-600" />
             <span className="text-cyan-800">SERVICES</span>
-          </Link>
+          </div>
 
           {/* CONTACT */}
-          <Link 
-            href="/contact"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200 touch-manipulation"
+          <div 
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
             onClick={() => {
+              console.log('CONTACT clicked');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              window.location.href = '/contact';
             }}
           >
             <Phone className="h-6 w-6 mr-4 text-red-600" />
             <span className="text-red-800">CONTACT</span>
-          </Link>
+          </div>
 
           {/* Customer Care Number */}
           {contactInfo?.phone1 && (
