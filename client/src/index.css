@@ -57,11 +57,34 @@
     -webkit-overflow-scrolling: touch; /* Enables smoother scrolling on iOS */
     text-size-adjust: 100%; /* Prevents iOS from automatically adjusting text size */
     touch-action: manipulation; /* Prevents 300ms click delay on mobile browsers */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+    -webkit-touch-callout: none; /* Disable callout on long press */
   }
   
   /* Improve tap targets for mobile */
   button, a, input, select, textarea {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary;
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+    touch-action: manipulation;
+    min-height: 44px; /* Apple's recommended minimum touch target */
+  }
+  
+  /* Enhanced mobile navigation */
+  .mobile-menu-container a {
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  /* Prevent text selection on mobile menu */
+  .mobile-menu-container {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   
   /* Responsive text sizing */

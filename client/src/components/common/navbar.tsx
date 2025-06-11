@@ -53,7 +53,38 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+  // Enhanced mobile menu toggle with body scroll lock
+  const toggleMobileMenu = () => {
+    const newState = !mobileMenuOpen;
+    setMobileMenuOpen(newState);
+    
+    // Prevent body scroll when menu is open on mobile
+    if (newState) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  };
+
+  // Close menu on outside click
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (mobileMenuOpen && !target.closest('.mobile-menu-container')) {
+        setMobileMenuOpen(false);
+        document.body.style.overflow = 'unset';
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <header className={`sticky top-0 relative overflow-hidden z-50 transition-all duration-700 ${scrolled ? 'shadow-2xl shadow-purple-500/20' : 'shadow-xl shadow-indigo-500/10'}`}>
@@ -146,102 +177,179 @@ export function Navbar() {
         </div>
       </div>
       
-      {/* Mobile Menu - Slide down animation */}
-      <div 
-        className={`md:hidden bg-white border-t overflow-hidden transition-all duration-300 ease-in-out ${
-          mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}
-      >
-        <div className="container mx-auto px-4 py-2">
-          <nav className="flex flex-col space-y-3 py-2">
-            <Link 
-              href="/properties?type=buy" 
-              className={`py-2.5 px-2 font-medium text-base rounded-md ${
-                location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) 
-                  ? 'text-primary bg-blue-50' 
-                  : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-              }`}
-            >
-              Buy
-            </Link>
-            <Link 
-              href="/properties?type=rent" 
-              className={`py-2.5 px-2 font-medium text-base rounded-md ${
-                location.includes('type=rent') 
-                  ? 'text-primary bg-blue-50' 
-                  : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-              }`}
-            >
-              Rent
-            </Link>
-            <Link 
-              href="/home-loan" 
-              className={`py-2.5 px-2 font-medium text-base rounded-md ${
-                location === '/home-loan' 
-                  ? 'text-primary bg-blue-50' 
-                  : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-              }`}
-            >
-              Home Loan
-            </Link>
-            <div className="flex flex-col">
-              <Link 
-                href="/#services" 
-                className={`py-2.5 px-2 font-medium text-base rounded-md ${
-                  location === '/#services' 
-                    ? 'text-primary bg-blue-50' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
-              >
-                Property Services
-              </Link>
-
-              <Link 
-                href="/property-calculator" 
-                className={`py-2 px-8 font-medium text-sm rounded-md flex items-center ${
-                  location === '/property-calculator' 
-                    ? 'text-primary bg-blue-50' 
-                    : 'text-gray-700 hover:text-primary hover:bg-gray-50'
-                }`}
-              >
-                <ArrowRightLeft className="h-3.5 w-3.5 mr-2" />
-                Property Calculators
-              </Link>
+      {/* Enhanced Mobile Menu with Full Screen Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
+          />
+          
+          {/* Menu Content */}
+          <div className="mobile-menu-container absolute top-0 left-0 right-0 bg-white shadow-2xl">
+            <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+              <div className="flex items-center justify-between p-4">
+                <span className="text-lg font-bold text-gray-800">Menu</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
             </div>
-            <Link 
-              href="/contact" 
-              className={`py-2.5 px-2 font-medium text-base rounded-md ${
-                location === '/contact' 
-                  ? 'text-primary bg-blue-50' 
-                  : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-              }`}
-            >
-              Contact
-            </Link>
-            {/* Customer Care Number for Mobile */}
-            {contactInfo?.phone1 && (
-              <div className="py-2.5 px-2">
-                <div className="flex items-center space-x-3 text-white bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:from-green-600 hover:to-green-700 transform hover:scale-105">
-                  <div className="flex items-center justify-center w-8 h-8 bg-white bg-opacity-20 rounded-full">
-                    <Phone className="h-4 w-4 animate-pulse" />
+            
+            <div className="max-h-[80vh] overflow-y-auto bg-white">
+              <nav className="px-4 py-4 space-y-2">
+                {/* Buy Properties */}
+                <Link 
+                  href="/properties?type=buy" 
+                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
+                    location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) 
+                      ? 'text-white bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg' 
+                      : 'text-gray-800 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 border border-gray-200'
+                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}
+                >
+                  <Home className="h-5 w-5 mr-3" />
+                  BUY Properties
+                </Link>
+
+                {/* Rent Properties */}
+                <Link 
+                  href="/properties?type=rent" 
+                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
+                    location.includes('type=rent') 
+                      ? 'text-white bg-gradient-to-r from-green-600 to-green-700 shadow-lg' 
+                      : 'text-gray-800 bg-gray-50 hover:bg-green-50 hover:text-green-700 border border-gray-200'
+                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}
+                >
+                  <MapPin className="h-5 w-5 mr-3" />
+                  RENT Properties
+                </Link>
+
+                {/* Home Loan */}
+                <Link 
+                  href="/home-loan" 
+                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
+                    location === '/home-loan' 
+                      ? 'text-white bg-gradient-to-r from-purple-600 to-purple-700 shadow-lg' 
+                      : 'text-gray-800 bg-gray-50 hover:bg-purple-50 hover:text-purple-700 border border-gray-200'
+                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}
+                >
+                  <Calculator className="h-5 w-5 mr-3" />
+                  HOME LOAN
+                </Link>
+
+                {/* Property Services */}
+                <Link 
+                  href="/#services" 
+                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
+                    location === '/#services' 
+                      ? 'text-white bg-gradient-to-r from-orange-600 to-orange-700 shadow-lg' 
+                      : 'text-gray-800 bg-gray-50 hover:bg-orange-50 hover:text-orange-700 border border-gray-200'
+                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}
+                >
+                  <BarChart className="h-5 w-5 mr-3" />
+                  PROPERTY SERVICES
+                </Link>
+
+                {/* Property Calculator */}
+                <Link 
+                  href="/property-calculator" 
+                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
+                    location === '/property-calculator' 
+                      ? 'text-white bg-gradient-to-r from-indigo-600 to-indigo-700 shadow-lg' 
+                      : 'text-gray-800 bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 border border-gray-200'
+                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}
+                >
+                  <ArrowRightLeft className="h-5 w-5 mr-3" />
+                  Property Calculator
+                </Link>
+
+                {/* Contact */}
+                <Link 
+                  href="/contact" 
+                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
+                    location === '/contact' 
+                      ? 'text-white bg-gradient-to-r from-red-600 to-red-700 shadow-lg' 
+                      : 'text-gray-800 bg-gray-50 hover:bg-red-50 hover:text-red-700 border border-gray-200'
+                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}
+                >
+                  <Phone className="h-5 w-5 mr-3" />
+                  CONTACT
+                </Link>
+
+                {/* Customer Care Section */}
+                {contactInfo?.phone1 && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-white font-medium text-sm mb-1">Customer Care</p>
+                        <a 
+                          href={`tel:${contactInfo.phone1}`} 
+                          className="text-white font-bold text-xl tracking-wide hover:text-emerald-100 transition-colors active:scale-95"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            document.body.style.overflow = 'unset';
+                          }}
+                        >
+                          {contactInfo.phone1}
+                        </a>
+                      </div>
+                      <div className="bg-white bg-opacity-20 rounded-full p-3">
+                        <Phone className="h-6 w-6 text-white animate-pulse" />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-xs font-medium text-green-100 block">Customer Care</span>
-                    <span className="text-sm font-bold tracking-wide">
-                      <a href={`tel:${contactInfo.phone1}`} className="hover:text-green-100 transition-colors">
-                        {contactInfo.phone1}
-                      </a>
-                    </span>
+                )}
+
+                {/* Login Button */}
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <div onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = 'unset';
+                  }}>
+                    <LoginButton />
                   </div>
                 </div>
-              </div>
-            )}
-            <div className="py-2.5 px-2">
-              <LoginButton />
+              </nav>
             </div>
-          </nav>
+          </div>
         </div>
-      </div>
+      )}
       </div>
     </header>
   );
