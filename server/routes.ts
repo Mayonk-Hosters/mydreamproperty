@@ -221,11 +221,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Contact form schema
+  // Contact form schema with 10-digit phone validation
   const contactFormSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email address"),
-    phone: z.string().optional(),
+    phone: z.string()
+      .length(10, "Phone number must be exactly 10 digits")
+      .regex(/^\d+$/, "Phone number must contain only digits"),
     message: z.string().min(10, "Message must be at least 10 characters"),
     subject: z.string().min(3, "Subject must be at least 3 characters")
   });
@@ -236,7 +238,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Received contact form data:", req.body);
       
       // Make sure we match the contact form fields from the frontend
+      console.log("Validating phone number:", req.body.phone);
       const validatedData = contactFormSchema.parse(req.body);
+      console.log("Phone validation passed:", validatedData.phone);
       
       // Transform to match our database schema
       const contactData = {
