@@ -68,25 +68,33 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       <div 
-        className="h-[500px] sm:h-[600px] bg-cover bg-center transition-all duration-1000 ease-in-out transform"
+        className="min-h-[500px] sm:h-[600px] bg-cover bg-center bg-fixed"
         style={{
           backgroundImage: `url('${backgroundImage}')`
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/60 to-black/75"></div>
-        <div className="absolute inset-0 flex items-center justify-center hero-container">
-          <div className="text-center max-w-5xl w-full animate-fade-in">
-            <div className="mb-4 sm:mb-6">
-              <HomeIcon className="h-12 w-12 sm:h-16 sm:w-16 text-white mx-auto mb-3 sm:mb-4 animate-bounce drop-shadow-lg" />
+        <div className="absolute inset-0 bg-black opacity-60"></div>
+        <div className="relative z-10 h-full flex items-center justify-center px-4 py-8">
+          <div className="text-center w-full">
+            
+            {/* Simple Hero Icon */}
+            <div className="mb-8">
+              <HomeIcon className="h-16 w-16 text-white mx-auto" />
             </div>
-            <h1 className="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 animate-slide-up leading-tight">
-              <div className="text-white drop-shadow-2xl mb-1 sm:mb-2">Welcome to</div>
-              <div className="bg-gradient-to-r from-blue-300 via-white to-blue-200 bg-clip-text text-transparent drop-shadow-2xl font-extrabold">
-                {settings.siteName}
+            
+            {/* Hero Title - Simplified for Mobile */}
+            <h1 className="text-white font-bold mb-8">
+              <div className="text-3xl mb-4 block" style={{ fontSize: '24px', lineHeight: '1.3' }}>
+                WELCOME TO
+              </div>
+              <div className="text-3xl font-black block" style={{ fontSize: '26px', lineHeight: '1.3' }}>
+                MY DREAM PROPERTY
               </div>
             </h1>
-            <p className="hero-subtitle text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 mb-6 sm:mb-8 md:mb-10 font-medium animate-slide-up-delay leading-relaxed drop-shadow-lg px-2 sm:px-4">
-              Discover your dream property from our premium collection of homes and commercial spaces
+            
+            {/* Subtitle */}
+            <p className="text-white text-lg mb-8 opacity-90 px-2" style={{ fontSize: '18px', lineHeight: '1.5' }}>
+              Find your perfect home today
             </p>
             
             {/* Compact Search Form */}
