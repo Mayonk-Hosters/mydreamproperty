@@ -68,22 +68,24 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       <div 
-        className="h-[600px] bg-cover bg-center transition-all duration-1000 ease-in-out transform"
+        className="h-[500px] sm:h-[600px] bg-cover bg-center transition-all duration-1000 ease-in-out transform"
         style={{
           backgroundImage: `url('${backgroundImage}')`
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center max-w-4xl px-4 animate-fade-in">
-            <div className="mb-6">
-              <HomeIcon className="h-16 w-16 text-white mx-auto mb-4 animate-bounce" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/60 to-black/75"></div>
+        <div className="absolute inset-0 flex items-center justify-center hero-container">
+          <div className="text-center max-w-5xl w-full animate-fade-in">
+            <div className="mb-4 sm:mb-6">
+              <HomeIcon className="h-12 w-12 sm:h-16 sm:w-16 text-white mx-auto mb-3 sm:mb-4 animate-bounce drop-shadow-lg" />
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent animate-slide-up">
-              <div>Welcome to</div>
-              <div>{settings.siteName}</div>
+            <h1 className="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 animate-slide-up leading-tight">
+              <div className="text-white drop-shadow-2xl mb-1 sm:mb-2">Welcome to</div>
+              <div className="bg-gradient-to-r from-blue-300 via-white to-blue-200 bg-clip-text text-transparent drop-shadow-2xl font-extrabold">
+                {settings.siteName}
+              </div>
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 mb-10 font-light animate-slide-up-delay leading-relaxed">
+            <p className="hero-subtitle text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 mb-6 sm:mb-8 md:mb-10 font-medium animate-slide-up-delay leading-relaxed drop-shadow-lg px-2 sm:px-4">
               Discover your dream property from our premium collection of homes and commercial spaces
             </p>
             
