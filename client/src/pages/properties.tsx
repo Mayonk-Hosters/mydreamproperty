@@ -305,23 +305,48 @@ export default function PropertiesPage() {
                 </div>
               </div>
               
-              {/* Mobile View - Horizontal Sliders by Category */}
-              <div className="block sm:hidden">
+              {/* Mobile View - Vertical Property Types with Horizontal Sliders */}
+              <div className="block sm:hidden space-y-8">
                 {Object.entries(propertiesByType).map(([propertyType, typeProperties]) => (
-                  <div key={propertyType} className="mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-bold text-gray-800">{propertyType}s</h2>
-                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                        {typeProperties.length} {typeProperties.length === 1 ? 'property' : 'properties'}
-                      </span>
+                  <div key={propertyType} className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                    {/* Property Type Header */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-4 border-b border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h2 className="text-xl font-bold text-gray-800">{propertyType}s</h2>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Explore our {propertyType.toLowerCase()} properties
+                          </p>
+                        </div>
+                        <div className="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+                          {typeProperties.length}
+                        </div>
+                      </div>
                     </div>
                     
-                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                      {typeProperties.map((property) => (
-                        <div key={property.id} className="flex-shrink-0 w-72">
-                          <PropertyCard property={property} />
-                        </div>
-                      ))}
+                    {/* Horizontal Slider */}
+                    <div className="p-4">
+                      <div className="flex gap-4 overflow-x-auto pb-3" style={{ scrollbarWidth: 'thin' }}>
+                        {typeProperties.map((property) => (
+                          <div key={property.id} className="flex-shrink-0 w-80">
+                            <PropertyCard property={property} />
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* View All Button */}
+                      <div className="mt-4 pt-3 border-t border-gray-100">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
+                          onClick={() => {
+                            setFilters(prev => ({ ...prev, propertyType: propertyType }));
+                          }}
+                        >
+                          View All {propertyType}s ({typeProperties.length})
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
