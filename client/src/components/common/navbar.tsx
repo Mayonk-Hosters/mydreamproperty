@@ -286,17 +286,20 @@ export function Navbar() {
             {/* HOME LOAN */}
             <div 
               className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-violet-50/90 to-violet-100/90 rounded-2xl border border-violet-200/60 hover:from-violet-100 hover:to-violet-200 hover:border-violet-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-              onMouseDown={() => {
-                console.log('HOME LOAN mousedown');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/home-loan', '_self');
-              }}
-              onTouchStart={() => {
-                console.log('HOME LOAN touchstart');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/home-loan', '_self');
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('HOME LOAN clicked');
+                try {
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  setTimeout(() => {
+                    window.location.href = '/home-loan';
+                  }, 100);
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  window.location.href = '/home-loan';
+                }
               }}
             >
               <Calculator className="h-7 w-7 mr-4 text-violet-600" />
@@ -306,17 +309,20 @@ export function Navbar() {
             {/* PROPERTY SERVICES (Combined) */}
             <div 
               className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-orange-50/90 to-amber-100/90 rounded-2xl border border-orange-200/60 hover:from-orange-100 hover:to-amber-200 hover:border-orange-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-              onMouseDown={() => {
-                console.log('PROPERTY SERVICES mousedown');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/properties', '_self');
-              }}
-              onTouchStart={() => {
-                console.log('PROPERTY SERVICES touchstart');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/properties', '_self');
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('PROPERTY SERVICES clicked');
+                try {
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  setTimeout(() => {
+                    window.location.href = '/properties';
+                  }, 100);
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  window.location.href = '/properties';
+                }
               }}
             >
               <BarChart className="h-7 w-7 mr-4 text-orange-600" />
@@ -326,17 +332,20 @@ export function Navbar() {
             {/* CONTACT */}
             <div 
               className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-rose-50/90 to-rose-100/90 rounded-2xl border border-rose-200/60 hover:from-rose-100 hover:to-rose-200 hover:border-rose-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-              onMouseDown={() => {
-                console.log('CONTACT mousedown');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/contact', '_self');
-              }}
-              onTouchStart={() => {
-                console.log('CONTACT touchstart');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/contact', '_self');
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('CONTACT clicked');
+                try {
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  setTimeout(() => {
+                    window.location.href = '/contact';
+                  }, 100);
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  window.location.href = '/contact';
+                }
               }}
             >
               <Phone className="h-7 w-7 mr-4 text-rose-600" />
