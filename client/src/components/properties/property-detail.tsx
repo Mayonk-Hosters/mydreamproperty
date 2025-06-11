@@ -533,34 +533,74 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
           </div>
         </div>
         
-        {/* Contact Form and Agent Info */}
+        {/* Agent Contact Info - Simplified */}
         <div>
           <div className="bg-white shadow-sm sm:shadow-md rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-            <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4">Interested in this property?</h3>
-            <p className="text-gray-600 text-sm sm:text-base mb-3 sm:mb-4">
-              Send an inquiry to learn more about this property. Our agent will get back to you as soon as possible.
-            </p>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4">
-              <div>
-                <p className="font-medium text-sm sm:text-base">{property.title}</p>
-                <p className="text-primary font-semibold">
-                  {formatCurrency(property.price)}
-                  {property.type === "rent" && <span className="text-sm font-normal text-gray-500">/month</span>}
-                </p>
-              </div>
+            <div className="text-center">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2">Need More Information?</h3>
+              <p className="text-gray-600 text-sm mb-4">Contact our property expert</p>
               <Button 
                 onClick={() => setIsInquiryFormOpen(true)}
-                className="flex items-center mt-3 sm:mt-0 text-sm h-9 sm:h-10"
+                variant="outline"
+                className="w-full"
               >
-                <MessageSquare className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Send Inquiry
+                <MessageSquare className="mr-2 h-4 w-4" /> Contact Agent
               </Button>
             </div>
-            <div className="text-gray-500 text-xs sm:text-sm italic">
-              * By submitting an inquiry, you agree to our terms of service and privacy policy.
+          </div>
+        </div>
+      </div>
+
+      {/* Interested in Property Section - Moved Down with Attractive Design */}
+      <div className="mt-8 mb-6">
+        <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200/60 rounded-2xl p-6 sm:p-8 shadow-lg">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4 shadow-lg">
+              <MessageSquare className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+              💙 Interested in This Property?
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Get in touch with our friendly property experts! We're here to help you find your dream home.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50 shadow-sm">
+              <h3 className="font-semibold text-gray-800 mb-2">{property.title}</h3>
+              <p className="text-2xl font-bold text-blue-600">
+                {formatCurrency(property.price)}
+                {property.type === "rent" && <span className="text-lg font-normal text-gray-500">/month</span>}
+              </p>
+              <p className="text-gray-600 text-sm mt-1">
+                📍 {property.location}
+              </p>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/50 shadow-sm">
+              <h4 className="font-semibold text-gray-800 mb-2">✨ Why Choose Us?</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>🏠 Expert property guidance</li>
+                <li>⚡ Quick response time</li>
+                <li>🤝 Personalized service</li>
+                <li>📞 24/7 support available</li>
+              </ul>
             </div>
           </div>
           
-
+          <div className="text-center">
+            <Button 
+              onClick={() => setIsInquiryFormOpen(true)}
+              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-3 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <MessageSquare className="mr-3 h-5 w-5" /> 
+              Send Inquiry Now
+            </Button>
+            <p className="text-gray-500 text-xs mt-3 italic">
+              💝 Free consultation • No hidden fees • Trusted by thousands
+            </p>
+          </div>
         </div>
       </div>
 
