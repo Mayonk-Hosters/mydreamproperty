@@ -197,16 +197,16 @@ export function Navbar() {
         </div>
       </div>
       
-      {/* Simple Mobile Menu - Slide Down */}
+      {/* Modern Dark Mobile Menu - Slide Down */}
       <div 
-        className={`md:hidden bg-white border-t border-gray-200 shadow-xl transition-all duration-300 ease-in-out overflow-hidden pointer-events-auto ${
+        className={`md:hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700 shadow-2xl transition-all duration-300 ease-in-out overflow-hidden pointer-events-auto ${
           mobileMenuOpen ? 'max-h-[100vh] opacity-100' : 'max-h-0 opacity-0'
         }`}
         style={{ pointerEvents: mobileMenuOpen ? 'auto' : 'none' }}
       >
-        <div className="px-4 py-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm">
+        <div className="px-4 py-4 bg-gradient-to-r from-slate-800/90 to-slate-700/90 backdrop-blur-sm border-b border-slate-600/50">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold text-slate-800">Navigation Menu</span>
+            <span className="text-xl font-bold text-white tracking-wide">Navigation</span>
             <button 
               onClick={(e) => {
                 e.preventDefault();
@@ -214,21 +214,21 @@ export function Navbar() {
                 setMobileMenuOpen(false);
                 document.body.style.overflow = 'unset';
               }}
-              className="p-1 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors"
+              className="p-2 text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200"
               aria-label="Close menu"
             >
-              <X className="h-5 w-5" />
+              <X className="h-6 w-6" />
             </button>
           </div>
         </div>
         
-        <nav className="px-4 py-4 space-y-3 bg-white max-h-[70vh] overflow-y-auto" style={{ pointerEvents: 'auto', position: 'relative', zIndex: 1000 }}>
+        <nav className="px-4 py-6 space-y-4 bg-gradient-to-b from-slate-900 to-slate-800 max-h-[70vh] overflow-y-auto" style={{ pointerEvents: 'auto', position: 'relative', zIndex: 1000 }}>
           
-          {/* Simple button navigation with window.open fallback */}
+          {/* Modern Dark Navigation Items */}
           <div className="space-y-3">
             {/* BUY Properties */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-blue-50/90 to-blue-100/90 rounded-2xl border border-blue-200/60 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-semibold text-lg bg-gradient-to-r from-blue-600/20 to-blue-500/20 hover:from-blue-600/30 hover:to-blue-500/30 rounded-xl border border-blue-400/30 hover:border-blue-400/50 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer group"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -245,13 +245,13 @@ export function Navbar() {
                 }
               }}
             >
-              <Home className="h-7 w-7 mr-4 text-blue-600" />
-              <span className="text-blue-800 font-medium">BUY Properties</span>
+              <Home className="h-6 w-6 mr-4 text-blue-400 group-hover:text-blue-300 transition-colors" />
+              <span className="text-white font-medium group-hover:text-blue-100 transition-colors">BUY Properties</span>
             </div>
 
             {/* RENT Properties */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-emerald-50/90 to-emerald-100/90 rounded-2xl border border-emerald-200/60 hover:from-emerald-100 hover:to-emerald-200 hover:border-emerald-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-semibold text-lg bg-gradient-to-r from-emerald-600/20 to-emerald-500/20 hover:from-emerald-600/30 hover:to-emerald-500/30 rounded-xl border border-emerald-400/30 hover:border-emerald-400/50 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer group"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -268,13 +268,13 @@ export function Navbar() {
                 }
               }}
             >
-              <MapPin className="h-7 w-7 mr-4 text-emerald-600" />
-              <span className="text-emerald-800 font-medium">RENT Properties</span>
+              <MapPin className="h-6 w-6 mr-4 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+              <span className="text-white font-medium group-hover:text-emerald-100 transition-colors">RENT Properties</span>
             </div>
 
             {/* HOME LOAN */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-violet-50/90 to-violet-100/90 rounded-2xl border border-violet-200/60 hover:from-violet-100 hover:to-violet-200 hover:border-violet-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-semibold text-lg bg-gradient-to-r from-violet-600/20 to-violet-500/20 hover:from-violet-600/30 hover:to-violet-500/30 rounded-xl border border-violet-400/30 hover:border-violet-400/50 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer group"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -291,13 +291,13 @@ export function Navbar() {
                 }
               }}
             >
-              <Calculator className="h-7 w-7 mr-4 text-violet-600" />
-              <span className="text-violet-800 font-medium">HOME LOAN</span>
+              <Calculator className="h-6 w-6 mr-4 text-violet-400 group-hover:text-violet-300 transition-colors" />
+              <span className="text-white font-medium group-hover:text-violet-100 transition-colors">HOME LOAN</span>
             </div>
 
             {/* PROPERTIES */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-orange-50/90 to-amber-100/90 rounded-2xl border border-orange-200/60 hover:from-orange-100 hover:to-amber-200 hover:border-orange-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-semibold text-lg bg-gradient-to-r from-orange-600/20 to-amber-500/20 hover:from-orange-600/30 hover:to-amber-500/30 rounded-xl border border-orange-400/30 hover:border-orange-400/50 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer group"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -314,13 +314,13 @@ export function Navbar() {
                 }
               }}
             >
-              <BarChart className="h-7 w-7 mr-4 text-orange-600" />
-              <span className="text-orange-800 font-medium">PROPERTIES</span>
+              <BarChart className="h-6 w-6 mr-4 text-orange-400 group-hover:text-orange-300 transition-colors" />
+              <span className="text-white font-medium group-hover:text-orange-100 transition-colors">PROPERTIES</span>
             </div>
 
             {/* CONTACT */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-rose-50/90 to-rose-100/90 rounded-2xl border border-rose-200/60 hover:from-rose-100 hover:to-rose-200 hover:border-rose-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-semibold text-lg bg-gradient-to-r from-rose-600/20 to-rose-500/20 hover:from-rose-600/30 hover:to-rose-500/30 rounded-xl border border-rose-400/30 hover:border-rose-400/50 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer group"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -337,8 +337,8 @@ export function Navbar() {
                 }
               }}
             >
-              <Phone className="h-7 w-7 mr-4 text-rose-600" />
-              <span className="text-rose-800 font-medium">CONTACT</span>
+              <Phone className="h-6 w-6 mr-4 text-rose-400 group-hover:text-rose-300 transition-colors" />
+              <span className="text-white font-medium group-hover:text-rose-100 transition-colors">CONTACT</span>
             </div>
           </div>
 
