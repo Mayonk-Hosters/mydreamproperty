@@ -99,7 +99,11 @@ export default function PropertiesPage() {
         const matchesLocation = 
           property.location?.toLowerCase().includes(searchTerm) ||
           property.address?.toLowerCase().includes(searchTerm) ||
-          property.title?.toLowerCase().includes(searchTerm);
+          property.title?.toLowerCase().includes(searchTerm) ||
+          (property as any).tehsilName?.toLowerCase().includes(searchTerm) ||
+          (property as any).talukaName?.toLowerCase().includes(searchTerm) ||
+          (property as any).districtName?.toLowerCase().includes(searchTerm) ||
+          (property as any).stateName?.toLowerCase().includes(searchTerm);
         if (!matchesLocation) return false;
       }
       
