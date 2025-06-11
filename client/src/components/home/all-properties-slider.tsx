@@ -228,16 +228,64 @@ export function AllPropertiesSlider() {
           </div>
         </div>
 
-        {/* View All Properties Button */}
-        <div className="text-center mt-8">
-          <Link href="/properties?type=buy">
-            <Button 
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
-            >
-              View All Properties
-            </Button>
-          </Link>
+        {/* Interested in Properties Call-to-Action */}
+        <div className="mt-12 text-center">
+          <div className="relative bg-gradient-to-br from-purple-600 via-pink-600 to-red-500 rounded-3xl p-8 overflow-hidden shadow-2xl">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white to-transparent transform -skew-y-6"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full opacity-10 transform translate-x-16 -translate-y-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full opacity-10 transform -translate-x-12 translate-y-12"></div>
+            </div>
+            
+            {/* Content */}
+            <div className="relative z-10">
+              <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Interested in this property?
+              </h3>
+              <p className="text-xl text-pink-100 mb-6 max-w-2xl mx-auto">
+                Find your dream home from our extensive collection of premium properties
+              </p>
+              
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/properties?type=buy">
+                  <Button 
+                    size="lg"
+                    className="bg-white text-purple-600 hover:bg-gray-100 hover:text-purple-700 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    Browse Buy Properties
+                  </Button>
+                </Link>
+                
+                <Link href="/properties?type=rent">
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-white text-white hover:bg-white hover:text-purple-600 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    Browse Rent Properties
+                  </Button>
+                </Link>
+              </div>
+              
+              {/* Stats */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                  <div className="text-2xl font-bold text-white">{properties.length}+</div>
+                  <div className="text-pink-100">Total Properties</div>
+                </div>
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                  <div className="text-2xl font-bold text-white">{properties.filter(p => p.type === 'buy').length}+</div>
+                  <div className="text-pink-100">For Sale</div>
+                </div>
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                  <div className="text-2xl font-bold text-white">{properties.filter(p => p.type === 'rent').length}+</div>
+                  <div className="text-pink-100">For Rent</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Pagination Dots */}
