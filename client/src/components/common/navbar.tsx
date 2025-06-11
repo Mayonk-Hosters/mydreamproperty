@@ -144,61 +144,12 @@ export function Navbar() {
               >
                 Home Loan
               </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger className={`font-medium text-base px-4 py-2 rounded-md flex items-center transition-colors duration-200 ${location === '/#services' || location === '/property-calculator' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}>
-                  Property Types <ChevronDown className="h-4 w-4 ml-1" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=buy&propertyType=Apartment" className="flex items-center w-full cursor-pointer">
-                      <Home className="h-4 w-4 mr-2" />
-                      Apartments for Sale
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=rent&propertyType=Apartment" className="flex items-center w-full cursor-pointer">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Apartments for Rent
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=buy&propertyType=Villa" className="flex items-center w-full cursor-pointer">
-                      <Home className="h-4 w-4 mr-2" />
-                      Villas for Sale
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=buy&propertyType=Bunglow" className="flex items-center w-full cursor-pointer">
-                      <Home className="h-4 w-4 mr-2" />
-                      Bunglows for Sale
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=buy&propertyType=Row House" className="flex items-center w-full cursor-pointer">
-                      <Home className="h-4 w-4 mr-2" />
-                      Row Houses for Sale
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=buy&propertyType=Farm House" className="flex items-center w-full cursor-pointer">
-                      <Home className="h-4 w-4 mr-2" />
-                      Farm Houses for Sale
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=buy&propertyType=Agricultural Plot" className="flex items-center w-full cursor-pointer">
-                      <BarChart className="h-4 w-4 mr-2" />
-                      Agricultural Plots
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/properties?type=buy&propertyType=Industrial Plot" className="flex items-center w-full cursor-pointer">
-                      <BarChart className="h-4 w-4 mr-2" />
-                      Industrial Properties
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Link 
+                href="/properties" 
+                className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location === '/properties' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
+              >
+                Properties
+              </Link>
               <Link 
                 href="/contact" 
                 className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location === '/contact' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
@@ -344,121 +295,27 @@ export function Navbar() {
               <span className="text-violet-800 font-medium">HOME LOAN</span>
             </div>
 
-            {/* PROPERTY TYPES */}
-            <div className="space-y-2">
-              <div className="text-slate-600 font-medium text-sm px-5 py-2">
-                PROPERTY TYPES
-              </div>
-              
-              {/* Apartments for Sale */}
-              <div 
-                className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-medium text-base text-slate-700 bg-gradient-to-r from-blue-50/90 to-blue-100/90 rounded-xl border border-blue-200/60 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 shadow-md backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  try {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    setTimeout(() => {
-                      window.location.href = '/properties?type=buy&propertyType=Apartment';
-                    }, 100);
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                    window.location.href = '/properties?type=buy&propertyType=Apartment';
-                  }
-                }}
-              >
-                <Home className="h-6 w-6 mr-3 text-blue-600" />
-                <span className="text-blue-800">Apartments for Sale</span>
-              </div>
-
-              {/* Apartments for Rent */}
-              <div 
-                className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-medium text-base text-slate-700 bg-gradient-to-r from-emerald-50/90 to-emerald-100/90 rounded-xl border border-emerald-200/60 hover:from-emerald-100 hover:to-emerald-200 hover:border-emerald-300 shadow-md backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  try {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    setTimeout(() => {
-                      window.location.href = '/properties?type=rent&propertyType=Apartment';
-                    }, 100);
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                    window.location.href = '/properties?type=rent&propertyType=Apartment';
-                  }
-                }}
-              >
-                <MapPin className="h-6 w-6 mr-3 text-emerald-600" />
-                <span className="text-emerald-800">Apartments for Rent</span>
-              </div>
-
-              {/* Villas for Sale */}
-              <div 
-                className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-medium text-base text-slate-700 bg-gradient-to-r from-purple-50/90 to-purple-100/90 rounded-xl border border-purple-200/60 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 shadow-md backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  try {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    setTimeout(() => {
-                      window.location.href = '/properties?type=buy&propertyType=Villa';
-                    }, 100);
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                    window.location.href = '/properties?type=buy&propertyType=Villa';
-                  }
-                }}
-              >
-                <Home className="h-6 w-6 mr-3 text-purple-600" />
-                <span className="text-purple-800">Villas for Sale</span>
-              </div>
-
-              {/* Bunglows for Sale */}
-              <div 
-                className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-medium text-base text-slate-700 bg-gradient-to-r from-indigo-50/90 to-indigo-100/90 rounded-xl border border-indigo-200/60 hover:from-indigo-100 hover:to-indigo-200 hover:border-indigo-300 shadow-md backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  try {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    setTimeout(() => {
-                      window.location.href = '/properties?type=buy&propertyType=Bunglow';
-                    }, 100);
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                    window.location.href = '/properties?type=buy&propertyType=Bunglow';
-                  }
-                }}
-              >
-                <Home className="h-6 w-6 mr-3 text-indigo-600" />
-                <span className="text-indigo-800">Bunglows for Sale</span>
-              </div>
-
-              {/* Agricultural Plots */}
-              <div 
-                className="mobile-nav-item flex items-center w-full py-4 px-5 text-left font-medium text-base text-slate-700 bg-gradient-to-r from-green-50/90 to-green-100/90 rounded-xl border border-green-200/60 hover:from-green-100 hover:to-green-200 hover:border-green-300 shadow-md backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  try {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                    setTimeout(() => {
-                      window.location.href = '/properties?type=buy&propertyType=Agricultural Plot';
-                    }, 100);
-                  } catch (error) {
-                    console.error('Navigation error:', error);
-                    window.location.href = '/properties?type=buy&propertyType=Agricultural Plot';
-                  }
-                }}
-              >
-                <BarChart className="h-6 w-6 mr-3 text-green-600" />
-                <span className="text-green-800">Agricultural Plots</span>
-              </div>
+            {/* PROPERTIES */}
+            <div 
+              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-orange-50/90 to-amber-100/90 rounded-2xl border border-orange-200/60 hover:from-orange-100 hover:to-amber-200 hover:border-orange-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('PROPERTIES clicked');
+                try {
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  setTimeout(() => {
+                    window.location.href = '/properties';
+                  }, 100);
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  window.location.href = '/properties';
+                }
+              }}
+            >
+              <BarChart className="h-7 w-7 mr-4 text-orange-600" />
+              <span className="text-orange-800 font-medium">PROPERTIES</span>
             </div>
 
             {/* CONTACT */}
