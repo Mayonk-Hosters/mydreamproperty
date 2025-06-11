@@ -52,17 +52,25 @@ export default function PropertiesPage() {
   };
 
   // Fetch all properties once and filter client-side for superfast performance
-  const { data: allProperties, isLoading } = useQuery<Property[]>({
+  const { data: allProperties, isLoading, error } = useQuery<Property[]>({
     queryKey: ["/api/properties"],
     queryFn: async () => {
-      const response = await fetch('/api/properties');
-      if (!response.ok) {
-        throw new Error('Failed to fetch properties');
+      try {
+        const response = await fetch('/api/properties');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('Failed to fetch properties:', error);
+        throw error;
       }
-      return response.json();
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    retry: 3,
+    retryDelay: 1000,
   });
 
   // Client-side filtering for instant results
@@ -82,11 +90,7 @@ export default function PropertiesPage() {
         const matchesLocation = 
           property.location?.toLowerCase().includes(searchTerm) ||
           property.address?.toLowerCase().includes(searchTerm) ||
-          property.title?.toLowerCase().includes(searchTerm) ||
-          property.stateName?.toLowerCase().includes(searchTerm) ||
-          property.districtName?.toLowerCase().includes(searchTerm) ||
-          property.talukaName?.toLowerCase().includes(searchTerm) ||
-          property.tehsilName?.toLowerCase().includes(searchTerm);
+          property.title?.toLowerCase().includes(searchTerm);
         if (!matchesLocation) return false;
       }
       
@@ -106,13 +110,18 @@ export default function PropertiesPage() {
 
   // Update URL when filters change
   useEffect(() => {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value && value !== 0) {
-        params.set(key, value.toString());
-      }
-    });
-    setLocation(`/properties?${params.toString()}`, { replace: true });
+    try {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== 0) {
+          params.set(key, value.toString());
+        }
+      });
+      const newUrl = `/properties?${params.toString()}`;
+      setLocation(newUrl, { replace: true });
+    } catch (error) {
+      console.error('Error updating URL:', error);
+    }
   }, [filters, setLocation]);
 
   // Sort properties
@@ -206,7 +215,21 @@ export default function PropertiesPage() {
         
         {/* Property Listings */}
         <div id="properties-results" className="w-full">
-          {isLoading ? (
+          {error ? (
+            <div className="text-center py-12">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                <p className="text-red-600 font-medium mb-2">Error loading properties</p>
+                <p className="text-red-500 text-sm mb-4">Please try refreshing the page</p>
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  variant="outline"
+                  className="border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  Refresh Page
+                </Button>
+              </div>
+            </div>
+          ) : isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {Array(6).fill(0).map((_, i) => (
                 <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">

@@ -240,17 +240,20 @@ export function Navbar() {
             {/* BUY Properties */}
             <div 
               className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-blue-50/90 to-blue-100/90 rounded-2xl border border-blue-200/60 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-              onMouseDown={() => {
-                console.log('BUY mousedown');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/properties?type=buy', '_self');
-              }}
-              onTouchStart={() => {
-                console.log('BUY touchstart');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/properties?type=buy', '_self');
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('BUY clicked');
+                try {
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  setTimeout(() => {
+                    window.location.href = '/properties?type=buy';
+                  }, 100);
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  window.location.href = '/properties?type=buy';
+                }
               }}
             >
               <Home className="h-7 w-7 mr-4 text-blue-600" />
@@ -260,17 +263,20 @@ export function Navbar() {
             {/* RENT Properties */}
             <div 
               className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-emerald-50/90 to-emerald-100/90 rounded-2xl border border-emerald-200/60 hover:from-emerald-100 hover:to-emerald-200 hover:border-emerald-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
-              onMouseDown={() => {
-                console.log('RENT mousedown');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/properties?type=rent', '_self');
-              }}
-              onTouchStart={() => {
-                console.log('RENT touchstart');
-                setMobileMenuOpen(false);
-                document.body.style.overflow = 'unset';
-                window.open('/properties?type=rent', '_self');
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('RENT clicked');
+                try {
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  setTimeout(() => {
+                    window.location.href = '/properties?type=rent';
+                  }, 100);
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  window.location.href = '/properties?type=rent';
+                }
               }}
             >
               <MapPin className="h-7 w-7 mr-4 text-emerald-600" />
