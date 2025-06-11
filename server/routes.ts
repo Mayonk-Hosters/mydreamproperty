@@ -44,7 +44,7 @@ const isAuthenticated = isLocalDev ? isLocalAuthenticated : isReplitAuthenticate
 const isAdmin = isLocalDev ? isLocalAdmin : isReplitAdmin;
 import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
-import { sendPropertyInquiryNotification, sendHomeLoanInquiryNotification, sendContactMessageNotification } from "./email-service";
+
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
@@ -252,7 +252,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newMessage = await dbStorage.createContactMessage(contactData);
       console.log("Contact form submission saved:", newMessage);
       
-      // Here you would typically also send an email notification to admin
+      // Send email notification to admin
+      try {
+        await sendContactMessageNotification(newMessage);
+        console.log(`Email notification sent for contact message ID: ${newMessage.id}`);
+      } catch (emailError) {
+        // Log the error but don't fail the API response
+        console.error("Failed to send email notification:", emailError);
+      }
       
       res.status(201).json({ success: true, message: "Message received successfully", id: newMessage.id });
     } catch (error) {
