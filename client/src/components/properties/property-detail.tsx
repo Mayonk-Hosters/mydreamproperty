@@ -157,8 +157,8 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 lg:gap-8">
+        <div>
           {/* Property Images Carousel */}
           <Carousel className="mb-4 sm:mb-6">
             <CarouselContent>
@@ -532,23 +532,6 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             </Tabs>
           </div>
         </div>
-        
-        {/* Agent Contact Info - Simplified */}
-        <div>
-          <div className="bg-white shadow-sm sm:shadow-md rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-            <div className="text-center">
-              <h3 className="text-lg sm:text-xl font-semibold mb-2">Need More Information?</h3>
-              <p className="text-gray-600 text-sm mb-4">Contact our property expert</p>
-              <Button 
-                onClick={() => setIsInquiryFormOpen(true)}
-                variant="outline"
-                className="w-full"
-              >
-                <MessageSquare className="mr-2 h-4 w-4" /> Contact Agent
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Interested in Property Section - Moved Down with Attractive Design */}
@@ -600,6 +583,28 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             <p className="text-gray-500 text-xs mt-3 italic">
               💝 Free consultation • No hidden fees • Trusted by thousands
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Need More Information Section - Moved Down */}
+      <div className="mt-6 mb-6">
+        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200/60 rounded-2xl p-6 shadow-lg">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mb-4 shadow-lg">
+              <MessageSquare className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+              Need More Information?
+            </h3>
+            <p className="text-gray-600 mb-4">Contact our property expert for personalized assistance</p>
+            <Button 
+              onClick={() => setIsInquiryFormOpen(true)}
+              variant="outline"
+              className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 px-6 py-2 rounded-xl"
+            >
+              <MessageSquare className="mr-2 h-4 w-4" /> Contact Agent
+            </Button>
           </div>
         </div>
       </div>
