@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator, MapPin, BarChart, Phone } from "lucide-react";
+import { Home, Menu, X, LogIn, User, ChevronDown, ArrowRightLeft, Calculator, MapPin, BarChart, Phone, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useSiteSettings } from "@/hooks/use-site-settings";
@@ -149,6 +149,34 @@ export function Navbar() {
               >
                 Rent
               </Link>
+              
+              {/* Property Services Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location.includes('/calculator') || location.includes('/services') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
+                  >
+                    Property Services
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link href="/emi-calculator" className="flex items-center w-full">
+                      <Calculator className="mr-2 h-4 w-4" />
+                      <span>EMI Calculator</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/area-calculator" className="flex items-center w-full">
+                      <ArrowRightLeft className="mr-2 h-4 w-4" />
+                      <span>Area Calculator</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               <Link 
                 href="/home-loan" 
                 className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location === '/home-loan' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
@@ -270,6 +298,43 @@ export function Navbar() {
             >
               <MapPin className="h-6 w-6 mr-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
               <span className="text-emerald-800 font-medium group-hover:text-emerald-900 transition-colors">RENT Properties</span>
+            </div>
+
+            {/* PROPERTY SERVICES */}
+            <div className="space-y-2">
+              <div className="text-sm font-medium text-gray-700 px-2">Property Services</div>
+              
+              {/* EMI Calculator */}
+              <div 
+                className="mobile-nav-item flex items-center w-full py-3 px-5 text-left font-semibold text-base bg-gradient-to-r from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 rounded-xl border border-indigo-200 hover:border-indigo-300 shadow-lg transition-all duration-300 touch-manipulation cursor-pointer group"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('EMI Calculator clicked');
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  window.location.href = '/emi-calculator';
+                }}
+              >
+                <Calculator className="h-5 w-5 mr-3 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
+                <span className="text-indigo-800 font-medium group-hover:text-indigo-900 transition-colors">EMI Calculator</span>
+              </div>
+
+              {/* Area Calculator */}
+              <div 
+                className="mobile-nav-item flex items-center w-full py-3 px-5 text-left font-semibold text-base bg-gradient-to-r from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 rounded-xl border border-indigo-200 hover:border-indigo-300 shadow-lg transition-all duration-300 touch-manipulation cursor-pointer group"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Area Calculator clicked');
+                  setMobileMenuOpen(false);
+                  document.body.style.overflow = 'unset';
+                  window.location.href = '/area-calculator';
+                }}
+              >
+                <ArrowRightLeft className="h-5 w-5 mr-3 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
+                <span className="text-indigo-800 font-medium group-hover:text-indigo-900 transition-colors">Area Calculator</span>
+              </div>
             </div>
 
             {/* HOME LOAN */}
