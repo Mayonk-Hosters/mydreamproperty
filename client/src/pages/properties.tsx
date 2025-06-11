@@ -231,6 +231,97 @@ export default function PropertiesPage() {
           </Tabs>
         </div>
         
+        {/* Filters Section */}
+        <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <h3 className="text-lg font-semibold mb-4 text-gray-800">Filters</h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Property Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+              <select 
+                value={filters.propertyType}
+                onChange={(e) => setFilters(prev => ({ ...prev, propertyType: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Types</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Villa">Villa</option>
+                <option value="Row House">Row House</option>
+                <option value="Twin Bunglow">Twin Bungalow</option>
+                <option value="Industrial Plot">Industrial Plot</option>
+                <option value="Industrial Shed">Industrial Shed</option>
+                <option value="Open Plot">Open Plot</option>
+              </select>
+            </div>
+
+            {/* BHK Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Min BHK</label>
+              <select 
+                value={filters.minBeds}
+                onChange={(e) => setFilters(prev => ({ ...prev, minBeds: parseInt(e.target.value) || 0 }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="0">Any</option>
+                <option value="1">1+ BHK</option>
+                <option value="2">2+ BHK</option>
+                <option value="3">3+ BHK</option>
+                <option value="4">4+ BHK</option>
+                <option value="5">5+ BHK</option>
+              </select>
+            </div>
+
+            {/* Min Price Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Min Price</label>
+              <select 
+                value={filters.minPrice}
+                onChange={(e) => setFilters(prev => ({ ...prev, minPrice: parseInt(e.target.value) || 0 }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="0">Any</option>
+                <option value="500000">₹5 Lakh</option>
+                <option value="1000000">₹10 Lakh</option>
+                <option value="2500000">₹25 Lakh</option>
+                <option value="5000000">₹50 Lakh</option>
+                <option value="10000000">₹1 Crore</option>
+                <option value="20000000">₹2 Crore</option>
+              </select>
+            </div>
+
+            {/* Max Price Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Max Price</label>
+              <select 
+                value={filters.maxPrice}
+                onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: parseInt(e.target.value) || 0 }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="0">Any</option>
+                <option value="1000000">₹10 Lakh</option>
+                <option value="2500000">₹25 Lakh</option>
+                <option value="5000000">₹50 Lakh</option>
+                <option value="10000000">₹1 Crore</option>
+                <option value="20000000">₹2 Crore</option>
+                <option value="50000000">₹5 Crore</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Clear Filters Button */}
+          <div className="mt-4 flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setFilters({ type: activeTab, propertyType: "", location: "", minPrice: 0, maxPrice: 0, minBeds: 0, minBaths: 0 })}
+              className="text-sm"
+            >
+              Clear Filters
+            </Button>
+          </div>
+        </div>
+        
         {/* Property Listings */}
         <div id="properties-results" className="w-full">
           {error ? (
