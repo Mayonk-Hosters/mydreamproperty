@@ -94,7 +94,7 @@ export default function MDPPropertiesPage() {
                 <PropertyCard key={property.id} property={property} />
               ))
             ) : (
-              <div className="col-span-full text-center py-10">No rental properties found.</div>
+              <div className="col-span-full text-center py-10">No properties to rent found.</div>
             )}
           </div>
         </TabsContent>

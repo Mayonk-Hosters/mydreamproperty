@@ -105,7 +105,7 @@ export function PropertyTabs() {
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    For Rent
+                    Rent
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-400/30 to-emerald-400/0 transform translate-x-[-100%] data-[state=active]:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
                 </TabsTrigger>
@@ -172,7 +172,7 @@ export function PropertyTabs() {
               <div className="mb-12 p-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl border border-emerald-100">
                 <h3 className="text-2xl font-bold mb-6 text-emerald-800 flex items-center">
                   <span className="inline-block w-3 h-8 bg-gradient-to-b from-emerald-600 to-green-700 rounded-sm mr-3"></span>
-                  ⭐ Featured Properties For Rent
+                  ⭐ Featured Properties to Rent
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {featuredRentProperties.map((property) => (
@@ -187,7 +187,7 @@ export function PropertyTabs() {
               {featuredRentProperties.length > 0 && (
                 <h3 className="text-2xl font-bold mb-6 text-slate-700 flex items-center">
                   <span className="inline-block w-3 h-8 bg-gradient-to-b from-emerald-500 to-green-600 rounded-sm mr-3"></span>
-                  🏢 More Properties For Rent
+                  🏢 More Properties to Rent
                 </h3>
               )}
               
@@ -202,7 +202,7 @@ export function PropertyTabs() {
                   ))
                 ) : (
                   <div className="col-span-full text-center py-8">
-                    <p className="text-gray-500">No properties found for rent.</p>
+                    <p className="text-gray-500">No properties found to rent.</p>
                   </div>
                 )}
               </div>
