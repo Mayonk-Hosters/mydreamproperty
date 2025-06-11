@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { Helmet } from "react-helmet";
 import { Layout } from "@/components/common/layout";
 import { PageTitle } from "@/components/common/page-title";
-import { PropertyFilter } from "@/components/properties/property-filter";
+
 import { PropertyCard } from "@/components/properties/property-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -229,13 +229,6 @@ export default function PropertiesPage() {
               </TabsList>
             </div>
           </Tabs>
-        </div>
-        
-        {/* Horizontal Search Section */}
-        <div className="mb-6 sm:mb-8">
-          <PropertyFilter 
-            onFilterChange={(newFilters) => setFilters(prev => ({ ...prev, ...newFilters }))} 
-          />
         </div>
         
         {/* Property Listings */}
