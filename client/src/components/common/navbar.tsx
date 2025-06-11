@@ -117,7 +117,7 @@ export function Navbar() {
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="relative">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4 min-h-[64px]">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative p-2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-purple-500/40 transition-all duration-300 group-hover:scale-110">
                 <Home className="text-white text-lg sm:text-xl drop-shadow-sm" />
@@ -125,27 +125,27 @@ export function Navbar() {
               </div>
               <span className="font-extrabold text-lg sm:text-xl bg-gradient-to-r from-blue-700 via-purple-600 to-indigo-700 bg-clip-text text-transparent truncate max-w-[150px] sm:max-w-none group-hover:from-purple-700 group-hover:via-blue-600 group-hover:to-indigo-800 transition-all duration-300">{settings.siteName}</span>
             </Link>
-            <nav className="hidden md:flex space-x-4 lg:space-x-6 ml-4 lg:ml-6">
-              <Link href="/properties?type=buy" className={`font-medium text-sm lg:text-base ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 ml-6 lg:ml-8">
+              <Link 
+                href="/properties?type=buy" 
+                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
+              >
                 Buy
               </Link>
-              <Link href="/properties?type=rent" className={`font-medium text-sm lg:text-base ${location.includes('type=rent') ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+              <Link 
+                href="/properties?type=rent" 
+                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location.includes('type=rent') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
+              >
                 Rent
               </Link>
-              {/* Sell link removed */}
-              {/* Agents link removed and moved to footer */}
               <Link 
                 href="/home-loan" 
-                className={`font-medium text-sm lg:text-base ${
-                  location === '/home-loan' 
-                    ? 'text-primary' 
-                    : 'text-gray-800 hover:text-primary'
-                }`}
+                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location === '/home-loan' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
               >
                 Home Loan
               </Link>
               <DropdownMenu>
-                <DropdownMenuTrigger className={`font-medium text-sm lg:text-base flex items-center ${location === '/#services' || location === '/property-calculator' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+                <DropdownMenuTrigger className={`font-semibold text-sm lg:text-base flex items-center py-2 px-1 transition-colors duration-200 ${location === '/#services' || location === '/property-calculator' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}>
                   Property Services <ChevronDown className="h-4 w-4 ml-1" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -154,7 +154,6 @@ export function Navbar() {
                       All Services
                     </Link>
                   </DropdownMenuItem>
-
                   <DropdownMenuItem asChild>
                     <Link href="/property-calculator" className="flex items-center w-full cursor-pointer">
                       <ArrowRightLeft className="h-4 w-4 mr-2" />
@@ -163,18 +162,21 @@ export function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Link href="/contact" className={`font-medium text-sm lg:text-base ${location === '/contact' ? 'text-primary' : 'text-gray-800 hover:text-primary'}`}>
+              <Link 
+                href="/contact" 
+                className={`font-semibold text-sm lg:text-base py-2 px-1 transition-colors duration-200 ${location === '/contact' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'}`}
+              >
                 Contact
               </Link>
             </nav>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4 min-h-[64px]">
             {/* Customer Care Number */}
             {contactInfo?.phone1 && (
-              <div className="hidden lg:flex items-center space-x-3 text-white bg-gradient-to-br from-rose-500 via-pink-600 to-purple-700 px-6 py-3 rounded-3xl shadow-2xl shadow-pink-500/30 hover:shadow-2xl hover:shadow-rose-500/50 transition-all duration-500 hover:from-rose-600 hover:via-pink-700 hover:to-purple-800 transform hover:scale-110 hover:-translate-y-1 border border-pink-400/40 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[150%] transition-all duration-700"></div>
-                <Phone className="h-5 w-5 animate-pulse drop-shadow-lg relative z-10" />
-                <span className="text-sm font-extrabold tracking-wide drop-shadow-lg relative z-10">
+              <div className="hidden lg:flex items-center space-x-3 text-white bg-gradient-to-br from-rose-500 via-pink-600 to-purple-700 px-4 py-2 rounded-2xl shadow-lg shadow-pink-500/20 hover:shadow-xl hover:shadow-rose-500/30 transition-all duration-300 hover:from-rose-600 hover:via-pink-700 hover:to-purple-800 border border-pink-400/30 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[150%] transition-all duration-500"></div>
+                <Phone className="h-4 w-4 drop-shadow-sm relative z-10" />
+                <span className="text-sm font-semibold tracking-wide drop-shadow-sm relative z-10">
                   <a href={`tel:${contactInfo.phone1}`} className="hover:text-pink-100 transition-colors">
                     {contactInfo.phone1}
                   </a>
