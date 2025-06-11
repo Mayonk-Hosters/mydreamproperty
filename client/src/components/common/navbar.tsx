@@ -116,10 +116,21 @@ export function Navbar() {
           {/* Left Section - Logo */}
           <div className="flex items-center flex-shrink-0 min-w-0">
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="p-2 bg-blue-600 rounded-lg shadow-sm group-hover:bg-blue-700 transition-colors duration-200">
-                <Home className="text-white h-6 w-6" />
+              {/* Attractive Logo with Gradient */}
+              <div className="relative">
+                <div className="p-3 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                  <Home className="text-white h-7 w-7" />
+                </div>
+                {/* Decorative dot */}
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
               </div>
-              <span className="font-bold text-xl text-gray-800 group-hover:text-blue-600 transition-colors duration-200 truncate">{settings.siteName}</span>
+              {/* Brand Name */}
+              <div className="flex flex-col">
+                <span className="font-bold text-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:via-purple-700 group-hover:to-pink-700 transition-all duration-300">
+                  My Dream Property
+                </span>
+                <span className="text-xs text-gray-500 font-medium hidden sm:block">Find Your Perfect Home</span>
+              </div>
             </Link>
           </div>
 
