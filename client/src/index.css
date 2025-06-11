@@ -3,27 +3,41 @@
 @tailwind utilities;
 
 :root {
-      --background: 0 0% 100%;
---foreground: 20 14.3% 4.1%;
---muted: 60 4.8% 95.9%;
---muted-foreground: 25 5.3% 44.7%;
---popover: 0 0% 100%;
---popover-foreground: 20 14.3% 4.1%;
---card: 0 0% 100%;
---card-foreground: 20 14.3% 4.1%;
---border: 20 5.9% 90%;
---input: 20 5.9% 90%;
---primary: 207 90% 54%;
---primary-foreground: 211 100% 99%;
---secondary: 60 4.8% 95.9%;
---secondary-foreground: 24 9.8% 10%;
---accent: 60 4.8% 95.9%;
---accent-foreground: 24 9.8% 10%;
---destructive: 0 84.2% 60.2%;
---destructive-foreground: 60 9.1% 97.8%;
---ring: 20 14.3% 4.1%;
---radius: 0.5rem;
-  }
+  /* Professional Theme - Clean & Modern */
+  --background: 210 20% 98%;
+  --foreground: 220 13% 18%;
+  --muted: 210 14% 95%;
+  --muted-foreground: 215 8% 46%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 13% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 13% 18%;
+  --border: 214 20% 90%;
+  --input: 214 20% 90%;
+  --primary: 210 90% 48%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 14% 89%;
+  --secondary-foreground: 220 13% 18%;
+  --accent: 210 14% 89%;
+  --accent-foreground: 220 13% 18%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 210 90% 48%;
+  --radius: 0.75rem;
+  
+  /* Professional Color Palette */
+  --success: 142 76% 36%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 100%;
+  --info: 199 89% 48%;
+  --info-foreground: 0 0% 100%;
+  
+  /* Brand Colors */
+  --brand-primary: 210 90% 48%;
+  --brand-secondary: 199 89% 48%;
+  --brand-accent: 142 76% 36%;
+}
   .dark {
       --background: 240 10% 3.9%;
 --foreground: 0 0% 98%;
@@ -54,24 +68,87 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    -webkit-overflow-scrolling: touch; /* Enables smoother scrolling on iOS */
-    text-size-adjust: 100%; /* Prevents iOS from automatically adjusting text size */
-    touch-action: manipulation; /* Prevents 300ms click delay on mobile browsers */
-    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
-    -webkit-touch-callout: none; /* Disable callout on long press */
+    font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    -webkit-overflow-scrolling: touch;
+    text-size-adjust: 100%;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    background: linear-gradient(135deg, hsl(210, 20%, 98%) 0%, hsl(214, 32%, 96%) 100%);
+    min-height: 100vh;
+  }
+
+  /* Professional Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+    color: hsl(220, 13%, 18%);
+  }
+
+  h1 {
+    @apply text-4xl lg:text-5xl;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  h2 {
+    @apply text-3xl lg:text-4xl;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    @apply text-2xl lg:text-3xl;
+    font-weight: 600;
+  }
+
+  p {
+    @apply leading-relaxed;
+    color: hsl(215, 8%, 46%);
   }
   
-  /* Improve tap targets for mobile */
+  /* Professional Interactive Elements */
   button, a, input, select, textarea {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary;
-    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+    -webkit-tap-highlight-color: rgba(33, 102, 193, 0.15);
     touch-action: manipulation;
-    min-height: 44px; /* Apple's recommended minimum touch target */
+    min-height: 44px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Enhanced Button Styling */
+  button {
+    @apply font-medium;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  /* Professional Input Styling */
+  input, select, textarea {
+    @apply border border-input bg-background px-3 py-2 text-sm;
+    border-radius: 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: hsl(210, 90%, 48%);
+    box-shadow: 0 0 0 3px hsla(210, 90%, 48%, 0.1);
   }
   
-  /* Enhanced mobile navigation and theme */
+  /* Professional Mobile Navigation */
   .mobile-menu-container, .mobile-menu-container a, .mobile-nav-item {
-    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+    -webkit-tap-highlight-color: rgba(33, 102, 193, 0.15);
     touch-action: manipulation;
     user-select: none;
     -webkit-user-select: none;
@@ -79,24 +156,26 @@
     -ms-user-select: none;
   }
   
-  /* Mobile-specific button styling */
+  /* Professional Mobile Navigation Items */
   @media (max-width: 768px) {
     .mobile-nav-item {
-      min-height: 56px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease;
-      -webkit-tap-highlight-color: rgba(59, 130, 246, 0.3);
+      min-height: 60px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.12);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-tap-highlight-color: rgba(33, 102, 193, 0.2);
       cursor: pointer;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .mobile-nav-item:active {
-      transform: scale(0.98);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-      background: rgba(59, 130, 246, 0.1) !important;
+      transform: scale(0.96);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(135deg, rgba(33, 102, 193, 0.1), rgba(33, 102, 193, 0.05)) !important;
     }
     
-    /* Enhanced touch feedback */
+    /* Enhanced Professional Touch Feedback */
     button:active, a:active, .mobile-nav-item:active {
       transform: scale(0.98);
       transition: transform 0.1s ease;

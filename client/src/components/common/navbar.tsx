@@ -215,9 +215,9 @@ export function Navbar() {
         }`}
         style={{ pointerEvents: mobileMenuOpen ? 'auto' : 'none' }}
       >
-        <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50">
+        <div className="px-4 py-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-gray-800">Navigation Menu</span>
+            <span className="text-lg font-semibold text-slate-800">Navigation Menu</span>
             <button 
               onClick={(e) => {
                 e.preventDefault();
@@ -239,7 +239,7 @@ export function Navbar() {
           <div className="space-y-3">
             {/* BUY Properties */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-blue-50/90 to-blue-100/90 rounded-2xl border border-blue-200/60 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
               onMouseDown={() => {
                 console.log('BUY mousedown');
                 setMobileMenuOpen(false);
@@ -253,13 +253,13 @@ export function Navbar() {
                 window.open('/properties?type=buy', '_self');
               }}
             >
-              <Home className="h-6 w-6 mr-4 text-blue-600" />
-              <span className="text-blue-800">BUY Properties</span>
+              <Home className="h-7 w-7 mr-4 text-blue-600" />
+              <span className="text-blue-800 font-medium">BUY Properties</span>
             </div>
 
             {/* RENT Properties */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-emerald-50/90 to-emerald-100/90 rounded-2xl border border-emerald-200/60 hover:from-emerald-100 hover:to-emerald-200 hover:border-emerald-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
               onMouseDown={() => {
                 console.log('RENT mousedown');
                 setMobileMenuOpen(false);
@@ -273,13 +273,13 @@ export function Navbar() {
                 window.open('/properties?type=rent', '_self');
               }}
             >
-              <MapPin className="h-6 w-6 mr-4 text-green-600" />
-              <span className="text-green-800">RENT Properties</span>
+              <MapPin className="h-7 w-7 mr-4 text-emerald-600" />
+              <span className="text-emerald-800 font-medium">RENT Properties</span>
             </div>
 
             {/* HOME LOAN */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-violet-50/90 to-violet-100/90 rounded-2xl border border-violet-200/60 hover:from-violet-100 hover:to-violet-200 hover:border-violet-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
               onMouseDown={() => {
                 console.log('HOME LOAN mousedown');
                 setMobileMenuOpen(false);
@@ -293,13 +293,13 @@ export function Navbar() {
                 window.open('/home-loan', '_self');
               }}
             >
-              <Calculator className="h-6 w-6 mr-4 text-purple-600" />
-              <span className="text-purple-800">HOME LOAN</span>
+              <Calculator className="h-7 w-7 mr-4 text-violet-600" />
+              <span className="text-violet-800 font-medium">HOME LOAN</span>
             </div>
 
             {/* PROPERTY SERVICES (Combined) */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-cyan-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-cyan-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-orange-50/90 to-amber-100/90 rounded-2xl border border-orange-200/60 hover:from-orange-100 hover:to-amber-200 hover:border-orange-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
               onMouseDown={() => {
                 console.log('PROPERTY SERVICES mousedown');
                 setMobileMenuOpen(false);
@@ -313,13 +313,13 @@ export function Navbar() {
                 window.open('/properties', '_self');
               }}
             >
-              <BarChart className="h-6 w-6 mr-4 text-orange-600" />
-              <span className="text-orange-800">PROPERTY SERVICES</span>
+              <BarChart className="h-7 w-7 mr-4 text-orange-600" />
+              <span className="text-orange-800 font-medium">PROPERTY SERVICES</span>
             </div>
 
             {/* CONTACT */}
             <div 
-              className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
+              className="mobile-nav-item flex items-center w-full py-5 px-5 text-left font-semibold text-lg text-slate-800 bg-gradient-to-r from-rose-50/90 to-rose-100/90 rounded-2xl border border-rose-200/60 hover:from-rose-100 hover:to-rose-200 hover:border-rose-300 shadow-lg backdrop-blur-sm transition-all duration-300 touch-manipulation cursor-pointer"
               onMouseDown={() => {
                 console.log('CONTACT mousedown');
                 setMobileMenuOpen(false);
@@ -333,8 +333,8 @@ export function Navbar() {
                 window.open('/contact', '_self');
               }}
             >
-              <Phone className="h-6 w-6 mr-4 text-red-600" />
-              <span className="text-red-800">CONTACT</span>
+              <Phone className="h-7 w-7 mr-4 text-rose-600" />
+              <span className="text-rose-800 font-medium">CONTACT</span>
             </div>
           </div>
 
