@@ -236,16 +236,9 @@ export function Navbar() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('BUY clicked');
-                try {
-                  setMobileMenuOpen(false);
-                  document.body.style.overflow = 'unset';
-                  setTimeout(() => {
-                    window.location.href = '/properties?type=buy';
-                  }, 100);
-                } catch (error) {
-                  console.error('Navigation error:', error);
-                  window.location.href = '/properties?type=buy';
-                }
+                setMobileMenuOpen(false);
+                document.body.style.overflow = 'unset';
+                window.location.href = '/properties?type=buy';
               }}
             >
               <Home className="h-6 w-6 mr-4 text-blue-600 group-hover:text-blue-700 transition-colors" />
@@ -259,16 +252,9 @@ export function Navbar() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('RENT clicked');
-                try {
-                  setMobileMenuOpen(false);
-                  document.body.style.overflow = 'unset';
-                  setTimeout(() => {
-                    window.location.href = '/properties?type=rent';
-                  }, 100);
-                } catch (error) {
-                  console.error('Navigation error:', error);
-                  window.location.href = '/properties?type=rent';
-                }
+                setMobileMenuOpen(false);
+                document.body.style.overflow = 'unset';
+                window.location.href = '/properties?type=rent';
               }}
             >
               <MapPin className="h-6 w-6 mr-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
@@ -282,16 +268,9 @@ export function Navbar() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('HOME LOAN clicked');
-                try {
-                  setMobileMenuOpen(false);
-                  document.body.style.overflow = 'unset';
-                  setTimeout(() => {
-                    window.location.href = '/home-loan';
-                  }, 100);
-                } catch (error) {
-                  console.error('Navigation error:', error);
-                  window.location.href = '/home-loan';
-                }
+                setMobileMenuOpen(false);
+                document.body.style.overflow = 'unset';
+                window.location.href = '/home-loan';
               }}
             >
               <Calculator className="h-6 w-6 mr-4 text-violet-600 group-hover:text-violet-700 transition-colors" />
@@ -305,16 +284,9 @@ export function Navbar() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('PROPERTIES clicked');
-                try {
-                  setMobileMenuOpen(false);
-                  document.body.style.overflow = 'unset';
-                  setTimeout(() => {
-                    window.location.href = '/properties';
-                  }, 100);
-                } catch (error) {
-                  console.error('Navigation error:', error);
-                  window.location.href = '/properties';
-                }
+                setMobileMenuOpen(false);
+                document.body.style.overflow = 'unset';
+                window.location.href = '/properties';
               }}
             >
               <BarChart className="h-6 w-6 mr-4 text-orange-600 group-hover:text-orange-700 transition-colors" />
@@ -328,16 +300,9 @@ export function Navbar() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('CONTACT clicked');
-                try {
-                  setMobileMenuOpen(false);
-                  document.body.style.overflow = 'unset';
-                  setTimeout(() => {
-                    window.location.href = '/contact';
-                  }, 100);
-                } catch (error) {
-                  console.error('Navigation error:', error);
-                  window.location.href = '/contact';
-                }
+                setMobileMenuOpen(false);
+                document.body.style.overflow = 'unset';
+                window.location.href = '/contact';
               }}
             >
               <Phone className="h-6 w-6 mr-4 text-rose-600 group-hover:text-rose-700 transition-colors" />
