@@ -165,11 +165,15 @@ export function Navbar() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={toggleMobileMenu}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleMobileMenu();
+                }}
                 aria-label="Toggle menu"
-                className="focus:outline-none"
+                className="focus:outline-none p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors"
               >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {mobileMenuOpen ? <X className="h-6 w-6 text-gray-700" /> : <Menu className="h-6 w-6 text-gray-700" />}
               </Button>
             </div>
           </div>
@@ -177,179 +181,161 @@ export function Navbar() {
         </div>
       </div>
       
-      {/* Enhanced Mobile Menu with Full Screen Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => {
+      {/* Simple Mobile Menu - Slide Down */}
+      <div 
+        className={`md:hidden bg-white border-t border-gray-200 shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${
+          mobileMenuOpen ? 'max-h-[100vh] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50">
+          <div className="flex items-center justify-between">
+            <span className="text-lg font-bold text-gray-800">Navigation Menu</span>
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setMobileMenuOpen(false);
+                document.body.style.overflow = 'unset';
+              }}
+              className="p-1 text-gray-600 hover:text-gray-800 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+        
+        <nav className="px-4 py-4 space-y-3 bg-white max-h-[70vh] overflow-y-auto">
+          {/* BUY Properties */}
+          <a 
+            href="/properties?type=buy"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200"
+            onClick={(e) => {
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
-          />
-          
-          {/* Menu Content */}
-          <div className="mobile-menu-container absolute top-0 left-0 right-0 bg-white shadow-2xl">
-            <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
-              <div className="flex items-center justify-between p-4">
-                <span className="text-lg font-bold text-gray-800">Menu</span>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  <X className="h-6 w-6" />
-                </Button>
+          >
+            <Home className="h-6 w-6 mr-4 text-blue-600" />
+            <span className="text-blue-800">BUY Properties</span>
+          </a>
+
+          {/* RENT Properties */}
+          <a 
+            href="/properties?type=rent"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200"
+            onClick={(e) => {
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
+          >
+            <MapPin className="h-6 w-6 mr-4 text-green-600" />
+            <span className="text-green-800">RENT Properties</span>
+          </a>
+
+          {/* HOME LOAN */}
+          <a 
+            href="/home-loan"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200"
+            onClick={(e) => {
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
+          >
+            <Calculator className="h-6 w-6 mr-4 text-purple-600" />
+            <span className="text-purple-800">HOME LOAN</span>
+          </a>
+
+          {/* PROPERTY SERVICES */}
+          <a 
+            href="/#services"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200"
+            onClick={(e) => {
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
+          >
+            <BarChart className="h-6 w-6 mr-4 text-orange-600" />
+            <span className="text-orange-800">PROPERTY SERVICES</span>
+          </a>
+
+          {/* SERVICES Link */}
+          <a 
+            href="/#services"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200"
+            onClick={(e) => {
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
+          >
+            <BarChart className="h-6 w-6 mr-4 text-cyan-600" />
+            <span className="text-cyan-800">SERVICES</span>
+          </a>
+
+          {/* Property Calculator */}
+          <a 
+            href="/property-calculator"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl border-2 border-indigo-200 hover:from-indigo-100 hover:to-indigo-200 hover:border-indigo-300 active:scale-95 transition-all duration-200"
+            onClick={(e) => {
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
+          >
+            <ArrowRightLeft className="h-6 w-6 mr-4 text-indigo-600" />
+            <span className="text-indigo-800">Property Calculator</span>
+          </a>
+
+          {/* CONTACT */}
+          <a 
+            href="/contact"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200"
+            onClick={(e) => {
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+            }}
+          >
+            <Phone className="h-6 w-6 mr-4 text-red-600" />
+            <span className="text-red-800">CONTACT</span>
+          </a>
+
+          {/* Customer Care Number */}
+          {contactInfo?.phone1 && (
+            <div className="mt-6 p-5 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-xl shadow-lg border-2 border-emerald-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white font-semibold text-sm mb-2">Customer Care</p>
+                  <a 
+                    href={`tel:${contactInfo.phone1}`} 
+                    className="text-white font-black text-2xl tracking-wide hover:text-emerald-100 active:scale-95 transition-all duration-200 block"
+                    onClick={(e) => {
+                      setMobileMenuOpen(false);
+                      document.body.style.overflow = 'unset';
+                    }}
+                  >
+                    {contactInfo.phone1}
+                  </a>
+                  <p className="text-emerald-100 text-xs mt-1">Tap to call now</p>
+                </div>
+                <div className="bg-white bg-opacity-25 rounded-full p-4">
+                  <Phone className="h-7 w-7 text-white animate-pulse" />
+                </div>
               </div>
             </div>
-            
-            <div className="max-h-[80vh] overflow-y-auto bg-white">
-              <nav className="px-4 py-4 space-y-2">
-                {/* Buy Properties */}
-                <Link 
-                  href="/properties?type=buy" 
-                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
-                    location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) 
-                      ? 'text-white bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg' 
-                      : 'text-gray-800 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 border border-gray-200'
-                  }`}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}
-                >
-                  <Home className="h-5 w-5 mr-3" />
-                  BUY Properties
-                </Link>
+          )}
 
-                {/* Rent Properties */}
-                <Link 
-                  href="/properties?type=rent" 
-                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
-                    location.includes('type=rent') 
-                      ? 'text-white bg-gradient-to-r from-green-600 to-green-700 shadow-lg' 
-                      : 'text-gray-800 bg-gray-50 hover:bg-green-50 hover:text-green-700 border border-gray-200'
-                  }`}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}
-                >
-                  <MapPin className="h-5 w-5 mr-3" />
-                  RENT Properties
-                </Link>
-
-                {/* Home Loan */}
-                <Link 
-                  href="/home-loan" 
-                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
-                    location === '/home-loan' 
-                      ? 'text-white bg-gradient-to-r from-purple-600 to-purple-700 shadow-lg' 
-                      : 'text-gray-800 bg-gray-50 hover:bg-purple-50 hover:text-purple-700 border border-gray-200'
-                  }`}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}
-                >
-                  <Calculator className="h-5 w-5 mr-3" />
-                  HOME LOAN
-                </Link>
-
-                {/* Property Services */}
-                <Link 
-                  href="/#services" 
-                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
-                    location === '/#services' 
-                      ? 'text-white bg-gradient-to-r from-orange-600 to-orange-700 shadow-lg' 
-                      : 'text-gray-800 bg-gray-50 hover:bg-orange-50 hover:text-orange-700 border border-gray-200'
-                  }`}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}
-                >
-                  <BarChart className="h-5 w-5 mr-3" />
-                  PROPERTY SERVICES
-                </Link>
-
-                {/* Property Calculator */}
-                <Link 
-                  href="/property-calculator" 
-                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
-                    location === '/property-calculator' 
-                      ? 'text-white bg-gradient-to-r from-indigo-600 to-indigo-700 shadow-lg' 
-                      : 'text-gray-800 bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 border border-gray-200'
-                  }`}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}
-                >
-                  <ArrowRightLeft className="h-5 w-5 mr-3" />
-                  Property Calculator
-                </Link>
-
-                {/* Contact */}
-                <Link 
-                  href="/contact" 
-                  className={`flex items-center w-full py-4 px-4 text-left font-semibold text-lg rounded-xl transition-all duration-200 active:scale-95 ${
-                    location === '/contact' 
-                      ? 'text-white bg-gradient-to-r from-red-600 to-red-700 shadow-lg' 
-                      : 'text-gray-800 bg-gray-50 hover:bg-red-50 hover:text-red-700 border border-gray-200'
-                  }`}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}
-                >
-                  <Phone className="h-5 w-5 mr-3" />
-                  CONTACT
-                </Link>
-
-                {/* Customer Care Section */}
-                {contactInfo?.phone1 && (
-                  <div className="mt-6 p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white font-medium text-sm mb-1">Customer Care</p>
-                        <a 
-                          href={`tel:${contactInfo.phone1}`} 
-                          className="text-white font-bold text-xl tracking-wide hover:text-emerald-100 transition-colors active:scale-95"
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            document.body.style.overflow = 'unset';
-                          }}
-                        >
-                          {contactInfo.phone1}
-                        </a>
-                      </div>
-                      <div className="bg-white bg-opacity-20 rounded-full p-3">
-                        <Phone className="h-6 w-6 text-white animate-pulse" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Login Button */}
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <div onClick={() => {
-                    setMobileMenuOpen(false);
-                    document.body.style.overflow = 'unset';
-                  }}>
-                    <LoginButton />
-                  </div>
-                </div>
-              </nav>
+          {/* Login Section */}
+          <div className="mt-6 pt-4 border-t-2 border-gray-200">
+            <div 
+              onClick={(e) => {
+                setMobileMenuOpen(false);
+                document.body.style.overflow = 'unset';
+              }}
+              className="w-full"
+            >
+              <LoginButton />
             </div>
           </div>
-        </div>
-      )}
+        </nav>
+      </div>
       </div>
     </header>
   );
