@@ -324,9 +324,11 @@ export function PropertyCard({ property }: PropertyCardProps) {
               
               <Link href={`/property/${property.id}`}>
                 <Button 
-                  variant="link" 
-                  className="text-primary text-xs sm:text-sm font-medium hover:underline p-0 h-auto"
+                  variant="default" 
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs sm:text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                 >
+                  <Eye className="mr-1" size={14} />
                   View Details
                 </Button>
               </Link>
@@ -336,17 +338,17 @@ export function PropertyCard({ property }: PropertyCardProps) {
           {/* Mobile-Friendly Action Buttons */}
           <div className="flex gap-2">
             <Button 
-              variant="outline" 
-              className="flex-1 text-sm"
+              variant="default"
+              className="flex-1 text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
               onClick={handleInquiry}
             >
               <MessageSquare className="mr-2" size={16} /> 
               Interested in this property?
             </Button>
             <Button 
-              variant="outline" 
+              variant="default"
               size="sm"
-              className="hidden md:block"
+              className="hidden md:block bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
               onClick={handleQuickView}
             >
               <Eye className="mr-2" size={16} /> Quick View
