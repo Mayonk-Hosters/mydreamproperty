@@ -142,11 +142,19 @@ export function FeaturedProperties() {
                   </span>
                 </div>
                 
-                {/* Horizontal Scrollable Container */}
-                <div className="overflow-x-auto">
-                  <div className="flex space-x-4 px-2" style={{ width: 'max-content' }}>
-                    {typeProperties.map((property) => (
-                      <div key={property.id} className="w-72 flex-shrink-0">
+                {/* Horizontal Scrollable Container with 15% next card preview */}
+                <div className="overflow-x-auto overflow-y-hidden scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  <div className="flex space-x-4 pl-2 pr-16" style={{ width: 'max-content' }}>
+                    {typeProperties.map((property, index) => (
+                      <div 
+                        key={property.id} 
+                        className="flex-shrink-0 cursor-pointer transform transition-transform duration-200 hover:scale-105 scroll-snap-start"
+                        style={{ 
+                          width: index === typeProperties.length - 1 ? '288px' : 'calc(85vw - 32px)',
+                          maxWidth: '288px'
+                        }}
+                        onClick={() => window.location.href = `/property/${property.id}`}
+                      >
                         <PropertyCard property={property} />
                       </div>
                     ))}

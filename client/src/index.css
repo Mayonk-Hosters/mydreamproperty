@@ -105,6 +105,23 @@
     min-height: 100vh;
   }
 
+  /* Scrollbar hiding for mobile sliders */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Scroll snap for smooth sliding */
+  .scroll-snap-start {
+    scroll-snap-align: start;
+  }
+
   /* Professional Typography */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
