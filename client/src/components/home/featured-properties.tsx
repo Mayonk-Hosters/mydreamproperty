@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,30 @@ export function FeaturedProperties() {
     property.status === 'active' || property.status === undefined
   );
 
+  // Group properties by type for mobile slider view
+  const propertiesByType = useMemo(() => {
+    if (!activeProperties?.length) return {};
+    
+    const grouped = activeProperties.reduce((acc, property) => {
+      const type = property.propertyType || 'Other';
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(property);
+      return acc;
+    }, {} as Record<string, Property[]>);
+    
+    // Sort by property type name for consistent ordering
+    const sortedGrouped = Object.keys(grouped)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = grouped[key];
+        return acc;
+      }, {} as Record<string, Property[]>);
+    
+    return sortedGrouped;
+  }, [activeProperties]);
+
   return (
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
@@ -43,8 +67,8 @@ export function FeaturedProperties() {
           </div>
         </div>
         
-        {/* Property Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Desktop View - Grid Layout */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
             // Loading skeletons
             Array(4).fill(0).map((_, index) => (
@@ -72,13 +96,66 @@ export function FeaturedProperties() {
                 </div>
               </div>
             ))
-          ) : properties && properties.length > 0 ? (
-            // Show all properties for now to debug
-            properties.map((property) => (
+          ) : activeProperties && activeProperties.length > 0 ? (
+            // Show all properties for desktop
+            activeProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))
           ) : (
             <div className="col-span-full text-center py-8">
+              <p className="text-gray-500">No properties found.</p>
+              {error && <p className="text-red-500 mt-2">Error: {String(error)}</p>}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile View - Property Types with Horizontal Sliders */}
+        <div className="block sm:hidden">
+          {isLoading ? (
+            <div className="space-y-6">
+              {Array(2).fill(0).map((_, index) => (
+                <div key={index} className="mb-8">
+                  <div className="flex items-center justify-between mb-4 px-2">
+                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-6 w-8 rounded-full" />
+                  </div>
+                  <div className="overflow-x-auto">
+                    <div className="flex space-x-4 px-2">
+                      {Array(3).fill(0).map((_, cardIndex) => (
+                        <div key={cardIndex} className="w-72 flex-shrink-0">
+                          <Skeleton className="h-48 w-full rounded-lg" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : Object.keys(propertiesByType).length > 0 ? (
+            Object.entries(propertiesByType).map(([propertyType, typeProperties]) => (
+              <div key={propertyType} className="mb-8">
+                {/* Property Type Title */}
+                <div className="flex items-center justify-between mb-4 px-2">
+                  <h3 className="text-lg font-bold text-gray-800">{propertyType}</h3>
+                  <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    {typeProperties.length}
+                  </span>
+                </div>
+                
+                {/* Horizontal Scrollable Container */}
+                <div className="overflow-x-auto">
+                  <div className="flex space-x-4 px-2" style={{ width: 'max-content' }}>
+                    {typeProperties.map((property) => (
+                      <div key={property.id} className="w-72 flex-shrink-0">
+                        <PropertyCard property={property} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8">
               <p className="text-gray-500">No properties found.</p>
               {error && <p className="text-red-500 mt-2">Error: {String(error)}</p>}
             </div>
