@@ -326,9 +326,11 @@ export default function PropertiesPage() {
                     
                     {/* Horizontal Slider */}
                     <div className="p-4">
-                      <div className="flex gap-4 overflow-x-auto pb-3" style={{ scrollbarWidth: 'thin' }}>
+                      <div 
+                        className="flex gap-4 overflow-x-auto overflow-y-hidden pb-3 mobile-scroll-container"
+                      >
                         {typeProperties.map((property) => (
-                          <div key={property.id} className="flex-shrink-0 w-80">
+                          <div key={property.id} className="flex-shrink-0 w-72 min-w-72">
                             <PropertyCard property={property} />
                           </div>
                         ))}
