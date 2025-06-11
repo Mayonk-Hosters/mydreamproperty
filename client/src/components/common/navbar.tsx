@@ -67,23 +67,23 @@ export function Navbar() {
     }
   };
 
-  // Mobile navigation handler
+  // Mobile navigation handler with enhanced reliability for HOME LOAN
   const handleMobileNavigation = (url: string, label: string) => {
     console.log(`${label} navigation triggered`);
     setMobileMenuOpen(false);
     document.body.style.overflow = 'unset';
     
-    // Use multiple navigation methods for reliability
+    // Special handling for HOME LOAN on mobile
+    if (label === 'HOME LOAN') {
+      console.log('HOME LOAN mobile navigation - using direct location change');
+      // Force immediate navigation for HOME LOAN
+      window.location.href = '/home-loan';
+      return;
+    }
+    
+    // For other navigation items
     if (typeof window !== 'undefined') {
-      // Method 1: Direct location change
       window.location.href = url;
-      
-      // Method 2: Fallback with timeout
-      setTimeout(() => {
-        if (window.location.href !== url) {
-          window.location.replace(url);
-        }
-      }, 500);
     }
   };
 
@@ -259,8 +259,26 @@ export function Navbar() {
           <button 
             type="button"
             className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer"
-            onClick={() => handleMobileNavigation('/home-loan', 'HOME LOAN')}
-            onTouchStart={() => handleMobileNavigation('/home-loan', 'HOME LOAN')}
+            onClick={(e) => {
+              e.preventDefault();
+              console.log('HOME LOAN clicked - mobile navigation');
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+              window.location.href = '/home-loan';
+            }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              console.log('HOME LOAN touched - mobile navigation');
+              setMobileMenuOpen(false);
+              document.body.style.overflow = 'unset';
+              setTimeout(() => {
+                window.location.href = '/home-loan';
+              }, 50);
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              console.log('HOME LOAN touch end - mobile navigation');
+            }}
           >
             <Calculator className="h-6 w-6 mr-4 text-purple-600" />
             <span className="text-purple-800">HOME LOAN</span>
