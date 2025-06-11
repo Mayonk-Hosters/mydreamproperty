@@ -230,7 +230,7 @@ export function AllPropertiesSlider() {
 
         {/* View All Properties Button */}
         <div className="text-center mt-8">
-          <Link href="/properties">
+          <Link href="/properties?type=buy">
             <Button 
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
