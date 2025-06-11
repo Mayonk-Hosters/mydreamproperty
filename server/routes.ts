@@ -28,6 +28,11 @@ import {
 import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { 
+  sendPropertyInquiryNotification,
+  sendHomeLoanInquiryNotification,
+  sendContactMessageNotification
+} from "./email-service";
 // Use local authentication when running locally (set by the LOCAL_DEV environment variable)
 import { setupAuth as setupReplitAuth, isAuthenticated as isReplitAuthenticated, isAdmin as isReplitAdmin } from "./replitAuth";
 import { setupAuth as setupLocalAuth, isAuthenticated as isLocalAuthenticated, isAdmin as isLocalAdmin } from "./localAuth";
@@ -847,7 +852,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Send email notification to admin
       try {
-        await sendInquiryNotification(newInquiry, propertyTitle);
+        await sendPropertyInquiryNotification(newInquiry, propertyTitle);
         console.log(`Email notification sent for inquiry ID: ${newInquiry.id}`);
       } catch (emailError) {
         // Log the error but don't fail the API response
@@ -2111,6 +2116,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const inquiryData = insertHomeLoanInquirySchema.parse(req.body);
       const newInquiry = await dbStorage.createHomeLoanInquiry(inquiryData);
+      
+      // Send email notification to admin
+      try {
+        await sendHomeLoanInquiryNotification(newInquiry);
+        console.log(`Email notification sent for home loan inquiry ID: ${newInquiry.id}`);
+      } catch (emailError) {
+        // Log the error but don't fail the API response
+        console.error("Failed to send email notification:", emailError);
+      }
       
       res.status(201).json(newInquiry);
     } catch (error) {
