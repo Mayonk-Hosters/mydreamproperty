@@ -540,108 +540,159 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
           </div>
         </div>
         
-        {/* Right Sidebar - Property Information */}
+        {/* Right Sidebar - Property Summary */}
         <div className="lg:col-span-1">
-          {/* Price Display - Highlighted Section */}
-          <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Price</p>
-                <p className="text-2xl sm:text-3xl font-bold text-primary">{formatCurrency(property.price)}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Property Type</p>
-                <p className="text-lg font-semibold text-gray-800">{property.propertyType}</p>
-              </div>
-            </div>
-            {property.type && (
-              <div className="mt-2">
-                <span className="inline-block bg-primary text-white text-sm font-medium px-3 py-1 rounded-full">
-                  For {property.type.charAt(0).toUpperCase() + property.type.slice(1)}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Property Header - Desktop Sidebar */}
-          <div className="bg-white shadow-sm rounded-lg p-4 mb-4">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex-1">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">{property.title}</h1>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {property.propertyNumber && (
-                    <div className="inline-block bg-primary/10 text-primary text-xs sm:text-sm font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-md">
-                      Property ID: {property.propertyNumber}
-                    </div>
-                  )}
-                  {(property as any).maharera_registered && (
-                    <div className="inline-block bg-green-100 text-green-800 text-xs sm:text-sm font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-md">
-                      MahaRERA Registered
-                    </div>
-                  )}
+          {/* Property Overview Card */}
+          <div className="bg-white shadow-lg rounded-xl border border-gray-200 p-6 mb-4">
+            {/* Property Header */}
+            <div className="border-b border-gray-100 pb-4 mb-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h1 className="text-xl font-bold text-gray-900 mb-2">{property.title}</h1>
+                  <div className="flex items-center text-gray-600 mb-2">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span className="text-sm">{property.location}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {property.propertyNumber && (
+                      <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-md font-medium">
+                        ID: {property.propertyNumber}
+                      </span>
+                    )}
+                    {(property as any).maharera_registered && (
+                      <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-md font-medium">
+                        MahaRERA Verified
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex space-x-2 ml-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => setIsFavorite(!isFavorite)}
+                    className="h-8 w-8"
+                  >
+                    <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                  </Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="icon" className="h-8 w-8">
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                      <ShareButtons
+                        url={typeof window !== 'undefined' ? window.location.href : ''}
+                        title={property.title}
+                        description={`${property.beds} bed, ${property.baths} bath, ${property.area} sq ft ${property.propertyType.toLowerCase()} for ${property.type} at ${formatCurrency(property.price)} in ${property.location}`}
+                        iconSize={32}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
-              <div className="flex space-x-2 ml-4">
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => setIsFavorite(!isFavorite)}
-                  className="flex-shrink-0"
-                >
-                  <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-                </Button>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="icon" className="flex-shrink-0">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80">
-                    <ShareButtons
-                      url={typeof window !== 'undefined' ? window.location.href : ''}
-                      title={property.title}
-                      description={`${property.beds} bed, ${property.baths} bath, ${property.area} sq ft ${property.propertyType.toLowerCase()} for ${property.type} at ${formatCurrency(property.price)} in ${property.location}`}
-                      iconSize={32}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
             </div>
-            
-            <p className="text-gray-600 text-sm sm:text-base flex items-center mt-2 sm:mt-4 mb-3 sm:mb-4">
-              <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-1 flex-shrink-0" /> 
-              <span>
-                {property.address}
-                {property.location && `, ${property.location}`}
-                {(property as any).tehsilArea && `, ${(property as any).tehsilArea}`}
-                {(property as any).tehsilName && `, ${(property as any).tehsilName}`}
-                {(property as any).talukaName && `, ${(property as any).talukaName}`}
-                {(property as any).districtName && `, ${(property as any).districtName}`}
-                {(property as any).stateName && `, ${(property as any).stateName}`}
-              </span>
-            </p>
-            
-            <div className="flex flex-wrap gap-2 sm:gap-4 mb-4 sm:mb-6">
-              <div className="flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
-                <Home className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
-                <span>{property.beds} Beds</span>
-              </div>
-              <div className="flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
-                <Droplets className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
-                <span>{property.baths} Baths</span>
-              </div>
-              <div className="flex items-center bg-gray-100 px-2 sm:px-4 py-1 sm:py-2 rounded-md text-sm sm:text-base">
-                <Ruler className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2 text-primary flex-shrink-0" /> 
-                <span>{property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'sq ft'}</span>
+
+            {/* Price Section */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Price</p>
+                  <p className="text-2xl font-bold text-blue-600">{formatCurrency(property.price)}</p>
+                  {property.type === "rent" && <span className="text-sm text-gray-500">/month</span>}
+                </div>
+                <div className="text-right">
+                  <span className="bg-blue-600 text-white text-sm px-3 py-1 rounded-full font-medium">
+                    For {property.type?.charAt(0).toUpperCase() + property.type?.slice(1)}
+                  </span>
+                </div>
               </div>
             </div>
 
+            {/* Property Details Grid */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <Home className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+                <p className="text-xs text-gray-600">Bedrooms</p>
+                <p className="font-semibold text-gray-900">{property.beds}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <Droplets className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+                <p className="text-xs text-gray-600">Bathrooms</p>
+                <p className="font-semibold text-gray-900">{property.baths}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <Ruler className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+                <p className="text-xs text-gray-600">Area</p>
+                <p className="font-semibold text-gray-900">{property.area} {(property as any).areaUnit === 'acres' ? 'acres' : 'sq ft'}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <Tag className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+                <p className="text-xs text-gray-600">Type</p>
+                <p className="font-semibold text-gray-900 text-xs">{property.propertyType}</p>
+              </div>
+            </div>
+
+            {/* Property Description */}
+            <div className="border-t border-gray-100 pt-4 mb-4">
+              <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+              <p className="text-sm text-gray-600 line-clamp-3">{property.description}</p>
+            </div>
+
+            {/* Key Features */}
+            {property.features && (
+              <div className="border-t border-gray-100 pt-4 mb-4">
+                <h3 className="font-semibold text-gray-900 mb-2">Key Features</h3>
+                <div className="flex flex-wrap gap-1">
+                  {(Array.isArray(property.features) ? property.features : 
+                     (typeof property.features === 'string' ? 
+                       JSON.parse(property.features) : [])).slice(0, 4).map((feature: any, index: number) => (
+                    <span key={index} className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Contact Action */}
             <Button 
-              className="w-full text-sm h-9 mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => setIsInquiryFormOpen(true)}
             >
-              <MessageSquare className="mr-2 h-4 w-4" /> Contact Agent
+              <MessageSquare className="mr-2 h-4 w-4" /> 
+              Contact Agent
             </Button>
+          </div>
+
+          {/* Quick Stats Card */}
+          <div className="bg-white shadow-lg rounded-xl border border-gray-200 p-4">
+            <h3 className="font-semibold text-gray-900 mb-3">Property Details</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Status</span>
+                <span className="text-sm font-medium text-gray-900 capitalize">{property.status}</span>
+              </div>
+              {property.yearBuilt && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Year Built</span>
+                  <span className="text-sm font-medium text-gray-900">{property.yearBuilt}</span>
+                </div>
+              )}
+              {property.parking && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Parking</span>
+                  <span className="text-sm font-medium text-gray-900">{property.parking} spaces</span>
+                </div>
+              )}
+              {property.featured && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Featured</span>
+                  <span className="text-sm font-medium text-green-600">Yes</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
