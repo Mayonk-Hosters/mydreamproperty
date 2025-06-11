@@ -88,7 +88,7 @@ export function HeroSection() {
                 WELCOME TO
               </div>
               <div className="text-2xl md:text-6xl lg:text-7xl xl:text-8xl font-black block tracking-wider">
-                MY DREAM PROPERTY
+                My Dream Property
               </div>
             </h1>
             
