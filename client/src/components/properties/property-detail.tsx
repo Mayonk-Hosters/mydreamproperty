@@ -164,7 +164,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             <CarouselContent>
               {propertyImages.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden rounded-lg">
+                  <div className="h-[250px] sm:h-[300px] md:aspect-square md:h-auto overflow-hidden rounded-lg">
                     <img 
                       src={image} 
                       alt={`${property.title} - Image ${index + 1}`} 
@@ -184,7 +184,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             {propertyImages.slice(0, 4).map((image, index) => (
               <div 
                 key={index} 
-                className="h-16 sm:h-20 overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
+                className="aspect-square overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
               >
                 <img 
                   src={image} 

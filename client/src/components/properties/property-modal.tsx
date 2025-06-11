@@ -125,7 +125,7 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
                 <CarouselContent>
                   {propertyImages.map((image, index) => (
                     <CarouselItem key={index}>
-                      <div className="h-[300px] overflow-hidden rounded-lg">
+                      <div className="aspect-square overflow-hidden rounded-lg">
                         <img 
                           src={image} 
                           alt={`${property.title} - Image ${index + 1}`} 
@@ -144,7 +144,7 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
                 {propertyImages.slice(0, 4).map((image, index) => (
                   <div 
                     key={index} 
-                    className="h-16 overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
+                    className="aspect-square overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
                   >
                     <img 
                       src={image} 
