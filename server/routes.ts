@@ -44,7 +44,7 @@ const isAuthenticated = isLocalDev ? isLocalAuthenticated : isReplitAuthenticate
 const isAdmin = isLocalDev ? isLocalAdmin : isReplitAdmin;
 import { setupAdminLogin } from "./admin-login";
 import { authStorage } from "./auth-storage";
-import { sendInquiryNotification } from "./email-service";
+import { sendPropertyInquiryNotification, sendHomeLoanInquiryNotification, sendContactMessageNotification } from "./email-service";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
@@ -1809,6 +1809,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Contact Messages API Routes
+  
+  // Create contact message (public endpoint)
+  app.post("/api/contact-messages", async (req, res) => {
+    try {
+      const messageData = insertContactMessageSchema.parse(req.body);
+      const newMessage = await dbStorage.createContactMessage(messageData);
+      
+      // Send email notification to admin
+      try {
+        await sendContactMessageNotification(newMessage);
+        console.log(`Email notification sent for contact message ID: ${newMessage.id}`);
+      } catch (emailError) {
+        // Log the error but don't fail the API response
+        console.error("Failed to send email notification:", emailError);
+      }
+      
+      res.status(201).json(newMessage);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedError = fromZodError(error);
+        return res.status(400).json({ message: formattedError.message });
+      }
+      console.error("Error creating contact message:", error);
+      res.status(500).json({ message: "Failed to create contact message" });
+    }
+  });
+  
   app.get("/api/contact-messages", requireAdmin, async (req, res) => {
     try {
       const messages = await dbStorage.getAllContactMessages();
