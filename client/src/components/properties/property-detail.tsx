@@ -656,14 +656,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </div>
             )}
 
-            {/* Contact Action */}
-            <Button 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => setIsInquiryFormOpen(true)}
-            >
-              <MessageSquare className="mr-2 h-4 w-4" /> 
-              Contact Agent
-            </Button>
+
           </div>
 
           {/* Quick Stats Card */}
@@ -750,27 +743,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
         </div>
       </div>
 
-      {/* Need More Information Section - Desktop Only */}
-      <div className="mt-6 mb-6 hidden md:block">
-        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200/60 rounded-2xl p-6 shadow-lg">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mb-4 shadow-lg">
-              <MessageSquare className="h-6 w-6 text-white" />
-            </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-              Need More Information?
-            </h3>
-            <p className="text-gray-600 mb-4">Contact our property expert for personalized assistance</p>
-            <Button 
-              onClick={() => setIsInquiryFormOpen(true)}
-              variant="outline"
-              className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 px-6 py-2 rounded-xl"
-            >
-              <MessageSquare className="mr-2 h-4 w-4" /> Contact Agent
-            </Button>
-          </div>
-        </div>
-      </div>
+
 
       {/* Property Inquiry Form */}
       {property && (
