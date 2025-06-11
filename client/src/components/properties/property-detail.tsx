@@ -594,8 +594,8 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
         </div>
       </div>
 
-      {/* Need More Information Section - Hidden on Mobile */}
-      <div className="mt-6 mb-6 hidden md:block">
+      {/* Need More Information Section - Moved Down */}
+      <div className="mt-6 mb-6">
         <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200/60 rounded-2xl p-6 shadow-lg">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mb-4 shadow-lg">
