@@ -43,11 +43,20 @@ export default function PropertiesPage() {
   
   const handleTabChange = (value: string) => {
     setActiveTab(value as "buy" | "rent");
-    setFilters(prev => ({ ...prev, type: value }));
+    // Reset price filters when switching between buy/rent since they have different ranges
+    setFilters(prev => ({ 
+      ...prev, 
+      type: value,
+      minPrice: 0,
+      maxPrice: 0
+    }));
     
     // Update URL when changing tabs
     const params = new URLSearchParams(window.location.search);
     params.set("type", value);
+    // Remove price params when switching tabs
+    params.delete("minPrice");
+    params.delete("maxPrice");
     setLocation(`/properties?${params.toString()}`);
   };
 
@@ -281,12 +290,27 @@ export default function PropertiesPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="0">Any</option>
-                <option value="500000">₹5 Lakh</option>
-                <option value="1000000">₹10 Lakh</option>
-                <option value="2500000">₹25 Lakh</option>
-                <option value="5000000">₹50 Lakh</option>
-                <option value="10000000">₹1 Crore</option>
-                <option value="20000000">₹2 Crore</option>
+                {activeTab === "buy" ? (
+                  // Sale price ranges
+                  <>
+                    <option value="500000">₹5 Lakh</option>
+                    <option value="1000000">₹10 Lakh</option>
+                    <option value="2500000">₹25 Lakh</option>
+                    <option value="5000000">₹50 Lakh</option>
+                    <option value="10000000">₹1 Crore</option>
+                    <option value="20000000">₹2 Crore</option>
+                  </>
+                ) : (
+                  // Rent price ranges
+                  <>
+                    <option value="5000">₹5,000/month</option>
+                    <option value="10000">₹10,000/month</option>
+                    <option value="15000">₹15,000/month</option>
+                    <option value="25000">₹25,000/month</option>
+                    <option value="35000">₹35,000/month</option>
+                    <option value="50000">₹50,000/month</option>
+                  </>
+                )}
               </select>
             </div>
 
@@ -299,12 +323,27 @@ export default function PropertiesPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="0">Any</option>
-                <option value="1000000">₹10 Lakh</option>
-                <option value="2500000">₹25 Lakh</option>
-                <option value="5000000">₹50 Lakh</option>
-                <option value="10000000">₹1 Crore</option>
-                <option value="20000000">₹2 Crore</option>
-                <option value="50000000">₹5 Crore</option>
+                {activeTab === "buy" ? (
+                  // Sale price ranges
+                  <>
+                    <option value="1000000">₹10 Lakh</option>
+                    <option value="2500000">₹25 Lakh</option>
+                    <option value="5000000">₹50 Lakh</option>
+                    <option value="10000000">₹1 Crore</option>
+                    <option value="20000000">₹2 Crore</option>
+                    <option value="50000000">₹5 Crore</option>
+                  </>
+                ) : (
+                  // Rent price ranges
+                  <>
+                    <option value="10000">₹10,000/month</option>
+                    <option value="15000">₹15,000/month</option>
+                    <option value="25000">₹25,000/month</option>
+                    <option value="35000">₹35,000/month</option>
+                    <option value="50000">₹50,000/month</option>
+                    <option value="75000">₹75,000/month</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
