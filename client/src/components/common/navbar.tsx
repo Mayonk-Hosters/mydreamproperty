@@ -265,49 +265,29 @@ export function Navbar() {
           {/* HOME LOAN */}
           <a 
             href="/home-loan"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline z-50 relative"
-            onClick={(e) => {
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200 hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            onClick={() => {
               console.log('HOME LOAN clicked - direct link');
-              console.log('Event:', e);
-              alert('HOME LOAN clicked!'); // Visual confirmation
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
-            onTouchStart={(e) => {
-              console.log('HOME LOAN touched');
-              e.stopPropagation();
-            }}
           >
             <Calculator className="h-6 w-6 mr-4 text-purple-600" />
-            <span className="text-purple-800">HOME LOAN ⚡</span>
+            <span className="text-purple-800">HOME LOAN</span>
           </a>
 
-          {/* PROPERTY (All Properties) */}
+          {/* PROPERTY SERVICES (Combined) */}
           <a 
             href="/properties"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
+            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-cyan-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-cyan-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
             onClick={() => {
-              console.log('PROPERTY clicked - direct link');
+              console.log('PROPERTY SERVICES clicked - direct link');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
             }}
           >
             <BarChart className="h-6 w-6 mr-4 text-orange-600" />
-            <span className="text-orange-800">PROPERTY</span>
-          </a>
-
-          {/* SERVICES */}
-          <a 
-            href="/#services"
-            className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl border-2 border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 hover:border-cyan-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
-            onClick={() => {
-              console.log('SERVICES clicked - direct link');
-              setMobileMenuOpen(false);
-              document.body.style.overflow = 'unset';
-            }}
-          >
-            <BarChart className="h-6 w-6 mr-4 text-cyan-600" />
-            <span className="text-cyan-800">SERVICES</span>
+            <span className="text-orange-800">PROPERTY SERVICES</span>
           </a>
 
           {/* CONTACT */}
