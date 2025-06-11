@@ -163,13 +163,13 @@ export function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link href="/emi-calculator" className="flex items-center w-full">
+                    <Link href="/property-calculator?tab=emi" className="flex items-center w-full">
                       <Calculator className="mr-2 h-4 w-4" />
                       <span>EMI Calculator</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/area-calculator" className="flex items-center w-full">
+                    <Link href="/property-calculator?tab=area" className="flex items-center w-full">
                       <ArrowRightLeft className="mr-2 h-4 w-4" />
                       <span>Area Calculator</span>
                     </Link>
@@ -313,7 +313,7 @@ export function Navbar() {
                   console.log('EMI Calculator clicked');
                   setMobileMenuOpen(false);
                   document.body.style.overflow = 'unset';
-                  window.location.href = '/emi-calculator';
+                  window.location.href = '/property-calculator?tab=emi';
                 }}
               >
                 <Calculator className="h-5 w-5 mr-3 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
@@ -329,7 +329,7 @@ export function Navbar() {
                   console.log('Area Calculator clicked');
                   setMobileMenuOpen(false);
                   document.body.style.overflow = 'unset';
-                  window.location.href = '/area-calculator';
+                  window.location.href = '/property-calculator?tab=area';
                 }}
               >
                 <ArrowRightLeft className="h-5 w-5 mr-3 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
