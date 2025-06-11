@@ -238,10 +238,19 @@ export function Navbar() {
           <a 
             href="/properties?type=buy"
             className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
-            onClick={() => {
+            onClick={(e) => {
               console.log('BUY clicked - direct link');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              setTimeout(() => {
+                if (!window.location.href.includes('/properties?type=buy')) {
+                  window.location.href = '/properties?type=buy';
+                }
+              }, 100);
+            }}
+            onTouchStart={(e) => {
+              console.log('BUY touched');
+              e.stopPropagation();
             }}
           >
             <Home className="h-6 w-6 mr-4 text-blue-600" />
@@ -252,10 +261,19 @@ export function Navbar() {
           <a 
             href="/properties?type=rent"
             className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200 hover:from-green-100 hover:to-green-200 hover:border-green-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
-            onClick={() => {
+            onClick={(e) => {
               console.log('RENT clicked - direct link');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              setTimeout(() => {
+                if (!window.location.href.includes('/properties?type=rent')) {
+                  window.location.href = '/properties?type=rent';
+                }
+              }, 100);
+            }}
+            onTouchStart={(e) => {
+              console.log('RENT touched');
+              e.stopPropagation();
             }}
           >
             <MapPin className="h-6 w-6 mr-4 text-green-600" />
@@ -280,10 +298,19 @@ export function Navbar() {
           <a 
             href="/properties"
             className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-orange-50 to-cyan-100 rounded-xl border-2 border-orange-200 hover:from-orange-100 hover:to-cyan-200 hover:border-orange-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
-            onClick={() => {
+            onClick={(e) => {
               console.log('PROPERTY SERVICES clicked - direct link');
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              setTimeout(() => {
+                if (window.location.pathname !== '/properties') {
+                  window.location.href = '/properties';
+                }
+              }, 100);
+            }}
+            onTouchStart={(e) => {
+              console.log('PROPERTY SERVICES touched');
+              e.stopPropagation();
             }}
           >
             <BarChart className="h-6 w-6 mr-4 text-orange-600" />
@@ -294,10 +321,21 @@ export function Navbar() {
           <a 
             href="/contact"
             className="mobile-nav-item flex items-center w-full py-4 px-4 text-left font-bold text-lg text-gray-800 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200 hover:from-red-100 hover:to-red-200 hover:border-red-300 active:scale-95 transition-all duration-200 touch-manipulation cursor-pointer no-underline"
-            onClick={() => {
+            onClick={(e) => {
               console.log('CONTACT clicked - direct link');
+              console.log('Event:', e);
               setMobileMenuOpen(false);
               document.body.style.overflow = 'unset';
+              // Force navigation if needed
+              setTimeout(() => {
+                if (window.location.pathname !== '/contact') {
+                  window.location.href = '/contact';
+                }
+              }, 100);
+            }}
+            onTouchStart={(e) => {
+              console.log('CONTACT touched');
+              e.stopPropagation();
             }}
           >
             <Phone className="h-6 w-6 mr-4 text-red-600" />
