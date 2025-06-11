@@ -33,7 +33,9 @@ import {
 
 const homeLoanSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  phone: z.string()
+    .length(10, "Phone number must be exactly 10 digits")
+    .regex(/^\d+$/, "Phone number must contain only digits"),
   email: z.string().email("Please enter a valid email address"),
   loanType: z.string().min(1, "Please select loan type"),
   loanAmount: z.coerce.number().min(100000, "Minimum loan amount is ₹1,00,000"),

@@ -274,18 +274,31 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
   id: true,
   createdAt: true,
   isRead: true,
+}).extend({
+  phone: z.string()
+    .length(10, "Phone number must be exactly 10 digits")
+    .regex(/^\d+$/, "Phone number must contain only digits"),
 });
 
 export const insertPropertyInquirySchema = createInsertSchema(propertyInquiries).omit({
   id: true,
   createdAt: true,
   isRead: true,
+}).extend({
+  phone: z.string()
+    .length(10, "Phone number must be exactly 10 digits")
+    .regex(/^\d+$/, "Phone number must contain only digits")
+    .optional(),
 });
 
 export const insertHomeLoanInquirySchema = createInsertSchema(homeLoanInquiries).omit({
   id: true,
   createdAt: true,
   isRead: true,
+}).extend({
+  phone: z.string()
+    .length(10, "Phone number must be exactly 10 digits")
+    .regex(/^\d+$/, "Phone number must contain only digits"),
 });
 
 export const insertContactInfoSchema = createInsertSchema(contactInfo).omit({
