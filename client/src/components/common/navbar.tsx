@@ -163,9 +163,9 @@ export function Navbar() {
           <div className="flex items-center space-x-3 flex-shrink-0">
             {/* Customer Care Number */}
             {contactInfo?.phone1 && (
-              <div className="hidden lg:flex items-center space-x-2 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200">
-                <Phone className="h-4 w-4" />
-                <a href={`tel:${contactInfo.phone1}`} className="text-sm font-medium">
+              <div className="hidden lg:flex items-center space-x-2 bg-green-600 text-white px-4 py-2.5 rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-sm">
+                <Phone className="h-4 w-4 flex-shrink-0" />
+                <a href={`tel:${contactInfo.phone1}`} className="text-sm font-medium whitespace-nowrap">
                   {contactInfo.phone1}
                 </a>
               </div>
@@ -346,11 +346,11 @@ export function Navbar() {
           {contactInfo?.phone1 && (
             <div className="mt-6 p-6 bg-gradient-to-r from-green-50 to-emerald-100 rounded-2xl shadow-xl border border-green-200">
               <div className="flex items-center justify-between">
-                <div>
+                <div className="flex-1">
                   <p className="text-green-800 font-semibold text-sm mb-2">Customer Care</p>
                   <a 
                     href={`tel:${contactInfo.phone1}`} 
-                    className="text-green-900 font-bold text-2xl tracking-wide hover:text-green-700 active:scale-95 transition-all duration-300 block"
+                    className="text-green-900 font-bold text-xl sm:text-2xl tracking-wide hover:text-green-700 active:scale-95 transition-all duration-300 block break-all"
                     onClick={(e) => {
                       setMobileMenuOpen(false);
                       document.body.style.overflow = 'unset';
@@ -360,8 +360,8 @@ export function Navbar() {
                   </a>
                   <p className="text-green-700 text-xs mt-1 opacity-90">Tap to call now</p>
                 </div>
-                <div className="bg-green-200 rounded-full p-4">
-                  <Phone className="h-7 w-7 text-green-700 animate-pulse" />
+                <div className="bg-green-200 rounded-full p-3 ml-3 flex-shrink-0">
+                  <Phone className="h-6 w-6 text-green-700 animate-pulse" />
                 </div>
               </div>
             </div>
