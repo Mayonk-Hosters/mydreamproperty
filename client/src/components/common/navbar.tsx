@@ -340,13 +340,13 @@ export function Navbar() {
 
           {/* Customer Care Number */}
           {contactInfo?.phone1 && (
-            <div className="mt-6 p-5 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-xl shadow-lg border-2 border-emerald-300">
+            <div className="mt-6 p-6 bg-gradient-to-r from-emerald-500/90 to-teal-600/90 rounded-2xl shadow-xl border border-emerald-300/40 backdrop-blur-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-white font-semibold text-sm mb-2">Customer Care</p>
                   <a 
                     href={`tel:${contactInfo.phone1}`} 
-                    className="text-white font-black text-2xl tracking-wide hover:text-emerald-100 active:scale-95 transition-all duration-200 block"
+                    className="text-white font-bold text-2xl tracking-wide hover:text-emerald-50 active:scale-95 transition-all duration-300 block"
                     onClick={(e) => {
                       setMobileMenuOpen(false);
                       document.body.style.overflow = 'unset';
@@ -354,9 +354,9 @@ export function Navbar() {
                   >
                     {contactInfo.phone1}
                   </a>
-                  <p className="text-emerald-100 text-xs mt-1">Tap to call now</p>
+                  <p className="text-emerald-50 text-xs mt-1 opacity-90">Tap to call now</p>
                 </div>
-                <div className="bg-white bg-opacity-25 rounded-full p-4">
+                <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
                   <Phone className="h-7 w-7 text-white animate-pulse" />
                 </div>
               </div>
