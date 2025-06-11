@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER || ADMIN_EMAIL,
+    user: process.env.EMAIL_USER || 'business@constroindia.com',
     pass: process.env.EMAIL_PASSWORD || 'dummy' // Will be set via environment
   },
   // Fallback configuration for basic SMTP
@@ -121,7 +121,7 @@ async function sendEmail(subject: string, html: string, replyToEmail?: string, r
     const mailOptions = {
       from: {
         name: 'My Dream Property',
-        address: process.env.EMAIL_USER || 'noreply@mydreamproperty.com'
+        address: process.env.EMAIL_USER || 'business@constroindia.com'
       },
       to: ADMIN_EMAIL,
       subject: subject,
