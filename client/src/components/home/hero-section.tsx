@@ -82,18 +82,18 @@ export function HeroSection() {
               <HomeIcon className="h-16 w-16 text-white mx-auto" />
             </div>
             
-            {/* Hero Title - Simplified for Mobile */}
+            {/* Hero Title - Large for Desktop, Optimized for Mobile */}
             <h1 className="text-white font-bold mb-8">
-              <div className="text-3xl mb-4 block" style={{ fontSize: '24px', lineHeight: '1.3' }}>
+              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-bold tracking-wide">
                 WELCOME TO
               </div>
-              <div className="text-3xl font-black block" style={{ fontSize: '26px', lineHeight: '1.3' }}>
+              <div className="text-2xl md:text-6xl lg:text-7xl xl:text-8xl font-black block tracking-wider">
                 MY DREAM PROPERTY
               </div>
             </h1>
             
             {/* Subtitle */}
-            <p className="text-white text-lg mb-8 opacity-90 px-2" style={{ fontSize: '18px', lineHeight: '1.5' }}>
+            <p className="text-white text-lg md:text-2xl lg:text-3xl xl:text-4xl mb-8 opacity-90 px-2 font-medium">
               Find your perfect home today
             </p>
             
