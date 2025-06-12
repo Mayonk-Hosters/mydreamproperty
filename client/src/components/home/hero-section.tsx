@@ -93,17 +93,17 @@ export function HeroSection() {
             </div>
             
             {/* Hero Title - Large for Desktop, Optimized for Mobile */}
-            <h1 className="text-white font-bold mb-8">
-              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-bold tracking-wide">
+            <h1 className="font-bold mb-8">
+              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-bold tracking-wide bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-lg">
                 Welcome To
               </div>
-              <div className="text-2xl md:text-6xl lg:text-7xl xl:text-8xl font-black block tracking-wider">
+              <div className="text-2xl md:text-6xl lg:text-7xl xl:text-8xl font-black block tracking-wider bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent drop-shadow-2xl animate-pulse">
                 My Dream Property
               </div>
             </h1>
             
             {/* Subtitle */}
-            <p className="text-white text-lg md:text-2xl lg:text-3xl xl:text-4xl mb-8 opacity-90 px-2 font-medium">
+            <p className="text-lg md:text-2xl lg:text-3xl xl:text-4xl mb-8 px-2 font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
               Find your dream property today
             </p>
             
