@@ -88,27 +88,27 @@ export function HeroSection() {
           <div className="text-center w-full">
             
             {/* Simple Hero Icon */}
-            <div className="mb-8 animate-bounce">
-              <HomeIcon className="h-16 w-16 text-white mx-auto animate-fade-in-down" />
+            <div className="mb-8">
+              <HomeIcon className="h-16 w-16 text-white mx-auto" />
             </div>
             
             {/* Hero Title - Large for Desktop, Optimized for Mobile */}
             <h1 className="font-bold mb-8">
-              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-bold tracking-wide bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-lg animate-slide-in-left">
+              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-bold tracking-wide bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-lg">
                 Welcome To
               </div>
-              <div className="text-2xl md:text-6xl lg:text-7xl xl:text-8xl font-black block tracking-wider bg-gradient-to-r from-purple-500 via-pink-500 via-red-500 to-orange-400 bg-clip-text text-transparent drop-shadow-2xl animate-pulse animate-slide-in-right text-shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <div className="text-2xl md:text-6xl lg:text-7xl xl:text-8xl font-black block tracking-wider bg-gradient-to-r from-purple-500 via-pink-500 via-red-500 to-orange-400 bg-clip-text text-transparent drop-shadow-2xl text-shadow-lg transform hover:scale-105 transition-transform duration-300">
                 My Dream Property
               </div>
             </h1>
             
             {/* Subtitle */}
-            <p className="text-lg md:text-2xl lg:text-3xl xl:text-4xl mb-8 px-2 font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg animate-fade-in-up animation-delay-300">
+            <p className="text-lg md:text-2xl lg:text-3xl xl:text-4xl mb-8 px-2 font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
               Find your dream property today
             </p>
             
             {/* Compact Search Form */}
-            <div className="bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-xl w-full max-w-4xl mx-auto border border-white/20 animate-scale-in animation-delay-300">
+            <div className="bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-xl w-full max-w-4xl mx-auto border border-white/20">
               <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Find Your Perfect Property</h3>
               
               <form onSubmit={handleSearch} className="space-y-4">
