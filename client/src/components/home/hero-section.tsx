@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -36,6 +36,57 @@ export function HeroSection() {
     queryKey: ['/api/homepage-images'],
     select: (data) => data?.filter(img => img.imageType === 'hero' && img.isActive) || [],
   });
+
+  // Typing animation effect
+  useEffect(() => {
+    const text = "Find your dream property today";
+    const typingElement = document.getElementById("typing-text");
+    if (!typingElement) return;
+
+    let index = 0;
+    typingElement.textContent = "";
+
+    // Create typing sound effect using Web Audio API
+    const createTypingSound = () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.type = 'square';
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      } catch (e) {
+        // Fallback for browsers that don't support Web Audio API
+        console.log("Typing sound not supported");
+      }
+    };
+
+    const typeNextChar = () => {
+      if (index < text.length) {
+        typingElement.textContent += text.charAt(index);
+        
+        // Play typing sound
+        createTypingSound();
+        
+        index++;
+        setTimeout(typeNextChar, 100); // 100ms delay between characters
+      }
+    };
+
+    // Start typing after a short delay
+    const timer = setTimeout(typeNextChar, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch tahsils with properties for quick tags
   const { data: tahsilsWithProperties } = useQuery({
@@ -109,7 +160,10 @@ export function HeroSection() {
             
             {/* Subtitle */}
             <p className="text-xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 px-2 font-bold text-white drop-shadow-2xl filter brightness-125" style={{ fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif' }}>
-              <span className="animate-running-text">Find your dream property today</span>
+              <span className="typing-container">
+                <span id="typing-text" className="typing-text"></span>
+                <span className="typing-cursor">|</span>
+              </span>
             </p>
             
             {/* Compact Search Form */}
