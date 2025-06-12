@@ -46,64 +46,99 @@ export function HeroSection() {
     let index = 0;
     typingElement.textContent = "";
 
-    // Create realistic keypad typing sound effect
-    const createKeypadTypingSound = () => {
+    // Create typewriter sound effect
+    const createTypewriterSound = () => {
       try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         
-        // Create noise buffer for mechanical key sound
-        const bufferSize = audioContext.sampleRate * 0.1;
+        // Create multiple noise sources for typewriter complexity
+        const bufferSize = audioContext.sampleRate * 0.15;
         const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
         const data = buffer.getChannelData(0);
         
-        // Generate white noise for key press
+        // Generate pink noise for typewriter character
         for (let i = 0; i < bufferSize; i++) {
-          data[i] = Math.random() * 2 - 1;
+          data[i] = (Math.random() * 2 - 1) * Math.pow(0.5, i / bufferSize * 8);
         }
         
         const noiseSource = audioContext.createBufferSource();
         noiseSource.buffer = buffer;
         
-        // Create oscillator for key tone
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+        // Main typewriter strike oscillator
+        const strikeOsc = audioContext.createOscillator();
+        const metalOsc = audioContext.createOscillator();
+        
+        // Gain nodes
+        const masterGain = audioContext.createGain();
         const noiseGain = audioContext.createGain();
-        const filter = audioContext.createBiquadFilter();
+        const strikeGain = audioContext.createGain();
+        const metalGain = audioContext.createGain();
         
-        // Connect audio nodes
-        oscillator.connect(gainNode);
+        // Filters for typewriter character
+        const lowPass = audioContext.createBiquadFilter();
+        const highPass = audioContext.createBiquadFilter();
+        
+        // Connect the typewriter audio graph
+        strikeOsc.connect(strikeGain);
+        metalOsc.connect(metalGain);
         noiseSource.connect(noiseGain);
-        gainNode.connect(filter);
-        noiseGain.connect(filter);
-        filter.connect(audioContext.destination);
         
-        // Set keypad frequencies (around 400-600Hz for mechanical keys)
-        oscillator.frequency.setValueAtTime(450 + Math.random() * 100, audioContext.currentTime);
-        oscillator.type = 'square';
+        strikeGain.connect(lowPass);
+        metalGain.connect(highPass);
+        noiseGain.connect(lowPass);
         
-        // Filter for realistic key sound
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(800, audioContext.currentTime);
-        filter.Q.setValueAtTime(2, audioContext.currentTime);
+        lowPass.connect(masterGain);
+        highPass.connect(masterGain);
+        masterGain.connect(audioContext.destination);
         
-        // Quick attack and decay for key press
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.005);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+        // Typewriter frequencies - strike and metal resonance
+        strikeOsc.frequency.setValueAtTime(120 + Math.random() * 80, audioContext.currentTime);
+        metalOsc.frequency.setValueAtTime(2400 + Math.random() * 800, audioContext.currentTime);
         
-        // Noise for mechanical click
-        noiseGain.gain.setValueAtTime(0, audioContext.currentTime);
-        noiseGain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.002);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.02);
+        strikeOsc.type = 'square';
+        metalOsc.type = 'triangle';
         
-        // Start sounds
-        oscillator.start(audioContext.currentTime);
-        noiseSource.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.05);
-        noiseSource.stop(audioContext.currentTime + 0.02);
+        // Typewriter filters
+        lowPass.type = 'lowpass';
+        lowPass.frequency.setValueAtTime(1200, audioContext.currentTime);
+        lowPass.Q.setValueAtTime(1, audioContext.currentTime);
+        
+        highPass.type = 'highpass';
+        highPass.frequency.setValueAtTime(1500, audioContext.currentTime);
+        highPass.Q.setValueAtTime(2, audioContext.currentTime);
+        
+        // Typewriter envelope - sharp attack, longer decay
+        const now = audioContext.currentTime;
+        
+        // Strike sound
+        strikeGain.gain.setValueAtTime(0, now);
+        strikeGain.gain.linearRampToValueAtTime(0.08, now + 0.003);
+        strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        
+        // Metal ping
+        metalGain.gain.setValueAtTime(0, now);
+        metalGain.gain.linearRampToValueAtTime(0.02, now + 0.001);
+        metalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        
+        // Mechanical noise
+        noiseGain.gain.setValueAtTime(0, now);
+        noiseGain.gain.linearRampToValueAtTime(0.03, now + 0.002);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        
+        // Master volume
+        masterGain.gain.setValueAtTime(0.4, now);
+        
+        // Start all sounds
+        strikeOsc.start(now);
+        metalOsc.start(now);
+        noiseSource.start(now);
+        
+        strikeOsc.stop(now + 0.12);
+        metalOsc.stop(now + 0.08);
+        noiseSource.stop(now + 0.06);
+        
       } catch (e) {
-        // Fallback for browsers that don't support Web Audio API
-        console.log("Keypad typing sound not supported");
+        console.log("Typewriter sound not supported");
       }
     };
 
@@ -111,8 +146,8 @@ export function HeroSection() {
       if (index < text.length) {
         typingElement.textContent += text.charAt(index);
         
-        // Play keypad typing sound
-        createKeypadTypingSound();
+        // Play typewriter sound
+        createTypewriterSound();
         
         index++;
         setTimeout(typeNextChar, 100); // 100ms delay between characters
