@@ -112,6 +112,61 @@
   }
 }
 
+@keyframes lightningGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(59,130,246,0.8), 0 0 10px rgba(59,130,246,0.6), 0 0 15px rgba(59,130,246,0.4);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(59,130,246,1), 0 0 20px rgba(59,130,246,0.8), 0 0 30px rgba(59,130,246,0.6);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(59,130,246,0.8), 0 0 10px rgba(59,130,246,0.6), 0 0 15px rgba(59,130,246,0.4);
+  }
+}
+
+@keyframes lightningFlash {
+  0% { opacity: 0.3; }
+  10% { opacity: 1; }
+  20% { opacity: 0.3; }
+  30% { opacity: 0.9; }
+  40% { opacity: 0.3; }
+  100% { opacity: 0.3; }
+}
+
+@keyframes lightningStrike {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  15% {
+    transform: translateX(50%);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes lightningPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(59,130,246,0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59,130,246,0.8), 0 0 30px rgba(59,130,246,0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(59,130,246,0.4);
+  }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.8s ease-out forwards;
 }
@@ -135,6 +190,22 @@
 
 .animate-sweep {
   animation: sweep 3s ease-in-out infinite;
+}
+
+.animate-lightning-glow {
+  animation: lightningGlow 2s ease-in-out infinite;
+}
+
+.animate-lightning-flash {
+  animation: lightningFlash 3s ease-in-out infinite;
+}
+
+.animate-lightning-strike {
+  animation: lightningStrike 4s ease-in-out infinite;
+}
+
+.animate-lightning-pulse {
+  animation: lightningPulse 2.5s ease-in-out infinite;
 }
 
 .animation-delay-300 {

@@ -98,10 +98,11 @@ export function HeroSection() {
                 Welcome To
               </div>
               <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-serif font-bold tracking-wide text-white drop-shadow-2xl filter brightness-110 relative overflow-hidden">
-                <span className="relative inline-block">
+                <span className="relative inline-block animate-lightning-glow">
                   My Dream Property
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/80 to-transparent w-full h-full animate-pulse"></span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-300/60 to-transparent w-[200%] h-full -translate-x-full animate-sweep"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent animate-lightning-flash"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent w-[150%] h-full animate-lightning-strike opacity-60"></span>
+                  <span className="absolute inset-0 shadow-[0_0_20px_rgba(59,130,246,0.8)] animate-lightning-pulse"></span>
                 </span>
               </div>
             </h1>
