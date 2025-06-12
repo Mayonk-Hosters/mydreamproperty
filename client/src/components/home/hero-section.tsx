@@ -108,8 +108,8 @@ export function HeroSection() {
             </h1>
             
             {/* Subtitle */}
-            <p className="text-xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 px-2 font-bold bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500 bg-clip-text text-transparent drop-shadow-2xl filter brightness-125">
-              Find your dream property today
+            <p className="text-xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 px-2 font-bold text-white drop-shadow-2xl filter brightness-125">
+              <span className="animate-typing-text">Find your dream property today</span>
             </p>
             
             {/* Compact Search Form */}
