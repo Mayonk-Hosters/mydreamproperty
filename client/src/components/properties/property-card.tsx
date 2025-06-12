@@ -57,7 +57,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
   const shareTitle = `Check out this property: ${property.title}`;
   const shareDescription = `${property.beds} beds, ${property.baths} baths, ${property.area} sq ft in ${property.location} for ${formatCurrency(property.price)}`;
   
-  // Click outside handler to close the share dropdown
+  // Click outside and keyboard handler to close the share dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isShareOpen && 
@@ -69,12 +69,21 @@ export function PropertyCard({ property }: PropertyCardProps) {
       }
     };
     
-    // Add click event listener to detect clicks outside the dropdown
-    document.addEventListener('mousedown', handleClickOutside);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isShareOpen && event.key === 'Escape') {
+        setIsShareOpen(false);
+        shareButtonRef.current?.focus();
+      }
+    };
     
-    // Clean up the event listener when component unmounts
+    // Add event listeners
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Clean up event listeners when component unmounts
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isShareOpen]);
   
@@ -144,6 +153,9 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 variant="outline" 
                 className="bg-white text-primary hover:bg-primary hover:text-white transition-colors text-sm"
                 onClick={handleToggleShare}
+                aria-label={`Share ${property.title}`}
+                aria-expanded={isShareOpen}
+                aria-haspopup="menu"
               >
                 <Share2 className="mr-2" size={15} /> Share
               </Button>
@@ -152,25 +164,56 @@ export function PropertyCard({ property }: PropertyCardProps) {
               {isShareOpen && (
                 <div 
                   ref={shareDropdownRef}
-                  className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 min-w-[200px]"
+                  className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-xl p-4 z-[9999] min-w-[220px] max-w-[300px]"
+                  style={{ zIndex: 9999 }}
+                  role="menu"
+                  aria-label={`Share options for ${property.title}`}
                 >
-                  <div className="text-sm font-medium text-gray-800 mb-3">Share this property</div>
-                  <div className="flex justify-center gap-2">
-                    <FacebookShareButton url={propertyUrl}>
-                      <FacebookIcon size={32} round />
-                    </FacebookShareButton>
-                    <TwitterShareButton url={propertyUrl} title={shareTitle}>
-                      <TwitterIcon size={32} round />
-                    </TwitterShareButton>
-                    <WhatsappShareButton url={propertyUrl} title={shareTitle}>
-                      <WhatsappIcon size={32} round />
-                    </WhatsappShareButton>
-                    <LinkedinShareButton url={propertyUrl} title={shareTitle} summary={shareDescription}>
-                      <LinkedinIcon size={32} round />
-                    </LinkedinShareButton>
-                    <EmailShareButton url={propertyUrl} subject={shareTitle} body={`${shareDescription}\n\n${propertyUrl}`}>
-                      <EmailIcon size={32} round />
-                    </EmailShareButton>
+                  <div className="text-sm font-medium text-gray-800 mb-3 text-center">Share this property</div>
+                  <div className="grid grid-cols-3 gap-3 justify-items-center" role="group">
+                    <div className="flex flex-col items-center">
+                      <FacebookShareButton url={propertyUrl} className="hover:scale-110 transition-transform">
+                        <FacebookIcon size={36} round />
+                      </FacebookShareButton>
+                      <span className="text-xs text-gray-600 mt-1">Facebook</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <TwitterShareButton url={propertyUrl} title={shareTitle} className="hover:scale-110 transition-transform">
+                        <TwitterIcon size={36} round />
+                      </TwitterShareButton>
+                      <span className="text-xs text-gray-600 mt-1">Twitter</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <WhatsappShareButton url={propertyUrl} title={shareTitle} className="hover:scale-110 transition-transform">
+                        <WhatsappIcon size={36} round />
+                      </WhatsappShareButton>
+                      <span className="text-xs text-gray-600 mt-1">WhatsApp</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <LinkedinShareButton url={propertyUrl} title={shareTitle} summary={shareDescription} className="hover:scale-110 transition-transform">
+                        <LinkedinIcon size={36} round />
+                      </LinkedinShareButton>
+                      <span className="text-xs text-gray-600 mt-1">LinkedIn</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <EmailShareButton url={propertyUrl} subject={shareTitle} body={`${shareDescription}\n\n${propertyUrl}`} className="hover:scale-110 transition-transform">
+                        <EmailIcon size={36} round />
+                      </EmailShareButton>
+                      <span className="text-xs text-gray-600 mt-1">Email</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(propertyUrl);
+                          setIsShareOpen(false);
+                          alert('Link copied to clipboard!');
+                        }}
+                        className="w-9 h-9 bg-gray-600 rounded-full flex items-center justify-center text-white hover:bg-gray-700 hover:scale-110 transition-all"
+                      >
+                        📋
+                      </button>
+                      <span className="text-xs text-gray-600 mt-1">Copy Link</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -290,6 +333,9 @@ export function PropertyCard({ property }: PropertyCardProps) {
                   size="sm"
                   className="h-7 w-7 p-0"
                   onClick={handleToggleShare}
+                  aria-label={`Share ${property.title}`}
+                  aria-expanded={isShareOpen}
+                  aria-haspopup="menu"
                 >
                   <Share2 size={14} />
                 </Button>
@@ -298,25 +344,56 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 {isShareOpen && (
                   <div 
                     ref={shareDropdownRef}
-                    className="absolute bottom-full mb-2 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50 min-w-[200px]"
+                    className="absolute bottom-full mb-2 right-0 bg-white border border-gray-200 rounded-lg shadow-xl p-4 z-[9999] min-w-[220px] max-w-[300px]"
+                    style={{ zIndex: 9999 }}
+                    role="menu"
+                    aria-label={`Share options for ${property.title}`}
                   >
-                    <div className="text-sm font-medium text-gray-800 mb-3">Share this property</div>
-                    <div className="flex justify-center gap-2">
-                      <FacebookShareButton url={propertyUrl}>
-                        <FacebookIcon size={28} round />
-                      </FacebookShareButton>
-                      <TwitterShareButton url={propertyUrl} title={shareTitle}>
-                        <TwitterIcon size={28} round />
-                      </TwitterShareButton>
-                      <WhatsappShareButton url={propertyUrl} title={shareTitle}>
-                        <WhatsappIcon size={28} round />
-                      </WhatsappShareButton>
-                      <LinkedinShareButton url={propertyUrl} title={shareTitle} summary={shareDescription}>
-                        <LinkedinIcon size={28} round />
-                      </LinkedinShareButton>
-                      <EmailShareButton url={propertyUrl} subject={shareTitle} body={`${shareDescription}\n\n${propertyUrl}`}>
-                        <EmailIcon size={28} round />
-                      </EmailShareButton>
+                    <div className="text-sm font-medium text-gray-800 mb-3 text-center">Share this property</div>
+                    <div className="grid grid-cols-3 gap-3 justify-items-center" role="group">
+                      <div className="flex flex-col items-center">
+                        <FacebookShareButton url={propertyUrl} className="hover:scale-110 transition-transform">
+                          <FacebookIcon size={32} round />
+                        </FacebookShareButton>
+                        <span className="text-xs text-gray-600 mt-1">Facebook</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <TwitterShareButton url={propertyUrl} title={shareTitle} className="hover:scale-110 transition-transform">
+                          <TwitterIcon size={32} round />
+                        </TwitterShareButton>
+                        <span className="text-xs text-gray-600 mt-1">Twitter</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <WhatsappShareButton url={propertyUrl} title={shareTitle} className="hover:scale-110 transition-transform">
+                          <WhatsappIcon size={32} round />
+                        </WhatsappShareButton>
+                        <span className="text-xs text-gray-600 mt-1">WhatsApp</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <LinkedinShareButton url={propertyUrl} title={shareTitle} summary={shareDescription} className="hover:scale-110 transition-transform">
+                          <LinkedinIcon size={32} round />
+                        </LinkedinShareButton>
+                        <span className="text-xs text-gray-600 mt-1">LinkedIn</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <EmailShareButton url={propertyUrl} subject={shareTitle} body={`${shareDescription}\n\n${propertyUrl}`} className="hover:scale-110 transition-transform">
+                          <EmailIcon size={32} round />
+                        </EmailShareButton>
+                        <span className="text-xs text-gray-600 mt-1">Email</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(propertyUrl);
+                            setIsShareOpen(false);
+                            alert('Link copied to clipboard!');
+                          }}
+                          className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white hover:bg-gray-700 hover:scale-110 transition-all"
+                        >
+                          📋
+                        </button>
+                        <span className="text-xs text-gray-600 mt-1">Copy Link</span>
+                      </div>
                     </div>
                   </div>
                 )}
