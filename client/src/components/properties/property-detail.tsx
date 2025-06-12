@@ -62,7 +62,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   
   // Fetch agent data when we have a property with an agentId
   const { data: agent } = useQuery({
-    queryKey: ['/api/agents', property?.agentId],
+    queryKey: [`/api/agents/${property?.agentId}`],
     queryFn: async () => {
       if (!property?.agentId) return null;
       const response = await fetch(`/api/agents/${property.agentId}`);
@@ -70,6 +70,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
       return response.json();
     },
     enabled: !!property?.agentId,
+    staleTime: 0, // Always refetch agent data
   });
   
   // Check if property is in favorites on load
