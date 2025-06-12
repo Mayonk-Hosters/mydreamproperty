@@ -575,7 +575,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       requestData.maharera_registered = maharera_registered;
       requestData.maharera_number = maharera_number;
       
-      const propertyData = insertPropertySchema.parse(requestData);
+      // For updates, make all fields optional by using partial schema
+      const updatePropertySchema = insertPropertySchema.partial();
+      const propertyData = updatePropertySchema.parse(requestData);
       const updatedProperty = await dbStorage.updateProperty(id, propertyData);
       
       if (!updatedProperty) {

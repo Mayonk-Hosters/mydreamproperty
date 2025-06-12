@@ -227,9 +227,47 @@ export class DbStorage implements IStorage {
   }
 
   async updateProperty(id: number, propertyData: Partial<InsertProperty>): Promise<Property> {
+    // Get existing property first to preserve data that shouldn't be overwritten
+    const existing = await this.getProperty(id);
+    if (!existing) {
+      throw new Error('Property not found');
+    }
+
+    // Prepare update data by preserving existing values when new values are missing/empty
+    const updateData: Partial<InsertProperty> = {};
+    
+    // Define fields that should be preserved if not explicitly provided
+    const preservableFields = [
+      'propertyNumber', 'title', 'description', 'price', 'location', 'address',
+      'beds', 'baths', 'area', 'areaUnit', 'yearBuilt', 'parking', 'propertyType',
+      'type', 'status', 'featured', 'features', 'images', 'mapUrl',
+      'maharera_registered', 'maharera_number', 'agentId', 'stateId', 'districtId',
+      'talukaId', 'tehsilId', 'createdAt'
+    ];
+
+    preservableFields.forEach(field => {
+      const newValue = propertyData[field as keyof InsertProperty];
+      const existingValue = existing[field as keyof Property];
+      
+      // Use new value if it's meaningful, otherwise preserve existing value
+      if (newValue !== undefined && newValue !== null) {
+        // For strings, don't use empty strings unless the existing value is also empty
+        if (typeof newValue === 'string' && newValue === '' && existingValue) {
+          updateData[field as keyof InsertProperty] = existingValue as any;
+        } else {
+          updateData[field as keyof InsertProperty] = newValue;
+        }
+      } else if (existingValue !== undefined && existingValue !== null) {
+        // Preserve existing value
+        updateData[field as keyof InsertProperty] = existingValue as any;
+      }
+    });
+
+    console.log(`Updating property ${id} with preserved data:`, updateData);
+
     const [updated] = await db
       .update(properties)
-      .set(propertyData)
+      .set(updateData)
       .where(eq(properties.id, id))
       .returning();
     return updated;
