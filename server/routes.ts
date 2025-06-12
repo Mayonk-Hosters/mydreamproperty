@@ -9,6 +9,7 @@ import * as XLSX from 'xlsx';
 // AI recommendation imports removed
 import { 
   insertPropertySchema, 
+  updatePropertySchema,
   insertAgentSchema, 
   insertPropertyInquirySchema,
   insertStateSchema,
@@ -575,8 +576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       requestData.maharera_registered = maharera_registered;
       requestData.maharera_number = maharera_number;
       
-      // For updates, make all fields optional by using partial schema
-      const updatePropertySchema = insertPropertySchema.partial();
+      // For updates, use the partial schema that allows all fields to be optional
       const propertyData = updatePropertySchema.parse(requestData);
       const updatedProperty = await dbStorage.updateProperty(id, propertyData);
       

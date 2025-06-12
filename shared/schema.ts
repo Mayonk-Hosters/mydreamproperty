@@ -270,6 +270,9 @@ export const insertPropertySchema = createInsertSchema(properties).omit({
   tehsilId: true
 });
 
+// Schema for property updates - all fields optional for partial updates
+export const updatePropertySchema = insertPropertySchema.partial();
+
 export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({
   id: true,
   createdAt: true,
