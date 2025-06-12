@@ -298,6 +298,10 @@
   animation: lightningGlow 2s ease-in-out infinite;
 }
 
+.animate-home-icon-entrance {
+  animation: home-icon-entrance 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
 .animate-lightning-flash {
   animation: lightningFlash 3s ease-in-out infinite;
 }
