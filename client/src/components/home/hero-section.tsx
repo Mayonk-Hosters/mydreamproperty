@@ -95,7 +95,10 @@ export function HeroSection() {
             {/* Hero Title - Large for Desktop, Optimized for Mobile */}
             <h1 className="font-extrabold mb-8">
               <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-serif font-bold tracking-wide text-white drop-shadow-2xl filter brightness-110">
-                Welcome To My Dream Property
+                Welcome To
+              </div>
+              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-serif font-bold tracking-wide text-white drop-shadow-2xl filter brightness-110">
+                My Dream Property
               </div>
             </h1>
             
