@@ -46,30 +46,54 @@ export function HeroSection() {
     let index = 0;
     typingElement.textContent = "";
 
-    // Create pleasant click typing sound effect
+    // Create typing start sound effect
+    const createStartSound = () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Rising tone for start
+        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(800, audioContext.currentTime + 0.3);
+        oscillator.type = 'sine';
+        
+        const now = audioContext.currentTime;
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        
+        oscillator.start(now);
+        oscillator.stop(now + 0.3);
+        
+      } catch (e) {
+        console.log("Start sound not supported");
+      }
+    };
+
+    // Create typing click sound effect
     const createClickSound = () => {
       try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         
-        // Create oscillator for clean click
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
-        // Connect audio nodes
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Set frequency for crisp click
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(800 + Math.random() * 200, audioContext.currentTime);
         oscillator.type = 'square';
         
-        // Very quick envelope for sharp click
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.002);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.002);
         gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
         
-        // Start and stop
         oscillator.start(now);
         oscillator.stop(now + 0.03);
         
@@ -78,20 +102,71 @@ export function HeroSection() {
       }
     };
 
+    // Create typing completion sound effect
+    const createCompletionSound = () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        // Create a pleasant completion chord
+        const osc1 = audioContext.createOscillator();
+        const osc2 = audioContext.createOscillator();
+        const osc3 = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        osc3.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Pleasant chord frequencies
+        osc1.frequency.setValueAtTime(523, audioContext.currentTime); // C
+        osc2.frequency.setValueAtTime(659, audioContext.currentTime); // E
+        osc3.frequency.setValueAtTime(784, audioContext.currentTime); // G
+        
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc3.type = 'sine';
+        
+        const now = audioContext.currentTime;
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        
+        osc1.start(now);
+        osc2.start(now);
+        osc3.start(now);
+        osc1.stop(now + 0.8);
+        osc2.stop(now + 0.8);
+        osc3.stop(now + 0.8);
+        
+      } catch (e) {
+        console.log("Completion sound not supported");
+      }
+    };
+
     const typeNextChar = () => {
       if (index < text.length) {
         typingElement.textContent += text.charAt(index);
         
-        // Play click sound
+        // Play click sound for each character
         createClickSound();
         
         index++;
         setTimeout(typeNextChar, 100); // 100ms delay between characters
+      } else {
+        // Typing completed - play completion sound
+        createCompletionSound();
       }
     };
 
-    // Start typing after a short delay
-    const timer = setTimeout(typeNextChar, 1000);
+    // Play start sound and begin typing after delay
+    const startTyping = () => {
+      createStartSound();
+      setTimeout(typeNextChar, 300); // Start typing after start sound
+    };
+
+    // Start the entire sequence after a short delay
+    const timer = setTimeout(startTyping, 1000);
     
     return () => clearTimeout(timer);
   }, []);
