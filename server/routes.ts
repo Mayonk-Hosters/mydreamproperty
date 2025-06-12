@@ -2024,31 +2024,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       try {
-        // First try using the storage method
-        const success = await dbStorage.deleteContactMessage(id);
-        if (success) {
-          return res.status(204).end();
-        }
-      } catch (storageError) {
-        console.error("Error deleting message using storage method:", storageError);
-      }
-      
-      // Fallback to direct SQL
-      try {
+        // Use direct SQL for atomic deletion with better race condition handling
         const result = await pool.query(`
           DELETE FROM contact_messages
           WHERE id = $1
           RETURNING id
         `, [id]);
         
-        if (result.rowCount === 0) {
-          return res.status(404).json({ message: "Message not found" });
+        if (result.rowCount > 0) {
+          console.log(`Successfully deleted contact message ID: ${id}`);
+        } else {
+          console.log(`Contact message ID: ${id} was already deleted or never existed`);
         }
         
+        // Always return success for idempotency - if the message is gone, that's the desired outcome
         return res.status(204).end();
+        
       } catch (sqlError) {
-        console.error("Error deleting message using SQL:", sqlError);
-        throw sqlError; // Re-throw for the outer catch
+        console.error("Error deleting message:", sqlError);
+        
+        // Try fallback with storage method
+        try {
+          await dbStorage.deleteContactMessage(id);
+          console.log(`Successfully deleted contact message ID: ${id} via storage fallback`);
+          return res.status(204).end();
+        } catch (storageError) {
+          console.error("Error deleting message using storage fallback:", storageError);
+          throw storageError; // Re-throw for the outer catch
+        }
       }
     } catch (error) {
       console.error("Error deleting contact message:", error);
