@@ -65,30 +65,39 @@ export function HeroSection() {
       if (!audioContext) return;
       
       try {
-        const oscillator = audioContext.createOscillator();
+        // Create a double beep start sound
+        const osc1 = audioContext.createOscillator();
+        const osc2 = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
-        oscillator.connect(gainNode);
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Gentle bell-like start
-        oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
-        oscillator.type = 'triangle';
+        // Double beep frequencies
+        osc1.frequency.setValueAtTime(880, audioContext.currentTime);
+        osc2.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
+        osc1.type = 'sawtooth';
+        osc2.type = 'sawtooth';
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.05);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0, now + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.17);
+        gainNode.gain.linearRampToValueAtTime(0, now + 0.25);
         
-        oscillator.start(now);
-        oscillator.stop(now + 0.4);
+        osc1.start(now);
+        osc2.start(now + 0.15);
+        osc1.stop(now + 0.1);
+        osc2.stop(now + 0.25);
         
       } catch (e) {
         console.log("Start sound failed");
       }
     };
 
-    // Create soft pop typing sound effect
+    // Create digital beep typing sound effect
     const createClickSound = async () => {
       if (!audioContext) await initAudio();
       if (!audioContext) return;
@@ -96,27 +105,23 @@ export function HeroSection() {
       try {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
-        const filter = audioContext.createBiquadFilter();
         
-        oscillator.connect(filter);
-        filter.connect(gainNode);
+        oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Soft pop sound
-        oscillator.frequency.setValueAtTime(1000 + Math.random() * 500, audioContext.currentTime);
-        oscillator.type = 'sine';
-        
-        // Low pass filter for softer sound
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1500, audioContext.currentTime);
+        // High-pitched digital beep
+        const frequencies = [1760, 1567, 1397, 1319]; // Different notes
+        const randomFreq = frequencies[Math.floor(Math.random() * frequencies.length)];
+        oscillator.frequency.setValueAtTime(randomFreq, audioContext.currentTime);
+        oscillator.type = 'sawtooth';
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.001);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
         
         oscillator.start(now);
-        oscillator.stop(now + 0.05);
+        oscillator.stop(now + 0.02);
         
       } catch (e) {
         console.log("Click sound failed");
