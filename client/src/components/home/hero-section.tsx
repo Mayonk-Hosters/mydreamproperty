@@ -59,69 +59,120 @@ export function HeroSection() {
       }
     };
 
-    // Create typing start sound effect
+    // Create typewriter bell start sound
     const createStartSound = async () => {
-      if (!audioContext) await initAudio();
-      if (!audioContext) return;
-      
-      try {
-        // Create a double beep start sound
-        const osc1 = audioContext.createOscillator();
-        const osc2 = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        osc1.connect(gainNode);
-        osc2.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        // Double beep frequencies
-        osc1.frequency.setValueAtTime(880, audioContext.currentTime);
-        osc2.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
-        osc1.type = 'sawtooth';
-        osc2.type = 'sawtooth';
-        
-        const now = audioContext.currentTime;
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.02);
-        gainNode.gain.linearRampToValueAtTime(0, now + 0.1);
-        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.17);
-        gainNode.gain.linearRampToValueAtTime(0, now + 0.25);
-        
-        osc1.start(now);
-        osc2.start(now + 0.15);
-        osc1.stop(now + 0.1);
-        osc2.stop(now + 0.25);
-        
-      } catch (e) {
-        console.log("Start sound failed");
-      }
-    };
-
-    // Create digital beep typing sound effect
-    const createClickSound = async () => {
       if (!audioContext) await initAudio();
       if (!audioContext) return;
       
       try {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
         
-        oscillator.connect(gainNode);
+        oscillator.connect(filter);
+        filter.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // High-pitched digital beep
-        const frequencies = [1760, 1567, 1397, 1319]; // Different notes
-        const randomFreq = frequencies[Math.floor(Math.random() * frequencies.length)];
-        oscillator.frequency.setValueAtTime(randomFreq, audioContext.currentTime);
-        oscillator.type = 'sawtooth';
+        // Typewriter bell sound
+        oscillator.frequency.setValueAtTime(2000, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        // Bell-like filter
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(2000, audioContext.currentTime);
+        filter.Q.setValueAtTime(10, audioContext.currentTime);
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.001);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
         
         oscillator.start(now);
-        oscillator.stop(now + 0.02);
+        oscillator.stop(now + 1.0);
+        
+      } catch (e) {
+        console.log("Start sound failed");
+      }
+    };
+
+    // Create typewriter key strike sound
+    const createClickSound = async () => {
+      if (!audioContext) await initAudio();
+      if (!audioContext) return;
+      
+      try {
+        // Create noise buffer for mechanical strike
+        const bufferSize = audioContext.sampleRate * 0.1;
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        // Generate filtered noise for typewriter strike
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / bufferSize * 5);
+        }
+        
+        const noiseSource = audioContext.createBufferSource();
+        noiseSource.buffer = buffer;
+        
+        // Main strike oscillator
+        const strikeOsc = audioContext.createOscillator();
+        const metalOsc = audioContext.createOscillator();
+        
+        const masterGain = audioContext.createGain();
+        const noiseGain = audioContext.createGain();
+        const strikeGain = audioContext.createGain();
+        const metalGain = audioContext.createGain();
+        
+        const filter = audioContext.createBiquadFilter();
+        
+        // Connect typewriter audio graph
+        strikeOsc.connect(strikeGain);
+        metalOsc.connect(metalGain);
+        noiseSource.connect(noiseGain);
+        
+        strikeGain.connect(filter);
+        metalGain.connect(filter);
+        noiseGain.connect(filter);
+        filter.connect(masterGain);
+        masterGain.connect(audioContext.destination);
+        
+        // Typewriter frequencies
+        strikeOsc.frequency.setValueAtTime(80 + Math.random() * 40, audioContext.currentTime);
+        metalOsc.frequency.setValueAtTime(2500 + Math.random() * 500, audioContext.currentTime);
+        
+        strikeOsc.type = 'square';
+        metalOsc.type = 'triangle';
+        
+        // Typewriter filter
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(3000, audioContext.currentTime);
+        filter.Q.setValueAtTime(1, audioContext.currentTime);
+        
+        const now = audioContext.currentTime;
+        
+        // Sharp typewriter attack
+        strikeGain.gain.setValueAtTime(0, now);
+        strikeGain.gain.linearRampToValueAtTime(0.2, now + 0.003);
+        strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        
+        metalGain.gain.setValueAtTime(0, now);
+        metalGain.gain.linearRampToValueAtTime(0.05, now + 0.001);
+        metalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        
+        noiseGain.gain.setValueAtTime(0, now);
+        noiseGain.gain.linearRampToValueAtTime(0.1, now + 0.002);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        
+        masterGain.gain.setValueAtTime(0.8, now);
+        
+        // Start typewriter sounds
+        strikeOsc.start(now);
+        metalOsc.start(now);
+        noiseSource.start(now);
+        
+        strikeOsc.stop(now + 0.08);
+        metalOsc.stop(now + 0.04);
+        noiseSource.stop(now + 0.05);
         
       } catch (e) {
         console.log("Click sound failed");
