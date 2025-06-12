@@ -46,99 +46,35 @@ export function HeroSection() {
     let index = 0;
     typingElement.textContent = "";
 
-    // Create typewriter sound effect
-    const createTypewriterSound = () => {
+    // Create simple, loud typing sound effect
+    const createTypingSound = () => {
       try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         
-        // Create multiple noise sources for typewriter complexity
-        const bufferSize = audioContext.sampleRate * 0.15;
-        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-        const data = buffer.getChannelData(0);
+        // Create oscillator for typing sound
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
         
-        // Generate pink noise for typewriter character
-        for (let i = 0; i < bufferSize; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.pow(0.5, i / bufferSize * 8);
-        }
+        // Connect audio nodes
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
         
-        const noiseSource = audioContext.createBufferSource();
-        noiseSource.buffer = buffer;
+        // Set frequency for pleasant typing sound
+        oscillator.frequency.setValueAtTime(600 + Math.random() * 200, audioContext.currentTime);
+        oscillator.type = 'sine';
         
-        // Main typewriter strike oscillator
-        const strikeOsc = audioContext.createOscillator();
-        const metalOsc = audioContext.createOscillator();
-        
-        // Gain nodes
-        const masterGain = audioContext.createGain();
-        const noiseGain = audioContext.createGain();
-        const strikeGain = audioContext.createGain();
-        const metalGain = audioContext.createGain();
-        
-        // Filters for typewriter character
-        const lowPass = audioContext.createBiquadFilter();
-        const highPass = audioContext.createBiquadFilter();
-        
-        // Connect the typewriter audio graph
-        strikeOsc.connect(strikeGain);
-        metalOsc.connect(metalGain);
-        noiseSource.connect(noiseGain);
-        
-        strikeGain.connect(lowPass);
-        metalGain.connect(highPass);
-        noiseGain.connect(lowPass);
-        
-        lowPass.connect(masterGain);
-        highPass.connect(masterGain);
-        masterGain.connect(audioContext.destination);
-        
-        // Typewriter frequencies - strike and metal resonance
-        strikeOsc.frequency.setValueAtTime(120 + Math.random() * 80, audioContext.currentTime);
-        metalOsc.frequency.setValueAtTime(2400 + Math.random() * 800, audioContext.currentTime);
-        
-        strikeOsc.type = 'square';
-        metalOsc.type = 'triangle';
-        
-        // Typewriter filters
-        lowPass.type = 'lowpass';
-        lowPass.frequency.setValueAtTime(1200, audioContext.currentTime);
-        lowPass.Q.setValueAtTime(1, audioContext.currentTime);
-        
-        highPass.type = 'highpass';
-        highPass.frequency.setValueAtTime(1500, audioContext.currentTime);
-        highPass.Q.setValueAtTime(2, audioContext.currentTime);
-        
-        // Typewriter envelope - sharp attack, longer decay
+        // Quick attack and decay for crisp sound
         const now = audioContext.currentTime;
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01); // Increased volume
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
         
-        // Strike sound
-        strikeGain.gain.setValueAtTime(0, now);
-        strikeGain.gain.linearRampToValueAtTime(0.08, now + 0.003);
-        strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-        
-        // Metal ping
-        metalGain.gain.setValueAtTime(0, now);
-        metalGain.gain.linearRampToValueAtTime(0.02, now + 0.001);
-        metalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-        
-        // Mechanical noise
-        noiseGain.gain.setValueAtTime(0, now);
-        noiseGain.gain.linearRampToValueAtTime(0.03, now + 0.002);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        
-        // Master volume
-        masterGain.gain.setValueAtTime(0.4, now);
-        
-        // Start all sounds
-        strikeOsc.start(now);
-        metalOsc.start(now);
-        noiseSource.start(now);
-        
-        strikeOsc.stop(now + 0.12);
-        metalOsc.stop(now + 0.08);
-        noiseSource.stop(now + 0.06);
+        // Start and stop
+        oscillator.start(now);
+        oscillator.stop(now + 0.08);
         
       } catch (e) {
-        console.log("Typewriter sound not supported");
+        console.log("Typing sound not supported");
       }
     };
 
@@ -146,8 +82,8 @@ export function HeroSection() {
       if (index < text.length) {
         typingElement.textContent += text.charAt(index);
         
-        // Play typewriter sound
-        createTypewriterSound();
+        // Play typing sound
+        createTypingSound();
         
         index++;
         setTimeout(typeNextChar, 100); // 100ms delay between characters
