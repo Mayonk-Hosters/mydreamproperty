@@ -80,7 +80,7 @@ export function PropertyTabs() {
           </p>
         </div>
         
-        <Tabs defaultValue="buy" value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <div className="flex justify-center mb-12">
             <div className="relative max-w-md">
               <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-pink-500/20 to-blue-600/20 rounded-full blur-xl"></div>

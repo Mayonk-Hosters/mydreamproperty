@@ -172,7 +172,6 @@ export default function PropertiesPage() {
         return acc;
       }, {} as Record<string, Property[]>);
     
-    console.log('Properties grouped by type:', sortedGrouped);
     return sortedGrouped;
   }, [sortedProperties]);
 
