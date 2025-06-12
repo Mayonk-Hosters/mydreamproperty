@@ -22,7 +22,14 @@ export function HeroSection() {
   const [searchParams, setSearchParams] = useState({
     type: "buy", // buy or rent
     propertyType: "", // House, Apartment, etc.
-    location: "" // Location search term
+    location: "", // Area/Location search term
+    minBhk: "",
+    minPrice: "",
+    maxPrice: "",
+    state: "",
+    district: "",
+    taluka: "",
+    tehsil: ""
   });
   
   const homeIconRef = useRef<HTMLDivElement>(null);
@@ -30,6 +37,49 @@ export function HeroSection() {
   // Fetch property types from API
   const { data: propertyTypes, isLoading } = useQuery<PropertyType[]>({
     queryKey: ['/api/property-types'],
+  });
+
+  // Fetch location data for filters
+  const { data: states } = useQuery({
+    queryKey: ['/api/states'],
+    queryFn: async () => {
+      const response = await fetch('/api/states');
+      if (!response.ok) throw new Error('Failed to fetch states');
+      return response.json();
+    },
+  });
+
+  const { data: districts } = useQuery({
+    queryKey: ['/api/districts', searchParams.state],
+    queryFn: async () => {
+      if (!searchParams.state) return [];
+      const response = await fetch(`/api/districts?stateId=${searchParams.state}`);
+      if (!response.ok) throw new Error('Failed to fetch districts');
+      return response.json();
+    },
+    enabled: !!searchParams.state,
+  });
+
+  const { data: talukas } = useQuery({
+    queryKey: ['/api/talukas', searchParams.district],
+    queryFn: async () => {
+      if (!searchParams.district) return [];
+      const response = await fetch(`/api/talukas?districtId=${searchParams.district}`);
+      if (!response.ok) throw new Error('Failed to fetch talukas');
+      return response.json();
+    },
+    enabled: !!searchParams.district,
+  });
+
+  const { data: tehsils } = useQuery({
+    queryKey: ['/api/tehsils', searchParams.taluka],
+    queryFn: async () => {
+      if (!searchParams.taluka) return [];
+      const response = await fetch(`/api/tehsils?talukaId=${searchParams.taluka}`);
+      if (!response.ok) throw new Error('Failed to fetch tehsils');
+      return response.json();
+    },
+    enabled: !!searchParams.taluka,
   });
 
   // Fetch hero background images from API
@@ -102,6 +152,34 @@ export function HeroSection() {
     
     if (searchParams.location && searchParams.location.trim() !== "") {
       queryParams.set("location", searchParams.location.trim());
+    }
+    
+    if (searchParams.minBhk) {
+      queryParams.set("minBeds", searchParams.minBhk);
+    }
+    
+    if (searchParams.minPrice) {
+      queryParams.set("minPrice", searchParams.minPrice);
+    }
+    
+    if (searchParams.maxPrice) {
+      queryParams.set("maxPrice", searchParams.maxPrice);
+    }
+    
+    if (searchParams.state) {
+      queryParams.set("state", searchParams.state);
+    }
+    
+    if (searchParams.district) {
+      queryParams.set("district", searchParams.district);
+    }
+    
+    if (searchParams.taluka) {
+      queryParams.set("taluka", searchParams.taluka);
+    }
+    
+    if (searchParams.tehsil) {
+      queryParams.set("tehsil", searchParams.tehsil);
     }
     
     // Navigate to properties page with search params
@@ -185,48 +263,210 @@ export function HeroSection() {
                 </div>
 
                 {/* Search Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  {/* Property Type */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Property Type
-                    </label>
-                    <Select 
-                      value={searchParams.propertyType} 
-                      onValueChange={(value) => setSearchParams(prev => ({ ...prev, propertyType: value }))}
-                    >
-                      <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-blue-500">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(propertyTypes || DEFAULT_PROPERTY_TYPES).map((type) => (
-                          <SelectItem key={type.id} value={type.name}>
-                            {type.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                <div className="space-y-4 mb-6">
+                  {/* First Row: Property Type, Min BHK, Min Price, Max Price */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {/* Property Type */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Property Type
+                      </label>
+                      <Select 
+                        value={searchParams.propertyType} 
+                        onValueChange={(value) => setSearchParams(prev => ({ ...prev, propertyType: value }))}
+                      >
+                        <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-blue-500">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(propertyTypes || DEFAULT_PROPERTY_TYPES).map((type) => (
+                            <SelectItem key={type.id} value={type.name}>
+                              {type.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Min BHK */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Min BHK
+                      </label>
+                      <Select 
+                        value={searchParams.minBhk} 
+                        onValueChange={(value) => setSearchParams(prev => ({ ...prev, minBhk: value }))}
+                      >
+                        <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-blue-500">
+                          <SelectValue placeholder="Any" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 BHK</SelectItem>
+                          <SelectItem value="2">2 BHK</SelectItem>
+                          <SelectItem value="3">3 BHK</SelectItem>
+                          <SelectItem value="4">4 BHK</SelectItem>
+                          <SelectItem value="5">5+ BHK</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Min Price */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Min Price
+                      </label>
+                      <input
+                        type="number"
+                        value={searchParams.minPrice}
+                        onChange={(e) => setSearchParams(prev => ({ ...prev, minPrice: e.target.value }))}
+                        placeholder="₹ Min Price"
+                        className="w-full h-12 px-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Max Price */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Max Price
+                      </label>
+                      <input
+                        type="number"
+                        value={searchParams.maxPrice}
+                        onChange={(e) => setSearchParams(prev => ({ ...prev, maxPrice: e.target.value }))}
+                        placeholder="₹ Max Price"
+                        className="w-full h-12 px-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                      />
+                    </div>
                   </div>
 
-                  {/* Location */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      value={searchParams.location}
-                      onChange={(e) => setSearchParams(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Enter location"
-                      className="w-full h-12 px-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
-                    />
+                  {/* Second Row: Location Filters */}
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    {/* Area/Location */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Area/Location
+                      </label>
+                      <input
+                        type="text"
+                        value={searchParams.location}
+                        onChange={(e) => setSearchParams(prev => ({ ...prev, location: e.target.value }))}
+                        placeholder="Enter area"
+                        className="w-full h-12 px-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* State */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        State
+                      </label>
+                      <Select 
+                        value={searchParams.state} 
+                        onValueChange={(value) => setSearchParams(prev => ({ 
+                          ...prev, 
+                          state: value, 
+                          district: "", 
+                          taluka: "", 
+                          tehsil: "" 
+                        }))}
+                      >
+                        <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-blue-500">
+                          <SelectValue placeholder="Select state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {states?.map((state: any) => (
+                            <SelectItem key={state.id} value={state.id.toString()}>
+                              {state.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* District */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        District
+                      </label>
+                      <Select 
+                        value={searchParams.district} 
+                        onValueChange={(value) => setSearchParams(prev => ({ 
+                          ...prev, 
+                          district: value, 
+                          taluka: "", 
+                          tehsil: "" 
+                        }))}
+                        disabled={!searchParams.state}
+                      >
+                        <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-blue-500">
+                          <SelectValue placeholder="Select district" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {districts?.map((district: any) => (
+                            <SelectItem key={district.id} value={district.id.toString()}>
+                              {district.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Taluka */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Taluka
+                      </label>
+                      <Select 
+                        value={searchParams.taluka} 
+                        onValueChange={(value) => setSearchParams(prev => ({ 
+                          ...prev, 
+                          taluka: value, 
+                          tehsil: "" 
+                        }))}
+                        disabled={!searchParams.district}
+                      >
+                        <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-blue-500">
+                          <SelectValue placeholder="Select taluka" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {talukas?.map((taluka: any) => (
+                            <SelectItem key={taluka.id} value={taluka.id.toString()}>
+                              {taluka.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Tehsil */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Tehsil
+                      </label>
+                      <Select 
+                        value={searchParams.tehsil} 
+                        onValueChange={(value) => setSearchParams(prev => ({ ...prev, tehsil: value }))}
+                        disabled={!searchParams.taluka}
+                      >
+                        <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-blue-500">
+                          <SelectValue placeholder="Select tehsil" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {tehsils?.map((tehsil: any) => (
+                            <SelectItem key={tehsil.id} value={tehsil.id.toString()}>
+                              {tehsil.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   {/* Search Button */}
-                  <div className="flex items-end">
+                  <div className="flex justify-center">
                     <Button 
                       type="submit"
-                      className={`w-full h-12 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105 ${
+                      className={`px-12 h-12 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105 ${
                         searchParams.type === "buy" 
                           ? "bg-blue-600 hover:bg-blue-700" 
                           : "bg-emerald-600 hover:bg-emerald-700"
