@@ -97,7 +97,7 @@ export function HeroSection() {
               <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-extrabold tracking-wide bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-500 bg-clip-text text-transparent drop-shadow-2xl filter brightness-110">
                 Welcome To
               </div>
-              <div className="text-3xl md:text-6xl lg:text-8xl xl:text-9xl font-black block tracking-widest bg-gradient-to-r from-rose-400 via-fuchsia-500 via-violet-600 to-indigo-600 bg-clip-text text-transparent drop-shadow-2xl text-shadow-lg transform hover:scale-105 transition-transform duration-300 filter brightness-110">
+              <div className="text-3xl md:text-6xl lg:text-8xl xl:text-9xl font-black block tracking-widest text-white drop-shadow-2xl text-shadow-lg transform hover:scale-105 transition-transform duration-300 filter brightness-110">
                 My Dream Property
               </div>
             </h1>
