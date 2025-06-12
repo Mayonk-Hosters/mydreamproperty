@@ -44,13 +44,27 @@ export function HeroSection() {
     if (!typingElement) return;
 
     let index = 0;
+    let audioContext: AudioContext | null = null;
     typingElement.textContent = "";
 
-    // Create typing start sound effect
-    const createStartSound = () => {
+    // Initialize audio context on first user interaction
+    const initAudio = async () => {
       try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        
+        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+      } catch (e) {
+        console.log("Audio not supported");
+      }
+    };
+
+    // Create typing start sound effect
+    const createStartSound = async () => {
+      if (!audioContext) await initAudio();
+      if (!audioContext) return;
+      
+      try {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
@@ -64,22 +78,23 @@ export function HeroSection() {
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.1);
         gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
         
         oscillator.start(now);
         oscillator.stop(now + 0.3);
         
       } catch (e) {
-        console.log("Start sound not supported");
+        console.log("Start sound failed");
       }
     };
 
     // Create typing click sound effect
-    const createClickSound = () => {
+    const createClickSound = async () => {
+      if (!audioContext) await initAudio();
+      if (!audioContext) return;
+      
       try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
@@ -91,22 +106,23 @@ export function HeroSection() {
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.002);
+        gainNode.gain.linearRampToValueAtTime(0.25, now + 0.002);
         gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
         
         oscillator.start(now);
         oscillator.stop(now + 0.03);
         
       } catch (e) {
-        console.log("Click sound not supported");
+        console.log("Click sound failed");
       }
     };
 
     // Create typing completion sound effect
-    const createCompletionSound = () => {
+    const createCompletionSound = async () => {
+      if (!audioContext) await initAudio();
+      if (!audioContext) return;
+      
       try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        
         // Create a pleasant completion chord
         const osc1 = audioContext.createOscillator();
         const osc2 = audioContext.createOscillator();
@@ -129,7 +145,7 @@ export function HeroSection() {
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.1, now + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.1);
         gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
         
         osc1.start(now);
@@ -140,7 +156,7 @@ export function HeroSection() {
         osc3.stop(now + 0.8);
         
       } catch (e) {
-        console.log("Completion sound not supported");
+        console.log("Completion sound failed");
       }
     };
 
@@ -165,10 +181,24 @@ export function HeroSection() {
       setTimeout(typeNextChar, 300); // Start typing after start sound
     };
 
+    // Enable audio on user interaction
+    const enableAudio = () => {
+      initAudio();
+      document.removeEventListener('click', enableAudio);
+      document.removeEventListener('touchstart', enableAudio);
+    };
+
+    document.addEventListener('click', enableAudio);
+    document.addEventListener('touchstart', enableAudio);
+
     // Start the entire sequence after a short delay
     const timer = setTimeout(startTyping, 1000);
     
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', enableAudio);
+      document.removeEventListener('touchstart', enableAudio);
+    };
   }, []);
 
   // Fetch tahsils with properties for quick tags
