@@ -39,7 +39,7 @@ export function HeroSection() {
 
   // Typing animation effect
   useEffect(() => {
-    const text = "Find your dream property today";
+    const text = "Find your dream property today...";
     const typingElement = document.getElementById("typing-text");
     if (!typingElement) return;
 
