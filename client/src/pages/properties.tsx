@@ -248,7 +248,7 @@ export default function PropertiesPage() {
         <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
           <h3 className="text-lg font-semibold mb-4 text-gray-800">Filters</h3>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Property Type Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
@@ -349,6 +349,18 @@ export default function PropertiesPage() {
                   </>
                 )}
               </select>
+            </div>
+
+            {/* Location Filter - Added after Max Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <input
+                type="text"
+                value={filters.location}
+                onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="Enter area, district, taluka, tehsil, or state"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
           </div>
 
