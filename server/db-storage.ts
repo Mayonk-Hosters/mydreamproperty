@@ -539,8 +539,14 @@ export class DbStorage implements IStorage {
   }
 
   async deleteHomepageImage(id: number): Promise<boolean> {
-    const result = await db.delete(homepageImages).where(eq(homepageImages.id, id));
-    return result.rowCount > 0;
+    try {
+      const result = await db.delete(homepageImages).where(eq(homepageImages.id, id));
+      console.log(`Homepage image deletion result for ID ${id}:`, result);
+      return (result.rowCount !== null && result.rowCount !== undefined && result.rowCount > 0);
+    } catch (error) {
+      console.error(`Error deleting homepage image ${id}:`, error);
+      throw error;
+    }
   }
 
   // Contact Info management
