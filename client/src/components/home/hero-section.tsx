@@ -46,49 +46,64 @@ export function HeroSection() {
     let index = 0;
     typingElement.textContent = "";
 
-    // Create WhatsApp-style typing sound effect
-    const createWhatsAppTypingSound = () => {
+    // Create realistic keypad typing sound effect
+    const createKeypadTypingSound = () => {
       try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         
-        // Create multiple oscillators for a richer sound
-        const oscillator1 = audioContext.createOscillator();
-        const oscillator2 = audioContext.createOscillator();
+        // Create noise buffer for mechanical key sound
+        const bufferSize = audioContext.sampleRate * 0.1;
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        // Generate white noise for key press
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        
+        const noiseSource = audioContext.createBufferSource();
+        noiseSource.buffer = buffer;
+        
+        // Create oscillator for key tone
+        const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
+        const noiseGain = audioContext.createGain();
         const filter = audioContext.createBiquadFilter();
         
-        // Connect the audio graph
-        oscillator1.connect(gainNode);
-        oscillator2.connect(gainNode);
+        // Connect audio nodes
+        oscillator.connect(gainNode);
+        noiseSource.connect(noiseGain);
         gainNode.connect(filter);
+        noiseGain.connect(filter);
         filter.connect(audioContext.destination);
         
-        // Set frequencies for a more WhatsApp-like sound
-        oscillator1.frequency.setValueAtTime(1200, audioContext.currentTime);
-        oscillator2.frequency.setValueAtTime(1600, audioContext.currentTime);
+        // Set keypad frequencies (around 400-600Hz for mechanical keys)
+        oscillator.frequency.setValueAtTime(450 + Math.random() * 100, audioContext.currentTime);
+        oscillator.type = 'square';
         
-        // Use sine waves for smoother sound
-        oscillator1.type = 'sine';
-        oscillator2.type = 'sine';
+        // Filter for realistic key sound
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(800, audioContext.currentTime);
+        filter.Q.setValueAtTime(2, audioContext.currentTime);
         
-        // Add filter for WhatsApp-like tone
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(2000, audioContext.currentTime);
-        filter.Q.setValueAtTime(1, audioContext.currentTime);
-        
-        // Quick attack and decay like WhatsApp
+        // Quick attack and decay for key press
         gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+        gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.005);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
         
-        // Start and stop oscillators
-        oscillator1.start(audioContext.currentTime);
-        oscillator2.start(audioContext.currentTime);
-        oscillator1.stop(audioContext.currentTime + 0.08);
-        oscillator2.stop(audioContext.currentTime + 0.08);
+        // Noise for mechanical click
+        noiseGain.gain.setValueAtTime(0, audioContext.currentTime);
+        noiseGain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.002);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.02);
+        
+        // Start sounds
+        oscillator.start(audioContext.currentTime);
+        noiseSource.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.05);
+        noiseSource.stop(audioContext.currentTime + 0.02);
       } catch (e) {
         // Fallback for browsers that don't support Web Audio API
-        console.log("WhatsApp typing sound not supported");
+        console.log("Keypad typing sound not supported");
       }
     };
 
@@ -96,8 +111,8 @@ export function HeroSection() {
       if (index < text.length) {
         typingElement.textContent += text.charAt(index);
         
-        // Play WhatsApp typing sound
-        createWhatsAppTypingSound();
+        // Play keypad typing sound
+        createKeypadTypingSound();
         
         index++;
         setTimeout(typeNextChar, 100); // 100ms delay between characters
