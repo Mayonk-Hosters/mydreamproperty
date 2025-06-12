@@ -540,7 +540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update a property
+  // Update a property (PATCH for partial updates)
   app.patch("/api/properties/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -579,6 +579,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For updates, use the partial schema that allows all fields to be optional
       const propertyData = updatePropertySchema.parse(requestData);
       const updatedProperty = await dbStorage.updateProperty(id, propertyData);
+      
+      if (!updatedProperty) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      
+      res.json(updatedProperty);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error updating property:", error);
+      res.status(500).json({ message: "Failed to update property" });
+    }
+  });
+
+  // Update a property (PUT for complete updates - used by admin form)
+  app.put("/api/properties/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid property ID" });
+      }
+
+      const requestData = req.body;
+      
+      // Process the data to handle features and map URL correctly
+      if (requestData.features) {
+        requestData.features = Array.isArray(requestData.features) ? requestData.features : 
+                               (typeof requestData.features === 'string' ? 
+                                 (requestData.features ? JSON.parse(requestData.features) : []) : []);
+      }
+      
+      if (requestData.mapUrl) {
+        requestData.map_url = requestData.mapUrl;
+      }
+      
+      // Handle MahaRERA registration fields
+      const maharera_registered = requestData.maharera_registered === true || 
+                                 requestData.maharera_registered === 'true' || 
+                                 requestData.maharera_registered === 't' || 
+                                 requestData.maharera_registered === '1' || 
+                                 requestData.maharera_registered === 1;
+      
+      const maharera_number = requestData.maharera_number || null;
+      
+      requestData.maharera_registered = maharera_registered;
+      requestData.maharera_number = maharera_number;
+      
+      // For PUT, use the partial schema to allow form updates
+      const propertyData = updatePropertySchema.parse(requestData);
+      console.log(`PUT update for property ${id}:`, JSON.stringify(propertyData, null, 2));
+      const updatedProperty = await dbStorage.updateProperty(id, propertyData);
+      console.log(`Updated property result:`, JSON.stringify(updatedProperty, null, 2));
       
       if (!updatedProperty) {
         return res.status(404).json({ message: "Property not found" });
