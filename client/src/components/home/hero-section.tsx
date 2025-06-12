@@ -83,15 +83,7 @@ export function HeroSection() {
     };
   }, []);
 
-  // Fetch tahsils with properties for quick tags
-  const { data: tahsilsWithProperties } = useQuery({
-    queryKey: ['/api/tehsils-with-properties'],
-    queryFn: async () => {
-      const response = await fetch('/api/tehsils-with-properties');
-      if (!response.ok) throw new Error('Failed to fetch tahsils');
-      return response.json();
-    },
-  });
+
 
   const handleSearch = (e?: React.FormEvent) => {
     // Prevent form submission if called from form submit event
@@ -158,30 +150,7 @@ export function HeroSection() {
               <span id="typing-text" className="border-r-2 border-white animate-blink"></span>
             </p>
 
-            {/* Quick Location Tags */}
-            {tahsilsWithProperties && tahsilsWithProperties.length > 0 && (
-              <div className="mb-8">
-                <div className="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
-                  {tahsilsWithProperties.slice(0, 6).map((tahsil: any) => (
-                    <button
-                      key={tahsil.id}
-                      onClick={() => {
-                        setSearchParams(prev => ({ ...prev, location: tahsil.name }));
-                        // Auto search when clicking quick tag
-                        const queryParams = new URLSearchParams();
-                        queryParams.set("type", searchParams.type);
-                        if (searchParams.propertyType) queryParams.set("propertyType", searchParams.propertyType);
-                        queryParams.set("location", tahsil.name);
-                        setLocation(`/properties?${queryParams.toString()}`);
-                      }}
-                      className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full border border-white/30 hover:bg-white/30 transition-all duration-200 hover:scale-105"
-                    >
-                      {tahsil.name} ({tahsil.propertyCount})
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+
             
             {/* Search Form */}
             <form onSubmit={handleSearch} className="max-w-6xl mx-auto">
