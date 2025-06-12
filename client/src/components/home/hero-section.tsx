@@ -109,7 +109,7 @@ export function HeroSection() {
             
             {/* Subtitle */}
             <p className="text-xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 px-2 font-bold text-white drop-shadow-2xl filter brightness-125">
-              <span className="animate-typing-text">Find your dream property today</span>
+              <span className="animate-running-text">Find your dream property today</span>
             </p>
             
             {/* Compact Search Form */}
