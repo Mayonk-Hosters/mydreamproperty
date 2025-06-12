@@ -47,22 +47,46 @@ export function HeroSection() {
     let audioContext: AudioContext | null = null;
     typingElement.textContent = "";
 
-    // Initialize audio context on first user interaction
+    // Initialize audio context with deployment support
     const initAudio = async () => {
       try {
-        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        if (audioContext.state === 'suspended') {
-          await audioContext.resume();
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioContextClass) {
+          console.log("Web Audio API not supported");
+          return false;
         }
+        
+        audioContext = new AudioContextClass();
+        
+        // Force context resume for deployment environments
+        if (audioContext.state === 'suspended') {
+          try {
+            await audioContext.resume();
+            console.log("Audio context resumed successfully");
+          } catch (resumeError) {
+            console.log("Failed to resume audio context:", resumeError);
+            return false;
+          }
+        }
+        
+        // Verify context is running
+        if (audioContext.state !== 'running') {
+          console.log("Audio context state:", audioContext.state);
+          return false;
+        }
+        
+        console.log("Audio initialized successfully");
+        return true;
       } catch (e) {
-        console.log("Audio not supported");
+        console.log("Audio initialization failed:", e);
+        return false;
       }
     };
 
     // Create typewriter bell start sound
     const createStartSound = async () => {
-      if (!audioContext) await initAudio();
-      if (!audioContext) return;
+      const audioReady = await initAudio();
+      if (!audioReady || !audioContext) return;
       
       try {
         const oscillator = audioContext.createOscillator();
@@ -97,8 +121,8 @@ export function HeroSection() {
 
     // Create typewriter key strike sound
     const createClickSound = async () => {
-      if (!audioContext) await initAudio();
-      if (!audioContext) return;
+      const audioReady = await initAudio();
+      if (!audioReady || !audioContext) return;
       
       try {
         // Create noise buffer for mechanical strike
@@ -181,8 +205,8 @@ export function HeroSection() {
 
     // Create typing completion sound effect
     const createCompletionSound = async () => {
-      if (!audioContext) await initAudio();
-      if (!audioContext) return;
+      const audioReady = await initAudio();
+      if (!audioReady || !audioContext) return;
       
       try {
         // Create a pleasant completion chord
@@ -243,15 +267,24 @@ export function HeroSection() {
       setTimeout(typeNextChar, 300); // Start typing after start sound
     };
 
-    // Enable audio on user interaction
-    const enableAudio = () => {
-      initAudio();
+    // Enable audio on user interaction (deployment fix)
+    const enableAudio = async (event: Event) => {
+      console.log("User interaction detected, enabling audio for deployment...");
+      const audioReady = await initAudio();
+      if (audioReady) {
+        console.log("Audio successfully enabled for production");
+      } else {
+        console.log("Audio initialization failed in production");
+      }
       document.removeEventListener('click', enableAudio);
       document.removeEventListener('touchstart', enableAudio);
+      document.removeEventListener('keydown', enableAudio);
     };
 
-    document.addEventListener('click', enableAudio);
-    document.addEventListener('touchstart', enableAudio);
+    // Multiple interaction listeners for robust deployment audio
+    document.addEventListener('click', enableAudio, { once: true });
+    document.addEventListener('touchstart', enableAudio, { once: true });
+    document.addEventListener('keydown', enableAudio, { once: true });
 
     // Start the entire sequence after a short delay
     const timer = setTimeout(startTyping, 1000);
