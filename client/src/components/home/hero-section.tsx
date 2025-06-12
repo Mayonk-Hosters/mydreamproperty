@@ -141,84 +141,62 @@ export function HeroSection() {
       }
     };
 
-    // Create typewriter key strike sound
+    // Create mechanical keyboard click sound
     const createClickSound = async () => {
       const audioReady = await initAudio();
       if (!audioReady || !audioContext) return;
       
       try {
-        // Create noise buffer for mechanical strike
-        const bufferSize = audioContext.sampleRate * 0.1;
-        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-        const data = buffer.getChannelData(0);
+        // Create main click oscillator
+        const clickOsc = audioContext.createOscillator();
+        const resonanceOsc = audioContext.createOscillator();
         
-        // Generate filtered noise for typewriter strike
-        for (let i = 0; i < bufferSize; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / bufferSize * 5);
-        }
-        
-        const noiseSource = audioContext.createBufferSource();
-        noiseSource.buffer = buffer;
-        
-        // Main strike oscillator
-        const strikeOsc = audioContext.createOscillator();
-        const metalOsc = audioContext.createOscillator();
-        
+        const clickGain = audioContext.createGain();
+        const resonanceGain = audioContext.createGain();
         const masterGain = audioContext.createGain();
-        const noiseGain = audioContext.createGain();
-        const strikeGain = audioContext.createGain();
-        const metalGain = audioContext.createGain();
         
         const filter = audioContext.createBiquadFilter();
         
-        // Connect typewriter audio graph
-        strikeOsc.connect(strikeGain);
-        metalOsc.connect(metalGain);
-        noiseSource.connect(noiseGain);
-        
-        strikeGain.connect(filter);
-        metalGain.connect(filter);
-        noiseGain.connect(filter);
+        // Connect audio graph
+        clickOsc.connect(clickGain);
+        resonanceOsc.connect(resonanceGain);
+        clickGain.connect(filter);
+        resonanceGain.connect(filter);
         filter.connect(masterGain);
         masterGain.connect(audioContext.destination);
         
-        // Typewriter frequencies
-        strikeOsc.frequency.setValueAtTime(80 + Math.random() * 40, audioContext.currentTime);
-        metalOsc.frequency.setValueAtTime(2500 + Math.random() * 500, audioContext.currentTime);
+        // Mechanical keyboard frequencies
+        const baseFreq = 800 + Math.random() * 400; // Random between 800-1200Hz
+        clickOsc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+        resonanceOsc.frequency.setValueAtTime(baseFreq * 1.5, audioContext.currentTime);
         
-        strikeOsc.type = 'square';
-        metalOsc.type = 'triangle';
+        clickOsc.type = 'square';
+        resonanceOsc.type = 'sine';
         
-        // Typewriter filter
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(3000, audioContext.currentTime);
-        filter.Q.setValueAtTime(1, audioContext.currentTime);
+        // Sharp highpass filter for crisp click
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(600, audioContext.currentTime);
+        filter.Q.setValueAtTime(2, audioContext.currentTime);
         
         const now = audioContext.currentTime;
         
-        // Sharp typewriter attack
-        strikeGain.gain.setValueAtTime(0, now);
-        strikeGain.gain.linearRampToValueAtTime(0.2, now + 0.003);
-        strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        // Sharp mechanical click envelope
+        clickGain.gain.setValueAtTime(0, now);
+        clickGain.gain.linearRampToValueAtTime(0.3, now + 0.002);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
         
-        metalGain.gain.setValueAtTime(0, now);
-        metalGain.gain.linearRampToValueAtTime(0.05, now + 0.001);
-        metalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        resonanceGain.gain.setValueAtTime(0, now);
+        resonanceGain.gain.linearRampToValueAtTime(0.1, now + 0.001);
+        resonanceGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
         
-        noiseGain.gain.setValueAtTime(0, now);
-        noiseGain.gain.linearRampToValueAtTime(0.1, now + 0.002);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        masterGain.gain.setValueAtTime(0.6, now);
         
-        masterGain.gain.setValueAtTime(0.8, now);
+        // Start mechanical click
+        clickOsc.start(now);
+        resonanceOsc.start(now);
         
-        // Start typewriter sounds
-        strikeOsc.start(now);
-        metalOsc.start(now);
-        noiseSource.start(now);
-        
-        strikeOsc.stop(now + 0.08);
-        metalOsc.stop(now + 0.04);
-        noiseSource.stop(now + 0.05);
+        clickOsc.stop(now + 0.03);
+        resonanceOsc.stop(now + 0.02);
         
       } catch (e) {
         console.log("Click sound failed");
@@ -270,15 +248,18 @@ export function HeroSection() {
 
     const typeNextChar = () => {
       if (index < text.length) {
-        typingElement.textContent += text.charAt(index);
+        const currentChar = text.charAt(index);
+        typingElement.textContent += currentChar;
         
-        // Play click sound for each character
+        // Play mechanical keyboard click for every character (including spaces)
         createClickSound();
+        console.log(`Typed character ${index + 1}/${text.length}: "${currentChar}"`);
         
         index++;
-        setTimeout(typeNextChar, 100); // 100ms delay between characters
+        setTimeout(typeNextChar, 80); // 80ms delay between characters for faster typing
       } else {
         // Typing completed - play completion sound
+        console.log("Typing completed, playing completion sound");
         createCompletionSound();
       }
     };
