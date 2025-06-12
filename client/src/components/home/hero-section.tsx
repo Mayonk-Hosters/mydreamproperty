@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -26,6 +26,8 @@ export function HeroSection() {
     location: "" // Location search term
   });
   
+  const homeIconRef = useRef<HTMLDivElement>(null);
+  
   // Fetch property types from API
   const { data: propertyTypes, isLoading } = useQuery<PropertyType[]>({
     queryKey: ['/api/property-types'],
@@ -36,6 +38,26 @@ export function HeroSection() {
     queryKey: ['/api/homepage-images'],
     select: (data) => data?.filter(img => img.imageType === 'hero' && img.isActive) || [],
   });
+
+  // Home icon scroll animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-home-icon-entrance');
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    if (homeIconRef.current) {
+      observer.observe(homeIconRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   // Typing animation effect
   useEffect(() => {
@@ -346,8 +368,8 @@ export function HeroSection() {
         <div className="relative z-10 h-full flex items-center justify-center px-4 py-8">
           <div className="text-center w-full">
             
-            {/* Simple Hero Icon */}
-            <div className="mb-8">
+            {/* Hero Icon with Scroll Animation */}
+            <div ref={homeIconRef} className="mb-8 opacity-0 transform translate-y-8">
               <HomeIcon className="h-16 w-16 text-white mx-auto" />
             </div>
             
