@@ -141,62 +141,62 @@ export function HeroSection() {
       }
     };
 
-    // Create mechanical keyboard click sound
+    // Create soft bubble pop sound
     const createClickSound = async () => {
       const audioReady = await initAudio();
       if (!audioReady || !audioContext) return;
       
       try {
-        // Create main click oscillator
-        const clickOsc = audioContext.createOscillator();
-        const resonanceOsc = audioContext.createOscillator();
+        // Create soft pop oscillator
+        const popOsc = audioContext.createOscillator();
+        const subOsc = audioContext.createOscillator();
         
-        const clickGain = audioContext.createGain();
-        const resonanceGain = audioContext.createGain();
+        const popGain = audioContext.createGain();
+        const subGain = audioContext.createGain();
         const masterGain = audioContext.createGain();
         
         const filter = audioContext.createBiquadFilter();
         
-        // Connect audio graph
-        clickOsc.connect(clickGain);
-        resonanceOsc.connect(resonanceGain);
-        clickGain.connect(filter);
-        resonanceGain.connect(filter);
+        // Connect soft pop audio graph
+        popOsc.connect(popGain);
+        subOsc.connect(subGain);
+        popGain.connect(filter);
+        subGain.connect(filter);
         filter.connect(masterGain);
         masterGain.connect(audioContext.destination);
         
-        // Mechanical keyboard frequencies
-        const baseFreq = 800 + Math.random() * 400; // Random between 800-1200Hz
-        clickOsc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
-        resonanceOsc.frequency.setValueAtTime(baseFreq * 1.5, audioContext.currentTime);
+        // Soft bubble pop frequencies
+        const baseFreq = 300 + Math.random() * 200; // Random between 300-500Hz
+        popOsc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+        subOsc.frequency.setValueAtTime(baseFreq * 0.5, audioContext.currentTime);
         
-        clickOsc.type = 'square';
-        resonanceOsc.type = 'sine';
+        popOsc.type = 'sine';
+        subOsc.type = 'triangle';
         
-        // Sharp highpass filter for crisp click
-        filter.type = 'highpass';
-        filter.frequency.setValueAtTime(600, audioContext.currentTime);
-        filter.Q.setValueAtTime(2, audioContext.currentTime);
+        // Soft lowpass filter for warm tone
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, audioContext.currentTime);
+        filter.Q.setValueAtTime(1, audioContext.currentTime);
         
         const now = audioContext.currentTime;
         
-        // Sharp mechanical click envelope
-        clickGain.gain.setValueAtTime(0, now);
-        clickGain.gain.linearRampToValueAtTime(0.3, now + 0.002);
-        clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+        // Gentle bubble pop envelope
+        popGain.gain.setValueAtTime(0, now);
+        popGain.gain.linearRampToValueAtTime(0.15, now + 0.01);
+        popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
         
-        resonanceGain.gain.setValueAtTime(0, now);
-        resonanceGain.gain.linearRampToValueAtTime(0.1, now + 0.001);
-        resonanceGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+        subGain.gain.setValueAtTime(0, now);
+        subGain.gain.linearRampToValueAtTime(0.08, now + 0.005);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
         
-        masterGain.gain.setValueAtTime(0.6, now);
+        masterGain.gain.setValueAtTime(0.4, now);
         
-        // Start mechanical click
-        clickOsc.start(now);
-        resonanceOsc.start(now);
+        // Start soft pop
+        popOsc.start(now);
+        subOsc.start(now);
         
-        clickOsc.stop(now + 0.03);
-        resonanceOsc.stop(now + 0.02);
+        popOsc.stop(now + 0.15);
+        subOsc.stop(now + 0.1);
         
       } catch (e) {
         console.log("Click sound failed");
