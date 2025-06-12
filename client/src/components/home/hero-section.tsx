@@ -97,12 +97,12 @@ export function HeroSection() {
               <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-serif font-bold tracking-wide text-white drop-shadow-2xl filter brightness-110">
                 Welcome To
               </div>
-              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-serif font-bold tracking-wide text-white drop-shadow-2xl filter brightness-110 relative overflow-hidden">
-                <span className="relative inline-block animate-lightning-glow">
+              <div className="text-2xl md:text-5xl lg:text-6xl xl:text-7xl mb-2 md:mb-4 block font-serif font-bold tracking-wide drop-shadow-2xl filter brightness-110 relative overflow-hidden">
+                <span className="relative inline-block animate-gold-glow bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent">
                   My Dream Property
-                  <span className="absolute inset-0 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent animate-lightning-flash"></span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent w-[150%] h-full animate-lightning-strike opacity-60"></span>
-                  <span className="absolute inset-0 shadow-[0_0_20px_rgba(59,130,246,0.8)] animate-lightning-pulse"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-200 bg-clip-text text-transparent animate-gold-shimmer"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-100 to-transparent w-[150%] h-full animate-gold-sweep opacity-70"></span>
+                  <span className="absolute inset-0 shadow-[0_0_25px_rgba(251,191,36,0.8)] animate-gold-pulse"></span>
                 </span>
               </div>
             </h1>
