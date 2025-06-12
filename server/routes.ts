@@ -78,14 +78,39 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
+    console.log('File upload filter check:', {
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      fieldname: file.fieldname,
+      encoding: file.encoding
+    });
     
-    if (mimetype && extname) {
+    // Skip validation for empty uploads or missing files
+    if (!file.originalname || file.originalname === '') {
+      console.log('File rejected - no filename provided');
+      return cb(new Error('No file selected'));
+    }
+    
+    // More permissive image validation
+    const allowedExtensions = /\.(jpeg|jpg|png|gif|webp|bmp|tiff|svg)$/i;
+    const allowedMimeTypes = /^image\//i; // Accept any image MIME type
+    
+    const extname = allowedExtensions.test(file.originalname);
+    const mimetype = allowedMimeTypes.test(file.mimetype || '');
+    
+    console.log('File validation:', { 
+      extname, 
+      mimetype, 
+      originalname: file.originalname,
+      detectedMime: file.mimetype 
+    });
+    
+    if (mimetype || extname) {
+      console.log('File accepted for upload');
       return cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      console.log('File rejected - not an image file');
+      cb(new Error('Only image files are allowed. Please select a JPG, PNG, GIF, or WebP image.'));
     }
   }
 });
