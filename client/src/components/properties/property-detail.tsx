@@ -46,6 +46,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const [isInquiryFormOpen, setIsInquiryFormOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [contactFormData, setContactFormData] = useState({
@@ -78,6 +79,15 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
       setIsFavorite(favorites.includes(propertyId));
     }
   }, [propertyId]);
+
+  // Track current image index when carousel changes
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    carouselApi.on("select", () => {
+      setCurrentImageIndex(carouselApi.selectedScrollSnap());
+    });
+  }, [carouselApi]);
   
   // Toggle favorite status
   const toggleFavorite = () => {
@@ -181,26 +191,36 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             <CarouselNext className="right-2 w-8 h-8 sm:w-10 sm:h-10" />
           </Carousel>
           
-          {/* Image Thumbnails - Hidden on mobile */}
-          <div className="hidden sm:grid grid-cols-4 gap-2 mb-6">
-            {propertyImages.slice(0, 4).map((image, index) => (
-              <div 
-                key={index} 
-                className="aspect-square overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
-                onClick={() => {
-                  if (carouselApi) {
-                    carouselApi.scrollTo(index);
-                  }
-                }}
-              >
-                <img 
-                  src={image} 
-                  alt={`Thumbnail ${index + 1}`} 
-                  className="w-full h-full object-cover" 
-                  loading="lazy"
-                />
+          {/* Image Thumbnails - Show all images */}
+          <div className="hidden sm:block mb-6">
+            <div className="grid grid-cols-6 gap-2">
+              {propertyImages.map((image, index) => (
+                <div 
+                  key={index} 
+                  className={`aspect-square overflow-hidden rounded cursor-pointer border-2 transition-all hover:border-primary ${
+                    index === currentImageIndex ? 'border-primary ring-2 ring-primary/30' : 'border-gray-200'
+                  }`}
+                  onClick={() => {
+                    if (carouselApi) {
+                      carouselApi.scrollTo(index);
+                      setCurrentImageIndex(index);
+                    }
+                  }}
+                >
+                  <img 
+                    src={image} 
+                    alt={`Thumbnail ${index + 1}`} 
+                    className="w-full h-full object-cover" 
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+            {propertyImages.length > 6 && (
+              <div className="text-center mt-2 text-sm text-gray-500">
+                {propertyImages.length} images total
               </div>
-            ))}
+            )}
           </div>
           
           {/* Price Display - Highlighted Section */}

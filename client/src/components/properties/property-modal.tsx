@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { 
   MapPin, 
@@ -42,6 +42,8 @@ interface PropertyModalProps {
 
 export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProps) {
   const [isInquiryFormOpen, setIsInquiryFormOpen] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<any>();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const { data: property, isLoading, error } = useQuery<Property>({
     queryKey: [`/api/properties/${propertyId}`],
@@ -52,6 +54,15 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
   const propertyImages = property && Array.isArray(property.images) && property.images.length > 0 
     ? property.images 
     : [0, 1, 2, 3].map(i => getInteriorImage(i));
+
+  // Track current image index when carousel changes
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    carouselApi.on("select", () => {
+      setCurrentImageIndex(carouselApi.selectedScrollSnap());
+    });
+  }, [carouselApi]);
 
   if (isLoading) {
     return (
@@ -121,7 +132,7 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Property Images */}
             <div>
-              <Carousel className="mb-4">
+              <Carousel className="mb-4" setApi={setCarouselApi}>
                 <CarouselContent>
                   {propertyImages.map((image, index) => (
                     <CarouselItem key={index}>
@@ -139,12 +150,20 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
                 <CarouselNext className="right-1" />
               </Carousel>
 
-              {/* Image Thumbnails */}
+              {/* Image Thumbnails - Show all with click functionality */}
               <div className="grid grid-cols-4 gap-2">
-                {propertyImages.slice(0, 4).map((image, index) => (
+                {propertyImages.map((image, index) => (
                   <div 
                     key={index} 
-                    className="aspect-square overflow-hidden rounded cursor-pointer border-2 hover:border-primary transition-all"
+                    className={`aspect-square overflow-hidden rounded cursor-pointer border-2 transition-all hover:border-primary ${
+                      index === currentImageIndex ? 'border-primary ring-2 ring-primary/30' : 'border-gray-200'
+                    }`}
+                    onClick={() => {
+                      if (carouselApi) {
+                        carouselApi.scrollTo(index);
+                        setCurrentImageIndex(index);
+                      }
+                    }}
                   >
                     <img 
                       src={image} 
@@ -154,6 +173,11 @@ export function PropertyModal({ propertyId, isOpen, onClose }: PropertyModalProp
                   </div>
                 ))}
               </div>
+              {propertyImages.length > 4 && (
+                <div className="text-center mt-2 text-xs text-gray-500">
+                  {propertyImages.length} images total
+                </div>
+              )}
             </div>
 
             {/* Property Details */}
