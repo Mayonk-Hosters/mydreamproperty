@@ -108,7 +108,7 @@ export function HeroSection() {
             </h1>
             
             {/* Subtitle */}
-            <p className="text-xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 px-2 font-bold text-white drop-shadow-2xl filter brightness-125" style={{ fontFamily: '"Montserrat", "Lato", "Poppins", "Inter", sans-serif' }}>
+            <p className="text-xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 px-2 font-bold text-white drop-shadow-2xl filter brightness-125" style={{ fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif' }}>
               <span className="animate-running-text">Find your dream property today</span>
             </p>
             
