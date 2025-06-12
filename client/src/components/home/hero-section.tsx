@@ -71,25 +71,24 @@ export function HeroSection() {
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Rising tone for start
-        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-        oscillator.frequency.linearRampToValueAtTime(800, audioContext.currentTime + 0.3);
-        oscillator.type = 'sine';
+        // Gentle bell-like start
+        oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
+        oscillator.type = 'triangle';
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
         
         oscillator.start(now);
-        oscillator.stop(now + 0.3);
+        oscillator.stop(now + 0.4);
         
       } catch (e) {
         console.log("Start sound failed");
       }
     };
 
-    // Create typing click sound effect
+    // Create soft pop typing sound effect
     const createClickSound = async () => {
       if (!audioContext) await initAudio();
       if (!audioContext) return;
@@ -97,20 +96,27 @@ export function HeroSection() {
       try {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
         
-        oscillator.connect(gainNode);
+        oscillator.connect(filter);
+        filter.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        oscillator.frequency.setValueAtTime(800 + Math.random() * 200, audioContext.currentTime);
-        oscillator.type = 'square';
+        // Soft pop sound
+        oscillator.frequency.setValueAtTime(1000 + Math.random() * 500, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        // Low pass filter for softer sound
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1500, audioContext.currentTime);
         
         const now = audioContext.currentTime;
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.25, now + 0.002);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
         
         oscillator.start(now);
-        oscillator.stop(now + 0.03);
+        oscillator.stop(now + 0.05);
         
       } catch (e) {
         console.log("Click sound failed");
