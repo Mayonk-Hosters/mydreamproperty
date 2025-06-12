@@ -321,8 +321,8 @@
 
 .animate-running-text {
   display: inline-block;
-  font-style: italic;
-  transform: skewX(-10deg);
+  font-style: normal;
+  transform: skewX(0deg);
   animation: slideInRunning 2s ease-out;
   background: linear-gradient(45deg, white, #f0f0f0, white);
   background-size: 200% 200%;
