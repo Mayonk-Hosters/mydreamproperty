@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { 
   MapPin, 
   Home, 
@@ -168,7 +169,37 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   // No need for the handleContactFormChange and handleContactFormSubmit 
   // functions as we'll be using the InquiryForm component instead
 
+  // Get current URL for sharing
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const ogImageUrl = `/api/og-image?id=${propertyId}`;
+  const description = `${property.type === 'sale' ? 'Buy' : 'Rent'} this ${property.propertyType} in ${property.location}. ${property.beds} beds, ${property.baths} baths, ${property.area} sqft. Price: ${formatCurrency(property.price)}`;
+
   return (
+    <>
+      <Helmet>
+        <title>{property.title} - My Dream Property</title>
+        <meta name="description" content={description} />
+        
+        {/* Open Graph meta tags for social sharing */}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={property.title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:site_name" content="My Dream Property" />
+        
+        {/* Twitter Card meta tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={property.title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={ogImageUrl} />
+        
+        {/* Additional meta tags */}
+        <meta name="keywords" content={`${property.propertyType}, ${property.location}, ${property.type === 'sale' ? 'buy' : 'rent'}, real estate, Maharashtra, property`} />
+      </Helmet>
+    
     <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-2">
@@ -775,5 +806,6 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
         />
       )}
     </div>
+    </>
   );
 }

@@ -2611,6 +2611,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Open Graph image generation endpoint
+  app.get('/api/og-image', async (req, res) => {
+    try {
+      const propertyId = req.query.id;
+      let property = null;
+      
+      if (propertyId) {
+        property = await dbStorage.getProperty(Number(propertyId));
+      }
+      
+      // Generate SVG for Open Graph image
+      const title = property?.title || "My Dream Property - Premium Real Estate";
+      const price = property?.price ? `₹${(property.price / 100000).toFixed(1)}L` : "Premium Properties";
+      const location = property?.location || "Maharashtra, India";
+      const beds = property?.beds || "";
+      const baths = property?.baths || "";
+      const area = property?.area || "";
+      
+      const svg = `
+        <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#2563EB;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Background -->
+          <rect width="1200" height="630" fill="url(#grad1)"/>
+          
+          <!-- Content Area -->
+          <rect x="60" y="60" width="1080" height="510" fill="white" rx="20" opacity="0.95"/>
+          
+          <!-- Title -->
+          <text x="100" y="150" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#1F2937">
+            ${title.length > 45 ? title.substring(0, 42) + '...' : title}
+          </text>
+          
+          <!-- Price -->
+          <text x="100" y="220" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#2563EB">
+            ${price}
+          </text>
+          
+          <!-- Location -->
+          <text x="100" y="280" font-family="Arial, sans-serif" font-size="24" fill="#6B7280">
+            📍 ${location}
+          </text>
+          
+          <!-- Property Details -->
+          ${beds ? `<text x="100" y="340" font-family="Arial, sans-serif" font-size="20" fill="#374151">🛏️ ${beds} Beds</text>` : ''}
+          ${baths ? `<text x="250" y="340" font-family="Arial, sans-serif" font-size="20" fill="#374151">🚿 ${baths} Baths</text>` : ''}
+          ${area ? `<text x="400" y="340" font-family="Arial, sans-serif" font-size="20" fill="#374151">📐 ${area} sqft</text>` : ''}
+          
+          <!-- Footer -->
+          <text x="100" y="480" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#2563EB">
+            My Dream Property
+          </text>
+          <text x="100" y="520" font-family="Arial, sans-serif" font-size="18" fill="#6B7280">
+            Your trusted real estate partner in Maharashtra
+          </text>
+          
+          <!-- Logo/Icon Area -->
+          <circle cx="1000" cy="200" r="80" fill="#2563EB" opacity="0.1"/>
+          <text x="1000" y="220" font-family="Arial, sans-serif" font-size="60" text-anchor="middle" fill="#2563EB">🏠</text>
+        </svg>
+      `;
+      
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.send(svg);
+      
+    } catch (error) {
+      console.error('Error generating OG image:', error);
+      res.status(500).json({ message: 'Failed to generate image' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
