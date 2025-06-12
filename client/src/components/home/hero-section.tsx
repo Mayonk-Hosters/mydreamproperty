@@ -46,35 +46,59 @@ export function HeroSection() {
     let index = 0;
     typingElement.textContent = "";
 
-    // Create simple, loud typing sound effect
-    const createTypingSound = () => {
+    // Create Samsung keyboard typing sound effect
+    const createSamsungTypingSound = () => {
       try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         
-        // Create oscillator for typing sound
-        const oscillator = audioContext.createOscillator();
+        // Create oscillators for Samsung's characteristic sound
+        const mainOsc = audioContext.createOscillator();
+        const subOsc = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
+        const subGain = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
         
-        // Connect audio nodes
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        // Connect audio graph
+        mainOsc.connect(gainNode);
+        subOsc.connect(subGain);
+        gainNode.connect(filter);
+        subGain.connect(filter);
+        filter.connect(audioContext.destination);
         
-        // Set frequency for pleasant typing sound
-        oscillator.frequency.setValueAtTime(600 + Math.random() * 200, audioContext.currentTime);
-        oscillator.type = 'sine';
+        // Samsung keyboard frequencies - soft but audible
+        mainOsc.frequency.setValueAtTime(1200 + Math.random() * 300, audioContext.currentTime);
+        subOsc.frequency.setValueAtTime(800 + Math.random() * 200, audioContext.currentTime);
         
-        // Quick attack and decay for crisp sound
+        // Use sine waves for soft Samsung sound
+        mainOsc.type = 'sine';
+        subOsc.type = 'sine';
+        
+        // Soft lowpass filter for Samsung's muted character
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2500, audioContext.currentTime);
+        filter.Q.setValueAtTime(1.5, audioContext.currentTime);
+        
+        // Samsung envelope - quick but soft
         const now = audioContext.currentTime;
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01); // Increased volume
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
         
-        // Start and stop
-        oscillator.start(now);
-        oscillator.stop(now + 0.08);
+        // Main tone
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.005);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        
+        // Sub tone for richness
+        subGain.gain.setValueAtTime(0, now);
+        subGain.gain.linearRampToValueAtTime(0.08, now + 0.003);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        
+        // Start sounds
+        mainOsc.start(now);
+        subOsc.start(now);
+        mainOsc.stop(now + 0.06);
+        subOsc.stop(now + 0.05);
         
       } catch (e) {
-        console.log("Typing sound not supported");
+        console.log("Samsung typing sound not supported");
       }
     };
 
@@ -82,8 +106,8 @@ export function HeroSection() {
       if (index < text.length) {
         typingElement.textContent += text.charAt(index);
         
-        // Play typing sound
-        createTypingSound();
+        // Play Samsung typing sound
+        createSamsungTypingSound();
         
         index++;
         setTimeout(typeNextChar, 100); // 100ms delay between characters
