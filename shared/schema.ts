@@ -75,7 +75,7 @@ export const properties = pgTable("properties", {
   propertyNumber: text("property_number").unique(),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  price: real("price").notNull(),
+  price: decimal("price").notNull(),
   location: text("location").notNull(),
   address: text("address").notNull(),
   beds: integer("beds").notNull(),
@@ -268,6 +268,8 @@ export const insertPropertySchema = createInsertSchema(properties).omit({
   districtId: true,
   talukaId: true,
   tehsilId: true
+}).extend({
+  price: z.number().nonnegative("Price must be a non-negative number"),
 });
 
 // Schema for property updates - all fields optional for partial updates
