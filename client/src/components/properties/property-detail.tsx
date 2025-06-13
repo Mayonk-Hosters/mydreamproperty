@@ -14,7 +14,8 @@ import {
   Tag,
   CheckCircle,
   MessageSquare,
-  ExternalLink
+  ExternalLink,
+  Star
 } from "lucide-react";
 import { InquiryForm } from "./inquiry-form";
 import { Button } from "@/components/ui/button";
