@@ -139,9 +139,10 @@ export function Footer() {
               href="https://www.facebook.com/rahuldhapatkar27" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="ml-1 text-blue-500 hover:text-blue-400 underline transition-colors duration-200 cursor-pointer"
+              className="ml-1 relative inline-block bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400 bg-clip-text text-transparent font-bold hover:scale-105 transition-transform duration-200 cursor-pointer"
             >
               Rahoul Dhappatkar
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-200 to-transparent w-[150%] h-full animate-pulse opacity-60"></span>
             </a>
           </p>
         </div>
