@@ -120,10 +120,10 @@ export function Footer() {
         </div>
         
         <div className="pt-6 border-t border-gray-800 text-center text-gray-500 text-xs sm:text-sm">
-          <p>&copy; 
+          <p>
             <a 
               href="/admin-access" 
-              className="text-gray-500 hover:text-gray-400 mx-1"
+              className="text-gray-500 hover:text-gray-400 mr-1"
               title="Admin Access"
             >
               @
