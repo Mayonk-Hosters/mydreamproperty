@@ -223,26 +223,27 @@ export function PropertyCard({ property }: PropertyCardProps) {
           )}
           
           {/* Agent Information */}
-          <div className="pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center mb-3">
-            <div className="flex items-center">
-              <img 
-                src={agent?.image || `https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40`} 
-                alt={agent?.name || "Agent"} 
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
-                loading="lazy"
-              />
-              <span className="ml-1.5 sm:ml-2 text-xs sm:text-sm">
-                {agent?.name || 'Loading...'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
+          <div className="pt-2 sm:pt-3 border-t border-gray-100 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <img 
+                  src={agent?.image || `https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40`} 
+                  alt={agent?.name || "Agent"} 
+                  className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
+                  loading="lazy"
+                />
+                <span className="ml-1.5 sm:ml-2 text-xs sm:text-sm font-medium">
+                  {agent?.name || 'Loading...'}
+                </span>
+              </div>
+              
               {/* Mobile Share Button */}
               <div className="relative md:hidden">
                 <Button 
                   ref={shareButtonRef}
                   variant="outline" 
                   size="sm"
-                  className="h-7 w-7 p-0"
+                  className="h-8 w-8 p-0"
                   onClick={handleToggleShare}
                   aria-label={`Share ${property.title}`}
                   aria-expanded={isShareOpen}
@@ -309,38 +310,41 @@ export function PropertyCard({ property }: PropertyCardProps) {
                   </div>
                 )}
               </div>
-              
+            </div>
+            
+            {/* Action Buttons Grid - Better Spacing and Alignment */}
+            <div className="space-y-2">
+              {/* View Details Button - Full Width */}
               <Link href={`/property/${property.id}`}>
                 <Button 
                   variant="default" 
-                  size="sm"
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs sm:text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
                 >
-                  <Eye className="mr-1" size={14} />
+                  <Eye className="mr-2" size={16} />
                   View Details
                 </Button>
               </Link>
+              
+              {/* Two-Column Layout for Other Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <Button 
+                  variant="default"
+                  className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
+                  onClick={handleInquiry}
+                >
+                  <MessageSquare className="mr-2" size={16} /> 
+                  Interested
+                </Button>
+                <Button 
+                  variant="default"
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
+                  onClick={handleQuickView}
+                >
+                  <Eye className="mr-2" size={16} /> 
+                  Quick View
+                </Button>
+              </div>
             </div>
-          </div>
-
-          {/* Mobile-Friendly Action Buttons */}
-          <div className="flex gap-2">
-            <Button 
-              variant="default"
-              className="flex-1 text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-              onClick={handleInquiry}
-            >
-              <MessageSquare className="mr-2" size={16} /> 
-              Interested in this property?
-            </Button>
-            <Button 
-              variant="default"
-              size="sm"
-              className="hidden md:block bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-              onClick={handleQuickView}
-            >
-              <Eye className="mr-2" size={16} /> Quick View
-            </Button>
           </div>
         </div>
       </div>
