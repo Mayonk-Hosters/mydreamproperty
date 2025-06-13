@@ -1,18 +1,16 @@
 import nodemailer from 'nodemailer';
 
-// Default admin email
-const ADMIN_EMAIL = 'rahul.dhapatkar1010@gmail.com';
+// Admin email from environment variables
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@localhost.com';
 
-// Create a transporter using Gmail SMTP
-// This will work with any SMTP service, not just Gmail
+// Create a transporter using configurable SMTP settings
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.EMAIL_PORT || '587'),
+  secure: process.env.EMAIL_SECURE === 'true',
   auth: {
-    user: process.env.EMAIL_USER || 'business@constroindia.com',
-    pass: process.env.EMAIL_PASSWORD || 'dummy' // Will be set via environment
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   },
   // Enhanced configuration for better compatibility
   tls: {
