@@ -26,14 +26,18 @@ export function HeroSection() {
     location: "" // Combined location search term
   });
 
-  const handleBuyClick = () => {
-    console.log('Buy clicked, setting to buy');
+  const handleBuyClick = (e?: React.MouseEvent) => {
+    console.log('Buy button clicked, current activeTab:', activeTab);
+    console.log('Buy tab set, should be highlighted');
+    if (e) e.stopPropagation();
     setActiveTab('buy');
     setSearchParams(prev => ({ ...prev, type: 'buy' }));
   };
   
-  const handleRentClick = () => {
-    console.log('Rent clicked, setting to rent');
+  const handleRentClick = (e?: React.MouseEvent) => {
+    console.log('Rent button clicked, current activeTab:', activeTab);
+    console.log('Rent tab set, should be highlighted');
+    if (e) e.stopPropagation();
     setActiveTab('rent');
     setSearchParams(prev => ({ ...prev, type: 'rent' }));
   };
@@ -179,16 +183,16 @@ export function HeroSection() {
                 
                 {/* Property Type Toggle */}
                 <div className="flex justify-center mb-6">
-                  <div className="bg-gray-100 rounded-xl p-1 flex">
+                  <div className="bg-gray-100 rounded-lg p-1 flex gap-1">
                     <div
                       onClick={handleBuyClick}
                       style={{
                         backgroundColor: activeTab === 'buy' ? '#2563eb' : 'transparent',
-                        color: activeTab === 'buy' ? 'white' : '#2563eb'
+                        color: activeTab === 'buy' ? 'white' : '#6b7280'
                       }}
-                      className="px-6 py-2 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:bg-blue-50 shadow-lg transform scale-105"
+                      className="px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer hover:bg-blue-50"
                     >
-                      <span className="flex items-center gap-2 pointer-events-none">
+                      <span className="flex items-center gap-2">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                         </svg>
@@ -199,11 +203,11 @@ export function HeroSection() {
                       onClick={handleRentClick}
                       style={{
                         backgroundColor: activeTab === 'rent' ? '#059669' : 'transparent',
-                        color: activeTab === 'rent' ? 'white' : '#059669'
+                        color: activeTab === 'rent' ? 'white' : '#6b7280'
                       }}
-                      className="px-6 py-2 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:bg-emerald-50 shadow-lg transform scale-105"
+                      className="px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer hover:bg-emerald-50"
                     >
-                      <span className="flex items-center gap-2 pointer-events-none">
+                      <span className="flex items-center gap-2">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
