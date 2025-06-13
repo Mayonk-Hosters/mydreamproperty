@@ -210,15 +210,16 @@ export default function PropertiesPage() {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Buy button clicked');
+                console.log('Buy button clicked, current activeTab:', activeTab);
                 setActiveTab('buy');
                 setFilters(prev => ({ ...prev, type: 'buy', minPrice: 0, maxPrice: 0 }));
+                console.log('Buy tab set, should be highlighted');
               }}
-              className={`px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer ${
-                activeTab === 'buy' 
-                  ? 'bg-blue-600 text-white shadow-lg' 
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-              }`}
+              style={{
+                backgroundColor: activeTab === 'buy' ? '#2563eb' : 'transparent',
+                color: activeTab === 'buy' ? 'white' : '#6b7280'
+              }}
+              className="px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer hover:bg-blue-50"
             >
               <span className="flex items-center gap-2 pointer-events-none">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -231,15 +232,16 @@ export default function PropertiesPage() {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Rent button clicked');
+                console.log('Rent button clicked, current activeTab:', activeTab);
                 setActiveTab('rent');
                 setFilters(prev => ({ ...prev, type: 'rent', minPrice: 0, maxPrice: 0 }));
+                console.log('Rent tab set, should be highlighted');
               }}
-              className={`px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer ${
-                activeTab === 'rent' 
-                  ? 'bg-emerald-600 text-white shadow-lg' 
-                  : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
-              }`}
+              style={{
+                backgroundColor: activeTab === 'rent' ? '#059669' : 'transparent',
+                color: activeTab === 'rent' ? 'white' : '#6b7280'
+              }}
+              className="px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer hover:bg-emerald-50"
             >
               <span className="flex items-center gap-2 pointer-events-none">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
