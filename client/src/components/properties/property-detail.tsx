@@ -405,7 +405,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               <TabsList className="grid grid-cols-3 w-full">
                 <TabsTrigger value="details" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Details</TabsTrigger>
                 <TabsTrigger value="features" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Features</TabsTrigger>
-                <TabsTrigger value="agent" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Agent</TabsTrigger>
+                <TabsTrigger value="agent" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Real Estate Consultant</TabsTrigger>
               </TabsList>
               <TabsContent value="details">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
