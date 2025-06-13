@@ -19,11 +19,30 @@ import { DEFAULT_PROPERTY_TYPES, PropertyType, HomepageImage } from "@shared/sch
 export function HeroSection() {
   const [, setLocation] = useLocation();
   const { settings } = useSiteSettings();
+  const [activeTab, setActiveTab] = useState<"buy" | "rent">("buy");
   const [searchParams, setSearchParams] = useState({
     type: "buy", // buy or rent
     propertyType: "", // House, Apartment, etc.
     location: "" // Combined location search term
   });
+
+  const handleBuyClick = () => {
+    console.log('Buy clicked, setting to buy');
+    setActiveTab('buy');
+    setSearchParams(prev => ({ ...prev, type: 'buy' }));
+  };
+  
+  const handleRentClick = () => {
+    console.log('Rent clicked, setting to rent');
+    setActiveTab('rent');
+    setSearchParams(prev => ({ ...prev, type: 'rent' }));
+  };
+
+  // Keep activeTab and searchParams.type in sync
+  useEffect(() => {
+    console.log('ActiveTab state changed to:', activeTab);
+    setSearchParams(prev => ({ ...prev, type: activeTab }));
+  }, [activeTab]);
   
   const homeIconRef = useRef<HTMLDivElement>(null);
   
@@ -161,28 +180,36 @@ export function HeroSection() {
                 {/* Property Type Toggle */}
                 <div className="flex justify-center mb-6">
                   <div className="bg-gray-100 rounded-xl p-1 flex">
-                    <button
-                      type="button"
-                      onClick={() => setSearchParams(prev => ({ ...prev, type: "buy" }))}
-                      className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200 ${
-                        searchParams.type === "buy"
-                          ? "bg-blue-600 text-white shadow-lg transform scale-105"
-                          : "text-blue-600 hover:bg-blue-50"
-                      }`}
+                    <div
+                      onClick={handleBuyClick}
+                      style={{
+                        backgroundColor: activeTab === 'buy' ? '#2563eb' : 'transparent',
+                        color: activeTab === 'buy' ? 'white' : '#2563eb'
+                      }}
+                      className="px-6 py-2 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:bg-blue-50 shadow-lg transform scale-105"
                     >
-                      Buy
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSearchParams(prev => ({ ...prev, type: "rent" }))}
-                      className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200 ${
-                        searchParams.type === "rent"
-                          ? "bg-emerald-600 text-white shadow-lg transform scale-105"
-                          : "text-emerald-600 hover:bg-emerald-50"
-                      }`}
+                      <span className="flex items-center gap-2 pointer-events-none">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                        </svg>
+                        Buy
+                      </span>
+                    </div>
+                    <div
+                      onClick={handleRentClick}
+                      style={{
+                        backgroundColor: activeTab === 'rent' ? '#059669' : 'transparent',
+                        color: activeTab === 'rent' ? 'white' : '#059669'
+                      }}
+                      className="px-6 py-2 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:bg-emerald-50 shadow-lg transform scale-105"
                     >
-                      Rent
-                    </button>
+                      <span className="flex items-center gap-2 pointer-events-none">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Rent
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -236,7 +263,7 @@ export function HeroSection() {
                     <Button 
                       type="submit"
                       className={`w-full h-12 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105 ${
-                        searchParams.type === "buy" 
+                        activeTab === "buy" 
                           ? "bg-blue-600 hover:bg-blue-700" 
                           : "bg-emerald-600 hover:bg-emerald-700"
                       }`}
