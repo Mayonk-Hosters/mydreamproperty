@@ -20,7 +20,7 @@ import PropertyCalculatorPage from "@/pages/property-calculator";
 import HomeLoanPage from "@/pages/home-loan";
 import LoginPage from "@/pages/login";
 import MDPPropertiesPage from "@/pages/mdp-properties-page";
-import DirectAdminAccess from "@/pages/direct-admin-access";
+import InstantAdmin from "@/pages/instant-admin";
 import { AgentProfile } from "@/pages/agent-profile";
 
 // Agent Pages
@@ -58,7 +58,7 @@ function Router() {
   return (
     <Switch>
       {/* Standalone pages without Layout wrapper */}
-      <Route path="/admin-access" component={DirectAdminAccess} />
+      <Route path="/admin-access" component={InstantAdmin} />
       <Route path="/login" component={LoginPage} />
       
       {/* Public pages */}
