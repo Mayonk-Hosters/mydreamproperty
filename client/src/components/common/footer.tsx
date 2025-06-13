@@ -120,17 +120,18 @@ export function Footer() {
         </div>
         
         <div className="pt-6 border-t border-gray-800 text-center text-gray-500 text-xs sm:text-sm">
-          <p>&copy; {currentYear} {settings.siteName}. All rights reserved.</p>
-          <p className="mt-2 text-xs">
-            Optimized for iOS and Android devices
-            <span className="mx-1">·</span>
+          <p>&copy; 
             <a 
               href="/admin-access" 
-              className="text-gray-500 hover:text-gray-400"
-              title="Site version 2.5.1"
+              className="text-gray-500 hover:text-gray-400 mx-1"
+              title="Admin Access"
             >
-              v2.5.1
+              @
             </a>
+            {currentYear} {settings.siteName}. All rights reserved.
+          </p>
+          <p className="mt-2 text-xs">
+            Optimized for iOS and Android devices
           </p>
           <p className="mt-3 text-xs font-medium">
             This site is powered by 
