@@ -39,7 +39,7 @@ export default function InstantAdmin() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: '#f8f9fa',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -47,37 +47,25 @@ export default function InstantAdmin() {
     }}>
       <div style={{
         background: 'white',
-        borderRadius: '12px',
-        padding: '40px',
-        maxWidth: '400px',
+        borderRadius: '8px',
+        padding: '20px 30px',
+        maxWidth: '350px',
         width: '100%',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        border: '1px solid #e0e0e0'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <div style={{
-            width: '60px',
-            height: '60px',
-            background: 'linear-gradient(45deg, #667eea, #764ba2)',
-            borderRadius: '50%',
-            margin: '0 auto 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontSize: '24px',
-            fontWeight: 'bold'
-          }}>🔐</div>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h1 style={{ 
-            fontSize: '28px', 
-            fontWeight: 'bold', 
+            fontSize: '20px', 
+            fontWeight: '600', 
             color: '#333',
-            margin: '0 0 8px 0'
+            margin: '0 0 5px 0'
           }}>Admin Login</h1>
-          <p style={{ color: '#666', margin: 0 }}>My Dream Property Dashboard</p>
+          <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>My Dream Property</p>
         </div>
 
         <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '15px' }}>
             <input
               type="text"
               placeholder="Username"
@@ -85,21 +73,21 @@ export default function InstantAdmin() {
               onChange={(e) => setUsername(e.target.value)}
               style={{
                 width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e1e5e9',
-                borderRadius: '8px',
-                fontSize: '16px',
+                padding: '10px 12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '14px',
                 outline: 'none',
                 transition: 'border-color 0.2s',
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
+              onBlur={(e) => e.target.style.borderColor = '#ddd'}
               required
             />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '15px' }}>
             <input
               type="password"
               placeholder="Password"
@@ -107,16 +95,16 @@ export default function InstantAdmin() {
               onChange={(e) => setPassword(e.target.value)}
               style={{
                 width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e1e5e9',
-                borderRadius: '8px',
-                fontSize: '16px',
+                padding: '10px 12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '14px',
                 outline: 'none',
                 transition: 'border-color 0.2s',
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
+              onBlur={(e) => e.target.style.borderColor = '#ddd'}
               required
             />
           </div>
@@ -125,10 +113,10 @@ export default function InstantAdmin() {
             <div style={{
               background: '#fee',
               color: '#c53030',
-              padding: '12px',
-              borderRadius: '8px',
-              marginBottom: '20px',
-              fontSize: '14px'
+              padding: '8px 10px',
+              borderRadius: '4px',
+              marginBottom: '15px',
+              fontSize: '13px'
             }}>
               {error}
             </div>
@@ -139,13 +127,13 @@ export default function InstantAdmin() {
             disabled={isLoading}
             style={{
               width: '100%',
-              padding: '14px',
-              background: isLoading ? '#ccc' : 'linear-gradient(45deg, #667eea, #764ba2)',
+              padding: '10px',
+              background: isLoading ? '#ccc' : '#667eea',
               color: 'white',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: '500',
               cursor: isLoading ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s'
             }}
@@ -154,7 +142,7 @@ export default function InstantAdmin() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '25px' }}>
+        <div style={{ textAlign: 'center', marginTop: '15px' }}>
           <button
             onClick={() => window.location.href = '/'}
             style={{
@@ -163,7 +151,7 @@ export default function InstantAdmin() {
               color: '#667eea',
               textDecoration: 'underline',
               cursor: 'pointer',
-              fontSize: '14px'
+              fontSize: '12px'
             }}
           >
             Back to Website
