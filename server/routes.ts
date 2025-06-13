@@ -3,7 +3,6 @@ import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { db } from "./db";
 import { pool } from "./db";
-import { eq } from "drizzle-orm";
 import { hashPassword } from "./auth";
 
 import * as XLSX from 'xlsx';
@@ -847,14 +846,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Insert the rating
-      const [newRating] = await db.insert(agentRatings).values(validatedData).returning();
+      const [newRating] = await db.insert(agentRatings).values({
+        agentId: validatedData.agentId,
+        rating: validatedData.rating
+      }).returning();
 
       // Calculate new average rating for the agent
       const allRatings = await db.select().from(agentRatings).where(eq(agentRatings.agentId, agentId));
       const averageRating = allRatings.reduce((sum, rating) => sum + rating.rating, 0) / allRatings.length;
 
-      // Update agent's rating
-      await db.update(agents).set({ rating: averageRating }).where(eq(agents.id, agentId));
+      // Update agent's rating - convert to string to match schema
+      await db.update(agents).set({ 
+        rating: averageRating.toFixed(1) 
+      }).where(eq(agents.id, agentId));
 
       res.status(201).json(newRating);
     } catch (error) {
