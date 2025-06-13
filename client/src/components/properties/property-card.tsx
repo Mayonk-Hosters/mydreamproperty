@@ -318,7 +318,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
               <Link href={`/property/${property.id}`}>
                 <Button 
                   variant="default" 
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
+                  className="w-full bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
                 >
                   <Eye className="mr-2" size={16} />
                   View Details
@@ -329,7 +329,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <Button 
                   variant="default"
-                  className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
                   onClick={handleInquiry}
                 >
                   <MessageSquare className="mr-2" size={16} /> 
@@ -337,7 +337,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
                 </Button>
                 <Button 
                   variant="default"
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
+                  className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 h-10"
                   onClick={handleQuickView}
                 >
                   <Eye className="mr-2" size={16} /> 
