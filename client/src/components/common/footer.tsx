@@ -133,17 +133,19 @@ export function Footer() {
           <p className="mt-2 text-xs">
             Optimized for iOS and Android devices
           </p>
-          <p className="mt-3 text-xs font-medium">
-            This site is powered by 
-            <a 
-              href="https://www.facebook.com/rahuldhapatkar27" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="ml-1 relative inline-block bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400 bg-clip-text text-transparent font-bold hover:scale-105 transition-transform duration-200 cursor-pointer"
-            >
-              Rahoul Dhappatkar
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-200 to-transparent w-[150%] h-full animate-pulse opacity-60"></span>
-            </a>
+          <p className="mt-3 text-xs font-medium relative overflow-hidden">
+            <span className="relative inline-block bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-clip-text text-transparent animate-pulse">
+              This site is powered by 
+              <a 
+                href="https://www.facebook.com/rahuldhapatkar27" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="ml-1 relative inline-block bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400 bg-clip-text text-transparent font-bold hover:scale-105 transition-transform duration-200 cursor-pointer"
+              >
+                Rahoul Dhappatkar
+              </a>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent w-[200%] h-full opacity-30 animate-sweep"></span>
+            </span>
           </p>
         </div>
       </div>
