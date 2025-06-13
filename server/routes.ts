@@ -56,11 +56,21 @@ import MemoryStore from "memorystore";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 import mdpPropertiesRoutes from './routes/mdp-properties';
 
-// Ensure upload directory exists
-const uploadDir = path.join(process.cwd(), 'static', 'uploads');
+// Ensure upload directory exists with proper path resolution for production
+const getUploadDir = () => {
+  if (process.env.NODE_ENV === 'production') {
+    const currentDir = dirname(fileURLToPath(import.meta.url));
+    return path.join(currentDir, '..', 'static', 'uploads');
+  }
+  return path.join(process.cwd(), 'static', 'uploads');
+};
+
+const uploadDir = getUploadDir();
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

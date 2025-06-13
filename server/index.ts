@@ -3,14 +3,24 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const app = express();
 // Increase size limit for JSON payloads to handle image uploads (50MB)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.join(process.cwd(), 'static', 'uploads')));
+// Serve uploaded files statically with proper path resolution for production
+const getUploadsPath = () => {
+  if (process.env.NODE_ENV === 'production') {
+    const currentDir = dirname(fileURLToPath(import.meta.url));
+    return path.join(currentDir, '..', 'static', 'uploads');
+  }
+  return path.join(process.cwd(), 'static', 'uploads');
+};
+
+app.use('/uploads', express.static(getUploadsPath()));
 
 app.use((req, res, next) => {
   const start = Date.now();
