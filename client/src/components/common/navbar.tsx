@@ -20,6 +20,15 @@ export function Navbar() {
   const [location] = useLocation();
   const { settings } = useSiteSettings();
   
+  // Get current URL parameters for active state detection
+  const [currentParams, setCurrentParams] = useState('');
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentParams(window.location.search);
+    }
+  }, [location]);
+  
   // Fetch contact information for customer care number
   const { data: contactInfo } = useQuery<{
     id: number;
@@ -139,13 +148,20 @@ export function Navbar() {
             <div className="flex items-center space-x-1">
               <Link 
                 href="/properties?type=buy" 
-                className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location === '/properties' || (location.includes('/properties') && location.includes('type=buy')) ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
+                className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${
+                  (location === '/properties' && currentParams.includes('type=buy')) || 
+                  (location === '/properties' && !currentParams.includes('type=')) ? 
+                  'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                }`}
               >
                 Buy
               </Link>
               <Link 
                 href="/properties?type=rent" 
-                className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${location.includes('type=rent') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}
+                className={`font-medium text-base px-4 py-2 rounded-md transition-colors duration-200 ${
+                  location === '/properties' && currentParams.includes('type=rent') ? 
+                  'bg-emerald-600 text-white shadow-lg' : 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50'
+                }`}
               >
                 Rent
               </Link>
