@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import { db } from "./db";
 import { pool } from "./db";
+import { eq } from "drizzle-orm";
 import { hashPassword } from "./auth";
 
 import * as XLSX from 'xlsx';
@@ -827,6 +828,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting agent:", error);
       res.status(500).json({ message: "Failed to delete agent" });
+    }
+  });
+
+  // Agent Rating endpoints
+  // Submit a rating for an agent
+  app.post("/api/agents/:id/rate", async (req, res) => {
+    try {
+      const agentId = parseInt(req.params.id);
+      if (isNaN(agentId)) {
+        return res.status(400).json({ message: "Invalid agent ID" });
+      }
+
+      // Validate the rating data
+      const validatedData = insertAgentRatingSchema.parse({
+        ...req.body,
+        agentId
+      });
+
+      // Insert the rating
+      const [newRating] = await db.insert(agentRatings).values(validatedData).returning();
+
+      // Calculate new average rating for the agent
+      const allRatings = await db.select().from(agentRatings).where(eq(agentRatings.agentId, agentId));
+      const averageRating = allRatings.reduce((sum, rating) => sum + rating.rating, 0) / allRatings.length;
+
+      // Update agent's rating
+      await db.update(agents).set({ rating: averageRating }).where(eq(agents.id, agentId));
+
+      res.status(201).json(newRating);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: fromZodError(error).message 
+        });
+      }
+      console.error("Error submitting rating:", error);
+      res.status(500).json({ message: "Failed to submit rating" });
+    }
+  });
+
+  // Get ratings for an agent
+  app.get("/api/agents/:id/ratings", async (req, res) => {
+    try {
+      const agentId = parseInt(req.params.id);
+      if (isNaN(agentId)) {
+        return res.status(400).json({ message: "Invalid agent ID" });
+      }
+
+      const ratings = await db.select().from(agentRatings).where(eq(agentRatings.agentId, agentId));
+      res.json(ratings);
+    } catch (error) {
+      console.error("Error fetching agent ratings:", error);
+      res.status(500).json({ message: "Failed to fetch ratings" });
     }
   });
 

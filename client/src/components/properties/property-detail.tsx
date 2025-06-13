@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { 
@@ -51,6 +52,8 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const [userRating, setUserRating] = useState(0);
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
@@ -73,6 +76,33 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
     },
     enabled: !!property?.agentId,
     staleTime: 0, // Always refetch agent data
+  });
+
+  // Rating mutation
+  const ratingMutation = useMutation({
+    mutationFn: async (rating: number) => {
+      if (!agent?.id) throw new Error('No agent selected');
+      
+      return apiRequest(`/api/agents/${agent.id}/rate`, 'POST', {
+        rating,
+        userEmail: 'anonymous@user.com' // For anonymous ratings
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Rating submitted",
+        description: "Thank you for rating this Real Estate Consultant!",
+      });
+      // Invalidate agent data to refetch updated rating
+      queryClient.invalidateQueries({ queryKey: [`/api/agents/${agent?.id}`] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to submit rating. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
   
   // Check if property is in favorites on load
@@ -586,20 +616,30 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                             {[1, 2, 3, 4, 5].map((star) => (
                               <button
                                 key={star}
-                                className="p-1 hover:scale-110 transition-transform"
+                                className="p-1 hover:scale-110 transition-transform disabled:opacity-50"
+                                disabled={ratingMutation.isPending}
                                 onClick={() => {
-                                  // Handle rating submission
-                                  console.log(`Rating: ${star} stars`);
+                                  setUserRating(star);
+                                  ratingMutation.mutate(star);
                                 }}
+                                onMouseEnter={() => setUserRating(star)}
+                                onMouseLeave={() => setUserRating(0)}
                               >
                                 <Star 
-                                  className="h-5 w-5 text-gray-300 hover:text-yellow-400 cursor-pointer transition-colors"
+                                  className={`h-5 w-5 cursor-pointer transition-colors ${
+                                    star <= userRating 
+                                      ? 'text-yellow-400 fill-yellow-400' 
+                                      : 'text-gray-300 hover:text-yellow-400'
+                                  }`}
                                 />
                               </button>
                             ))}
                           </div>
                           <p className="text-xs text-gray-500">
-                            Click on a star to rate this consultant's service
+                            {ratingMutation.isPending 
+                              ? 'Submitting your rating...' 
+                              : 'Click on a star to rate this consultant\'s service'
+                            }
                           </p>
                         </div>
                         
