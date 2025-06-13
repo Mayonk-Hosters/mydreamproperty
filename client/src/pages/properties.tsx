@@ -42,7 +42,8 @@ export default function PropertiesPage() {
   const [filters, setFilters] = useState(initialState.filters);
   
   const handleTabChange = (value: string) => {
-    setActiveTab(value as "buy" | "rent");
+    const newTab = value as "buy" | "rent";
+    setActiveTab(newTab);
     // Reset price filters when switching between buy/rent since they have different ranges
     setFilters(prev => ({ 
       ...prev, 
@@ -50,14 +51,6 @@ export default function PropertiesPage() {
       minPrice: 0,
       maxPrice: 0
     }));
-    
-    // Update URL when changing tabs
-    const params = new URLSearchParams(window.location.search);
-    params.set("type", value);
-    // Remove price params when switching tabs
-    params.delete("minPrice");
-    params.delete("maxPrice");
-    setLocation(`/properties?${params.toString()}`);
   };
 
   // Fetch all properties once and filter client-side for superfast performance
@@ -108,14 +101,14 @@ export default function PropertiesPage() {
       }
       
       // Price filters
-      if (filters.minPrice && property.price < filters.minPrice) return false;
-      if (filters.maxPrice && filters.maxPrice > 0 && property.price > filters.maxPrice) return false;
+      if (filters.minPrice && Number(property.price) < filters.minPrice) return false;
+      if (filters.maxPrice && filters.maxPrice > 0 && Number(property.price) > filters.maxPrice) return false;
       
       // Beds filter
-      if (filters.minBeds && property.beds < filters.minBeds) return false;
+      if (filters.minBeds && Number(property.beds) < filters.minBeds) return false;
       
       // Baths filter
-      if (filters.minBaths && property.baths < filters.minBaths) return false;
+      if (filters.minBaths && Number(property.baths) < filters.minBaths) return false;
       
       return true;
     });
@@ -143,9 +136,9 @@ export default function PropertiesPage() {
       case "newest":
         return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
       case "price-low":
-        return (a.price || 0) - (b.price || 0);
+        return parseFloat(String(a.price) || "0") - parseFloat(String(b.price) || "0");
       case "price-high":
-        return (b.price || 0) - (a.price || 0);
+        return parseFloat(String(b.price) || "0") - parseFloat(String(a.price) || "0");
       default:
         return 0;
     }
@@ -210,40 +203,38 @@ export default function PropertiesPage() {
         
         {/* Property Type Tabs */}
         <div className="mb-6 sm:mb-8 flex justify-center">
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full max-w-md">
-            <TabsList className="bg-gray-100 rounded-lg p-1">
-              <TabsTrigger 
-                value="buy" 
-                className={`px-8 py-3 text-base font-semibold rounded-md transition-all ${
-                  activeTab === 'buy' 
-                    ? 'bg-blue-600 text-white shadow-lg' 
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                  </svg>
-                  Buy
-                </span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="rent" 
-                className={`px-8 py-3 text-base font-semibold rounded-md transition-all ${
-                  activeTab === 'rent' 
-                    ? 'bg-emerald-600 text-white shadow-lg' 
-                    : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  Rent
-                </span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="bg-gray-100 rounded-lg p-1 flex">
+            <button
+              onClick={() => handleTabChange('buy')}
+              className={`px-8 py-3 text-base font-semibold rounded-md transition-all ${
+                activeTab === 'buy' 
+                  ? 'bg-blue-600 text-white shadow-lg' 
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                </svg>
+                Buy
+              </span>
+            </button>
+            <button
+              onClick={() => handleTabChange('rent')}
+              className={`px-8 py-3 text-base font-semibold rounded-md transition-all ${
+                activeTab === 'rent' 
+                  ? 'bg-emerald-600 text-white shadow-lg' 
+                  : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Rent
+              </span>
+            </button>
+          </div>
         </div>
         
         {/* Filters Section */}
