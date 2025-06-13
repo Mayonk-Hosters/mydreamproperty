@@ -402,10 +402,10 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             </div>
             
             <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-6 sm:mb-8">
-              <TabsList className="grid grid-cols-3 w-full">
-                <TabsTrigger value="details" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Details</TabsTrigger>
-                <TabsTrigger value="features" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Features</TabsTrigger>
-                <TabsTrigger value="agent" className="text-xs sm:text-sm py-1.5 px-1 sm:px-2">Real Estate Consultant</TabsTrigger>
+              <TabsList className="grid grid-cols-3 w-full bg-gradient-to-r from-blue-50 to-indigo-50 p-1 rounded-lg border border-blue-200">
+                <TabsTrigger value="details" className="text-xs sm:text-sm py-2 px-2 sm:px-3 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-blue-100 text-blue-700">Details</TabsTrigger>
+                <TabsTrigger value="features" className="text-xs sm:text-sm py-2 px-2 sm:px-3 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-emerald-100 text-emerald-700">Features</TabsTrigger>
+                <TabsTrigger value="agent" className="text-xs sm:text-sm py-2 px-2 sm:px-3 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-amber-100 text-amber-700">Real Estate Consultant</TabsTrigger>
               </TabsList>
               <TabsContent value="details">
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
