@@ -42,6 +42,7 @@ export default function PropertiesPage() {
   const [filters, setFilters] = useState(initialState.filters);
   
   const handleTabChange = (value: string) => {
+    console.log('Tab change clicked:', value, 'Current active:', activeTab);
     const newTab = value as "buy" | "rent";
     setActiveTab(newTab);
     // Reset price filters when switching between buy/rent since they have different ranges
@@ -51,6 +52,7 @@ export default function PropertiesPage() {
       minPrice: 0,
       maxPrice: 0
     }));
+    console.log('Tab change completed, new tab:', newTab);
   };
 
   // Fetch all properties once and filter client-side for superfast performance
