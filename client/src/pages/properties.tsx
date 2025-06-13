@@ -41,18 +41,21 @@ export default function PropertiesPage() {
   const [sortBy, setSortBy] = useState<"newest" | "price-low" | "price-high" | "">("");
   const [filters, setFilters] = useState(initialState.filters);
   
-  const handleTabChange = (value: string) => {
-    console.log('Tab change clicked:', value, 'Current active:', activeTab);
-    const newTab = value as "buy" | "rent";
-    setActiveTab(newTab);
-    // Reset price filters when switching between buy/rent since they have different ranges
-    setFilters(prev => ({ 
-      ...prev, 
-      type: value,
-      minPrice: 0,
-      maxPrice: 0
-    }));
-    console.log('Tab change completed, new tab:', newTab);
+  // Use useEffect to debug state changes
+  useEffect(() => {
+    console.log('ActiveTab state changed to:', activeTab);
+  }, [activeTab]);
+  
+  const handleBuyClick = () => {
+    console.log('Buy clicked, setting to buy');
+    setActiveTab('buy');
+    setFilters(prev => ({ ...prev, type: 'buy', minPrice: 0, maxPrice: 0 }));
+  };
+  
+  const handleRentClick = () => {
+    console.log('Rent clicked, setting to rent');
+    setActiveTab('rent');
+    setFilters(prev => ({ ...prev, type: 'rent', minPrice: 0, maxPrice: 0 }));
   };
 
   // Fetch all properties once and filter client-side for superfast performance
@@ -207,14 +210,7 @@ export default function PropertiesPage() {
         <div className="mb-6 sm:mb-8 flex justify-center">
           <div className="bg-gray-100 rounded-lg p-1 flex gap-1">
             <div
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Buy button clicked, current activeTab:', activeTab);
-                setActiveTab('buy');
-                setFilters(prev => ({ ...prev, type: 'buy', minPrice: 0, maxPrice: 0 }));
-                console.log('Buy tab set, should be highlighted');
-              }}
+              onClick={handleBuyClick}
               style={{
                 backgroundColor: activeTab === 'buy' ? '#2563eb' : 'transparent',
                 color: activeTab === 'buy' ? 'white' : '#6b7280'
@@ -229,14 +225,7 @@ export default function PropertiesPage() {
               </span>
             </div>
             <div
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Rent button clicked, current activeTab:', activeTab);
-                setActiveTab('rent');
-                setFilters(prev => ({ ...prev, type: 'rent', minPrice: 0, maxPrice: 0 }));
-                console.log('Rent tab set, should be highlighted');
-              }}
+              onClick={handleRentClick}
               style={{
                 backgroundColor: activeTab === 'rent' ? '#059669' : 'transparent',
                 color: activeTab === 'rent' ? 'white' : '#6b7280'
