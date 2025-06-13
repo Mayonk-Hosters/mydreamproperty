@@ -56,9 +56,8 @@ export default function DirectAdminAccess() {
           localStorage.setItem("admin_username", userData.username);
           localStorage.setItem("isAdmin", "true");
           
-          setTimeout(() => {
-            setLocation("/admin");
-          }, 1500);
+          // Immediate redirect for faster admin access
+          setLocation("/admin");
         } else {
           setIsLoading(false);
           toast({
@@ -86,8 +85,8 @@ export default function DirectAdminAccess() {
   };
 
   return (
-    <div className="container mx-auto flex h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
             <LockKeyhole className="h-12 w-12 text-primary" />

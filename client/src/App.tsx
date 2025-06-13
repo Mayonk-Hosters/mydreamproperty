@@ -57,6 +57,10 @@ import AdminInquiriesCenterPage from "@/pages/admin/inquiries-center";
 function Router() {
   return (
     <Switch>
+      {/* Standalone pages without Layout wrapper */}
+      <Route path="/admin-access" component={DirectAdminAccess} />
+      <Route path="/login" component={LoginPage} />
+      
       {/* Public pages */}
       <Route path="/" component={HomePage} />
       <Route path="/properties" component={PropertiesPage} />
@@ -67,8 +71,6 @@ function Router() {
       <Route path="/property-calculator" component={PropertyCalculatorPage} />
       <Route path="/home-loan" component={HomeLoanPage} />
       <Route path="/contact" component={ContactPage} />
-      <Route path="/login" component={LoginPage} />
-      <Route path="/admin-access" component={DirectAdminAccess} />
       
       {/* Agent pages - protected with agent-specific auth */}
       <Route path="/agent-dashboard" component={AgentDashboardPage} />
