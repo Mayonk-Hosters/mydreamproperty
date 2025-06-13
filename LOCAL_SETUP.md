@@ -95,9 +95,19 @@ npm run dev
 The application will be available at: `http://localhost:5000`
 
 ### Production Build
+Note: The production build requires both frontend and backend compilation. Due to the large number of dependencies, building may take several minutes.
+
 ```bash
+# Build frontend and backend (may take 3-5 minutes)
 npm run build
+
+# Run production server
 npm start
+```
+
+If the build times out or fails, use development mode instead:
+```bash
+npm run dev
 ```
 
 ## Project Structure
