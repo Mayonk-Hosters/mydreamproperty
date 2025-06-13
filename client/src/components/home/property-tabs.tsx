@@ -65,8 +65,18 @@ export function PropertyTabs() {
   // We've removed the "sell" type query
 
   const handleTabChange = (value: string) => {
+    console.log('Tab click detected:', value, 'Current tab:', activeTab);
     setActiveTab(value as PropertyType);
   };
+
+  // Debug effects
+  useEffect(() => {
+    console.log('Active tab changed to:', activeTab);
+    console.log('Buy properties available:', buyProperties.length);
+    console.log('Rent properties available:', rentProperties.length);
+    console.log('Featured buy properties:', featuredBuyProperties.length);
+    console.log('Featured rent properties:', featuredRentProperties.length);
+  }, [activeTab, buyProperties.length, rentProperties.length, featuredBuyProperties.length, featuredRentProperties.length]);
 
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
