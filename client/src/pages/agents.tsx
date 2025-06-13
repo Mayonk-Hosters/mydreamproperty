@@ -25,22 +25,22 @@ export default function AgentsPage() {
   return (
     <Layout>
       <Helmet>
-        <title>Our Real Estate Agents | RealEstate Pro</title>
-        <meta name="description" content="Meet our team of experienced real estate agents who are ready to help you find your dream property or sell your current home." />
+        <title>Our Real Estate Consultants | RealEstate Pro</title>
+        <meta name="description" content="Meet our team of experienced real estate consultants who are ready to help you find your dream property or sell your current home." />
       </Helmet>
       
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold mb-4">Our Real Estate Agents</h1>
+          <h1 className="text-3xl font-bold mb-4">Our Real Estate Consultants</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Meet our team of experienced real estate professionals who are dedicated to helping you find your dream home or sell your property for the best price.
+            Meet our team of experienced real estate consultants who are dedicated to helping you find your dream home or sell your property for the best price.
           </p>
           
           <div className="mt-6 max-w-md mx-auto relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
-              placeholder="Search agents..."
+              placeholder="Search consultants..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"

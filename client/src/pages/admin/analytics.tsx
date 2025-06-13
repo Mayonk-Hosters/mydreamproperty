@@ -284,7 +284,7 @@ export default function AdminAnalyticsPage() {
         <TabsContent value="agents" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Properties by Agent</CardTitle>
+              <CardTitle>Properties by Consultant</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-96">

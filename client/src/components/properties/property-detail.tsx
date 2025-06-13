@@ -537,10 +537,10 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                       </div>
                       <div>
                         <h3 className="font-medium text-base sm:text-lg">
-                          {agent?.name ? agent.name : "Property Agent"}
+                          {agent?.name ? agent.name : "Property Consultant"}
                         </h3>
                         <p className="text-primary font-medium text-sm">
-                          {agent?.title ? agent.title : "Real Estate Agent"}
+                          {agent?.title ? agent.title : "Real Estate Consultant"}
                         </p>
                         {agent?.contactNumber && (
                           <p className="text-gray-700 text-sm mt-2">
