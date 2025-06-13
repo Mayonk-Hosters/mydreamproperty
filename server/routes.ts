@@ -11,6 +11,7 @@ import {
   insertPropertySchema, 
   updatePropertySchema,
   insertAgentSchema, 
+  insertAgentRatingSchema,
   insertPropertyInquirySchema,
   insertStateSchema,
   insertDistrictSchema,
@@ -24,7 +25,9 @@ import {
   PROPERTY_STATUS,
   propertyInquiries,
   homeLoanInquiries,
-  contactMessages
+  contactMessages,
+  agentRatings,
+  agents
 } from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";

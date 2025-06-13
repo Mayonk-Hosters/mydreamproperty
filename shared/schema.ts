@@ -39,6 +39,17 @@ export const agents = pgTable("agents", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Agent ratings schema
+export const agentRatings = pgTable("agent_ratings", {
+  id: serial("id").primaryKey(),
+  agentId: integer("agent_id").notNull().references(() => agents.id, { onDelete: 'cascade' }),
+  rating: integer("rating").notNull(), // 1-5 stars
+  userId: text("user_id").references(() => users.id, { onDelete: 'cascade' }),
+  userEmail: text("user_email"), // For anonymous ratings
+  comment: text("comment"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // India Locations Tables
 export const states = pgTable("states", {
   id: serial("id").primaryKey(),
@@ -191,6 +202,18 @@ export const usersRelations = relations(users, ({ many }) => ({}));
 
 export const agentsRelations = relations(agents, ({ many }) => ({
   properties: many(properties),
+  ratings: many(agentRatings),
+}));
+
+export const agentRatingsRelations = relations(agentRatings, ({ one }) => ({
+  agent: one(agents, {
+    fields: [agentRatings.agentId],
+    references: [agents.id],
+  }),
+  user: one(users, {
+    fields: [agentRatings.userId],
+    references: [users.id],
+  }),
 }));
 
 export const propertiesRelations = relations(properties, ({ one, many }) => ({
@@ -342,6 +365,13 @@ export const insertTehsilSchema = createInsertSchema(tehsils).omit({
   createdAt: true,
 });
 
+export const insertAgentRatingSchema = createInsertSchema(agentRatings).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  rating: z.number().min(1).max(5, "Rating must be between 1 and 5 stars"),
+});
+
 // Type definitions
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -352,6 +382,9 @@ export type InsertProperty = z.infer<typeof insertPropertySchema>;
 
 export type Agent = typeof agents.$inferSelect;
 export type InsertAgent = z.infer<typeof insertAgentSchema>;
+
+export type AgentRating = typeof agentRatings.$inferSelect;
+export type InsertAgentRating = z.infer<typeof insertAgentRatingSchema>;
 
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
