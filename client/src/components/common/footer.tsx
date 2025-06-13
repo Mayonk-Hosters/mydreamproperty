@@ -133,7 +133,7 @@ export function Footer() {
           <p className="mt-2 text-xs">
             Optimized for iOS and Android devices
           </p>
-          <p className="mt-3 text-xs font-medium relative overflow-hidden">
+          <p className="mt-3 text-xs font-medium text-center relative overflow-hidden">
             <span className="relative inline-block text-gray-500">
               This site is powered by 
               <a 
@@ -145,7 +145,7 @@ export function Footer() {
                 Rahoul Dhappatkar
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 animate-name-flash"></span>
               </a>
-              <span className="absolute left-0 top-0 w-full h-full bg-gradient-to-r from-transparent via-yellow-300 to-transparent opacity-60 animate-sweep"></span>
+              <span className="absolute left-1/2 top-0 w-full h-full bg-gradient-to-r from-transparent via-yellow-300 to-transparent opacity-60 animate-sweep transform -translate-x-1/2"></span>
             </span>
           </p>
         </div>
