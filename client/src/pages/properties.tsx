@@ -41,19 +41,12 @@ export default function PropertiesPage() {
   const [sortBy, setSortBy] = useState<"newest" | "price-low" | "price-high" | "">("");
   const [filters, setFilters] = useState(initialState.filters);
   
-  // Use useEffect to debug state changes
-  useEffect(() => {
-    console.log('ActiveTab state changed to:', activeTab);
-  }, [activeTab]);
-  
   const handleBuyClick = () => {
-    console.log('Buy clicked, setting to buy');
     setActiveTab('buy');
     setFilters(prev => ({ ...prev, type: 'buy', minPrice: 0, maxPrice: 0 }));
   };
   
   const handleRentClick = () => {
-    console.log('Rent clicked, setting to rent');
     setActiveTab('rent');
     setFilters(prev => ({ ...prev, type: 'rent', minPrice: 0, maxPrice: 0 }));
   };
