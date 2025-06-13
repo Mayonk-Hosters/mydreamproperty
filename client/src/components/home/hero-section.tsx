@@ -28,18 +28,22 @@ export function HeroSection() {
 
   const handleBuyClick = (e?: React.MouseEvent) => {
     console.log('Buy button clicked, current activeTab:', activeTab);
-    console.log('Buy tab set, should be highlighted');
-    if (e) e.stopPropagation();
+    console.log('Setting activeTab to buy');
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setActiveTab('buy');
-    setSearchParams(prev => ({ ...prev, type: 'buy' }));
   };
   
   const handleRentClick = (e?: React.MouseEvent) => {
     console.log('Rent button clicked, current activeTab:', activeTab);
-    console.log('Rent tab set, should be highlighted');
-    if (e) e.stopPropagation();
+    console.log('Setting activeTab to rent');
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setActiveTab('rent');
-    setSearchParams(prev => ({ ...prev, type: 'rent' }));
   };
 
   // Keep activeTab and searchParams.type in sync
@@ -184,7 +188,8 @@ export function HeroSection() {
                 {/* Property Type Toggle */}
                 <div className="flex justify-center mb-6">
                   <div className="bg-gray-100 rounded-lg p-1 flex gap-1">
-                    <div
+                    <button
+                      type="button"
                       onClick={handleBuyClick}
                       style={{
                         backgroundColor: activeTab === 'buy' ? '#2563eb' : 'transparent',
@@ -198,8 +203,9 @@ export function HeroSection() {
                         </svg>
                         Buy
                       </span>
-                    </div>
-                    <div
+                    </button>
+                    <button
+                      type="button"
                       onClick={handleRentClick}
                       style={{
                         backgroundColor: activeTab === 'rent' ? '#059669' : 'transparent',
@@ -213,7 +219,7 @@ export function HeroSection() {
                         </svg>
                         Rent
                       </span>
-                    </div>
+                    </button>
                   </div>
                 </div>
 
