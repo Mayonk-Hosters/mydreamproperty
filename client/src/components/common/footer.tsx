@@ -144,7 +144,7 @@ export function Footer() {
               >
                 Rahoul Dhappatkar
               </a>
-              <span className="absolute left-0 top-0 w-8 h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-40 animate-sweep"></span>
+              <span className="absolute left-0 top-0 w-12 h-full bg-gradient-to-r from-transparent via-yellow-200 to-transparent opacity-80 animate-sweep shadow-[0_0_20px_rgba(255,255,0,0.8)]"></span>
             </span>
           </p>
         </div>

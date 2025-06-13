@@ -247,16 +247,28 @@
   0% {
     transform: translateX(-50px);
     opacity: 0;
+    filter: brightness(1);
   }
-  10% {
-    opacity: 1;
+  5% {
+    opacity: 0.8;
+    filter: brightness(3) saturate(2);
   }
-  90% {
+  15% {
     opacity: 1;
+    filter: brightness(4) saturate(3);
+  }
+  85% {
+    opacity: 1;
+    filter: brightness(4) saturate(3);
+  }
+  95% {
+    opacity: 0.8;
+    filter: brightness(3) saturate(2);
   }
   100% {
     transform: translateX(calc(100% + 50px));
     opacity: 0;
+    filter: brightness(1);
   }
 }
 
