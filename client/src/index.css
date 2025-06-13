@@ -245,10 +245,18 @@
 
 @keyframes sweep {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
   }
   100% {
-    transform: translateX(100%);
+    transform: translateX(calc(100% + 50px));
+    opacity: 0;
   }
 }
 
