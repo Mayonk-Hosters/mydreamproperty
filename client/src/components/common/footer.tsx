@@ -132,6 +132,9 @@ export function Footer() {
               v2.5.1
             </a>
           </p>
+          <p className="mt-3 text-xs text-gray-600 font-medium">
+            This site is powered by Rahoul Dhappatkar
+          </p>
         </div>
       </div>
     </footer>
