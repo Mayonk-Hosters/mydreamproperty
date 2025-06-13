@@ -558,10 +558,50 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                           </p>
                         )}
                         {agent?.rating && (
-                          <p className="text-gray-700 text-sm">
-                            Rating: {agent.rating}/5
-                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-gray-700 text-sm">Rating:</span>
+                            <div className="flex items-center">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star 
+                                  key={star}
+                                  className={`h-4 w-4 ${
+                                    star <= Math.round(agent.rating) 
+                                      ? 'text-yellow-400 fill-yellow-400' 
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                              <span className="text-gray-600 text-sm ml-1">
+                                ({agent.rating.toFixed(1)}/5)
+                              </span>
+                            </div>
+                          </div>
                         )}
+                        
+                        {/* Rating Section */}
+                        <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                          <h4 className="font-medium text-sm mb-2">Rate this Consultant</h4>
+                          <div className="flex items-center gap-2 mb-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                className="p-1 hover:scale-110 transition-transform"
+                                onClick={() => {
+                                  // Handle rating submission
+                                  console.log(`Rating: ${star} stars`);
+                                }}
+                              >
+                                <Star 
+                                  className="h-5 w-5 text-gray-300 hover:text-yellow-400 cursor-pointer transition-colors"
+                                />
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            Click on a star to rate this consultant's service
+                          </p>
+                        </div>
+                        
                         <p className="text-gray-600 text-sm sm:text-base my-3">
                           Our property expert will guide you through every step of your real estate journey.
                         </p>
