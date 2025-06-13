@@ -135,12 +135,17 @@ export function Footer() {
           </p>
           <p className="mt-3 text-xs font-medium">
             This site is powered by 
-            <span className="ml-1 relative inline-block animate-gold-glow bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent font-bold">
+            <a 
+              href="https://www.facebook.com/rahuldhapatkar27" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="ml-1 relative inline-block animate-gold-glow bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent font-bold hover:scale-105 transition-transform duration-200 cursor-pointer"
+            >
               Rahoul Dhappatkar
               <span className="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-200 bg-clip-text text-transparent animate-gold-shimmer"></span>
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-100 to-transparent w-[150%] h-full animate-gold-sweep opacity-70"></span>
               <span className="absolute inset-0 shadow-[0_0_15px_rgba(251,191,36,0.6)] animate-gold-pulse"></span>
-            </span>
+            </a>
           </p>
         </div>
       </div>
