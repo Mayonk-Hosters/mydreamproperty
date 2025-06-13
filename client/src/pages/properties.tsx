@@ -205,37 +205,49 @@ export default function PropertiesPage() {
         
         {/* Property Type Tabs */}
         <div className="mb-6 sm:mb-8 flex justify-center">
-          <div className="bg-gray-100 rounded-lg p-1 flex">
-            <button
-              onClick={() => handleTabChange('buy')}
-              className={`px-8 py-3 text-base font-semibold rounded-md transition-all ${
+          <div className="bg-gray-100 rounded-lg p-1 flex gap-1">
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Buy button clicked');
+                setActiveTab('buy');
+                setFilters(prev => ({ ...prev, type: 'buy', minPrice: 0, maxPrice: 0 }));
+              }}
+              className={`px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer ${
                 activeTab === 'buy' 
                   ? 'bg-blue-600 text-white shadow-lg' 
                   : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
               }`}
             >
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 pointer-events-none">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                 </svg>
                 Buy
               </span>
-            </button>
-            <button
-              onClick={() => handleTabChange('rent')}
-              className={`px-8 py-3 text-base font-semibold rounded-md transition-all ${
+            </div>
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Rent button clicked');
+                setActiveTab('rent');
+                setFilters(prev => ({ ...prev, type: 'rent', minPrice: 0, maxPrice: 0 }));
+              }}
+              className={`px-8 py-3 text-base font-semibold rounded-md transition-all cursor-pointer ${
                 activeTab === 'rent' 
                   ? 'bg-emerald-600 text-white shadow-lg' 
                   : 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'
               }`}
             >
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 pointer-events-none">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 Rent
               </span>
-            </button>
+            </div>
           </div>
         </div>
         
