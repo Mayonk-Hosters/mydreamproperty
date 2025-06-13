@@ -201,11 +201,18 @@ export function HeroSection() {
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {(propertyTypes || DEFAULT_PROPERTY_TYPES).map((type) => (
-                          <SelectItem key={type.id} value={type.name}>
-                            {type.name}
-                          </SelectItem>
-                        ))}
+                        {propertyTypes ? 
+                          propertyTypes.map((type) => (
+                            <SelectItem key={type.id} value={type.name}>
+                              {type.name}
+                            </SelectItem>
+                          )) :
+                          DEFAULT_PROPERTY_TYPES.map((typeName, index) => (
+                            <SelectItem key={index} value={typeName}>
+                              {typeName}
+                            </SelectItem>
+                          ))
+                        }
                       </SelectContent>
                     </Select>
                   </div>
