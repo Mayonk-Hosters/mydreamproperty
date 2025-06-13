@@ -138,7 +138,6 @@ export function Footer() {
               This site is powered by 
               <span className="ml-1 relative inline-block bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400 bg-clip-text text-transparent font-bold">
                 Rahoul Dhappatkar
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 animate-name-flash"></span>
               </span>
               <span className="absolute left-1/2 top-0 w-full h-full bg-gradient-to-r from-transparent via-yellow-300 to-transparent opacity-60 animate-sweep transform -translate-x-1/2"></span>
             </span>
